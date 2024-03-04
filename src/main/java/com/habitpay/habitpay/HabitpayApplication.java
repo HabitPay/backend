@@ -1,13 +1,13 @@
-package com.habitpay.HabitPay;
+package com.habitpay.habitpay;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class HabitPayApplication {
+public class HabitpayApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(HabitPayApplication.class, args);
+		SpringApplication.run(HabitpayApplication.class, args);
 	}
 
 }

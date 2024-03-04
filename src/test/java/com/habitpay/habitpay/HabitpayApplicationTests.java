@@ -1,10 +1,10 @@
-package com.habitpay.HabitPay;
+package com.habitpay.habitpay;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class HabitPayApplicationTests {
+class HabitpayApplicationTests {
 
 	@Test
 	void contextLoads() {
