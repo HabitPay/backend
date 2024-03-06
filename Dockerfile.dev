@@ -1,0 +1,9 @@
+FROM gradle:jdk17
+
+WORKDIR /usr/app
+
+COPY ./entrypoint.sh ./
+
+EXPOSE 8080
+
+ENTRYPOINT [ "/bin/sh", "./entrypoint.sh" ]
