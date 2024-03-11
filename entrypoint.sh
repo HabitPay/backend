@@ -13,4 +13,4 @@ fi
 
 ./gradlew --status
 
-./gradlew --build-cache --parallel -t --watch-fs bootRun
+./gradlew --build-cache --parallel -t bootRun
