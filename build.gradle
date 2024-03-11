@@ -33,22 +33,3 @@ dependencies {
 	testImplementation 'org.springframework.security:spring-security-test'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 }
-
-tasks.named('test') {
-	useJUnitPlatform()
-}
-
-task getDependencies(type: Copy) {
-    from sourceSets.main.runtimeClasspath
-    into "runtime/"
-
-    doFirst {
-        def runtimeDir = new File("runtime")
-        runtimeDir.deleteDir()
-        runtimeDir.mkdir()
-    }
-
-    doLast {
-        new File("runtime").deleteDir()
-    }
-}
