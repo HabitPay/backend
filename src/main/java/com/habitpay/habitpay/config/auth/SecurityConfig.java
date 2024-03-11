@@ -21,6 +21,7 @@ public class SecurityConfig {
     @Autowired
     private final CustomOAuth2UserService customOAuth2UserService;
 
+    // TODO: CorsConfig.java 파일에 옮길 수 있도록 하기 
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         return request -> {
