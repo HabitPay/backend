@@ -1,4 +1,4 @@
-package com.habitpay.habitpay.user.entities;
+package com.habitpay.habitpay.domain.model;
 
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.MappedSuperclass;
@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 @Getter
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
-public abstract class BaseTimeEntity {
+public abstract class BaseTime {
     @CreatedDate
     private LocalDateTime createdDate;
 

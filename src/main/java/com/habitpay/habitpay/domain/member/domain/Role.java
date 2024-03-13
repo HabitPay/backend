@@ -1,4 +1,4 @@
-package com.habitpay.habitpay.user.enums;
+package com.habitpay.habitpay.domain.member.domain;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

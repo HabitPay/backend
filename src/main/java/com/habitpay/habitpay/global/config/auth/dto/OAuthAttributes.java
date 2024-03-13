@@ -1,7 +1,7 @@
-package com.habitpay.habitpay.config.auth.dto;
+package com.habitpay.habitpay.global.config.auth.dto;
 
-import com.habitpay.habitpay.user.entities.User;
-import com.habitpay.habitpay.user.enums.Role;
+import com.habitpay.habitpay.domain.member.domain.Member;
+import com.habitpay.habitpay.domain.member.domain.Role;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -35,8 +35,8 @@ public class OAuthAttributes {
                 .build();
     }
 
-    public User toEntity() {
-        return User.builder()
+    public Member toEntity() {
+        return Member.builder()
                 .name(name)
                 .email(email)
                 .role(Role.GUEST)
