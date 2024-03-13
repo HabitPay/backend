@@ -21,6 +21,9 @@ public class Member extends BaseTime {
     @Column(nullable = false)
     private String email;
 
+    @Column(nullable = false)
+    private boolean isActive;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Role role;
@@ -29,6 +32,7 @@ public class Member extends BaseTime {
     public Member(String name, String email, Role role) {
         this.name = name;
         this.email = email;
+        this.isActive = false;
         this.role = role;
     }
 
