@@ -1,5 +1,6 @@
 package com.habitpay.habitpay.domain.model;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.MappedSuperclass;
 import lombok.Getter;
@@ -14,9 +15,11 @@ import java.time.LocalDateTime;
 @EntityListeners(AuditingEntityListener.class)
 public abstract class BaseTime {
     @CreatedDate
-    private LocalDateTime createdDate;
+    private LocalDateTime createdAt;
 
     @LastModifiedBy
-    private LocalDateTime modifiedDate;
+    private LocalDateTime modifiedAt;
 
+    @Column
+    private LocalDateTime deletedAt;
 }
