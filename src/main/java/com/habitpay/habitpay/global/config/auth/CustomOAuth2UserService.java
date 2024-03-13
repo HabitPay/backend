@@ -1,9 +1,9 @@
-package com.habitpay.habitpay.config.auth;
+package com.habitpay.habitpay.global.config.auth;
 
-import com.habitpay.habitpay.config.auth.dto.OAuthAttributes;
-import com.habitpay.habitpay.config.auth.dto.SessionUser;
-import com.habitpay.habitpay.user.entities.User;
-import com.habitpay.habitpay.user.repositories.UserRepository;
+import com.habitpay.habitpay.global.config.auth.dto.OAuthAttributes;
+import com.habitpay.habitpay.global.config.auth.dto.SessionUser;
+import com.habitpay.habitpay.domain.member.domain.Member;
+import com.habitpay.habitpay.domain.member.dao.MemberRepository;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -20,7 +20,7 @@ import java.util.Collections;
 @Service
 @RequiredArgsConstructor
 public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequest, OAuth2User> {
-    private final UserRepository userRepository;
+    private final MemberRepository memberRepository;
     private final HttpSession httpSession;
 
     @Override
@@ -33,23 +33,23 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
 
         OAuthAttributes attributes = OAuthAttributes.of(registrationId, userNameAttributeName, oAuth2User.getAttributes());
 
-        User user = saveOrUpdate(attributes);
+        Member member = saveOrUpdate(attributes);
 
-        httpSession.setAttribute("user", new SessionUser(user));
+        httpSession.setAttribute("user", new SessionUser(member));
 
         return new DefaultOAuth2User(
                 Collections.singleton(new SimpleGrantedAuthority(
-                        user.getRoleKey())),
+                        member.getRoleKey())),
                         attributes.getAttributes(),
                         attributes.getNameAttributeKey()
         );
 
         }
-        private User saveOrUpdate(OAuthAttributes attributes) {
-            User user = userRepository.findByEmail(attributes.getEmail())
+        private Member saveOrUpdate(OAuthAttributes attributes) {
+            Member member = memberRepository.findByEmail(attributes.getEmail())
                     .map(entity -> entity.update(attributes.getName()))
                     .orElse(attributes.toEntity());
 
-            return userRepository.save(user);
+            return memberRepository.save(member);
     }
 }
