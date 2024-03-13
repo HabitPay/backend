@@ -1,0 +1,21 @@
+---
+spring:
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: ${GOOGLE_CLIENT_ID}
+            client-secret: ${GOOGLE_CLIENT_SECRET}
+            redirect-uri: ${GOOGLE_REDIRECT_URI}
+            scope: ${GOOGLE_SCOPE}
+  jpa:
+    database: postgresql
+---
+spring:
+  profiles:
+    active: local
+---
+spring:
+  profiles:
+    active: prod
