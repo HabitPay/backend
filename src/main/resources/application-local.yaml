@@ -12,3 +12,7 @@ spring:
   devtools:
     livereload:
       enabled: true
+
+jwt:
+  issuer: hello@world.kr
+  secret: 1234qwer
