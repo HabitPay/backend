@@ -65,6 +65,11 @@ public class TokenProvider {
                 authorities);
     }
 
+    public String getEmail(String token) {
+        Claims claims = getClaims(token);
+        return claims.getSubject();
+    }
+
     public boolean getIsActive(String token) {
         Claims claims = getClaims(token);
         return claims.get("isActive", Boolean.class);
