@@ -43,15 +43,15 @@ public class SecurityConfig {
                             frameOptionsConfig.disable()))
             .authorizeHttpRequests((authorizeRequests ->
                     authorizeRequests
-                            .requestMatchers("/", "/oauth2/authorization/google").permitAll()
-                            .requestMatchers("/api/v1/**").hasRole(Role.USER.name())
+                            .requestMatchers("/*").permitAll() // todo: 보안 상 취약할 수 있으니 범위 제한하기
+//                            .requestMatchers("/api/v1/**").hasRole(Role.USER.name()) // todo: 로그인 후 사용하는 api 에서만 적용하기
                             .anyRequest().authenticated()
             ))
             .logout((logoutConfig) ->
                     logoutConfig.logoutSuccessUrl("/"))
             .oauth2Login((oauth2) ->
                     oauth2.loginPage("/oauth2/authorization/google")
-                            .defaultSuccessUrl("http://localhost:3000/success")
+                            .defaultSuccessUrl("http://localhost:3000/onboarding")
                             .failureUrl("http://localhost:3000/fail")
                             .userInfoEndpoint(userInfoEndpoint ->
                                     userInfoEndpoint.userService(customOAuth2UserService)));
