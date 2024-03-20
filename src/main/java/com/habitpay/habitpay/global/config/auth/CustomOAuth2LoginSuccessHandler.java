@@ -29,10 +29,12 @@ public class CustomOAuth2LoginSuccessHandler implements AuthenticationSuccessHan
             OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
             String email = oAuth2User.getAttribute("email");
             String accessToken = tokenService.createAccessToken(email);
+            int maxAge = (int) Duration.ofHours(2).getSeconds();
 
             Cookie cookie = new Cookie("accessToken", accessToken);
             cookie.setPath("/");
-            cookie.setMaxAge((int) Duration.ofHours(2).getSeconds());
+            cookie.setMaxAge(maxAge);
+            cookie.setDomain("localhost");
 //            cookie.setSecure(true);
 //            cookie.setHttpOnly(true);
             response.addCookie(cookie);
