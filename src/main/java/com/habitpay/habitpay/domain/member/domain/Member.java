@@ -15,8 +15,8 @@ public class Member extends BaseTime {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private String name;
+    @Column()
+    private String nickname;
 
     @Column(nullable = false)
     private String email;
@@ -29,15 +29,19 @@ public class Member extends BaseTime {
     private Role role;
 
     @Builder
-    public Member(String name, String email, Role role) {
-        this.name = name;
+    public Member(String email, Role role) {
         this.email = email;
         this.isActive = false;
         this.role = role;
     }
 
-    public Member update(String name) {
-        this.name = name;
+    public void activate(String nickname) {
+        this.nickname = nickname;
+        this.isActive = true;
+    }
+
+    public Member create(String email) {
+        this.email = email;
 
         return this;
     }
