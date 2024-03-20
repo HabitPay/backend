@@ -1,11 +1,10 @@
 package com.habitpay.habitpay.global.config.auth;
 
-import com.habitpay.habitpay.global.config.auth.dto.OAuthAttributes;
-import com.habitpay.habitpay.global.config.auth.dto.SessionUser;
-import com.habitpay.habitpay.domain.member.domain.Member;
 import com.habitpay.habitpay.domain.member.dao.MemberRepository;
-import jakarta.servlet.http.HttpSession;
+import com.habitpay.habitpay.domain.member.domain.Member;
+import com.habitpay.habitpay.global.config.auth.dto.OAuthAttributes;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
@@ -19,9 +18,9 @@ import java.util.Collections;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequest, OAuth2User> {
     private final MemberRepository memberRepository;
-    private final HttpSession httpSession;
 
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
@@ -35,21 +34,22 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
 
         Member member = saveOrUpdate(attributes);
 
-        httpSession.setAttribute("user", new SessionUser(member));
+        log.info("loadUser: 회원 생성 완료 {}", member.getEmail());
 
         return new DefaultOAuth2User(
                 Collections.singleton(new SimpleGrantedAuthority(
                         member.getRoleKey())),
-                        attributes.getAttributes(),
-                        attributes.getNameAttributeKey()
+                attributes.getAttributes(),
+                attributes.getNameAttributeKey()
         );
 
-        }
-        private Member saveOrUpdate(OAuthAttributes attributes) {
-            Member member = memberRepository.findByEmail(attributes.getEmail())
-                    .map(entity -> entity.create(attributes.getEmail()))
-                    .orElse(attributes.toEntity());
+    }
 
-            return memberRepository.save(member);
+    private Member saveOrUpdate(OAuthAttributes attributes) {
+        Member member = memberRepository.findByEmail(attributes.getEmail())
+                .map(entity -> entity.create(attributes.getEmail()))
+                .orElse(attributes.toEntity());
+
+        return memberRepository.save(member);
     }
 }
