@@ -4,6 +4,7 @@ import com.habitpay.habitpay.domain.member.dao.MemberRepository;
 import com.habitpay.habitpay.domain.member.domain.Member;
 import com.habitpay.habitpay.domain.member.dto.MemberRequest;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
@@ -18,6 +19,7 @@ public class MemberApi {
     }
 
     @PostMapping("/member")
+    @ResponseStatus(HttpStatus.CREATED)
     public void updateMember(@RequestBody MemberRequest memberRequest) {
         String email = memberRequest.getEmail();
         String nickname = memberRequest.getNickname();
