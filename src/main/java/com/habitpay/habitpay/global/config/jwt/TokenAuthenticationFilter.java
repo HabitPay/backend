@@ -11,9 +11,11 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.StringTokenizer;
 
 @RequiredArgsConstructor
 public class TokenAuthenticationFilter extends OncePerRequestFilter {
+    private final TokenService tokenService;
     private final TokenProvider tokenProvider;
 
     @Override
@@ -22,10 +24,15 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
             HttpServletResponse response,
             FilterChain filterChain
     ) throws ServletException, IOException {
-        String token = getAccessToken(request);
-        if (tokenProvider.validateToken(token)) {
-            Authentication authentication = tokenProvider.getAuthentication(token);
-            SecurityContextHolder.getContext().setAuthentication(authentication);
+        String authorizationHeader = request.getHeader("Authorization");
+        StringTokenizer tokenizer = new StringTokenizer(authorizationHeader);
+        if (tokenizer.countTokens() == 2 && tokenizer.nextToken().equals("Bearer")) {
+            String token = tokenizer.nextToken();
+
+            if (tokenProvider.validateToken(token)) {
+                Authentication authentication = tokenService.getAuthentication(token);
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+            }
         }
 
         filterChain.doFilter(request, response);
