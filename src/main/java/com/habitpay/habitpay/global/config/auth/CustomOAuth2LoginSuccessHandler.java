@@ -2,7 +2,6 @@ package com.habitpay.habitpay.global.config.auth;
 
 import com.habitpay.habitpay.global.config.jwt.TokenService;
 import jakarta.servlet.ServletException;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
@@ -12,7 +11,6 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
-import java.time.Duration;
 
 @AllArgsConstructor
 @Component
@@ -29,16 +27,9 @@ public class CustomOAuth2LoginSuccessHandler implements AuthenticationSuccessHan
             OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
             String email = oAuth2User.getAttribute("email");
             String accessToken = tokenService.createAccessToken(email);
-            int maxAge = (int) Duration.ofHours(2).getSeconds();
+            String redirectUrl = "http://localhost:3000/onboarding?accessToken=" + accessToken;
 
-            Cookie cookie = new Cookie("accessToken", accessToken);
-            cookie.setPath("/");
-            cookie.setMaxAge(maxAge);
-            cookie.setDomain("localhost");
-//            cookie.setSecure(true);
-//            cookie.setHttpOnly(true);
-            response.addCookie(cookie);
-            response.sendRedirect("http://localhost:3000/onboarding");
+            response.sendRedirect(redirectUrl);
         }
     }
 }
