@@ -8,8 +8,8 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 @SpringBootApplication
 public class HabitpayApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(HabitpayApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(HabitpayApplication.class, args);
+    }
 
 }

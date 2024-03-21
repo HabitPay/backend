@@ -28,7 +28,6 @@ public class OAuthAttributes {
 
     private static OAuthAttributes ofGoogle(String userNameAttributeName, Map<String, Object> attributes) {
         return OAuthAttributes.builder()
-                .name((String) attributes.get("name"))
                 .email((String) attributes.get("email"))
                 .attributes(attributes)
                 .nameAttributeKey(userNameAttributeName)
@@ -37,7 +36,6 @@ public class OAuthAttributes {
 
     public Member toEntity() {
         return Member.builder()
-                .name(name)
                 .email(email)
                 .role(Role.GUEST)
                 .build();
