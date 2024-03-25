@@ -29,8 +29,8 @@ public class SecurityConfig {
     private final CustomOAuth2LoginSuccessHandler customOAuth2LoginSuccessHandler;
 
     //todo
-    private final TokenProvider tokenProvider;
-    private final TokenService tokenService;
+//    private final TokenProvider tokenProvider;
+//    private final TokenService tokenService;
 
     // TODO: CorsConfig.java 파일에 옮길 수 있도록 하기 
     @Bean
@@ -71,13 +71,13 @@ public class SecurityConfig {
                                         userInfoEndpoint.userService(customOAuth2UserService)));
 
         //todo
-        http.addFilterBefore(tokenAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
+//        http.addFilterBefore(tokenAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
 
-    @Bean
-    public TokenAuthenticationFilter tokenAuthenticationFilter() {
-        return new TokenAuthenticationFilter(tokenService, tokenProvider);
-    }
+//    @Bean
+//    public TokenAuthenticationFilter tokenAuthenticationFilter() {
+//        return new TokenAuthenticationFilter(tokenService, tokenProvider);
+//    }
 
 }
