@@ -29,9 +29,14 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
         if (tokenizer.countTokens() == 2 && tokenizer.nextToken().equals("Bearer")) {
             String token = tokenizer.nextToken();
 
+            //todo
+            System.out.println("Filter token(before validation) : " + token);
+
             if (tokenProvider.validateToken(token)) {
                 Authentication authentication = tokenService.getAuthentication(token);
                 SecurityContextHolder.getContext().setAuthentication(authentication);
+                //todo
+                System.out.println("authentication : " + authentication);
             }
         }
 

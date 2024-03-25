@@ -29,6 +29,8 @@ public class CustomOAuth2LoginSuccessHandler implements AuthenticationSuccessHan
             String accessToken = tokenService.createAccessToken(email);
             String redirectUrl = "http://localhost:3000/onboarding?accessToken=" + accessToken;
 
+            //todo
+            System.out.println("token : " + accessToken);
             response.sendRedirect(redirectUrl);
         }
     }

@@ -1,13 +1,20 @@
 package com.habitpay.habitpay.global.config.auth;
 
+import com.habitpay.habitpay.domain.member.domain.Role;
+import com.habitpay.habitpay.global.config.jwt.TokenAuthenticationFilter;
+import com.habitpay.habitpay.global.config.jwt.TokenProvider;
+import com.habitpay.habitpay.global.config.jwt.TokenService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.authentication.configuration.EnableGlobalAuthentication;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 
@@ -20,6 +27,10 @@ import java.util.Collections;
 public class SecurityConfig {
     private final CustomOAuth2UserService customOAuth2UserService;
     private final CustomOAuth2LoginSuccessHandler customOAuth2LoginSuccessHandler;
+
+    //todo
+    private final TokenProvider tokenProvider;
+    private final TokenService tokenService;
 
     // TODO: CorsConfig.java 파일에 옮길 수 있도록 하기 
     @Bean
@@ -47,7 +58,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests((authorizeRequests ->
                         authorizeRequests
                                 .requestMatchers("/*").permitAll() // todo: 보안 상 취약할 수 있으니 범위 제한하기
-//                            .requestMatchers("/api/v1/**").hasRole(Role.USER.name()) // todo: 로그인 후 사용하는 api 에서만 적용하기
+                            .requestMatchers("/api/v1/**").authenticated() // todo: 로그인 후 사용하는 api 에서만 적용하기
                                 .anyRequest().authenticated()
                 ))
                 .logout((logoutConfig) ->
@@ -59,8 +70,14 @@ public class SecurityConfig {
                                 .userInfoEndpoint(userInfoEndpoint ->
                                         userInfoEndpoint.userService(customOAuth2UserService)));
 
+        //todo
+        http.addFilterBefore(tokenAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
 
+    @Bean
+    public TokenAuthenticationFilter tokenAuthenticationFilter() {
+        return new TokenAuthenticationFilter(tokenService, tokenProvider);
+    }
 
 }
