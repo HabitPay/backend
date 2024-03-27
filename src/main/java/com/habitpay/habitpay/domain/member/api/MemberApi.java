@@ -60,8 +60,21 @@ public class MemberApi {
     }
 
     //todo
-    @GetMapping("/api/v1/inter")
+    @GetMapping("/inter")
     public String inter() {
         return "inter";
     }
+
+//    @ExceptionHandler(IllegalAccessException.class)
+//    public ResponseEntity<String> error(IllegalAccessException exception) {
+//        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(exception.getMessage());
+//    }
+//
+//    @ExceptionHandler(Exception.class)
+//    public String defaultError(Exception exception) {
+//        return exception.getMessage();
+//    }
+//
+//    @GetMapping("/api/error")
+//    public String apiError() {return "apiError";}
 }

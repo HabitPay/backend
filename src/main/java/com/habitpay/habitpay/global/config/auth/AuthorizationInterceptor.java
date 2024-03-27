@@ -6,12 +6,14 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationObservationContext;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.method.HandlerMethod;
+import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 import java.lang.reflect.Method;
@@ -65,6 +67,12 @@ public class AuthorizationInterceptor implements HandlerInterceptor {
 
         //todo 인증 코드
         String authorizationHeader = request.getHeader("Authorization");
+
+        // todo header에 아무 내용 없을 경우 처리
+        if (authorizationHeader == null) {
+            throw new IllegalAccessException("로그인 해야 해");
+        }
+
         StringTokenizer tokenizer = new StringTokenizer(authorizationHeader);
         if (tokenizer.countTokens() == 2 && tokenizer.nextToken().equals("Bearer")) {
             String token = tokenizer.nextToken();
@@ -87,10 +95,10 @@ public class AuthorizationInterceptor implements HandlerInterceptor {
 
             boolean ok = collection.toString().equals("[ROLE_GUEST]");
             if (!ok) {
-                response.sendRedirect("localhost:3000/error");
+                response.sendRedirect("localhost:8080/api/error");
+//                return false;
                 return ok;
             }
-            return true;
 
 //            System.out.println("인증 내용 :" + authentication.getAuthorities().toString());
 //            return authentication.getAuthorities().toString().equals("ROLE_GUEST");
