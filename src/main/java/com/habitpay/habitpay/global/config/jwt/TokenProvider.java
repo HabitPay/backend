@@ -30,6 +30,7 @@ public class TokenProvider {
                 .setIssuedAt(now)
                 .setExpiration(expiry)
                 .setSubject(member.getEmail())
+                .claim("nickname", String.valueOf(member.getNickname()))
                 .claim("isActive", String.valueOf(member.isActive()))
                 .signWith(SignatureAlgorithm.HS256, jwtProperties.getSecret())
                 .compact();
