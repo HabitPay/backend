@@ -4,16 +4,14 @@ import com.google.gson.JsonObject;
 import com.habitpay.habitpay.domain.member.application.MemberService;
 import com.habitpay.habitpay.domain.member.domain.Member;
 import com.habitpay.habitpay.domain.member.dto.MemberRequest;
+import com.habitpay.habitpay.global.config.aws.S3FileService;
 import com.habitpay.habitpay.global.config.jwt.TokenService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.StringTokenizer;
 
 @RestController
@@ -22,6 +20,7 @@ import java.util.StringTokenizer;
 public class MemberApi {
     private final MemberService memberService;
     private final TokenService tokenService;
+    private final S3FileService s3FileService;
 
     @PostMapping("/member")
     @ResponseStatus(HttpStatus.CREATED)
@@ -63,16 +62,14 @@ public class MemberApi {
 
     @PatchMapping("/member")
     @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<String> patchMember(@ModelAttribute MemberRequest memberRequest) throws IOException {
+    public ResponseEntity<String> patchMember(@RequestBody MemberRequest memberRequest) {
         log.info("[PATCH /member] nickname: {}", memberRequest.getNickname());
-        if (memberRequest.getProfileImage() != null) {
-            MultipartFile profileImage = memberRequest.getProfileImage();
-            String fileName = profileImage.getOriginalFilename();
+        if (memberRequest.getProfileImageName() != null) {
+            String fileName = memberRequest.getProfileImageName();
             log.info("[PATCH /member] fileName: {}", fileName);
-            String filePath = "/Users/joonhyuk/workspace/habitpay/HabitPay/backend/images/" + fileName;
-            log.info("[PATCH /member] filePath: {}", filePath);
-            profileImage.transferTo(new File(filePath));
+            String preSignedUrl = s3FileService.getPreSignedUrl("profiles", fileName);
+            return ResponseEntity.status(HttpStatus.OK).body(preSignedUrl);
         }
-        return ResponseEntity.status(HttpStatus.OK).body("Test");
+        return ResponseEntity.status(HttpStatus.OK).body("OK");
     }
 }
