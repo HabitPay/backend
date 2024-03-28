@@ -10,7 +10,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.StringTokenizer;
 
 @RestController
@@ -22,8 +25,8 @@ public class MemberApi {
 
     @PostMapping("/member")
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<String> updateMember(@RequestBody MemberRequest memberRequest,
-                                               @RequestHeader("Authorization") String authorizationHeader) {
+    public ResponseEntity<String> activateMember(@RequestBody MemberRequest memberRequest,
+                                                 @RequestHeader("Authorization") String authorizationHeader) {
 
         // todo: 예외처리 추가하기
 //        if (authorizationHeader == null || authorizationHeader.startsWith("Bearer") {
@@ -56,5 +59,20 @@ public class MemberApi {
         }
 
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("올바른 접근이 아닙니다.");
+    }
+
+    @PatchMapping("/member")
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseEntity<String> patchMember(@ModelAttribute MemberRequest memberRequest) throws IOException {
+        log.info("[PATCH /member] nickname: {}", memberRequest.getNickname());
+        if (memberRequest.getProfileImage() != null) {
+            MultipartFile profileImage = memberRequest.getProfileImage();
+            String fileName = profileImage.getOriginalFilename();
+            log.info("[PATCH /member] fileName: {}", fileName);
+            String filePath = "/Users/joonhyuk/workspace/habitpay/HabitPay/backend/images/" + fileName;
+            log.info("[PATCH /member] filePath: {}", filePath);
+            profileImage.transferTo(new File(filePath));
+        }
+        return ResponseEntity.status(HttpStatus.OK).body("Test");
     }
 }
