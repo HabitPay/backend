@@ -75,6 +75,6 @@ public class MemberApi {
 //        return exception.getMessage();
 //    }
 //
-//    @GetMapping("/api/error")
-//    public String apiError() {return "apiError";}
+    @GetMapping("/api/error")
+    public String apiError() {return "apiError";}
 }

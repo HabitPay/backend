@@ -10,6 +10,6 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(IllegalAccessException.class)
     protected String illegalAccessExceptionHandler(IllegalAccessException exception) {
-        return "@RestControllerAdvice GlobalExceptionHandler IllegalAccessException let's go";
+        return exception.getMessage() + "@RestControllerAdvice GlobalExceptionHandler IllegalAccessException let's go";
     }
 }

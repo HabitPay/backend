@@ -68,9 +68,9 @@ public class AuthorizationInterceptor implements HandlerInterceptor {
         //todo 인증 코드
         String authorizationHeader = request.getHeader("Authorization");
 
-        // todo header에 아무 내용 없을 경우 처리
+        // todo header가 비어 있을 경우
         if (authorizationHeader == null) {
-            throw new IllegalAccessException("로그인 해야 해");
+            throw new IllegalAccessException("authorization 헤더 : null");
         }
 
         StringTokenizer tokenizer = new StringTokenizer(authorizationHeader);
@@ -83,25 +83,19 @@ public class AuthorizationInterceptor implements HandlerInterceptor {
                 Authentication authentication = tokenService.getAuthentication(token);
                 SecurityContextHolder.getContext().setAuthentication(authentication);
 
-                System.out.println("authentication success : " + authentication);
+                System.out.println("Interceptor authentication success : " + authentication);
+                // isActive, ExpitedAt 등 확인하기
             }
             // todo 여기까지
 
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            System.out.println("Interceptor authentication : " + authentication);
-
+//            System.out.println("Interceptor authentication : " + authentication);
             Collection<GrantedAuthority> collection = (Collection<GrantedAuthority>) authentication.getAuthorities();
-            System.out.println(collection);
+            System.out.println("Interceptor ROLE check : " + collection);
 
-            boolean ok = collection.toString().equals("[ROLE_GUEST]");
-            if (!ok) {
-                response.sendRedirect("localhost:8080/api/error");
-//                return false;
-                return ok;
+            if (!collection.toString().equals("[ROLE_GUEST]")) {
+                throw new IllegalAccessException("authorization 헤더 : 유효하지 않은 JWT");
             }
-
-//            System.out.println("인증 내용 :" + authentication.getAuthorities().toString());
-//            return authentication.getAuthorities().toString().equals("ROLE_GUEST");
         }
             return true;
     }
