@@ -1,5 +1,8 @@
 package com.habitpay.habitpay.global.config.auth;
 
+import com.habitpay.habitpay.domain.member.application.MemberService;
+import com.habitpay.habitpay.global.config.auth.interceptor.AuthorizationInterceptor;
+import com.habitpay.habitpay.global.config.auth.interceptor.SignUpInterceptor;
 import com.habitpay.habitpay.global.config.jwt.TokenProvider;
 import com.habitpay.habitpay.global.config.jwt.TokenService;
 import org.springframework.context.annotation.Bean;
@@ -13,10 +16,12 @@ public class CorsConfig implements WebMvcConfigurer {
 
     private final TokenService tokenService;
     private final TokenProvider tokenProvider;
+    private final MemberService memberService;
 
-    public CorsConfig(TokenService tokenService, TokenProvider tokenProvider){
+    public CorsConfig(TokenService tokenService, TokenProvider tokenProvider, MemberService memberService){
         this.tokenService = tokenService;
         this.tokenProvider = tokenProvider;
+        this.memberService = memberService;
     }
 
     @Override
@@ -28,11 +33,20 @@ public class CorsConfig implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(authorizationInterceptor());
+//        registry.addInterceptor(authorizationInterceptor());
+
+        // todo
+        registry.addInterceptor(authorizationInterceptor()).addPathPatterns("/api/**");
+        registry.addInterceptor(signUpInterceptor()).addPathPatterns("/member");
     }
 
     @Bean
     public AuthorizationInterceptor authorizationInterceptor() {
-        return new AuthorizationInterceptor(tokenService, tokenProvider);
+        return new AuthorizationInterceptor(tokenService, tokenProvider, memberService);
+    }
+
+    @Bean
+    public SignUpInterceptor signUpInterceptor() {
+        return new SignUpInterceptor(tokenService, tokenProvider, memberService);
     }
 }
