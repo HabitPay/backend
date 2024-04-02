@@ -30,6 +30,9 @@ public class CustomOAuth2LoginSuccessHandler implements AuthenticationSuccessHan
             String redirectUrl = "http://localhost:3000/onboarding?accessToken=" + accessToken;
 
             response.sendRedirect(redirectUrl);
+
+            // todo : for test
+            System.out.println("token : " + accessToken);
         }
     }
 }
