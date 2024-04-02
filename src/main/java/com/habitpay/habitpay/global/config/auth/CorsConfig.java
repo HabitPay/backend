@@ -16,12 +16,10 @@ public class CorsConfig implements WebMvcConfigurer {
 
     private final TokenService tokenService;
     private final TokenProvider tokenProvider;
-    private final MemberService memberService;
 
     public CorsConfig(TokenService tokenService, TokenProvider tokenProvider, MemberService memberService){
         this.tokenService = tokenService;
         this.tokenProvider = tokenProvider;
-        this.memberService = memberService;
     }
 
     @Override
@@ -42,11 +40,11 @@ public class CorsConfig implements WebMvcConfigurer {
 
     @Bean
     public AuthorizationInterceptor authorizationInterceptor() {
-        return new AuthorizationInterceptor(tokenService, tokenProvider, memberService);
+        return new AuthorizationInterceptor(tokenService, tokenProvider);
     }
 
     @Bean
     public SignUpInterceptor signUpInterceptor() {
-        return new SignUpInterceptor(tokenService, tokenProvider, memberService);
+        return new SignUpInterceptor(tokenService, tokenProvider);
     }
 }

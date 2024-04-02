@@ -29,7 +29,6 @@ public class AuthorizationInterceptor implements HandlerInterceptor {
 
     private final TokenService tokenService;
     private final TokenProvider tokenProvider;
-    private final MemberService memberService;
 
     @Override
     public boolean preHandle(
@@ -81,20 +80,6 @@ public class AuthorizationInterceptor implements HandlerInterceptor {
 
             // todo
             log.info("Interceptor authorization success : {}", authentication);
-
-            // todo
-            String email = authentication.getName();
-            Member member = memberService.findByEmail(email);
-            log.info("accessed member isActive : {}", member.isActive());
-            log.info("accessed member deletedAt : {}", member.getDeletedAt());
-            log.info("accessed member nickname : {}", member.getNickname());
-            if (!member.isActive()) {
-                // todo
-//            response.sendRedirect(REDIRECT_URL);
-//            return false;
-
-                throw new IllegalAccessException("Login, please. You are not a member yet.");
-            }
 
             // todo
             Collection<GrantedAuthority> collection = (Collection<GrantedAuthority>) authentication.getAuthorities();
