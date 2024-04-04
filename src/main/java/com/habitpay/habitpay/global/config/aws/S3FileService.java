@@ -18,7 +18,7 @@ public class S3FileService {
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
 
-    public String getPreSignedUrl(String prefix, String fileName) {
+    public String getPutPreSignedUrl(String prefix, String fileName) {
         String filePath = String.format("%s/%s", prefix, fileName);
         try (S3Presigner presigner = S3Presigner.create()) {
             PutObjectRequest objectRequest = PutObjectRequest.builder()
