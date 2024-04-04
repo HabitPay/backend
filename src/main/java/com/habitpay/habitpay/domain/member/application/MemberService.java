@@ -4,6 +4,7 @@ import com.habitpay.habitpay.domain.member.dao.MemberRepository;
 import com.habitpay.habitpay.domain.member.domain.Member;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -19,6 +20,7 @@ public class MemberService {
         return optionalMember.get();
     }
 
+    @Transactional
     public void save(Member member) {
         memberRepository.save(member);
     }
