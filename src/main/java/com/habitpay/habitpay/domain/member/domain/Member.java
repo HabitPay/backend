@@ -18,6 +18,9 @@ public class Member extends BaseTime {
     @Column()
     private String nickname;
 
+    @Column()
+    private String imageUrl;
+
     @Column(nullable = false)
     private String email;
 
