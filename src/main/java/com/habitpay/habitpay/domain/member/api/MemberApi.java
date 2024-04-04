@@ -118,6 +118,9 @@ public class MemberApi {
             memberService.save(member);
             return ResponseEntity.status(HttpStatus.OK).body(Response.PROFILE_UPDATE_SUCCESS.getMessage());
         } else if (ImageUtil.isValidImageExtension(imageExtension)) {
+            // 기존 이미지 삭제
+            s3FileService.deleteImage("profiles", member.getImageFileName());
+
             String randomFileName = UUID.randomUUID().toString();
             String savedFileName = String.format("%s.%s", randomFileName, imageExtension);
             log.info("[PATCH /member] savedFileName: {}", savedFileName);
