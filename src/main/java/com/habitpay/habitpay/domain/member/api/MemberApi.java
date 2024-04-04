@@ -81,9 +81,17 @@ public class MemberApi {
 
         log.info("[PATCH /member] nickname: {}", memberRequest.getNickname());
 
+
         String randomFileName = UUID.randomUUID().toString();
         log.info("[PATCH /member] randomFileName: {}", randomFileName);
-        String preSignedUrl = s3FileService.getPreSignedUrl("profiles", randomFileName);
+
+        String token = optionalToken.get();
+        String email = tokenService.getEmail(token);
+        Member member = memberService.findByEmail(email);
+        member.updateProfile(memberRequest.getNickname(), randomFileName);
+        memberService.save(member);
+
+        String preSignedUrl = s3FileService.getPutPreSignedUrl("profiles", randomFileName);
         return ResponseEntity.status(HttpStatus.OK).body(preSignedUrl);
     }
 

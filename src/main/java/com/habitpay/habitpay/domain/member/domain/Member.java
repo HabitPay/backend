@@ -19,7 +19,7 @@ public class Member extends BaseTime {
     private String nickname;
 
     @Column()
-    private String imageUrl;
+    private String imageFileName;
 
     @Column(nullable = false)
     private String email;
@@ -32,10 +32,17 @@ public class Member extends BaseTime {
     private Role role;
 
     @Builder
-    public Member(String email, Role role) {
+    public Member(String email, String imageFileName, String nickname, Role role) {
         this.email = email;
+        this.imageFileName = imageFileName;
+        this.nickname = nickname;
         this.isActive = false;
         this.role = role;
+    }
+
+    public void updateProfile(String nickname, String imageFileName) {
+        this.nickname = nickname;
+        this.imageFileName = imageFileName;
     }
 
     public void activate(String nickname) {
