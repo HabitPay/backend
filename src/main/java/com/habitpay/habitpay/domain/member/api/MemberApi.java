@@ -4,6 +4,7 @@ import com.google.gson.JsonObject;
 import com.habitpay.habitpay.domain.member.application.MemberService;
 import com.habitpay.habitpay.domain.member.domain.Member;
 import com.habitpay.habitpay.domain.member.dto.MemberRequest;
+import com.habitpay.habitpay.domain.member.dto.MemberResponse;
 import com.habitpay.habitpay.global.config.aws.S3FileService;
 import com.habitpay.habitpay.global.config.jwt.TokenService;
 import com.habitpay.habitpay.global.error.ErrorResponse;
@@ -24,6 +25,38 @@ public class MemberApi {
     private final MemberService memberService;
     private final TokenService tokenService;
     private final S3FileService s3FileService;
+
+    @GetMapping("/member")
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseEntity<?> getMember(@RequestHeader("Authorization") String authorizationHeader) {
+        Optional<String> optionalToken = tokenService.getTokenFromHeader(authorizationHeader);
+        if (optionalToken.isEmpty()) {
+            String message = ErrorResponse.UNAUTHORIZED.getMessage();
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(message);
+        }
+
+        String token = optionalToken.get();
+        log.info("[GET /member] token: {}", token);
+
+        String email = tokenService.getEmail(token);
+        log.info("[GET /member] email: {}", email);
+
+        Member member = memberService.findByEmail(email);
+        String nickname = member.getNickname();
+        Optional<String> optionalImageFileName = Optional.ofNullable(member.getImageFileName());
+        MemberResponse memberResponse;
+
+        if (optionalImageFileName.isEmpty()) {
+            memberResponse = new MemberResponse(nickname, "");
+        } else {
+            String imageFileName = optionalImageFileName.get();
+            log.info("[GET /member] imageFileName: {}", imageFileName);
+            String preSignedGetUrl = s3FileService.getGetPreSignedUrl("profiles", imageFileName);
+            memberResponse = new MemberResponse(nickname, preSignedGetUrl);
+        }
+
+        return ResponseEntity.status(HttpStatus.OK).body(memberResponse);
+    }
 
     @PostMapping("/member")
     @ResponseStatus(HttpStatus.CREATED)
@@ -83,15 +116,16 @@ public class MemberApi {
 
 
         String randomFileName = UUID.randomUUID().toString();
-        log.info("[PATCH /member] randomFileName: {}", randomFileName);
+        String savedFileName = String.format("%s.%s", randomFileName, imageExtension);
+        log.info("[PATCH /member] savedFileName: {}", savedFileName);
 
         String token = optionalToken.get();
         String email = tokenService.getEmail(token);
         Member member = memberService.findByEmail(email);
-        member.updateProfile(memberRequest.getNickname(), randomFileName);
+        member.updateProfile(memberRequest.getNickname(), savedFileName);
         memberService.save(member);
 
-        String preSignedUrl = s3FileService.getPutPreSignedUrl("profiles", randomFileName);
+        String preSignedUrl = s3FileService.getPutPreSignedUrl("profiles", savedFileName);
         return ResponseEntity.status(HttpStatus.OK).body(preSignedUrl);
     }
 
