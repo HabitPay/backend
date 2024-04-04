@@ -5,6 +5,7 @@ import com.habitpay.habitpay.domain.member.application.MemberService;
 import com.habitpay.habitpay.domain.member.domain.Member;
 import com.habitpay.habitpay.domain.member.dto.MemberRequest;
 import com.habitpay.habitpay.domain.member.dto.MemberResponse;
+import com.habitpay.habitpay.domain.model.Response;
 import com.habitpay.habitpay.global.config.aws.S3FileService;
 import com.habitpay.habitpay.global.config.jwt.TokenService;
 import com.habitpay.habitpay.global.error.ErrorResponse;
@@ -104,29 +105,34 @@ public class MemberApi {
             String message = ErrorResponse.UNAUTHORIZED.getMessage();
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(message);
         }
-
+        String nickname = memberRequest.getNickname();
         String imageExtension = memberRequest.getImageExtension();
-        log.info("[PATCH /member] imageExtension: {}", imageExtension);
-        if (ImageUtil.isValidImageExtension(imageExtension) == false) {
-            String message = ErrorResponse.UNSUPPORTED_IMAGE_EXTENSION.getMessage();
-            return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE).body(message);
-        }
-
-        log.info("[PATCH /member] nickname: {}", memberRequest.getNickname());
-
-
-        String randomFileName = UUID.randomUUID().toString();
-        String savedFileName = String.format("%s.%s", randomFileName, imageExtension);
-        log.info("[PATCH /member] savedFileName: {}", savedFileName);
+        log.info("[PATCH /member] nickname: {}, imageExtension: {}", nickname, imageExtension);
 
         String token = optionalToken.get();
         String email = tokenService.getEmail(token);
         Member member = memberService.findByEmail(email);
-        member.updateProfile(memberRequest.getNickname(), savedFileName);
-        memberService.save(member);
 
-        String preSignedUrl = s3FileService.getPutPreSignedUrl("profiles", savedFileName);
-        return ResponseEntity.status(HttpStatus.OK).body(preSignedUrl);
+        if (imageExtension.isEmpty()) {
+            member.updateProfile(nickname, member.getImageFileName());
+            memberService.save(member);
+            return ResponseEntity.status(HttpStatus.OK).body(Response.PROFILE_UPDATE_SUCCESS.getMessage());
+        } else if (ImageUtil.isValidImageExtension(imageExtension)) {
+            String randomFileName = UUID.randomUUID().toString();
+            String savedFileName = String.format("%s.%s", randomFileName, imageExtension);
+            log.info("[PATCH /member] savedFileName: {}", savedFileName);
+
+            member.updateProfile(memberRequest.getNickname(), savedFileName);
+            memberService.save(member);
+
+            String preSignedUrl = s3FileService.getPutPreSignedUrl("profiles", savedFileName);
+
+            return ResponseEntity.status(HttpStatus.OK).body(preSignedUrl);
+        } else {
+            String message = ErrorResponse.UNSUPPORTED_IMAGE_EXTENSION.getMessage();
+            return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE).body(message);
+        }
     }
+
 
 }
