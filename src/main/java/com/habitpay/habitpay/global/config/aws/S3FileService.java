@@ -40,12 +40,15 @@ public class S3FileService {
         }
     }
 
-    public String getPutPreSignedUrl(String prefix, String fileName) {
+    public String getPutPreSignedUrl(String prefix, String fileName, String extension, Long contentLength) {
         String filePath = String.format("%s/%s", prefix, fileName);
+        String contentType = String.format("image/%s", extension);
         try (S3Presigner presigner = S3Presigner.create()) {
             PutObjectRequest objectRequest = PutObjectRequest.builder()
                     .bucket(bucket)
                     .key(filePath)
+                    .contentType(contentType)
+                    .contentLength(contentLength)
                     .build();
 
             PutObjectPresignRequest presignRequest = PutObjectPresignRequest.builder()

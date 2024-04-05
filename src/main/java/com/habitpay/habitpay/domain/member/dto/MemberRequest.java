@@ -6,4 +6,5 @@ import lombok.Getter;
 public class MemberRequest {
     private String nickname;
     private String imageExtension;
+    private Long contentLength;
 }

@@ -113,28 +113,41 @@ public class MemberApi {
         String email = tokenService.getEmail(token);
         Member member = memberService.findByEmail(email);
 
-        if (imageExtension.isEmpty()) {
-            member.updateProfile(nickname, member.getImageFileName());
-            memberService.save(member);
-            return ResponseEntity.status(HttpStatus.OK).body(Response.PROFILE_UPDATE_SUCCESS.getMessage());
-        } else if (ImageUtil.isValidImageExtension(imageExtension)) {
-            // 기존 이미지 삭제
-            s3FileService.deleteImage("profiles", member.getImageFileName());
+        Long contentLength = memberRequest.getContentLength();
 
-            String randomFileName = UUID.randomUUID().toString();
-            String savedFileName = String.format("%s.%s", randomFileName, imageExtension);
-            log.info("[PATCH /member] savedFileName: {}", savedFileName);
+        // 1. 이미지 크기 제한이 넘을 경우
+        if (ImageUtil.isValidFileSize(contentLength) == false) {
+            String message = ErrorResponse.IMAGE_CONTENT_TOO_LARGE.getMessage();
+            return ResponseEntity.status(HttpStatus.PAYLOAD_TOO_LARGE).body(message);
+        }
 
-            member.updateProfile(memberRequest.getNickname(), savedFileName);
-            memberService.save(member);
-
-            String preSignedUrl = s3FileService.getPutPreSignedUrl("profiles", savedFileName);
-
-            return ResponseEntity.status(HttpStatus.OK).body(preSignedUrl);
-        } else {
+        // 2. 이미지 확장자가 허용되지 않은 경우
+        if (ImageUtil.isValidImageExtension(imageExtension) == false) {
             String message = ErrorResponse.UNSUPPORTED_IMAGE_EXTENSION.getMessage();
             return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE).body(message);
         }
+
+        // 3. 닉네임만 변경
+        if (imageExtension.isEmpty()) {
+            member.updateProfile(nickname, member.getImageFileName());
+            memberService.save(member);
+            String message = Response.PROFILE_UPDATE_SUCCESS.getMessage();
+            return ResponseEntity.status(HttpStatus.OK).body(message);
+        }
+
+        // 4. 프로필 이미지가 이미 존재하고, 새롭게 업로드 하는 경우
+        s3FileService.deleteImage("profiles", member.getImageFileName());
+
+        String randomFileName = UUID.randomUUID().toString();
+        String savedFileName = String.format("%s.%s", randomFileName, imageExtension);
+        log.info("[PATCH /member] savedFileName: {}", savedFileName);
+
+        member.updateProfile(memberRequest.getNickname(), savedFileName);
+        memberService.save(member);
+
+        String preSignedUrl = s3FileService.getPutPreSignedUrl("profiles", savedFileName, imageExtension, contentLength);
+
+        return ResponseEntity.status(HttpStatus.OK).body(preSignedUrl);
     }
 
 
