@@ -24,6 +24,7 @@ import java.util.UUID;
 @Slf4j
 public class MemberApi {
     private final MemberService memberService;
+    private final MemberProfileService memberProfileService;
     private final TokenService tokenService;
     private final S3FileService s3FileService;
 
@@ -77,6 +78,10 @@ public class MemberApi {
         String email = tokenService.getEmail(token);
         String nickname = memberRequest.getNickname();
         log.info("[POST /member] email: {}, nickname: {}", email, nickname);
+        if (memberProfileService.isValidNickname(nickname) == false) {
+            String message = ErrorResponse.INVALID_NICKNAME_RULE.getMessage();
+            return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(message);
+        }
 
         Member member = memberService.findByEmail(email);
 
@@ -127,7 +132,13 @@ public class MemberApi {
             return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE).body(message);
         }
 
-        // 3. 닉네임만 변경
+        // 3. 닉네임 규칙이 맞지 않은 경우
+        if (memberProfileService.isValidNickname(nickname) == false) {
+            String message = ErrorResponse.INVALID_NICKNAME_RULE.getMessage();
+            return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(message);
+        }
+
+        // 4. 닉네임만 변경
         if (imageExtension.isEmpty()) {
             member.updateProfile(nickname, member.getImageFileName());
             memberService.save(member);
@@ -135,7 +146,7 @@ public class MemberApi {
             return ResponseEntity.status(HttpStatus.OK).body(message);
         }
 
-        // 4. 프로필 이미지가 이미 존재하고, 새롭게 업로드 하는 경우
+        // 5. 프로필 이미지가 이미 존재하고, 새롭게 업로드 하는 경우
         s3FileService.deleteImage("profiles", member.getImageFileName());
 
         String randomFileName = UUID.randomUUID().toString();
