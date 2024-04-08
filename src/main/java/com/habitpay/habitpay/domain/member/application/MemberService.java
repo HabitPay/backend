@@ -19,6 +19,13 @@ public class MemberService {
         return optionalMember.get();
     }
 
+    public Member findById(Long userId) {
+        Optional<Member> optionalMember = Optional.ofNullable(memberRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("사용자 Id를 찾을 수 없습니다 for RefreshToken")));
+
+        return optionalMember.get();
+    }
+
     public void save(Member member) {
         memberRepository.save(member);
     }
