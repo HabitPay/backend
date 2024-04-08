@@ -59,7 +59,7 @@ public class NewTokenService {
         };
 
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
-        for (String header: IpHeaderCandidates) {
+        for (String header : IpHeaderCandidates) {
             String requestIp = request.getHeader(header);
             if (Objects.nonNull(requestIp) && !requestIp.isEmpty() && !"unknown".equalsIgnoreCase(requestIp)) {
                 String ip = requestIp.split(",")[0];
