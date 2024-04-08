@@ -32,6 +32,15 @@ public class TokenService {
         return tokenProvider.generateToken(member, Duration.ofHours(2));
     }
 
+    public String createRefreshToken(String email) {
+        Optional<Member> optionalMember = Optional.ofNullable(memberRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다.")));
+
+        Member member = optionalMember.get();
+
+        return tokenProvider.generateToken(member, Duration.ofDays(14));
+    }
+
     public Authentication getAuthentication(String token) {
         Claims claims = getClaims(token);
         Set<SimpleGrantedAuthority> authorities = Collections.singleton(

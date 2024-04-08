@@ -5,6 +5,7 @@ import com.habitpay.habitpay.domain.refreshToken.dto.CreateAccessTokenRequest;
 import com.habitpay.habitpay.domain.refreshToken.dto.CreateAccessTokenResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RequiredArgsConstructor
 @RestController
+@Slf4j
 public class TokenApiController {
 
     private final NewTokenService newTokenService;
@@ -22,6 +24,8 @@ public class TokenApiController {
 
         String requestIp = newTokenService.getClientIpAddress();
         String newAccessToken = newTokenService.createNewAccessToken(requestBody.getRefreshToken(), requestIp);
+
+        log.info("Client IP Address : {}", requestIp);
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(new CreateAccessTokenResponse(newAccessToken));
