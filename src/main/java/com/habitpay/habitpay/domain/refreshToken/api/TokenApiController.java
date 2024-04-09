@@ -8,9 +8,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.security.Principal;
 
 @RequiredArgsConstructor
 @RestController
@@ -19,7 +23,7 @@ public class TokenApiController {
 
     private final NewTokenService newTokenService;
 
-    @PostMapping("/api/token")
+    @PostMapping("/token")
     public ResponseEntity<CreateAccessTokenResponse> createNewAccessToken(@RequestBody CreateAccessTokenRequest requestBody) {
 
         String requestIp = newTokenService.getClientIpAddress();
@@ -29,5 +33,17 @@ public class TokenApiController {
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(new CreateAccessTokenResponse(newAccessToken));
+    }
+
+    // todo : 테스트 후 삭제
+    @PostMapping("/api/test")
+    public ResponseEntity<String> apiTest(@RequestBody String request, Principal principal) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body("api test ok : " + principal.getName());
+    }
+
+    @GetMapping("/api/get_test")
+    public String getTest() {
+        return "test ok!";
     }
 }

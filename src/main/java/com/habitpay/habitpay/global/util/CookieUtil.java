@@ -14,7 +14,9 @@ public class CookieUtil {
     public static void addCookie(HttpServletResponse response, String name, String value, int maxAge) {
         Cookie cookie = new Cookie(name, value);
         cookie.setPath("/");
+        cookie.setHttpOnly(true);
         cookie.setMaxAge(maxAge);
+//        cookie.setSecure(true);
         response.addCookie(cookie);
     }
 
@@ -35,18 +37,18 @@ public class CookieUtil {
     }
 
     // todo : 보안에 취약. 직렬화 및 역직렬화 방식 바꿔야 함.
-    public static String serialize(Object object) {
-        return Base64.getUrlEncoder()
-                .encodeToString(SerializationUtils.serialize(object));
-    }
-
-    public static <T> T deserialize(Cookie cookie, Class<T> cls) {
-        return cls.cast(
-                SerializationUtils.deserialize(
-                        Base64.getUrlDecoder().decode(cookie.getValue())
-                )
-        );
-    }
+//    public static String serialize(Object object) {
+//        return Base64.getUrlEncoder()
+//                .encodeToString(SerializationUtils.serialize(object));
+//    }
+//
+//    public static <T> T deserialize(Cookie cookie, Class<T> cls) {
+//        return cls.cast(
+//                SerializationUtils.deserialize(
+//                        Base64.getUrlDecoder().decode(cookie.getValue())
+//                )
+//        );
+//    }
 
     public static String getAccessToken(HttpServletRequest request) {
         Cookie[] cookies = request.getCookies();

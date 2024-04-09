@@ -4,6 +4,7 @@ import com.habitpay.habitpay.domain.member.application.MemberService;
 import com.habitpay.habitpay.domain.member.domain.Member;
 import com.habitpay.habitpay.global.config.jwt.TokenProvider;
 import com.habitpay.habitpay.global.config.jwt.TokenService;
+import io.jsonwebtoken.Jwts;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -66,6 +67,8 @@ public class AuthorizationInterceptor implements HandlerInterceptor {
 
             // todo
             log.info("Interceptor token (before validation) : {}", token);
+
+            // todo
 
             if (!tokenProvider.validateToken(token)) {
                 // todo

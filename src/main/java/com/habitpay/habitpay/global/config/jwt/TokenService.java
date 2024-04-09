@@ -29,7 +29,8 @@ public class TokenService {
 
         Member member = optionalMember.get();
 
-        return tokenProvider.generateToken(member, Duration.ofHours(2));
+//        return tokenProvider.generateToken(member, Duration.ofHours(2));
+        return tokenProvider.generateToken(member, Duration.ofMinutes(1));
     }
 
     public String createRefreshToken(String email) {
