@@ -1,7 +1,10 @@
 package com.habitpay.habitpay.domain.refreshToken.application;
 
+import com.habitpay.habitpay.domain.member.application.MemberService;
+import com.habitpay.habitpay.domain.member.domain.Member;
 import com.habitpay.habitpay.domain.refreshToken.dao.RefreshTokenRepository;
 import com.habitpay.habitpay.domain.refreshToken.domain.RefreshToken;
+import com.habitpay.habitpay.global.config.jwt.TokenService;
 import com.habitpay.habitpay.global.util.CookieUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -18,6 +21,8 @@ import java.util.Objects;
 @Service
 public class RefreshTokenService {
 
+    private final MemberService memberService;
+    private final TokenService tokenService;
     private final RefreshTokenRepository refreshTokenRepository;
 
     public static final String REFRESH_TOKEN_COOKIE_NAME = "refresh_token";
@@ -27,6 +32,17 @@ public class RefreshTokenService {
     public RefreshToken findByRefreshToken(String refreshToken) {
         return refreshTokenRepository.findByRefreshToken(refreshToken)
                 .orElseThrow(() -> new IllegalArgumentException("이런 refresh token은 없다"));
+    }
+
+    public void setRefreshTokenByEmail(HttpServletRequest request, HttpServletResponse response, String email) {
+        Member member = memberService.findByEmail(email);
+
+        String refreshToken = tokenService.createRefreshToken(email);
+        saveRefreshToken(member.getId(), refreshToken);
+        addRefreshTokenToCookie(request, response, refreshToken);
+
+        //todo : for test
+        System.out.println("refresh token : " + refreshToken);
     }
 
     public void saveRefreshToken(Long userId, String newRefreshToken) {

@@ -24,10 +24,7 @@ import java.time.Duration;
 
 @AllArgsConstructor
 @Component
-//public class CustomOAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
-    public class CustomOAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
-//    public static final String REFRESH_TOKEN_COOKIE_NAME = "refresh_token";
-//    public static final Duration REFRESH_TOKEN_DURATION = Duration.ofDays(14);
+public class CustomOAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
     private final MemberService memberService;
     private final TokenService tokenService;
@@ -38,27 +35,20 @@ import java.time.Duration;
             HttpServletRequest request,
             HttpServletResponse response,
             Authentication authentication
-    ) throws IOException, ServletException {
+    ) throws IOException {
 
-        if (authentication.getPrincipal() instanceof OAuth2User) {
-            OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
+        if (authentication.getPrincipal() instanceof OAuth2User oAuth2User) {
             String email = oAuth2User.getAttribute("email");
-            Member member = memberService.findByEmail(email);
 
-            String refreshToken = tokenService.createRefreshToken(email);
-            refreshTokenService.saveRefreshToken(member.getId(), refreshToken);
-            refreshTokenService.addRefreshTokenToCookie(request, response, refreshToken);
+            refreshTokenService.setRefreshTokenByEmail(request, response, email);
 
             String accessToken = tokenService.createAccessToken(email);
             String redirectUrl = "http://localhost:3000/onboarding?accessToken=" + accessToken;
-
             super.clearAuthenticationAttributes(request);
-
             response.sendRedirect(redirectUrl);
 
             // todo : for test
             System.out.println(accessToken);
-            System.out.println("refresh token : " + refreshToken);
         }
     }
 
