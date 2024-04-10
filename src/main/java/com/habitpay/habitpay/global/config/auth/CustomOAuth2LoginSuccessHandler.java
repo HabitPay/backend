@@ -15,6 +15,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -22,7 +23,8 @@ import java.time.Duration;
 
 @AllArgsConstructor
 @Component
-public class CustomOAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
+//public class CustomOAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
+    public class CustomOAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
     public static final String REFRESH_TOKEN_COOKIE_NAME = "refresh_token";
     public static final Duration REFRESH_TOKEN_DURATION = Duration.ofDays(14);
 
@@ -49,6 +51,8 @@ public class CustomOAuth2LoginSuccessHandler implements AuthenticationSuccessHan
 
             String accessToken = tokenService.createAccessToken(email);
             String redirectUrl = "http://localhost:3000/onboarding?accessToken=" + accessToken;
+
+            super.clearAuthenticationAttributes(request);
 
             response.sendRedirect(redirectUrl);
 

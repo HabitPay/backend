@@ -31,6 +31,8 @@ public class TokenApiController {
 
         log.info("Client IP Address : {}", requestIp);
 
+        // todo : 액세스 토큰 재발급하면서, 새 리프레시 토큰은 쿠키에 넣어줘야 함 : refresh token rotation
+
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(new CreateAccessTokenResponse(newAccessToken));
     }
