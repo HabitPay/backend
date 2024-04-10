@@ -34,15 +34,10 @@ public class TokenProvider {
     }
 
     public boolean validateToken(String token) {
-        try {
-            Jwts.parser()
-                    .setSigningKey(jwtProperties.getSecret())
-                    .parseClaimsJws(token);
-            return true;
-        } catch (ExpiredJwtException e) {
-            throw new JwtException("토큰 기한 만료. 리프레시 토큰으로 재발급 요청해야 함.");
-        } catch (Exception e) {
-            return false;
-        }
+        Jwts.parser()
+                .setSigningKey(jwtProperties.getSecret())
+                .parseClaimsJws(token);
+        return true;
+        // todo: 예외별 처리 하고 싶을 때 try-catch문 추가하면 됨
     }
 }
