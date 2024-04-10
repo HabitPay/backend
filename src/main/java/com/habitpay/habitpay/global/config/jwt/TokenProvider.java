@@ -19,6 +19,12 @@ public class TokenProvider {
         return makeToken(expiredDate, member);
     }
 
+    public String generateRefreshToken(Member member, Duration expiredAt) {
+        Date now = new Date();
+        Date expiredDate = new Date(now.getTime() + expiredAt.toMillis());
+        return makeRefreshToken(expiredDate, member);
+    }
+
     private String makeToken(Date expiry, Member member) {
         Date now = new Date();
 
@@ -29,6 +35,19 @@ public class TokenProvider {
                 .setExpiration(expiry)
                 .setSubject(member.getEmail())
                 .claim("isActive", String.valueOf(member.isActive()))
+                .signWith(SignatureAlgorithm.HS256, jwtProperties.getSecret())
+                .compact();
+    }
+
+    private String makeRefreshToken(Date expiry, Member member) {
+        Date now = new Date();
+
+        return Jwts.builder()
+                .setHeaderParam(Header.TYPE, Header.JWT_TYPE)
+                .setIssuer(jwtProperties.getIssuer())
+                .setIssuedAt(now)
+                .setExpiration(expiry)
+                .setSubject(member.getEmail())
                 .signWith(SignatureAlgorithm.HS256, jwtProperties.getSecret())
                 .compact();
     }

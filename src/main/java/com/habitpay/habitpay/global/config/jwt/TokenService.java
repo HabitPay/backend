@@ -39,7 +39,7 @@ public class TokenService {
 
         Member member = optionalMember.get();
 
-        return tokenProvider.generateToken(member, Duration.ofDays(14));
+        return tokenProvider.generateRefreshToken(member, Duration.ofDays(14));
     }
 
     public Authentication getAuthentication(String token) {
