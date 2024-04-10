@@ -3,6 +3,7 @@ package com.habitpay.habitpay.global.config.auth;
 import com.habitpay.habitpay.domain.member.application.MemberService;
 import com.habitpay.habitpay.domain.member.domain.Member;
 import com.habitpay.habitpay.domain.refreshToken.application.NewTokenService;
+import com.habitpay.habitpay.domain.refreshToken.application.RefreshTokenService;
 import com.habitpay.habitpay.domain.refreshToken.dao.RefreshTokenRepository;
 import com.habitpay.habitpay.domain.refreshToken.domain.RefreshToken;
 import com.habitpay.habitpay.global.config.jwt.TokenProvider;
@@ -25,13 +26,12 @@ import java.time.Duration;
 @Component
 //public class CustomOAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
     public class CustomOAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
-    public static final String REFRESH_TOKEN_COOKIE_NAME = "refresh_token";
-    public static final Duration REFRESH_TOKEN_DURATION = Duration.ofDays(14);
+//    public static final String REFRESH_TOKEN_COOKIE_NAME = "refresh_token";
+//    public static final Duration REFRESH_TOKEN_DURATION = Duration.ofDays(14);
 
     private final MemberService memberService;
     private final TokenService tokenService;
-    private final NewTokenService newTokenService;
-    private final RefreshTokenRepository refreshTokenRepository;
+    private final RefreshTokenService refreshTokenService;
 
     @Override
     public void onAuthenticationSuccess(
@@ -46,8 +46,8 @@ import java.time.Duration;
             Member member = memberService.findByEmail(email);
 
             String refreshToken = tokenService.createRefreshToken(email);
-            saveRefreshToken(member.getId(), refreshToken);
-            addRefreshTokenToCookie(request, response, refreshToken);
+            refreshTokenService.saveRefreshToken(member.getId(), refreshToken);
+            refreshTokenService.addRefreshTokenToCookie(request, response, refreshToken);
 
             String accessToken = tokenService.createAccessToken(email);
             String redirectUrl = "http://localhost:3000/onboarding?accessToken=" + accessToken;
@@ -57,25 +57,9 @@ import java.time.Duration;
             response.sendRedirect(redirectUrl);
 
             // todo : for test
-            System.out.println("token : " + accessToken);
+            System.out.println(accessToken);
             System.out.println("refresh token : " + refreshToken);
         }
     }
 
-    private void saveRefreshToken(Long userId, String newRefreshToken) {
-        String loginId = newTokenService.getClientIpAddress();
-        RefreshToken refreshToken = refreshTokenRepository.findByUserId(userId)
-                .map(entity -> entity.update(newRefreshToken, loginId))
-                .orElse(new RefreshToken(userId, newRefreshToken, loginId));
-
-        refreshTokenRepository.save(refreshToken);
-    }
-
-    private void addRefreshTokenToCookie(HttpServletRequest request,
-                                         HttpServletResponse response, String refreshToken) {
-
-        int cookieMaxAge = (int) REFRESH_TOKEN_DURATION.toSeconds();
-        CookieUtil.deleteCookie(request, response, REFRESH_TOKEN_COOKIE_NAME);
-        CookieUtil.addCookie(response, REFRESH_TOKEN_COOKIE_NAME, refreshToken, cookieMaxAge);
-    }
 }

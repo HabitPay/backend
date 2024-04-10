@@ -3,6 +3,7 @@ package com.habitpay.habitpay.domain.refreshToken.api;
 import com.habitpay.habitpay.domain.refreshToken.application.NewTokenService;
 import com.habitpay.habitpay.domain.refreshToken.dto.CreateAccessTokenRequest;
 import com.habitpay.habitpay.domain.refreshToken.dto.CreateAccessTokenResponse;
+import com.habitpay.habitpay.global.config.jwt.TokenService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,17 +22,18 @@ import java.security.Principal;
 @Slf4j
 public class TokenApiController {
 
+    private final TokenService tokenService;
     private final NewTokenService newTokenService;
 
     @PostMapping("/token")
     public ResponseEntity<CreateAccessTokenResponse> createNewAccessToken(@RequestBody CreateAccessTokenRequest requestBody) {
 
-        String requestIp = newTokenService.getClientIpAddress();
-        String newAccessToken = newTokenService.createNewAccessToken(requestBody.getRefreshToken(), requestIp);
-
-        log.info("Client IP Address : {}", requestIp);
+        String newAccessToken = newTokenService.createNewAccessToken(requestBody.getRefreshToken());
 
         // todo : 액세스 토큰 재발급하면서, 새 리프레시 토큰은 쿠키에 넣어줘야 함 : refresh token rotation
+//        String refreshToken = tokenService.createRefreshToken(email);
+//        saveRefreshToken(member.getId(), refreshToken);
+//        addRefreshTokenToCookie(request, response, refreshToken);
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(new CreateAccessTokenResponse(newAccessToken));
