@@ -161,5 +161,23 @@ public class MemberApi {
         return ResponseEntity.status(HttpStatus.OK).body(preSignedUrl);
     }
 
+    @DeleteMapping("/member")
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseEntity<String> deleteMember(@RequestHeader("Authorization") String authorizationHeader) {
+        Optional<String> optionalToken = tokenService.getTokenFromHeader(authorizationHeader);
+        if (optionalToken.isEmpty()) {
+            String message = ErrorResponse.UNAUTHORIZED.getMessage();
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(message);
+        }
 
+        String token = optionalToken.get();
+        String email = tokenService.getEmail(token);
+        Member member = memberService.findByEmail(email);
+
+        String imageFileName = member.getImageFileName();
+        log.info("[DELETE /member] imageFileName: {}", imageFileName);
+        s3FileService.deleteImage("profiles", imageFileName);
+        memberService.delete(member);
+        return ResponseEntity.status(HttpStatus.OK).body("정상적으로 탈퇴되었습니다.");
+    }
 }
