@@ -15,6 +15,7 @@ import java.time.Duration;
 import java.util.Collections;
 import java.util.Optional;
 import java.util.Set;
+import java.util.StringTokenizer;
 
 @RequiredArgsConstructor
 @Service
@@ -69,5 +70,13 @@ public class TokenService {
     public boolean getIsActive(String token) {
         Claims claims = getClaims(token);
         return claims.get("isActive", Boolean.class);
+    }
+
+    public Optional<String> getTokenFromHeader(String header) {
+        StringTokenizer tokenizer = new StringTokenizer(header);
+        if (tokenizer.countTokens() != 2 || tokenizer.nextToken().equals("Bearer") == false) {
+            return Optional.empty();
+        }
+        return Optional.of(tokenizer.nextToken());
     }
 }

@@ -5,5 +5,6 @@ import lombok.Getter;
 @Getter
 public class MemberRequest {
     private String nickname;
-    private String email;
+    private String imageExtension;
+    private Long contentLength;
 }

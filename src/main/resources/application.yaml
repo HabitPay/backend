@@ -12,6 +12,18 @@ spring:
   jpa:
     database: postgresql
 ---
+cloud:
+  aws:
+    s3:
+      bucket: ${BUCKET_NAME}
+    stack:
+      auto: false
+    region:
+      static: ap-northeast-2
+    credentials:
+      access-key: ${AWS_ACCESS_KEY}
+      secret-key: ${AWS_SECRET_KEY}
+---
 spring:
   profiles:
     active: local
