@@ -40,7 +40,8 @@ public class CustomOAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSucc
         if (authentication.getPrincipal() instanceof OAuth2User oAuth2User) {
             String email = oAuth2User.getAttribute("email");
 
-            refreshTokenService.setRefreshTokenByEmail(request, response, email);
+            // todo : remove
+//            refreshTokenService.setRefreshTokenByEmail(request, response, email);
 
             String accessToken = tokenService.createAccessToken(email);
             String redirectUrl = "http://localhost:3000/onboarding?accessToken=" + accessToken;
