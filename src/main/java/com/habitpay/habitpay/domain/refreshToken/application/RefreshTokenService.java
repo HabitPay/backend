@@ -39,7 +39,9 @@ public class RefreshTokenService {
 
         String refreshToken = tokenService.createRefreshToken(email);
         saveRefreshToken(member.getId(), refreshToken);
-        addRefreshTokenToCookie(request, response, refreshToken);
+        // todo : remove
+//        addRefreshTokenToCookie(request, response, refreshToken);
+        response.setHeader("refresh_token", refreshToken);
 
         //todo : for test
         System.out.println("refresh token : " + refreshToken);
