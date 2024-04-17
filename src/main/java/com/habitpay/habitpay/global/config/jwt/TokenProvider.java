@@ -58,6 +58,6 @@ public class TokenProvider {
                 .setSigningKey(jwtProperties.getSecret())
                 .parseClaimsJws(token);
         return true;
-        // todo: 예외별 처리 하고 싶을 때 try-catch문 추가하면 됨
+        // todo: 예외별 처리 하고 싶을 때 try-catch문 추가하기
     }
 }

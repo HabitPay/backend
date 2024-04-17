@@ -25,14 +25,14 @@ public class NewTokenService {
     public String createNewAccessToken(String refreshToken) {
 
         if (!tokenProvider.validateToken(refreshToken)) {
-            throw new IllegalArgumentException("새로운 토큰을 발급해주려 했으나 리프레시 토큰이 이상하네요.");
+            throw new IllegalArgumentException("try to create new token : not valid refresh token.");
         }
 
         String requestIp = refreshTokenService.getClientIpAddress();
         log.info("Client IP Address : {}", requestIp);
         String loginIp = refreshTokenService.findByRefreshToken(refreshToken).getLoginIp();
         if (!Objects.equals(requestIp, loginIp)) {
-            throw new IllegalArgumentException("로그인한 주소와 요청한 주소가 달라요.");
+            throw new IllegalArgumentException("request IP is different from login IP.");
         }
 
         Long userId = refreshTokenService.findByRefreshToken(refreshToken).getUserId();

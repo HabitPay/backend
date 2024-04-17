@@ -8,6 +8,7 @@ import org.springframework.util.SerializationUtils;
 
 import java.util.Base64;
 
+// todo : refresh token 목적으로 만든 util. 추후 필요 없으면 삭제하기
 @Slf4j
 public class CookieUtil {
 

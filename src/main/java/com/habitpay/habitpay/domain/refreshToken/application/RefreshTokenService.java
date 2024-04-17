@@ -10,6 +10,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -19,28 +20,23 @@ import java.util.Objects;
 
 @RequiredArgsConstructor
 @Service
+@Slf4j
 public class RefreshTokenService {
 
     private final MemberService memberService;
     private final TokenService tokenService;
     private final RefreshTokenRepository refreshTokenRepository;
 
-    public static final String REFRESH_TOKEN_COOKIE_NAME = "refresh_token";
-    public static final Duration REFRESH_TOKEN_DURATION = Duration.ofDays(14);
-
-    // todo: 예외 메시지 수정
     public RefreshToken findByRefreshToken(String refreshToken) {
         return refreshTokenRepository.findByRefreshToken(refreshToken)
-                .orElseThrow(() -> new IllegalArgumentException("이런 refresh token은 없다"));
+                .orElseThrow(() -> new IllegalArgumentException("cannot find refresh token in DB"));
     }
 
-    public void setRefreshTokenByEmail(HttpServletRequest request, HttpServletResponse response, String email) {
+    public void setRefreshTokenByEmail(HttpServletResponse response, String email) {
         Member member = memberService.findByEmail(email);
 
         String refreshToken = tokenService.createRefreshToken(email);
         saveRefreshToken(member.getId(), refreshToken);
-        // todo : remove
-//        addRefreshTokenToCookie(request, response, refreshToken);
         response.setHeader("refresh_token", refreshToken);
 
         //todo : for test
@@ -56,17 +52,10 @@ public class RefreshTokenService {
         refreshTokenRepository.save(refreshToken);
     }
 
-    public void addRefreshTokenToCookie(HttpServletRequest request,
-                                         HttpServletResponse response, String refreshToken) {
-
-        int cookieMaxAge = (int) REFRESH_TOKEN_DURATION.toSeconds();
-        CookieUtil.deleteCookie(request, response, REFRESH_TOKEN_COOKIE_NAME);
-        CookieUtil.addCookie(response, REFRESH_TOKEN_COOKIE_NAME, refreshToken, cookieMaxAge);
-    }
-
     public String getClientIpAddress() {
 
         if (Objects.isNull(RequestContextHolder.getRequestAttributes())) {
+            log.info("IP : 0.0.0.0");
             return "0.0.0.0";
         }
 
@@ -88,9 +77,12 @@ public class RefreshTokenService {
         for (String header : IpHeaderCandidates) {
             String requestIp = request.getHeader(header);
             if (Objects.nonNull(requestIp) && !requestIp.isEmpty() && !"unknown".equalsIgnoreCase(requestIp)) {
+                log.info("IP : {}", requestIp.split(",")[0]);
                 return requestIp.split(",")[0];
             }
         }
-        return request.getRemoteAddr();
+        String requestIp = request.getRemoteAddr();
+        log.info("IP : {}", requestIp);
+        return requestIp;
     }
 }

@@ -37,24 +37,17 @@ public class TokenApiController {
             HttpServletResponse response,
             @RequestBody CreateAccessTokenRequest requestBody) {
 
+        //todo : refresh token을 요청 헤더로 받을 경우
+//        if (request.getHeader("grant_type").equals("refresh_token")) {
+//            String newAccessToken = newTokenService.createNewAccessToken(request.getHeader("refresh_token"));
+//        }
+        // todo: refresh token을 요청 바디로 받을 경우
         String newAccessToken = newTokenService.createNewAccessToken(requestBody.getRefreshToken());
 
         String email = tokenService.getEmail(newAccessToken);
-        refreshTokenService.setRefreshTokenByEmail(request, response, email);
+        refreshTokenService.setRefreshTokenByEmail(response, email);
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(new CreateAccessTokenResponse(newAccessToken));
-    }
-
-    // todo : 테스트 후 삭제
-    @PostMapping("/api/test")
-    public ResponseEntity<String> apiTest(@RequestBody String request, Principal principal) {
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body("api test ok : " + principal.getName());
-    }
-
-    @GetMapping("/api/get_test")
-    public String getTest() {
-        return "test ok!";
     }
 }

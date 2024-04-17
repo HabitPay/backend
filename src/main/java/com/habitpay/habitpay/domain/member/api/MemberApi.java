@@ -6,10 +6,13 @@ import com.habitpay.habitpay.domain.member.domain.Member;
 import com.habitpay.habitpay.domain.member.dto.MemberRequest;
 import com.habitpay.habitpay.domain.member.dto.MemberResponse;
 import com.habitpay.habitpay.domain.model.Response;
+import com.habitpay.habitpay.domain.refreshToken.application.RefreshTokenService;
 import com.habitpay.habitpay.global.config.aws.S3FileService;
 import com.habitpay.habitpay.global.config.jwt.TokenService;
 import com.habitpay.habitpay.global.error.ErrorResponse;
 import com.habitpay.habitpay.global.util.ImageUtil;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -26,6 +29,7 @@ public class MemberApi {
     private final MemberService memberService;
     private final MemberProfileService memberProfileService;
     private final TokenService tokenService;
+    private final RefreshTokenService refreshTokenService;
     private final S3FileService s3FileService;
 
     @GetMapping("/member")
@@ -62,8 +66,10 @@ public class MemberApi {
 
     @PostMapping("/member")
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<String> activateMember(@RequestBody MemberRequest memberRequest,
-                                                 @RequestHeader("Authorization") String authorizationHeader) {
+    public ResponseEntity<String> activateMember(
+            HttpServletResponse response,
+            @RequestBody MemberRequest memberRequest,
+            @RequestHeader("Authorization") String authorizationHeader) {
 
         // TODO: Interceptor 나 Filter 에서 먼저 처리해주기 때문에 나중에 삭제하기
         Optional<String> optionalToken = tokenService.getTokenFromHeader(authorizationHeader);
@@ -95,6 +101,8 @@ public class MemberApi {
         String newToken = tokenService.createAccessToken(email);
         JsonObject responseBody = new JsonObject();
         responseBody.addProperty("accessToken", newToken);
+        refreshTokenService.setRefreshTokenByEmail(response, email);
+
 
         return ResponseEntity.status(HttpStatus.CREATED).body(responseBody.toString());
 

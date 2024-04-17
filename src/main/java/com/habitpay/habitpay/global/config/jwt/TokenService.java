@@ -30,6 +30,7 @@ public class TokenService {
 
         Member member = optionalMember.get();
 
+        // todo : test 용도로 만료 기간을 짧게 설정해놓음
 //        return tokenProvider.generateToken(member, Duration.ofHours(2));
         return tokenProvider.generateToken(member, Duration.ofSeconds(30));
     }
