@@ -1,6 +1,7 @@
 package com.habitpay.habitpay.domain.member.api;
 
 import com.google.gson.JsonObject;
+import com.habitpay.habitpay.domain.member.application.MemberProfileService;
 import com.habitpay.habitpay.domain.member.application.MemberService;
 import com.habitpay.habitpay.domain.member.domain.Member;
 import com.habitpay.habitpay.domain.member.dto.MemberRequest;
