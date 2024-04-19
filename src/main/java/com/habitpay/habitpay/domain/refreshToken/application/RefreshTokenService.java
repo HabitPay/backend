@@ -32,15 +32,16 @@ public class RefreshTokenService {
                 .orElseThrow(() -> new IllegalArgumentException("cannot find refresh token in DB"));
     }
 
-    public void setRefreshTokenByEmail(HttpServletResponse response, String email) {
+    public String setRefreshTokenByEmail(String email) {
         Member member = memberService.findByEmail(email);
 
         String refreshToken = tokenService.createRefreshToken(email);
         saveRefreshToken(member.getId(), refreshToken);
-        response.setHeader("refresh_token", refreshToken);
 
         //todo : for test
         System.out.println("refresh token : " + refreshToken);
+
+        return refreshToken;
     }
 
     public void saveRefreshToken(Long userId, String newRefreshToken) {

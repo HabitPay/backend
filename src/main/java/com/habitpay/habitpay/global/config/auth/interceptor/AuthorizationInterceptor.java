@@ -4,6 +4,8 @@ import com.habitpay.habitpay.domain.member.application.MemberService;
 import com.habitpay.habitpay.domain.member.domain.Member;
 import com.habitpay.habitpay.global.config.jwt.TokenProvider;
 import com.habitpay.habitpay.global.config.jwt.TokenService;
+import com.habitpay.habitpay.global.exception.CustomJwtErrorResponse;
+import com.habitpay.habitpay.global.exception.CustomJwtException;
 import io.jsonwebtoken.Jwts;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -37,15 +39,14 @@ public class AuthorizationInterceptor implements HandlerInterceptor {
             HttpServletResponse response,
             Object handler) throws Exception {
 
-        String REDIRECT_URL = "http://localhost:3000";
+//        String REDIRECT_URL = "http://localhost:3000";
 
         // todo
 //        if (!(handler instanceof HandlerMethod)) {}
 
+        // todo : for debug
         HandlerMethod handlerMethod = (HandlerMethod) handler;
         Method method = handlerMethod.getMethod();
-
-        // todo
         log.info("Bean : {}", handlerMethod.getBean());
         log.info("Method : {}", method);
 
@@ -53,48 +54,35 @@ public class AuthorizationInterceptor implements HandlerInterceptor {
 
         // todo : if 분기 말고 더 좋은 예외 처리 문법?
         if (authorizationHeader == null) {
-
-            // todo
-//            response.sendRedirect(REDIRECT_URL);
-//            return false;
-
-            throw new IllegalAccessException("authorization Header is null");
+            throw new Exception("authorization Header is null (원인 알 수 없게 일반 에러 메시지로 변경 필요)");
         }
 
         StringTokenizer tokenizer = new StringTokenizer(authorizationHeader);
         if (tokenizer.countTokens() == 2 && tokenizer.nextToken().equals("Bearer")) {
             String token = tokenizer.nextToken();
 
-            // todo
+            // todo : for debug
             log.info("Interceptor token (before validation) : {}", token);
 
-            // todo
-
             if (!tokenProvider.validateToken(token)) {
-                // todo
-//            response.sendRedirect(REDIRECT_URL);
-//            return false;
-
-                throw new IllegalAccessException("not valid token");
+                throw new CustomJwtException(CustomJwtErrorResponse.UNAUTHORIZED);
+//                throw new IllegalAccessException("not valid token");
             }
 
             Authentication authentication = tokenService.getAuthentication(token);
             SecurityContextHolder.getContext().setAuthentication(authentication);
 
-            // todo
+            // todo : for debug
             log.info("Interceptor authorization success : {}", authentication);
 
-            // todo
+            // todo : 인가
             Collection<GrantedAuthority> collection = (Collection<GrantedAuthority>) authentication.getAuthorities();
             log.info("Interceptor ROLE check : {}", collection);
 
-            if (!collection.toString().equals("[ROLE_GUEST]")) {
-                // todo
-//            response.sendRedirect(REDIRECT_URL);
-//            return false;
-
-                throw new IllegalAccessException("not permitted ROLE");
-            }
+//            if (!collection.toString().equals("[ROLE_GUEST]")) {
+//                throw new CustomJwtException(CustomJwtErrorResponse.FORBIDDEN);
+//                // throw new IllegalAccessException("not permitted ROLE");
+//            }
         }
 
         // todo

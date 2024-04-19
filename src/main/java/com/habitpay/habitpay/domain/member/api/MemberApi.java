@@ -7,6 +7,7 @@ import com.habitpay.habitpay.domain.member.dto.MemberRequest;
 import com.habitpay.habitpay.domain.member.dto.MemberResponse;
 import com.habitpay.habitpay.domain.model.Response;
 import com.habitpay.habitpay.domain.refreshToken.application.RefreshTokenService;
+import com.habitpay.habitpay.domain.refreshToken.dto.CreateAccessTokenResponse;
 import com.habitpay.habitpay.global.config.aws.S3FileService;
 import com.habitpay.habitpay.global.config.jwt.TokenService;
 import com.habitpay.habitpay.global.error.ErrorResponse;
@@ -19,6 +20,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Date;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -66,16 +68,16 @@ public class MemberApi {
 
     @PostMapping("/member")
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<String> activateMember(
-            HttpServletResponse response,
+    public ResponseEntity<CreateAccessTokenResponse> activateMember(
             @RequestBody MemberRequest memberRequest,
             @RequestHeader("Authorization") String authorizationHeader) {
 
-        // TODO: Interceptor 나 Filter 에서 먼저 처리해주기 때문에 나중에 삭제하기
+        // TODO: Interceptor 나 Filter 에서 먼저 처리해주기 때문에 나중에 삭제하기 -> 보류
         Optional<String> optionalToken = tokenService.getTokenFromHeader(authorizationHeader);
         if (optionalToken.isEmpty()) {
             String message = ErrorResponse.UNAUTHORIZED.getMessage();
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(message);
+            // todo : throw e
+//            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(message);
         }
 
         String token = optionalToken.get();
@@ -84,9 +86,10 @@ public class MemberApi {
         String email = tokenService.getEmail(token);
         String nickname = memberRequest.getNickname();
         log.info("[POST /member] email: {}, nickname: {}", email, nickname);
-        if (memberProfileService.isValidNickname(nickname) == false) {
+        if (!memberProfileService.isValidNickname(nickname)) {
             String message = ErrorResponse.INVALID_NICKNAME_RULE.getMessage();
-            return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(message);
+//            todo : throw e;
+//            return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(message);
         }
 
         Member member = memberService.findByEmail(email);
@@ -99,13 +102,19 @@ public class MemberApi {
         log.info("[POST /member] 회원 활성화 성공");
 
         String newToken = tokenService.createAccessToken(email);
-        JsonObject responseBody = new JsonObject();
-        responseBody.addProperty("accessToken", newToken);
-        refreshTokenService.setRefreshTokenByEmail(response, email);
+        String refreshToken = refreshTokenService.setRefreshTokenByEmail(email);
 
+        Date now = new Date();
+        Long expiresIn = tokenService.getClaims(newToken).getExpiration().getTime() - now.getTime();
+        // todo : remove
+        System.out.println("expiresIn : " + expiresIn);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(responseBody.toString());
-
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(new CreateAccessTokenResponse(
+                        newToken,
+                        "Bearer",
+                        expiresIn,
+                        refreshToken));
     }
 
     @PatchMapping("/member")
