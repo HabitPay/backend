@@ -1,8 +1,11 @@
 package com.habitpay.habitpay.global.config.jwt;
 
 import com.habitpay.habitpay.domain.member.domain.Member;
+import com.habitpay.habitpay.global.exception.JWT.CustomJwtErrorInfo;
+import com.habitpay.habitpay.global.exception.JWT.CustomJwtException;
 import io.jsonwebtoken.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
@@ -54,10 +57,14 @@ public class TokenProvider {
     }
 
     public boolean validateToken(String token) {
-        Jwts.parser()
-                .setSigningKey(jwtProperties.getSecret())
-                .parseClaimsJws(token);
-        return true;
-        // todo: 예외별 처리 하고 싶을 때 try-catch문 추가하기
+        try {
+            Jwts.parser()
+                    .setSigningKey(jwtProperties.getSecret())
+                    .parseClaimsJws(token);
+            return true;
+        } catch (Exception e) {
+            // todo : error info를 주고 싶지 않으면, 그냥 return false 하고, 밖(interceptor)에서 throw exception 하기
+            throw new CustomJwtException(HttpStatus.UNAUTHORIZED, CustomJwtErrorInfo.UNAUTHORIZED, e.getMessage());
+        }
     }
 }

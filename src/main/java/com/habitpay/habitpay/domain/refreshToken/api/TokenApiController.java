@@ -7,6 +7,8 @@ import com.habitpay.habitpay.domain.refreshToken.application.RefreshTokenService
 import com.habitpay.habitpay.domain.refreshToken.dto.CreateAccessTokenRequest;
 import com.habitpay.habitpay.domain.refreshToken.dto.CreateAccessTokenResponse;
 import com.habitpay.habitpay.global.config.jwt.TokenService;
+import com.habitpay.habitpay.global.exception.JWT.CustomJwtErrorInfo;
+import com.habitpay.habitpay.global.exception.JWT.CustomJwtException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.security.Principal;
 import java.util.Date;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @RestController
@@ -36,23 +39,19 @@ public class TokenApiController {
     public ResponseEntity<CreateAccessTokenResponse> createNewAccessTokenAndNewRefreshToken(
             @RequestBody CreateAccessTokenRequest requestBody) {
 
-        if (!requestBody.getGrantType().equals("refresh_token")) {
-            // todo
-//            throw e;
+        Optional<String> optionalGrantType = Optional.ofNullable(requestBody.getGrantType());
+        if (optionalGrantType.isEmpty() || !requestBody.getGrantType().equals("refresh_token")) {
+                throw new CustomJwtException(HttpStatus.BAD_REQUEST, CustomJwtErrorInfo.BAD_REQUEST, "Request was missing the 'grantType' parameter.");
         }
+
         String newAccessToken = newTokenService.createNewAccessToken(requestBody.getRefreshToken());
         String refreshToken = refreshTokenService.setRefreshTokenByEmail(tokenService.getEmail(newAccessToken));
-
-        Date now = new Date();
-        Long expiresIn = tokenService.getClaims(newAccessToken).getExpiration().getTime() - now.getTime();
-        // todo : for test
-        System.out.println("expiresIn : " + expiresIn);
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(new CreateAccessTokenResponse(
                         newAccessToken,
                         "Bearer",
-                        expiresIn,
+                        tokenService.getAccessTokenExpiresInToMillis(),
                         refreshToken));
     }
 }

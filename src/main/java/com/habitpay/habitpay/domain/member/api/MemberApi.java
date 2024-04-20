@@ -104,16 +104,11 @@ public class MemberApi {
         String newToken = tokenService.createAccessToken(email);
         String refreshToken = refreshTokenService.setRefreshTokenByEmail(email);
 
-        Date now = new Date();
-        Long expiresIn = tokenService.getClaims(newToken).getExpiration().getTime() - now.getTime();
-        // todo : remove
-        System.out.println("expiresIn : " + expiresIn);
-
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(new CreateAccessTokenResponse(
                         newToken,
                         "Bearer",
-                        expiresIn,
+                        tokenService.getAccessTokenExpiresInToMillis(),
                         refreshToken));
     }
 

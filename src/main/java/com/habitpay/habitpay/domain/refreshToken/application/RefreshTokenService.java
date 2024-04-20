@@ -16,6 +16,7 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import java.time.Duration;
+import java.util.NoSuchElementException;
 import java.util.Objects;
 
 @RequiredArgsConstructor
@@ -29,7 +30,7 @@ public class RefreshTokenService {
 
     public RefreshToken findByRefreshToken(String refreshToken) {
         return refreshTokenRepository.findByRefreshToken(refreshToken)
-                .orElseThrow(() -> new IllegalArgumentException("cannot find refresh token in DB"));
+                .orElseThrow(() -> new NoSuchElementException("cannot find refresh token in DB"));
     }
 
     public String setRefreshTokenByEmail(String email) {
@@ -78,12 +79,12 @@ public class RefreshTokenService {
         for (String header : IpHeaderCandidates) {
             String requestIp = request.getHeader(header);
             if (Objects.nonNull(requestIp) && !requestIp.isEmpty() && !"unknown".equalsIgnoreCase(requestIp)) {
-                log.info("IP : {}", requestIp.split(",")[0]);
+                log.info("[IP address] {}", requestIp.split(",")[0]);
                 return requestIp.split(",")[0];
             }
         }
         String requestIp = request.getRemoteAddr();
-        log.info("IP : {}", requestIp);
+        log.info("[IP address] {}", requestIp);
         return requestIp;
     }
 }

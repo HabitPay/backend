@@ -3,9 +3,12 @@ package com.habitpay.habitpay.domain.refreshToken.application;
 import com.habitpay.habitpay.domain.member.application.MemberService;
 import com.habitpay.habitpay.domain.member.domain.Member;
 import com.habitpay.habitpay.global.config.jwt.TokenProvider;
+import com.habitpay.habitpay.global.exception.JWT.CustomJwtErrorInfo;
+import com.habitpay.habitpay.global.exception.JWT.CustomJwtException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -24,15 +27,14 @@ public class NewTokenService {
 
     public String createNewAccessToken(String refreshToken) {
 
-        if (!tokenProvider.validateToken(refreshToken)) {
-            throw new IllegalArgumentException("try to create new token : not valid refresh token.");
-        }
+        tokenProvider.validateToken(refreshToken);
 
         String requestIp = refreshTokenService.getClientIpAddress();
-        log.info("Client IP Address : {}", requestIp);
         String loginIp = refreshTokenService.findByRefreshToken(refreshToken).getLoginIp();
+        log.info("[Client new request IP] {}", requestIp);
+        log.info("[Client old login IP] {}", loginIp);
         if (!Objects.equals(requestIp, loginIp)) {
-            throw new IllegalArgumentException("request IP is different from login IP.");
+            throw new CustomJwtException(HttpStatus.BAD_REQUEST, CustomJwtErrorInfo.BAD_REQUEST, "request IP address is different from login IP address.");
         }
 
         Long userId = refreshTokenService.findByRefreshToken(refreshToken).getUserId();
