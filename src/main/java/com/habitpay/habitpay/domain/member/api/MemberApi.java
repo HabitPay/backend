@@ -11,6 +11,8 @@ import com.habitpay.habitpay.domain.refreshToken.dto.CreateAccessTokenResponse;
 import com.habitpay.habitpay.global.config.aws.S3FileService;
 import com.habitpay.habitpay.global.config.jwt.TokenService;
 import com.habitpay.habitpay.global.error.ErrorResponse;
+import com.habitpay.habitpay.global.exception.JWT.CustomJwtErrorInfo;
+import com.habitpay.habitpay.global.exception.JWT.CustomJwtException;
 import com.habitpay.habitpay.global.util.ImageUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -76,8 +78,7 @@ public class MemberApi {
         Optional<String> optionalToken = tokenService.getTokenFromHeader(authorizationHeader);
         if (optionalToken.isEmpty()) {
             String message = ErrorResponse.UNAUTHORIZED.getMessage();
-            // todo : throw e
-//            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(message);
+            throw new CustomJwtException(HttpStatus.UNAUTHORIZED, CustomJwtErrorInfo.UNAUTHORIZED, message);
         }
 
         String token = optionalToken.get();
@@ -88,8 +89,8 @@ public class MemberApi {
         log.info("[POST /member] email: {}, nickname: {}", email, nickname);
         if (!memberProfileService.isValidNickname(nickname)) {
             String message = ErrorResponse.INVALID_NICKNAME_RULE.getMessage();
-//            todo : throw e;
-//            return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(message);
+//            todo : CustomJwtErrorInfo 바꾸거나 추가하기
+            throw new CustomJwtException(HttpStatus.UNPROCESSABLE_ENTITY, CustomJwtErrorInfo.BAD_REQUEST, message);
         }
 
         Member member = memberService.findByEmail(email);
