@@ -67,6 +67,10 @@ public class AuthorizationInterceptor implements HandlerInterceptor {
                 throw new CustomJwtException(HttpStatus.UNAUTHORIZED, CustomJwtErrorInfo.UNAUTHORIZED, "");
             }
 
+            if (!tokenService.getIsActive(token)) {
+                throw new CustomJwtException(HttpStatus.UNAUTHORIZED, CustomJwtErrorInfo.UNAUTHORIZED, "Request was not with a proper token.");
+            }
+
             Authentication authentication = tokenService.getAuthentication(token);
             SecurityContextHolder.getContext().setAuthentication(authentication);
 

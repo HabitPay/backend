@@ -5,7 +5,6 @@ import com.habitpay.habitpay.domain.member.domain.Member;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.java.Log;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -28,7 +27,7 @@ public class TokenService {
     // todo : for temp
 //    private final static Duration ACCESS_TOKEN_EXPIRED_AT = Duration.ofHours(1);
 
-    private final static Duration ACCESS_TOKEN_EXPIRED_AT = Duration.ofSeconds(30);
+    private final static Duration ACCESS_TOKEN_EXPIRED_AT = Duration.ofMinutes(1);
     private final static Duration REFRESH_TOKEN_EXPIRED_AT = Duration.ofDays(14);
 
     public String createAccessToken(String email) {
@@ -73,9 +72,9 @@ public class TokenService {
         return claims.getSubject();
     }
 
-    public boolean getIsActive(String token) {
+    public Boolean getIsActive(String token) {
         Claims claims = getClaims(token);
-        return claims.get("isActive", Boolean.class);
+        return claims.get("isActive", String.class).equals("true");
     }
 
     public Optional<String> getTokenFromHeader(String header) {

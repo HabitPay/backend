@@ -37,7 +37,7 @@ public class SignUpInterceptor implements HandlerInterceptor {
             HttpServletResponse response,
             Object handler) throws Exception {
 
-//        String REDIRECT_URL = "http://localhost:3000";
+        // final String REDIRECT_URL = "http://localhost:3000";
 
         // todo
 //        if (!(handler instanceof HandlerMethod)) {}
@@ -67,6 +67,17 @@ public class SignUpInterceptor implements HandlerInterceptor {
             if (!tokenProvider.validateToken(token)) {
                 // todo : validateToken 메서드 안에서 throw 해서 여기까지 안 옴. 에러 메시지 숨기고 싶을 때 이 코드 사용하기.
                 throw new CustomJwtException(HttpStatus.UNAUTHORIZED, CustomJwtErrorInfo.UNAUTHORIZED, "");
+            }
+
+            String httpMethod = request.getMethod();
+            if ("POST".equals(httpMethod)) {
+                if (tokenService.getIsActive(token)) {
+                    throw new CustomJwtException(HttpStatus.UNAUTHORIZED, CustomJwtErrorInfo.UNAUTHORIZED, "Request was trying to signup with a member already signed up.");
+                }
+            } else {
+                if (!tokenService.getIsActive(token)) {
+                    throw new CustomJwtException(HttpStatus.UNAUTHORIZED, CustomJwtErrorInfo.UNAUTHORIZED, "Request was not with a proper token.");
+                }
             }
 
             Authentication authentication = tokenService.getAuthentication(token);
