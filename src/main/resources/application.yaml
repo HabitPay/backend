@@ -15,7 +15,7 @@ spring:
 cloud:
   aws:
     s3:
-      bucket: cloud.aws.s3.bucket
+      bucket: ${BUCKET_NAME}
     stack:
       auto: false
     region:

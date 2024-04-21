@@ -27,7 +27,7 @@ public class TokenService {
     // todo : for temp
 //    private final static Duration ACCESS_TOKEN_EXPIRED_AT = Duration.ofHours(1);
 
-    private final static Duration ACCESS_TOKEN_EXPIRED_AT = Duration.ofSeconds(30);
+    private final static Duration ACCESS_TOKEN_EXPIRED_AT = Duration.ofMinutes(1);
     private final static Duration REFRESH_TOKEN_EXPIRED_AT = Duration.ofDays(14);
 
     public String createAccessToken(String email) {
