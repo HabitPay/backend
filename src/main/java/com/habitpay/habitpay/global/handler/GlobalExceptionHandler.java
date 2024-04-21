@@ -1,21 +1,28 @@
 package com.habitpay.habitpay.global.handler;
 
+import com.habitpay.habitpay.global.exception.JWT.ErrorTokenResponse;
+import com.habitpay.habitpay.global.exception.JWT.CustomJwtException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
+@Slf4j
 public class GlobalExceptionHandler {
-
-    @ExceptionHandler(IllegalAccessException.class)
-    protected ResponseEntity<String> illegalAccessExceptionError(IllegalAccessException exception) {
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(exception.getMessage());
+    @ExceptionHandler(CustomJwtException.class)
+    protected ResponseEntity<ErrorTokenResponse> customJwtExceptionError(CustomJwtException exception) {
+        return ResponseEntity.status(exception.getStatusCode())
+                .body(new ErrorTokenResponse(
+                        exception.getCustomJwtErrorInfo().getErrorMessage(),
+                        exception.getErrorMessage()
+                ));
     }
 
-    // todo
+    // todo : getMessage() 숨기기?
     @ExceptionHandler(Exception.class)
-    protected String error(Exception exception) {
-        return "error : " + exception.getMessage();
+    protected ResponseEntity<String> error(Exception exception) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(exception.getMessage());
     }
 }

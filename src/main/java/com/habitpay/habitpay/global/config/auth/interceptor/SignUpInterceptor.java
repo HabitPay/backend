@@ -4,10 +4,13 @@ import com.habitpay.habitpay.domain.member.application.MemberService;
 import com.habitpay.habitpay.domain.member.domain.Member;
 import com.habitpay.habitpay.global.config.jwt.TokenProvider;
 import com.habitpay.habitpay.global.config.jwt.TokenService;
+import com.habitpay.habitpay.global.exception.JWT.CustomJwtErrorInfo;
+import com.habitpay.habitpay.global.exception.JWT.CustomJwtException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -34,69 +37,58 @@ public class SignUpInterceptor implements HandlerInterceptor {
             HttpServletResponse response,
             Object handler) throws Exception {
 
-        String REDIRECT_URL = "http://localhost:3000";
+//        String REDIRECT_URL = "http://localhost:3000";
 
         // todo
 //        if (!(handler instanceof HandlerMethod)) {}
 
+        // todo : for debug
         HandlerMethod handlerMethod = (HandlerMethod) handler;
         Method method = handlerMethod.getMethod();
-
-        // todo
         log.info("Bean : {}", handlerMethod.getBean());
         log.info("Method : {}", method);
 
         String authorizationHeader = request.getHeader("Authorization");
-
-        // todo : if 분기 말고 더 좋은 예외 처리 문법?
+        // todo : authorization header가 빈 값인 경우와, 아예 헤더 자체가 없는 경우 분리 안 되나? 안 되면 에러 메시지 숨겨야 할 듯?
         if (authorizationHeader == null) {
-
-            // todo
-//            response.sendRedirect(REDIRECT_URL);
-//            return false;
-
-            throw new IllegalAccessException("authorization Header is null");
+            // todo : 분리 못 하면 그냥 'the request lacks any authentication information' 상태로 보고 처리해도 될 듯
+            //      이 경우면, 어떤 error 코드나 정보를 주어선 안 된다고 함! by RFC
+            //response.sendRedirect(REDIRECT_URL);
+            //return false;
+            throw new CustomJwtException(HttpStatus.BAD_REQUEST, CustomJwtErrorInfo.BAD_REQUEST, "Request was missing the 'Authorization' header.");
         }
 
         StringTokenizer tokenizer = new StringTokenizer(authorizationHeader);
         if (tokenizer.countTokens() == 2 && tokenizer.nextToken().equals("Bearer")) {
             String token = tokenizer.nextToken();
 
-            // todo
-            log.info("Interceptor token (before validation) : {}", token);
-
+            // todo : for debug
+            log.info("[token (before validation)] {}", token);
             if (!tokenProvider.validateToken(token)) {
-                // todo
-//            response.sendRedirect(REDIRECT_URL);
-//            return false;
-
-                throw new IllegalAccessException("not valid token");
+                // todo : validateToken 메서드 안에서 throw 해서 여기까지 안 옴. 에러 메시지 숨기고 싶을 때 이 코드 사용하기.
+                throw new CustomJwtException(HttpStatus.UNAUTHORIZED, CustomJwtErrorInfo.UNAUTHORIZED, "");
             }
 
             Authentication authentication = tokenService.getAuthentication(token);
             SecurityContextHolder.getContext().setAuthentication(authentication);
 
-            // todo
-            log.info("Interceptor authorization success : {}", authentication);
+            // todo : for debug
+            log.info("[authorization success] {}", authentication);
 
-            // todo
+            // todo : 인가
             Collection<GrantedAuthority> collection = (Collection<GrantedAuthority>) authentication.getAuthorities();
-            log.info("Interceptor ROLE check : {}", collection);
+            log.info("[check ROLE] {}", collection);
 
-            if (!collection.toString().equals("[ROLE_GUEST]")) {
-                // todo
-//            response.sendRedirect(REDIRECT_URL);
-//            return false;
-
-                throw new IllegalAccessException("not permitted ROLE");
-            }
+//            if (!collection.toString().equals("[ROLE_GUEST]")) {
+//                throw new CustomJwtException(HttpStatus.FORBIDDEN, CustomJwtErrorInfo.FORBIDDEN, "request required higher privileges than provided by the
+//         access token.");
+//            }
+            return true;
         }
 
         // todo
 //        response.sendRedirect(REDIRECT_URL);
-//        return false;
-
-        return true;
+        return false;
     }
 
     @Override

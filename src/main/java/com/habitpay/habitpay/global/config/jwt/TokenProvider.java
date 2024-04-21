@@ -1,10 +1,11 @@
 package com.habitpay.habitpay.global.config.jwt;
 
 import com.habitpay.habitpay.domain.member.domain.Member;
-import io.jsonwebtoken.Header;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import com.habitpay.habitpay.global.exception.JWT.CustomJwtErrorInfo;
+import com.habitpay.habitpay.global.exception.JWT.CustomJwtException;
+import io.jsonwebtoken.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
@@ -19,6 +20,12 @@ public class TokenProvider {
         Date now = new Date();
         Date expiredDate = new Date(now.getTime() + expiredAt.toMillis());
         return makeToken(expiredDate, member);
+    }
+
+    public String generateRefreshToken(Member member, Duration expiredAt) {
+        Date now = new Date();
+        Date expiredDate = new Date(now.getTime() + expiredAt.toMillis());
+        return makeRefreshToken(expiredDate, member);
     }
 
     private String makeToken(Date expiry, Member member) {
@@ -36,6 +43,19 @@ public class TokenProvider {
                 .compact();
     }
 
+    private String makeRefreshToken(Date expiry, Member member) {
+        Date now = new Date();
+
+        return Jwts.builder()
+                .setHeaderParam(Header.TYPE, Header.JWT_TYPE)
+                .setIssuer(jwtProperties.getIssuer())
+                .setIssuedAt(now)
+                .setExpiration(expiry)
+                .setSubject(member.getEmail())
+                .signWith(SignatureAlgorithm.HS256, jwtProperties.getSecret())
+                .compact();
+    }
+
     public boolean validateToken(String token) {
         try {
             Jwts.parser()
@@ -43,7 +63,8 @@ public class TokenProvider {
                     .parseClaimsJws(token);
             return true;
         } catch (Exception e) {
-            return false;
+            // todo : error info를 주고 싶지 않으면, 그냥 return false 하고, 밖(interceptor)에서 throw exception 하기
+            throw new CustomJwtException(HttpStatus.UNAUTHORIZED, CustomJwtErrorInfo.UNAUTHORIZED, e.getMessage());
         }
     }
 }
