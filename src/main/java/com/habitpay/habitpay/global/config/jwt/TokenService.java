@@ -24,13 +24,28 @@ public class TokenService {
     private final TokenProvider tokenProvider;
     private final MemberRepository memberRepository;
 
+    // todo : for temp
+//    private final static Duration ACCESS_TOKEN_EXPIRED_AT = Duration.ofHours(1);
+
+    private final static Duration ACCESS_TOKEN_EXPIRED_AT = Duration.ofMinutes(1);
+    private final static Duration REFRESH_TOKEN_EXPIRED_AT = Duration.ofDays(14);
+
     public String createAccessToken(String email) {
         Optional<Member> optionalMember = Optional.ofNullable(memberRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다.")));
 
         Member member = optionalMember.get();
 
-        return tokenProvider.generateToken(member, Duration.ofHours(2));
+        return tokenProvider.generateToken(member, ACCESS_TOKEN_EXPIRED_AT);
+    }
+
+    public String createRefreshToken(String email) {
+        Optional<Member> optionalMember = Optional.ofNullable(memberRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다.")));
+
+        Member member = optionalMember.get();
+
+        return tokenProvider.generateRefreshToken(member, REFRESH_TOKEN_EXPIRED_AT);
     }
 
     public Authentication getAuthentication(String token) {
@@ -45,7 +60,7 @@ public class TokenService {
                 authorities);
     }
 
-    private Claims getClaims(String token) {
+    public Claims getClaims(String token) {
         return Jwts.parser()
                 .setSigningKey(jwtProperties.getSecret())
                 .parseClaimsJws(token)
@@ -57,16 +72,24 @@ public class TokenService {
         return claims.getSubject();
     }
 
-    public boolean getIsActive(String token) {
+    public Boolean getIsActive(String token) {
         Claims claims = getClaims(token);
-        return claims.get("isActive", Boolean.class);
+        return claims.get("isActive", String.class).equals("true");
     }
 
     public Optional<String> getTokenFromHeader(String header) {
         StringTokenizer tokenizer = new StringTokenizer(header);
-        if (tokenizer.countTokens() != 2 || tokenizer.nextToken().equals("Bearer") == false) {
+        if (tokenizer.countTokens() != 2 || !tokenizer.nextToken().equals("Bearer")) {
             return Optional.empty();
         }
         return Optional.of(tokenizer.nextToken());
+    }
+
+    public Long getAccessTokenExpiresInToMillis() {
+        return ACCESS_TOKEN_EXPIRED_AT.toMillis();
+    }
+
+    public Long getRefreshTokenExpiresInToMillis() {
+        return REFRESH_TOKEN_EXPIRED_AT.toMillis();
     }
 }
