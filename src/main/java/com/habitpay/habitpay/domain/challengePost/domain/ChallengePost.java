@@ -1,13 +1,17 @@
 package com.habitpay.habitpay.domain.challengePost.domain;
 
+import com.habitpay.habitpay.domain.member.domain.Member;
 import com.habitpay.habitpay.domain.model.BaseTime;
 import jakarta.persistence.*;
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+@EntityListeners(AuditingEntityListener.class)
 @Getter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 @Table(name = "challenge_post")
 public class ChallengePost extends BaseTime {
@@ -32,8 +36,13 @@ public class ChallengePost extends BaseTime {
         this.isAnnouncement = isAnnouncement;
     }
 
-    public ChallengePost modifyContent(String modifiedContent) {
+    public ChallengePost modifyPost(String modifiedContent) {
         this.content = modifiedContent;
         return this;
     }
+
+    // todo : challengeEnrollment에서 id로 멤버 찾기 -> 포스트 작성자 정보
+//    public Member getWriter() {
+//        return challengeEnrollmentRepository.findMemberById(this.challengeEnrollmentId);
+//    }
 }
