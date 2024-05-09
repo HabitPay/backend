@@ -7,6 +7,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
-public class ModifyPostResponse {
+public class ModifyPostRequest {
     private String content;
 }

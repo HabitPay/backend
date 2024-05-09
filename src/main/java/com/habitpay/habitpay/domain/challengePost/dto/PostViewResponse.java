@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Getter
 public class PostViewResponse {
+    // todo : id, challengeEnrollmentId 필요 없으면 지우기
     private Long id;
     private Long challengeEnrollmentId;
     private String content;
