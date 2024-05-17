@@ -29,7 +29,7 @@ public class ChallengePostApi {
 //                .body(new PostViewResponse(challengePost));
 //    }
     // todo : test 용도 (auth 필요 없는 컨트롤러)
-    @GetMapping("/posts/{id}")
+    @GetMapping("/posts")
     public ResponseEntity<String> findPost() {
         return ResponseEntity.ok()
                 .body("new PostViewResponse(challengePost)");
@@ -57,11 +57,20 @@ public class ChallengePostApi {
                 .body(posts);
     }
 
-    @PostMapping("/api/challenge_enrollment/{id}/post")
-    public ResponseEntity<ChallengePost> addPost(@RequestBody AddPostRequest request, @PathVariable Long id, Principal principal) {
-        ChallengePost challengePost = challengePostService.save(request, id);
+//    @PostMapping("/api/challenge_enrollment/{id}/post")
+//    public ResponseEntity<ChallengePost> addPost(@RequestBody AddPostRequest request, @PathVariable Long id, Principal principal) {
+//        ChallengePost challengePost = challengePostService.save(request, id);
+//        // todo : principal.getName() 정보 확인 필요 없으면 인자 지우기
+//        System.out.println("Principal: " + principal.getName());
+//
+//        return ResponseEntity.status(HttpStatus.CREATED)
+//                .body(challengePost);
+//    }
+    @PostMapping("/post")
+    public ResponseEntity<ChallengePost> addPost(@RequestBody AddPostRequest request, Principal principal) {
+        ChallengePost challengePost = challengePostService.save(request, 1L);
         // todo : principal.getName() 정보 확인 필요 없으면 인자 지우기
-        System.out.println("Principal: " + principal.getName());
+//        System.out.println("Principal: " + principal.getName());
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(challengePost);
