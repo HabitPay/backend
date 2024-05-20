@@ -48,7 +48,7 @@ public class SecurityConfig {
                         authorizeRequests
                                 .requestMatchers("/*").permitAll() // todo: 보안 상 취약할 수 있으니 범위 제한하기
 //                            .requestMatchers("/api/v1/**").hasRole(Role.USER.name()) // todo: 로그인 후 사용하는 api 에서만 적용하기
-//                                .anyRequest().authenticated()
+                                .anyRequest().authenticated()
                 ))
                 .logout((logoutConfig) ->
                         logoutConfig.logoutSuccessUrl("/"))

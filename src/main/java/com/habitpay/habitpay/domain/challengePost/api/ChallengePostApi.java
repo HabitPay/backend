@@ -1,6 +1,7 @@
 package com.habitpay.habitpay.domain.challengePost.api;
 
 import com.habitpay.habitpay.domain.challengePost.application.ChallengePostService;
+import com.habitpay.habitpay.domain.challengePost.dao.ChallengePostRepository;
 import com.habitpay.habitpay.domain.challengePost.domain.ChallengePost;
 import com.habitpay.habitpay.domain.challengePost.dto.AddPostRequest;
 import com.habitpay.habitpay.domain.challengePost.dto.ModifyPostRequest;
@@ -19,6 +20,7 @@ import java.util.List;
 @Slf4j
 public class ChallengePostApi {
 
+    private final ChallengePostRepository challengePostRepository;
     private final ChallengePostService challengePostService;
 
 //    @GetMapping("/api/posts/{id}")
@@ -29,10 +31,17 @@ public class ChallengePostApi {
 //                .body(new PostViewResponse(challengePost));
 //    }
     // todo : test 용도 (auth 필요 없는 컨트롤러)
+//    @GetMapping("/posts/{id}")
+//    public ResponseEntity<String> findPost(@PathVariable("id")String id) {
+//        return ResponseEntity.ok()
+//                .body("Post id : " + id);
+//    }
     @GetMapping("/posts")
-    public ResponseEntity<String> findPost() {
+    public ResponseEntity<PostViewResponse> findPost(@RequestParam(value = "id")Long id) {
+        ChallengePost challengePost = challengePostService.findById(id);
+
         return ResponseEntity.ok()
-                .body("new PostViewResponse(challengePost)");
+                .body(new PostViewResponse(challengePost));
     }
 
     @GetMapping("/api/challenge/{id}/posts")
