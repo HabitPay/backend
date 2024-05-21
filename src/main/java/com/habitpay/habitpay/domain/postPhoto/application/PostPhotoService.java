@@ -19,8 +19,10 @@ public class PostPhotoService {
     private final S3FileService s3FileService;
     private final PostPhotoRepository postPhotoRepository;
 
-    // todo : S3FileService? 이미지 받아서 aws에 저장하고 url만 db에 저장
-    public PostPhoto save() {}
+    // todo : S3FileService -> url만 db에 저장
+    public void save(PostPhoto postPhoto) {
+        postPhotoRepository.save(postPhoto);
+    }
 
     public PostPhoto findById(Long id) {
         return postPhotoRepository.findById(id)
