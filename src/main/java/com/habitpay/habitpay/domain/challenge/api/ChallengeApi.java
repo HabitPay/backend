@@ -2,7 +2,7 @@ package com.habitpay.habitpay.domain.challenge.api;
 
 import com.habitpay.habitpay.domain.challenge.application.ChallengeCreateService;
 import com.habitpay.habitpay.domain.challenge.domain.Challenge;
-import com.habitpay.habitpay.domain.challenge.dto.ChallengeRequest;
+import com.habitpay.habitpay.domain.challenge.dto.ChallengeCreationRequest;
 import com.habitpay.habitpay.domain.member.application.MemberService;
 import com.habitpay.habitpay.domain.member.domain.Member;
 import com.habitpay.habitpay.global.config.jwt.TokenService;
@@ -25,7 +25,7 @@ public class ChallengeApi {
 
     @PostMapping("/challenge")
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<?> createChallenge(@RequestBody ChallengeRequest challengeRequest,
+    public ResponseEntity<?> createChallenge(@RequestBody ChallengeCreationRequest challengeCreationRequest,
                                              @RequestHeader("Authorization") String authorizationHeader) {
 
         // TODO: Interceptor 나 Filter 에서 먼저 처리해주기 때문에 나중에 삭제하기
@@ -42,12 +42,12 @@ public class ChallengeApi {
 
         Challenge challenge = Challenge.builder()
                 .member(member)
-                .title(challengeRequest.getTitle())
-                .description(challengeRequest.getDescription())
-                .startDate(challengeRequest.getStartDate())
-                .endDate(challengeRequest.getEndDate())
-                .participatingDays(challengeRequest.getParticipatingDays())
-                .feePerAbsence(challengeRequest.getFeePerAbsence())
+                .title(challengeCreationRequest.getTitle())
+                .description(challengeCreationRequest.getDescription())
+                .startDate(challengeCreationRequest.getStartDate())
+                .endDate(challengeCreationRequest.getEndDate())
+                .participatingDays(challengeCreationRequest.getParticipatingDays())
+                .feePerAbsence(challengeCreationRequest.getFeePerAbsence())
                 .build();
 
         challengeCreateService.save(challenge);
