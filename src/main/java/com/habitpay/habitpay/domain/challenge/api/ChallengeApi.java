@@ -1,6 +1,6 @@
 package com.habitpay.habitpay.domain.challenge.api;
 
-import com.habitpay.habitpay.domain.challenge.application.ChallengeCreateService;
+import com.habitpay.habitpay.domain.challenge.application.ChallengeCreationService;
 import com.habitpay.habitpay.domain.challenge.domain.Challenge;
 import com.habitpay.habitpay.domain.challenge.dto.ChallengeCreationRequest;
 import com.habitpay.habitpay.domain.member.application.MemberService;
@@ -19,7 +19,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @Slf4j
 public class ChallengeApi {
-    private final ChallengeCreateService challengeCreateService;
+    private final ChallengeCreationService challengeCreationService;
     private final MemberService memberService;
     private final TokenService tokenService;
 
@@ -50,7 +50,7 @@ public class ChallengeApi {
                 .feePerAbsence(challengeCreationRequest.getFeePerAbsence())
                 .build();
 
-        challengeCreateService.save(challenge);
+        challengeCreationService.save(challenge);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(challenge.getId());
     }

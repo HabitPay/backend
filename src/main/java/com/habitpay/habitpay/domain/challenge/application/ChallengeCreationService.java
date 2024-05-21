@@ -8,7 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @AllArgsConstructor
-public class ChallengeCreateService {
+public class ChallengeCreationService {
     private final ChallengeRepository challengeRepository;
 
     @Transactional
