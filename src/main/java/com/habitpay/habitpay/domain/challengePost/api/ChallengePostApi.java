@@ -77,9 +77,11 @@ public class ChallengePostApi {
 //    }
     @PostMapping("/post")
     public ResponseEntity<ChallengePost> addPost(@RequestBody AddPostRequest request, Principal principal) {
+        // todo : enrollmentId 만들고 난 후 수정하기
         ChallengePost challengePost = challengePostService.save(request, 1L);
         // todo : principal.getName() 정보 확인 필요 없으면 인자 지우기
 //        System.out.println("Principal: " + principal.getName());
+        // todo : AddPostReuest에서 postPhoto 리스트 정보 저장하기
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(challengePost);

@@ -9,4 +9,5 @@ import lombok.NoArgsConstructor;
 @Getter
 public class ModifyPostRequest {
     private String content;
+    private boolean isAnnouncement;
 }
