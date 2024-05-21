@@ -2,6 +2,7 @@ package com.habitpay.habitpay.domain.postPhoto.application;
 
 import com.habitpay.habitpay.domain.postPhoto.dao.PostPhotoRepository;
 import com.habitpay.habitpay.domain.postPhoto.domain.PostPhoto;
+import com.habitpay.habitpay.global.config.aws.S3FileService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,10 +16,11 @@ import java.util.List;
 @Slf4j
 public class PostPhotoService {
 
+    private final S3FileService s3FileService;
     private final PostPhotoRepository postPhotoRepository;
 
     // todo : S3FileService? 이미지 받아서 aws에 저장하고 url만 db에 저장
-//    public PostPhoto save() {}
+    public PostPhoto save() {}
 
     public PostPhoto findById(Long id) {
         return postPhotoRepository.findById(id)
