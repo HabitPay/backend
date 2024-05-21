@@ -1,4 +1,4 @@
-package com.habitpay.habitpay.domain.member.api;
+package com.habitpay.habitpay.domain.member.application;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
