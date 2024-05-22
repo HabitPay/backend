@@ -16,7 +16,7 @@ public class ChallengeResponse {
     private int feePerAbsence;
     private String hostNickname;
     private String hostProfileImage;
-    private boolean isHost;
+    private Boolean isHost;
 
     public ChallengeResponse(Member host, Challenge challenge) {
         this.title = challenge.getTitle();
