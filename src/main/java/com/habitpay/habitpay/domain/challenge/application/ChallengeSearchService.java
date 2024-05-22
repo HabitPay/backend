@@ -6,13 +6,18 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 @Service
 @AllArgsConstructor
-public class ChallengeCreateService {
+public class ChallengeSearchService {
     private final ChallengeRepository challengeRepository;
 
     @Transactional
-    public void save(Challenge challenge) {
-        challengeRepository.save(challenge);
+    public Challenge findById(Long id) {
+        Optional<Challenge> optionalChallenge = Optional.ofNullable(challengeRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("존재하는 챌린지가 아닙니다.")));
+
+        return optionalChallenge.get();
     }
 }

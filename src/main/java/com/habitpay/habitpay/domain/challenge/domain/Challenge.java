@@ -22,7 +22,7 @@ public class Challenge extends BaseTime {
 
     @ManyToOne
     @JoinColumn(name = "member_id")
-    private Member member;
+    private Member host;
 
     @Column(nullable = false)
     private String title;
@@ -57,7 +57,7 @@ public class Challenge extends BaseTime {
     @Builder
     public Challenge(Member member, String title, String description, ZonedDateTime startDate, ZonedDateTime endDate,
                      byte participatingDays, int feePerAbsence) {
-        this.member = member;
+        this.host = member;
         this.title = title;
         this.description = description;
         this.startDate = startDate;
