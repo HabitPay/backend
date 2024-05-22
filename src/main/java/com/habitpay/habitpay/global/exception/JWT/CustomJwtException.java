@@ -1,6 +1,6 @@
 package com.habitpay.habitpay.global.exception.JWT;
 
-import com.habitpay.habitpay.global.exception.JWT.CustomJwtErrorInfo;
+import com.habitpay.habitpay.global.error.CustomJwtErrorInfo;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
 

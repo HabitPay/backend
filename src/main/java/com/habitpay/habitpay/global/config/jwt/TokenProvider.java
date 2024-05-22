@@ -1,7 +1,7 @@
 package com.habitpay.habitpay.global.config.jwt;
 
 import com.habitpay.habitpay.domain.member.domain.Member;
-import com.habitpay.habitpay.global.exception.JWT.CustomJwtErrorInfo;
+import com.habitpay.habitpay.global.error.CustomJwtErrorInfo;
 import com.habitpay.habitpay.global.exception.JWT.CustomJwtException;
 import io.jsonwebtoken.*;
 import lombok.RequiredArgsConstructor;

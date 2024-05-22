@@ -2,6 +2,7 @@ package com.habitpay.habitpay.domain.postPhoto.domain;
 
 import com.habitpay.habitpay.domain.member.domain.Member;
 import com.habitpay.habitpay.domain.model.BaseTime;
+import com.habitpay.habitpay.domain.postPhoto.dto.PostPhotoData;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -24,15 +25,15 @@ public class PostPhoto extends BaseTime {
     private Long postId;
 
     @Column
-    private String url;
+    private String imageFileName;
 
     @Column(nullable = false)
     private Long viewOrder;
 
     @Builder
-    public PostPhoto(Long postId, String url, Long viewOrder) {
+    public PostPhoto(Long postId, String imageFileName, Long viewOrder) {
         this.postId = postId;
-        this.url = url;
+        this.imageFileName = imageFileName;
         this.viewOrder = viewOrder;
     }
 
