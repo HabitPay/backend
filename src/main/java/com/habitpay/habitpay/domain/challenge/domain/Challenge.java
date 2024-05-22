@@ -65,4 +65,8 @@ public class Challenge extends BaseTime {
         this.participatingDays = participatingDays;
         this.feePerAbsence = feePerAbsence;
     }
+
+    public void updateChallengeDescription(String description) {
+        this.description = description;
+    }
 }
