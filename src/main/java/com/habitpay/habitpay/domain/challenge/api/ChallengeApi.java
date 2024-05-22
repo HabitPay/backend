@@ -4,6 +4,7 @@ import com.habitpay.habitpay.domain.challenge.application.ChallengeCreationServi
 import com.habitpay.habitpay.domain.challenge.application.ChallengeSearchService;
 import com.habitpay.habitpay.domain.challenge.domain.Challenge;
 import com.habitpay.habitpay.domain.challenge.dto.ChallengeCreationRequest;
+import com.habitpay.habitpay.domain.challenge.dto.ChallengePatchRequest;
 import com.habitpay.habitpay.domain.challenge.dto.ChallengeResponse;
 import com.habitpay.habitpay.domain.member.application.MemberService;
 import com.habitpay.habitpay.domain.member.domain.Member;
@@ -25,6 +26,27 @@ public class ChallengeApi {
     private final ChallengeSearchService challengeSearchService;
     private final MemberService memberService;
     private final TokenService tokenService;
+
+    @GetMapping("/challenge/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseEntity<?> getChallenge(@PathVariable("id") Long id,
+                                          @RequestHeader("Authorization") String authorizationHeader) {
+
+        log.info("[GET /challenge/{}]", id);
+
+        // TODO: Interceptor 나 Filter 에서 먼저 처리해주기 때문에 나중에 삭제하기
+        Optional<String> optionalToken = tokenService.getTokenFromHeader(authorizationHeader);
+        String token = optionalToken.get();
+        String email = tokenService.getEmail(token);
+        Member host = memberService.findByEmail(email);
+
+        // TODO: 사용자의 Challenge 등록 여부를 확인한 후 return 하기
+
+        Challenge challenge = challengeSearchService.findById(id);
+        ChallengeResponse challengeResponse = new ChallengeResponse(host, challenge);
+
+        return ResponseEntity.status(HttpStatus.OK).body(challengeResponse);
+    }
 
     @PostMapping("/challenge")
     @ResponseStatus(HttpStatus.CREATED)
@@ -58,24 +80,25 @@ public class ChallengeApi {
         return ResponseEntity.status(HttpStatus.CREATED).body(challenge.getId());
     }
 
-    @GetMapping("/challenge/{id}")
+    @PatchMapping("/challenge/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<?> getChallenge(@PathVariable("id") Long id,
-                                          @RequestHeader("Authorization") String authorizationHeader) {
+    public ResponseEntity<?> patchChallengeDetails(@PathVariable("id") Long id, @RequestBody ChallengePatchRequest challengePatchRequest,
+                                                   @RequestHeader("Authorization") String authorizationHeader) {
+        log.info("[PATCH /challenge/{}]", id);
 
-        log.info("[GET /challenge] id: {}", id);
-
-        // TODO: Interceptor 나 Filter 에서 먼저 처리해주기 때문에 나중에 삭제하기
         Optional<String> optionalToken = tokenService.getTokenFromHeader(authorizationHeader);
         String token = optionalToken.get();
         String email = tokenService.getEmail(token);
-        Member host = memberService.findByEmail(email);
-
-        // TODO: 사용자의 Challenge 등록 여부를 확인한 후 return 하기
-
+        Member member = memberService.findByEmail(email);
         Challenge challenge = challengeSearchService.findById(id);
-        ChallengeResponse challengeResponse = new ChallengeResponse(host, challenge);
 
-        return ResponseEntity.status(HttpStatus.OK).body(challengeResponse);
+        if (member.getEmail().equals(challenge.getHost().getEmail()) == false) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("챌린지 수정 권한이 없습니다.");
+        }
+
+        challenge.updateChallengeDescription(challengePatchRequest.getDescription());
+        challengeCreationService.save(challenge);
+
+        return ResponseEntity.status(HttpStatus.OK).body("챌린지 정보 수정이 반영되었습니다.");
     }
 }
