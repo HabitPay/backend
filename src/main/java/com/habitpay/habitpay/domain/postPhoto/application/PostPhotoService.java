@@ -28,6 +28,8 @@ public class PostPhotoService {
     private final S3FileService s3FileService;
     private final PostPhotoRepository postPhotoRepository;
 
+    public final String POST_PHOTOS_PREFIX = "postPhotos";
+
     // todo : @Transaction 적절한지 확인하고 추가 (for 중간에 잘못됐을 경우 모든 걸 없던 걸로 되돌리는?) / 필요 없을지도?
     public List<String> save(List<PostPhotoData> photos) {
         List<String> urlList = new ArrayList<>();
@@ -54,7 +56,7 @@ public class PostPhotoService {
                     .viewOrder(photo.getViewOrder())
                     .build());
 
-            String preSignedUrl = s3FileService.getPutPreSignedUrl("postPhotos", savedFileName, imageExtension, contentLength);
+            String preSignedUrl = s3FileService.getPutPreSignedUrl(POST_PHOTOS_PREFIX, savedFileName, imageExtension, contentLength);
 
             urlList.add(preSignedUrl);
         }
@@ -79,6 +81,10 @@ public class PostPhotoService {
         authorizePhotoUploader(postPhoto);
         // todo : aws에서도 이미지 파일 삭제하기
         postPhotoRepository.delete(postPhoto);
+    }
+
+    public String getImageUrl(PostPhoto postPhoto) {
+        return s3FileService.getGetPreSignedUrl(POST_PHOTOS_PREFIX, postPhoto.getImageFileName());
     }
 
     // todo : 사진 순서 데이터 어떻게 오는지 확인하고 작성하기
