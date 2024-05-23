@@ -1,11 +1,11 @@
-package com.habitpay.habitpay.global.exception.JWT;
+package com.habitpay.habitpay.global.exception;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @AllArgsConstructor
 @Getter
-public class ErrorTokenResponse {
+public class ErrorMessageResponse {
     private String error;
     private String errorDescription;
 //    private String errorUri;

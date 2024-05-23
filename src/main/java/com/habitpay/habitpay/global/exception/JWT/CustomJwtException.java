@@ -9,12 +9,12 @@ public class CustomJwtException extends RuntimeException {
 
     private final HttpStatus statusCode;
     private final CustomJwtErrorInfo customJwtErrorInfo;
-    private final String errorMessage;
+    private final String Message;
 
-    public CustomJwtException(HttpStatus statusCode, CustomJwtErrorInfo customJwtErrorInfo, String errorMessage) {
-        super((customJwtErrorInfo.getErrorMessage()));
+    public CustomJwtException(HttpStatus statusCode, CustomJwtErrorInfo customJwtErrorInfo, String Message) {
+        super((customJwtErrorInfo.getMessage()));
         this.statusCode = statusCode;
         this.customJwtErrorInfo = customJwtErrorInfo;
-        this.errorMessage = errorMessage;
+        this.Message = Message;
     }
 }
