@@ -1,5 +1,6 @@
 package com.habitpay.habitpay.domain.postPhoto.application;
 
+import com.habitpay.habitpay.domain.challengePost.dto.PostPhotoView;
 import com.habitpay.habitpay.domain.postPhoto.dao.PostPhotoRepository;
 import com.habitpay.habitpay.domain.postPhoto.domain.PostPhoto;
 import com.habitpay.habitpay.domain.postPhoto.dto.PostPhotoData;
@@ -19,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -32,6 +34,11 @@ public class PostPhotoService {
 
     // todo : @Transaction 적절한지 확인하고 추가 (for 중간에 잘못됐을 경우 모든 걸 없던 걸로 되돌리는?) / 필요 없을지도?
     public List<String> save(List<PostPhotoData> photos) {
+
+        if (photos == null) {
+            return null;
+        }
+
         List<String> urlList = new ArrayList<>();
 
         for (PostPhotoData photo : photos) {
@@ -83,7 +90,24 @@ public class PostPhotoService {
         postPhotoRepository.delete(postPhoto);
     }
 
-    public String getImageUrl(PostPhoto postPhoto) {
+    public List<PostPhotoView> makePhotoViewList(List<PostPhoto> photoList) {
+        List<PostPhotoView> photoViewList = new ArrayList<>();
+
+        // todo : 되나?
+        photoList
+                .stream()
+                .map(photo -> photoViewList.add(new PostPhotoView(photo.getViewOrder(), getImageUrl(photo))))
+                .toList();
+
+        // todo : 위의 stream() 잘 되면 지우기
+//        for (PostPhoto photo : photoList) {
+//            photoViewList.add(new PostPhotoView(photo.getViewOrder(), getImageUrl(photo)));
+//        }
+
+        return photoViewList;
+    }
+
+    private String getImageUrl(PostPhoto postPhoto) {
         return s3FileService.getGetPreSignedUrl(POST_PHOTOS_PREFIX, postPhoto.getImageFileName());
     }
 

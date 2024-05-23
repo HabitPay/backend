@@ -11,6 +11,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @Service
 @RequiredArgsConstructor
@@ -23,14 +24,15 @@ public class ChallengePostService {
         return challengePostRepository.save(request.toEntity(challengeEnrollmentId));
     }
 
-    // todo : 각 챌린지 별로 findAll 해주는 메서드 (진행 중)
+    // todo : 각 챌린지 별로 findAll 해주는 메서드 (ChallengeEnrollment 도메인 만들고 거기서 ChallengeId 가져온 뒤에 할 수 있을 듯)
     public List<ChallengePost> findAllByChallenge(Long challengeId) {
         return challengePostRepository.findAll();
     }
 
-    // todo : 각 챌린지 내에서 내가 쓴 포스트만 찾아주는 메서드 (진행 중)
+    // todo : 없는 id를 입력했을 때 예외 던지지 않고 빈 값으로 나와서 뭔가 처리되는 듯. -> 예외 던지기로 고쳐야 함
     public List<ChallengePost> findAllByChallengeEnrollment(Long challengeEnrollmentId) {
-        return challengePostRepository.findAll();
+        return challengePostRepository.findAllByChallengeEnrollmentId(challengeEnrollmentId)
+                .orElseThrow(() -> new NoSuchElementException("(for debugging) not found challengeEnrollmentId : " + challengeEnrollmentId));
     }
 
     public ChallengePost findById(Long id) {
