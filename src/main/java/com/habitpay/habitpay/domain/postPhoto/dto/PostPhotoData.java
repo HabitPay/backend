@@ -3,7 +3,7 @@ package com.habitpay.habitpay.domain.postPhoto.dto;
 import lombok.Getter;
 
 @Getter
-public class postPhotoData {
+public class PostPhotoData {
     private Long postId;
     private Long viewOrder;
     private String imageExtension;

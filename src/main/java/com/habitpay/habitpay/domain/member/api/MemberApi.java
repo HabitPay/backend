@@ -11,8 +11,8 @@ import com.habitpay.habitpay.domain.refreshToken.application.RefreshTokenService
 import com.habitpay.habitpay.domain.refreshToken.dto.CreateAccessTokenResponse;
 import com.habitpay.habitpay.global.config.aws.S3FileService;
 import com.habitpay.habitpay.global.config.jwt.TokenService;
+import com.habitpay.habitpay.global.error.CustomJwtErrorInfo;
 import com.habitpay.habitpay.global.error.ErrorResponse;
-import com.habitpay.habitpay.global.exception.JWT.CustomJwtErrorInfo;
 import com.habitpay.habitpay.global.exception.JWT.CustomJwtException;
 import com.habitpay.habitpay.global.util.ImageUtil;
 import jakarta.servlet.http.HttpServletRequest;
