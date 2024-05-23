@@ -2,6 +2,7 @@ package com.habitpay.habitpay.global.handler;
 
 import com.habitpay.habitpay.global.exception.JWT.ErrorTokenResponse;
 import com.habitpay.habitpay.global.exception.JWT.CustomJwtException;
+import com.habitpay.habitpay.global.exception.PostPhoto.CustomPhotoException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +19,12 @@ public class GlobalExceptionHandler {
                         exception.getCustomJwtErrorInfo().getErrorMessage(),
                         exception.getErrorMessage()
                 ));
+    }
+
+    @ExceptionHandler(CustomPhotoException.class)
+    protected ResponseEntity<String> customPhotoExceptionError(CustomPhotoException exception) {
+        return ResponseEntity.status(exception.getStatusCode())
+                .body(exception.getErrorResponse() + exception.getMessage());
     }
 
     // todo : getMessage() 숨기기?

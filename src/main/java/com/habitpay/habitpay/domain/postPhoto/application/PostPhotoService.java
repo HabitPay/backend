@@ -39,11 +39,11 @@ public class PostPhotoService {
             Long contentLength = photo.getContentLength();
 
             if (!ImageUtil.isValidFileSize(contentLength)) {
-                throw new CustomPhotoException(HttpStatus.PAYLOAD_TOO_LARGE, ErrorResponse.IMAGE_CONTENT_TOO_LARGE, "image no." + photo.getViewOrder());
+                throw new CustomPhotoException(HttpStatus.PAYLOAD_TOO_LARGE, ErrorResponse.IMAGE_CONTENT_TOO_LARGE, " image no." + photo.getViewOrder());
             }
 
             if (!ImageUtil.isValidImageExtension(imageExtension)) {
-                throw new CustomPhotoException(HttpStatus.UNSUPPORTED_MEDIA_TYPE, ErrorResponse.UNSUPPORTED_IMAGE_EXTENSION, "image no." + photo.getViewOrder());
+                throw new CustomPhotoException(HttpStatus.UNSUPPORTED_MEDIA_TYPE, ErrorResponse.UNSUPPORTED_IMAGE_EXTENSION, " image no." + photo.getViewOrder());
             }
 
             String randomFileName = UUID.randomUUID().toString();
