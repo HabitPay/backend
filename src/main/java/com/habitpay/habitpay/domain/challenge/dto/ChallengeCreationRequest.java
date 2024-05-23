@@ -5,7 +5,7 @@ import lombok.Getter;
 import java.time.ZonedDateTime;
 
 @Getter
-public class ChallengeRequest {
+public class ChallengeCreationRequest {
     private String title;
     private String description;
     private ZonedDateTime startDate;
