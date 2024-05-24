@@ -1,8 +1,8 @@
 package com.habitpay.habitpay.global.handler;
 
-import com.habitpay.habitpay.global.exception.ErrorMessageResponse;
-import com.habitpay.habitpay.global.exception.JWT.CustomJwtException;
-import com.habitpay.habitpay.global.exception.PostPhoto.CustomPhotoException;
+import com.habitpay.habitpay.global.error.ExceptionResponse;
+import com.habitpay.habitpay.domain.refreshToken.exception.CustomJwtException;
+import com.habitpay.habitpay.domain.postPhoto.exception.CustomPhotoException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,18 +13,18 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @Slf4j
 public class GlobalExceptionHandler {
     @ExceptionHandler(CustomJwtException.class)
-    protected ResponseEntity<ErrorMessageResponse> customJwtExceptionError(CustomJwtException exception) {
+    protected ResponseEntity<ExceptionResponse> customJwtExceptionError(CustomJwtException exception) {
         return ResponseEntity.status(exception.getStatusCode())
-                .body(new ErrorMessageResponse(
+                .body(new ExceptionResponse(
                         exception.getCustomJwtErrorInfo().getMessage(),
                         exception.getMessage()
                 ));
     }
 
     @ExceptionHandler(CustomPhotoException.class)
-    protected ResponseEntity<ErrorMessageResponse> customPhotoExceptionError(CustomPhotoException exception) {
+    protected ResponseEntity<ExceptionResponse> customPhotoExceptionError(CustomPhotoException exception) {
         return ResponseEntity.status(exception.getStatusCode())
-                .body(new ErrorMessageResponse(
+                .body(new ExceptionResponse(
                         exception.getErrorResponse().getMessage(),
                         exception.getMessage()
                 ));

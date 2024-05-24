@@ -7,7 +7,7 @@ import com.habitpay.habitpay.domain.postPhoto.domain.PostPhoto;
 import com.habitpay.habitpay.domain.postPhoto.dto.AddPostPhotoData;
 import com.habitpay.habitpay.global.config.aws.S3FileService;
 import com.habitpay.habitpay.global.error.ErrorResponse;
-import com.habitpay.habitpay.global.exception.PostPhoto.CustomPhotoException;
+import com.habitpay.habitpay.domain.postPhoto.exception.CustomPhotoException;
 import com.habitpay.habitpay.global.util.ImageUtil;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -29,7 +29,7 @@ public class PostPhotoService {
     private final S3FileService s3FileService;
     private final PostPhotoRepository postPhotoRepository;
 
-    public final String POST_PHOTOS_PREFIX = "postPhotos";
+    public final String POST_PHOTOS_PREFIX = "challenges";
 
     // todo : @Transactional 적절한지 확인하고 추가
     public List<String> save(ChallengePost post, List<AddPostPhotoData> photos) {
@@ -64,6 +64,8 @@ public class PostPhotoService {
 
         authorizePhotoUploader(postPhoto);
 
+        // todo : enrollment 엔티티 만들어지면, 통해서 challengeId 가져오기
+        //      : 목표 경로 'challenges/{challenge_id}/{post_id}'
         s3FileService.deleteImage(POST_PHOTOS_PREFIX, findById(id).getImageFileName());
         postPhotoRepository.delete(postPhoto);
     }
@@ -99,10 +101,14 @@ public class PostPhotoService {
                 .viewOrder(photo.getViewOrder())
                 .build());
 
+        // todo : enrollment 엔티티 만들어지면, 통해서 challengeId 가져오기
+        //      : 목표 경로 'challenges/{challenge_id}/{post_id}'
         return s3FileService.getPutPreSignedUrl(POST_PHOTOS_PREFIX, savedFileName, imageExtension, contentLength);
     }
 
     private String getImageUrl(PostPhoto postPhoto) {
+        // todo : enrollment 엔티티 만들어지면, 통해서 challengeId 가져오기
+        //      : 목표 경로 'challenges/{challenge_id}/{post_id}'
         return s3FileService.getGetPreSignedUrl(POST_PHOTOS_PREFIX, postPhoto.getImageFileName());
     }
 
