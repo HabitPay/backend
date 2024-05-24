@@ -55,7 +55,7 @@ public class ChallengePostService {
                 .orElseThrow(() ->  new IllegalArgumentException("(for debugging) not found : " + id));
 
         authorizePostWriter(challengePost);
-        challengePost.modifyPost(request.getContent(), request.isAnnouncement());
+        challengePost.modifyPost(request.getContent(), request.getIsAnnouncement());
 
         return challengePost;
     }
@@ -63,7 +63,7 @@ public class ChallengePostService {
     // todo : 확인하기
     private static void authorizePostWriter(ChallengePost challengePost) {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
-        System.out.println("email : " + email);
+        log.info("email : " + email);
 //        if (!challengePost.getWriter().getEmail().equals(email)) {
 //            throw new IllegalArgumentException("(for debug) not authorized");
 //        }

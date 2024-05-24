@@ -1,8 +1,7 @@
 package com.habitpay.habitpay.domain.challengePost.dto;
 
 import com.habitpay.habitpay.domain.challengePost.domain.ChallengePost;
-import com.habitpay.habitpay.domain.postPhoto.domain.PostPhoto;
-import com.habitpay.habitpay.domain.postPhoto.dto.PostPhotoData;
+import com.habitpay.habitpay.domain.postPhoto.dto.AddPostPhotoData;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,7 +14,7 @@ import java.util.List;
 public class AddPostRequest {
     private String content;
     private boolean isAnnouncement;
-     private List<PostPhotoData> photos;
+    private List<AddPostPhotoData> photos;
 
     public ChallengePost toEntity(Long challengeEnrollmentId) {
         return ChallengePost.builder()

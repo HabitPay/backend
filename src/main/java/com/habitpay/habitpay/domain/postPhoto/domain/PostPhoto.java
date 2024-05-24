@@ -1,9 +1,7 @@
 package com.habitpay.habitpay.domain.postPhoto.domain;
 
 import com.habitpay.habitpay.domain.challengePost.domain.ChallengePost;
-import com.habitpay.habitpay.domain.member.domain.Member;
 import com.habitpay.habitpay.domain.model.BaseTime;
-import com.habitpay.habitpay.domain.postPhoto.dto.PostPhotoData;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -39,8 +37,7 @@ public class PostPhoto extends BaseTime {
     }
 
     public void changeViewOrder(Long newOrder) {
-        // todo : 두 사진 객체의 순서가 바뀌는 게 보장되어야 함.
-        // todo : 순서를 숫자로 받지 않고, postPhoto 객체를 받아서 서로 viewOrder 값을 교환하는 방식도 고려
+        // todo : 두 사진 객체의 순서가 바뀌는 게 보장되어야 함. -> 혹시 겹치면 순서 앞선 것부터 나열한다거나,,
         this.viewOrder = newOrder;
     }
 
