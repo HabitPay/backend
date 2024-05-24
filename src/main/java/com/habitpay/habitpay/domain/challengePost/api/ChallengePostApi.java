@@ -76,9 +76,8 @@ public class ChallengePostApi {
         // todo : principal.getName() 정보 확인 필요 없으면 인자 지우기
         // System.out.println("Principal: " + principal.getName());
 
-        List<String> preSignedUrlList = postPhotoService.save(request.getPhotos());
+        List<String> preSignedUrlList = postPhotoService.save(challengePost, request.getPhotos());
 
-        // todo : postPhoto 저장할 url 링크 -> front에서 어떻게 처리되는지?
         return ResponseEntity.status(HttpStatus.CREATED).body(preSignedUrlList);
     }
 
