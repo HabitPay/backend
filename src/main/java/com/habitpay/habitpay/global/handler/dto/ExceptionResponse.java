@@ -1,4 +1,4 @@
-package com.habitpay.habitpay.global.error;
+package com.habitpay.habitpay.global.handler.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

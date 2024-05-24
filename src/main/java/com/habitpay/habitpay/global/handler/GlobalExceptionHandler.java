@@ -1,6 +1,6 @@
 package com.habitpay.habitpay.global.handler;
 
-import com.habitpay.habitpay.global.error.ExceptionResponse;
+import com.habitpay.habitpay.global.handler.dto.ExceptionResponse;
 import com.habitpay.habitpay.domain.refreshToken.exception.CustomJwtException;
 import com.habitpay.habitpay.domain.postPhoto.exception.CustomPhotoException;
 import lombok.extern.slf4j.Slf4j;
