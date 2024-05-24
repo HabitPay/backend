@@ -4,7 +4,6 @@ import lombok.Getter;
 
 @Getter
 public class PostPhotoData {
-    private Long postId;
     private Long viewOrder;
     private String imageExtension;
     private Long contentLength;

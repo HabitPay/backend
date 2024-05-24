@@ -1,5 +1,6 @@
 package com.habitpay.habitpay.domain.postPhoto.application;
 
+import com.habitpay.habitpay.domain.challengePost.domain.ChallengePost;
 import com.habitpay.habitpay.domain.challengePost.dto.PostPhotoView;
 import com.habitpay.habitpay.domain.postPhoto.dao.PostPhotoRepository;
 import com.habitpay.habitpay.domain.postPhoto.domain.PostPhoto;
@@ -18,6 +19,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.UUID;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -33,7 +35,7 @@ public class PostPhotoService {
     public final String POST_PHOTOS_PREFIX = "postPhotos";
 
     // todo : @Transaction 적절한지 확인하고 추가 (for 중간에 잘못됐을 경우 모든 걸 없던 걸로 되돌리는?) / 필요 없을지도?
-    public List<String> save(List<PostPhotoData> photos) {
+    public List<String> save(ChallengePost post, List<PostPhotoData> photos) {
 
         if (photos == null) {
             return null;
@@ -58,7 +60,7 @@ public class PostPhotoService {
             log.info("[save] savedFileName: {}", savedFileName);
 
             postPhotoRepository.save(PostPhoto.builder()
-                    .postId(photo.getPostId())
+                    .post(post)
                     .imageFileName(savedFileName)
                     .viewOrder(photo.getViewOrder())
                     .build());
@@ -73,7 +75,7 @@ public class PostPhotoService {
 
     public PostPhoto findById(Long id) {
         return postPhotoRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("(for debugging) not found : " + id));
+                .orElseThrow(() -> new NoSuchElementException("(for debugging) not found : " + id));
     }
 
     // todo : post 별로 찾아주는 메서드 (진행 중)
@@ -83,7 +85,7 @@ public class PostPhotoService {
 
     public void delete(Long id) {
         PostPhoto postPhoto = postPhotoRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("(for debugging) not found : " + id));
+                .orElseThrow(() -> new NoSuchElementException("(for debugging) not found : " + id));
 
         authorizePhotoUploader(postPhoto);
         // todo : aws에서도 이미지 파일 삭제하기
@@ -93,16 +95,10 @@ public class PostPhotoService {
     public List<PostPhotoView> makePhotoViewList(List<PostPhoto> photoList) {
         List<PostPhotoView> photoViewList = new ArrayList<>();
 
-        // todo : 되나?
         photoList
                 .stream()
                 .map(photo -> photoViewList.add(new PostPhotoView(photo.getViewOrder(), getImageUrl(photo))))
                 .toList();
-
-        // todo : 위의 stream() 잘 되면 지우기
-//        for (PostPhoto photo : photoList) {
-//            photoViewList.add(new PostPhotoView(photo.getViewOrder(), getImageUrl(photo)));
-//        }
 
         return photoViewList;
     }

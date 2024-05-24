@@ -1,5 +1,6 @@
 package com.habitpay.habitpay.domain.postPhoto.domain;
 
+import com.habitpay.habitpay.domain.challengePost.domain.ChallengePost;
 import com.habitpay.habitpay.domain.member.domain.Member;
 import com.habitpay.habitpay.domain.model.BaseTime;
 import com.habitpay.habitpay.domain.postPhoto.dto.PostPhotoData;
@@ -20,9 +21,9 @@ public class PostPhoto extends BaseTime {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // todo : challengePost와 외래키 연결
-    @Column(nullable = false)
-    private Long postId;
+    @ManyToOne
+    @JoinColumn
+    private ChallengePost post;
 
     @Column
     private String imageFileName;
@@ -31,8 +32,8 @@ public class PostPhoto extends BaseTime {
     private Long viewOrder;
 
     @Builder
-    public PostPhoto(Long postId, String imageFileName, Long viewOrder) {
-        this.postId = postId;
+    public PostPhoto(ChallengePost post, String imageFileName, Long viewOrder) {
+        this.post = post;
         this.imageFileName = imageFileName;
         this.viewOrder = viewOrder;
     }
