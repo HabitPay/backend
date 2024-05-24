@@ -4,7 +4,7 @@ import com.habitpay.habitpay.domain.member.application.MemberService;
 import com.habitpay.habitpay.domain.member.domain.Member;
 import com.habitpay.habitpay.global.config.jwt.TokenProvider;
 import com.habitpay.habitpay.global.error.CustomJwtErrorInfo;
-import com.habitpay.habitpay.global.exception.JWT.CustomJwtException;
+import com.habitpay.habitpay.domain.refreshToken.exception.CustomJwtException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;

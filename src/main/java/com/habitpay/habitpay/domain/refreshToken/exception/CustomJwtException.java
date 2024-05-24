@@ -1,4 +1,4 @@
-package com.habitpay.habitpay.global.exception.JWT;
+package com.habitpay.habitpay.domain.refreshToken.exception;
 
 import com.habitpay.habitpay.global.error.CustomJwtErrorInfo;
 import lombok.Getter;

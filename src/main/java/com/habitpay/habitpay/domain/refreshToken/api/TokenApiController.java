@@ -6,7 +6,7 @@ import com.habitpay.habitpay.domain.refreshToken.dto.CreateAccessTokenRequest;
 import com.habitpay.habitpay.domain.refreshToken.dto.CreateAccessTokenResponse;
 import com.habitpay.habitpay.global.config.jwt.TokenService;
 import com.habitpay.habitpay.global.error.CustomJwtErrorInfo;
-import com.habitpay.habitpay.global.exception.JWT.CustomJwtException;
+import com.habitpay.habitpay.domain.refreshToken.exception.CustomJwtException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;

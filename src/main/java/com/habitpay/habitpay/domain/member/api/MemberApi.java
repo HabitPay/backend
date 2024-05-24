@@ -1,6 +1,5 @@
 package com.habitpay.habitpay.domain.member.api;
 
-import com.google.gson.JsonObject;
 import com.habitpay.habitpay.domain.member.application.MemberProfileService;
 import com.habitpay.habitpay.domain.member.application.MemberService;
 import com.habitpay.habitpay.domain.member.domain.Member;
@@ -13,17 +12,14 @@ import com.habitpay.habitpay.global.config.aws.S3FileService;
 import com.habitpay.habitpay.global.config.jwt.TokenService;
 import com.habitpay.habitpay.global.error.CustomJwtErrorInfo;
 import com.habitpay.habitpay.global.error.ErrorResponse;
-import com.habitpay.habitpay.global.exception.JWT.CustomJwtException;
+import com.habitpay.habitpay.domain.refreshToken.exception.CustomJwtException;
 import com.habitpay.habitpay.global.util.ImageUtil;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Date;
 import java.util.Optional;
 import java.util.UUID;
 
