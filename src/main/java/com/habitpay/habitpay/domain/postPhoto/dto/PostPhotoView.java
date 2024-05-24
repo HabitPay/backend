@@ -1,4 +1,4 @@
-package com.habitpay.habitpay.domain.challengePost.dto;
+package com.habitpay.habitpay.domain.postPhoto.dto;
 
 import com.habitpay.habitpay.domain.postPhoto.application.PostPhotoService;
 import com.habitpay.habitpay.domain.postPhoto.domain.PostPhoto;
@@ -12,6 +12,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @Getter
 public class PostPhotoView {
+    private Long postPhotoId;
     private Long viewOrder;
     private String imageUrl;
 }

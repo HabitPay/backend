@@ -1,13 +1,11 @@
 package com.habitpay.habitpay.domain.challengePost.dto;
 
 import com.habitpay.habitpay.domain.challengePost.domain.ChallengePost;
-import com.habitpay.habitpay.domain.postPhoto.domain.PostPhoto;
-import com.habitpay.habitpay.domain.postPhoto.dto.PostPhotoData;
+import com.habitpay.habitpay.domain.postPhoto.dto.PostPhotoView;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 @NoArgsConstructor

@@ -1,14 +1,13 @@
 package com.habitpay.habitpay.domain.challengePost.api;
 
 import com.habitpay.habitpay.domain.challengePost.application.ChallengePostService;
-import com.habitpay.habitpay.domain.challengePost.dao.ChallengePostRepository;
 import com.habitpay.habitpay.domain.challengePost.domain.ChallengePost;
 import com.habitpay.habitpay.domain.challengePost.dto.AddPostRequest;
 import com.habitpay.habitpay.domain.challengePost.dto.ModifyPostRequest;
-import com.habitpay.habitpay.domain.challengePost.dto.PostPhotoView;
+import com.habitpay.habitpay.domain.postPhoto.dto.ModifyPostPhotoData;
+import com.habitpay.habitpay.domain.postPhoto.dto.PostPhotoView;
 import com.habitpay.habitpay.domain.challengePost.dto.PostViewResponse;
 import com.habitpay.habitpay.domain.postPhoto.application.PostPhotoService;
-import com.habitpay.habitpay.domain.postPhoto.dao.PostPhotoRepository;
 import com.habitpay.habitpay.domain.postPhoto.domain.PostPhoto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,7 +16,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -34,7 +32,7 @@ public class ChallengePostApi {
     public ResponseEntity<PostViewResponse> findPost(@PathVariable Long id) {
 
         ChallengePost challengePost = challengePostService.findById(id);
-        List<PostPhoto> photoList = postPhotoService.findAllByPost(id);
+        List<PostPhoto> photoList = postPhotoService.findAllByPost(challengePost);
         List<PostPhotoView> photoViewList = postPhotoService.makePhotoViewList(photoList);
 
         return ResponseEntity.ok()
@@ -53,14 +51,14 @@ public class ChallengePostApi {
 //                .body(posts);
 //    }
 
-    // todo : 한 챌린지 내에서 내가 등록한 포스트만 모아보기
+    // todo : 한 챌린지 내에서 특정 멤버가 등록한 포스트만 모아보기
     @GetMapping("/challenge_enrollment/{id}/posts")
 //    @GetMapping("/api/challenge_enrollment/{id}/posts")
     public ResponseEntity<List<PostViewResponse>> findChallengeEnrollmentPosts(@PathVariable Long id) {
         List<PostViewResponse> posts = challengePostService.findAllByChallengeEnrollment(id)
                 .stream()
                 // .filter() // todo : isAnnouncement == true 인 건 제외하기
-                .map(post -> new PostViewResponse(post, postPhotoService.makePhotoViewList(postPhotoService.findAllByPost(post.getId()))))
+                .map(post -> new PostViewResponse(post, postPhotoService.makePhotoViewList(postPhotoService.findAllByPost(post))))
                 .toList();
 
         return ResponseEntity.ok()
@@ -81,14 +79,18 @@ public class ChallengePostApi {
         return ResponseEntity.status(HttpStatus.CREATED).body(preSignedUrlList);
     }
 
-    // todo : PostViewResponse로 응답 본문 형태 바꾸기
-    @PutMapping("/api/posts/{id}")
-    public ResponseEntity<ChallengePost> modifyPost(@PathVariable Long id,
+    @PutMapping("/posts/{id}")
+//    @PutMapping("/api/posts/{id}")
+    public ResponseEntity<List<String>> modifyPost(@PathVariable Long id,
                                                     @RequestBody ModifyPostRequest request) {
+
         ChallengePost modifiedPost = challengePostService.update(id, request);
+        request.getDeletedPhotoIds().forEach(postPhotoService::delete);
+        request.getModifiedPhotos().forEach(photo -> postPhotoService.changeViewOrder(photo.getPhotoId(), photo.getViewOrder()));
+        List<String> presignedUrlList =  postPhotoService.save(challengePostService.findById(id), request.getNewPhotos());
 
         return ResponseEntity.ok()
-                .body(modifiedPost);
+                .body(presignedUrlList);
     }
 
     // todo : 공지글만 지워지는 것 확인하기
