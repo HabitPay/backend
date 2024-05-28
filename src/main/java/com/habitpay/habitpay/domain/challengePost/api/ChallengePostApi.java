@@ -44,7 +44,7 @@ public class ChallengePostApi {
 
     @GetMapping("/api/challenges/{id}/posts")
     public ResponseEntity<List<PostViewResponse>> findChallengePosts(
-            @PathVariable Long id, @RequestParam(required = false, name = "challenge-enrollment-id") Optional<Long> challengeEnrollmentId) {
+            @PathVariable Long id, @RequestParam(required = false) Optional<Long> challengeEnrollmentId) {
 
         Long enrollmentId = challengeEnrollmentId.orElse(-1L);
         List<ChallengePost> challengePosts = new ArrayList<>();
