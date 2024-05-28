@@ -16,7 +16,7 @@ public class PostViewResponse {
     private Long challengeEnrollmentId;
     private String content;
     private String writer;
-    private boolean isAnnouncement;
+    private Boolean isAnnouncement;
     private LocalDateTime createdAt;
     private List<PostPhotoView> photoViewList;
 
@@ -25,7 +25,7 @@ public class PostViewResponse {
         this.challengeEnrollmentId = post.getChallengeEnrollmentId();
         this.content = post.getContent();
         //todo: this.writer = post.getWriter(post.getChallengeEnrollmentId());
-        this.isAnnouncement = post.isAnnouncement();
+        this.isAnnouncement = post.getIsAnnouncement();
         this.createdAt = post.getCreatedAt();
         this.photoViewList = photoViewList;
     }

@@ -59,7 +59,7 @@ public class ChallengePostApi {
         viewPosts = challengePosts
                 .stream()
                 .filter(post -> !post.getIsAnnouncement())
-                // .sorted()
+                // .sorted() // todo : id 순이 아닌 다른 순서로 정렬하고 싶을 경우
                 .map(post -> new PostViewResponse(post, postPhotoService.makePhotoViewList(postPhotoService.findAllByPost(post))))
                 .toList();
 
@@ -67,22 +67,21 @@ public class ChallengePostApi {
                 .body(viewPosts);
     }
 
-    @PostMapping("/challenge_enrollment/{id}/post")
-    //@PostMapping("/api/challenge_enrollment/{id}/post")
+    @PostMapping("/api/challenge_enrollment/{id}/post")
     public ResponseEntity<List<String>> addPost(@RequestBody AddPostRequest request, @PathVariable Long id, Principal principal) {
 
+         log.info("Principal Name: {}", principal.getName());
+        // todo : principal.getName() : token의 email 주소
+        //      : API를 '/api/challenges/{id}/post'로 변경하여, 메서드 간 일관성을 유지하고 직관성을 높일 예정
+        //      : [email && challenge id] 정보를 합쳐 enrollment id 찾기만 하면 됨
+
         ChallengePost challengePost = challengePostService.save(request, id);
-
-        // todo : principal.getName() 정보 확인 필요 없으면 인자 지우기
-        // System.out.println("Principal: " + principal.getName());
-
         List<String> preSignedUrlList = postPhotoService.save(challengePost, request.getPhotos());
 
         return ResponseEntity.status(HttpStatus.CREATED).body(preSignedUrlList);
     }
 
-    @PutMapping("/posts/{id}")
-//    @PutMapping("/api/posts/{id}")
+    @PutMapping("/api/posts/{id}")
     public ResponseEntity<List<String>> modifyPost(@PathVariable Long id,
                                                     @RequestBody ModifyPostRequest request) {
 
