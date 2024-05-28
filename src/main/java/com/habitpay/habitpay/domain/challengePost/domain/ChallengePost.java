@@ -27,7 +27,7 @@ public class ChallengePost extends BaseTime {
     private String content;
 
     @Column(nullable = false)
-    private boolean isAnnouncement;
+    private Boolean isAnnouncement;
 
     @Builder
     public ChallengePost(Long challengeEnrollmentId, String content, boolean isAnnouncement) {
