@@ -1,5 +1,6 @@
 package com.habitpay.habitpay.domain.challengePost.api;
 
+import com.habitpay.habitpay.domain.challenge.domain.Challenge;
 import com.habitpay.habitpay.domain.challengePost.application.ChallengePostService;
 import com.habitpay.habitpay.domain.challengePost.domain.ChallengePost;
 import com.habitpay.habitpay.domain.challengePost.dto.AddPostRequest;
@@ -16,7 +17,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
@@ -27,8 +30,8 @@ public class ChallengePostApi {
     private final ChallengePostService challengePostService;
     private final PostPhotoService postPhotoService;
 
-    @GetMapping("/posts/{id}")
-    //    @GetMapping("/api/posts/{id}")
+
+    @GetMapping("/api/posts/{id}")
     public ResponseEntity<PostViewResponse> findPost(@PathVariable Long id) {
 
         ChallengePost challengePost = challengePostService.findById(id);
@@ -39,30 +42,29 @@ public class ChallengePostApi {
                 .body(new PostViewResponse(challengePost, photoViewList));
     }
 
-    // todo : 한 챌린지 내의 모든 포스트 보기
-//    @GetMapping("/api/challenge/{id}/posts")
-//    public ResponseEntity<List<PostViewResponse>> findChallengePosts(@PathVariable Long id) {
-//        List<PostViewResponse> posts = challengePostService.findAllByChallenge(id)
-//                .stream()
-//                .map(PostViewResponse::new)
-//                .toList();
-//
-//        return ResponseEntity.ok()
-//                .body(posts);
-//    }
+    @GetMapping("/api/challenges/{id}/posts")
+    public ResponseEntity<List<PostViewResponse>> findChallengePosts(
+            @PathVariable Long id, @RequestParam(required = false, name = "challenge-enrollment-id") Optional<Long> challengeEnrollmentId) {
 
-    // todo : 한 챌린지 내에서 특정 멤버가 등록한 포스트만 모아보기
-    @GetMapping("/challenge_enrollment/{id}/posts")
-//    @GetMapping("/api/challenge_enrollment/{id}/posts")
-    public ResponseEntity<List<PostViewResponse>> findChallengeEnrollmentPosts(@PathVariable Long id) {
-        List<PostViewResponse> posts = challengePostService.findAllByChallengeEnrollment(id)
+        Long enrollmentId = challengeEnrollmentId.orElse(-1L);
+        List<ChallengePost> challengePosts = new ArrayList<>();
+        List<PostViewResponse> viewPosts = new ArrayList<>();
+
+        if (enrollmentId.equals(-1L)) {
+             challengePosts = challengePostService.findAllByChallenge(id);
+        } else {
+            challengePosts = challengePostService.findAllByChallengeEnrollment(enrollmentId);
+        }
+
+        viewPosts = challengePosts
                 .stream()
-                // .filter() // todo : isAnnouncement == true 인 건 제외하기
+                .filter(post -> !post.getIsAnnouncement())
+                // .sorted()
                 .map(post -> new PostViewResponse(post, postPhotoService.makePhotoViewList(postPhotoService.findAllByPost(post))))
                 .toList();
 
         return ResponseEntity.ok()
-                .body(posts);
+                .body(viewPosts);
     }
 
     @PostMapping("/challenge_enrollment/{id}/post")
