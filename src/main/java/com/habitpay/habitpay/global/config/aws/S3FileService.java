@@ -4,7 +4,7 @@ import io.awspring.cloud.s3.S3Exception;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
 import software.amazon.awssdk.services.s3.model.GetObjectRequest;
@@ -19,7 +19,7 @@ import java.time.Duration;
 
 @Slf4j
 @RequiredArgsConstructor
-@Component
+@Service
 public class S3FileService {
     private final S3Client s3Client;
     private final S3Presigner presigner;
