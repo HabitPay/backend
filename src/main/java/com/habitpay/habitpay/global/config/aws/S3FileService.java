@@ -24,7 +24,7 @@ public class S3FileService {
     private final S3Client s3Client;
     private final S3Presigner presigner;
 
-    @Value("${cloud.aws.s3.bucket}")
+    @Value("${spring.cloud.aws.s3.bucket}")
     private String bucket;
 
     public void deleteImage(String prefix, String fileName) {
