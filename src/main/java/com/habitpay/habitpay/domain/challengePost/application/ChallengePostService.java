@@ -55,7 +55,12 @@ public class ChallengePostService {
                 .orElseThrow(() ->  new IllegalArgumentException("(for debugging) not found : " + id));
 
         authorizePostWriter(challengePost);
-        challengePost.modifyPost(request.getContent(), request.getIsAnnouncement());
+        if (request.getContent() != null) {
+            challengePost.modifyPostContent(request.getContent());
+        }
+        if (request.getIsAnnouncement() != null) {
+            challengePost.modifyPostIsAnnouncement(request.getIsAnnouncement());
+        }
 
         return challengePost;
     }
