@@ -36,9 +36,11 @@ public class ChallengePost extends BaseTime {
         this.isAnnouncement = isAnnouncement;
     }
 
-    public void modifyPost(String modifiedContent, boolean isAnnouncement) {
-        // todo : 내용이 바뀌지 않은 경우, 그 사실을 알 수 있다면 밑에 과정 안 해도 되지 않나
+    public void modifyPostContent(String modifiedContent) {
         this.content = modifiedContent;
+    }
+
+    public void modifyPostIsAnnouncement(boolean isAnnouncement) {
         this.isAnnouncement = isAnnouncement;
     }
 
