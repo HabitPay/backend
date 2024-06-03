@@ -43,29 +43,54 @@ public class ChallengePostApi {
     }
 
     @GetMapping("/api/challenges/{id}/posts")
-    public ResponseEntity<List<PostViewResponse>> findChallengePosts(
-            @PathVariable Long id, @RequestParam(required = false) Optional<Long> challengeEnrollmentId) {
-
-        Long enrollmentId = challengeEnrollmentId.orElse(-1L);
-        List<ChallengePost> challengePosts = new ArrayList<>();
-        List<PostViewResponse> viewPosts = new ArrayList<>();
-
-        if (enrollmentId.equals(-1L)) {
-             challengePosts = challengePostService.findAllByChallenge(id);
-        } else {
-            challengePosts = challengePostService.findAllByChallengeEnrollment(enrollmentId);
-        }
-
-        viewPosts = challengePosts
+    public ResponseEntity<List<PostViewResponse>> findChallengePosts(@PathVariable Long id) {
+        List<PostViewResponse> challengePostsView = challengePostService.findAllByChallenge(id)
                 .stream()
                 .filter(post -> !post.getIsAnnouncement())
-                // .sorted() // todo : id 순이 아닌 다른 순서로 정렬하고 싶을 경우
+                // .sorted() // todo : 순서 설정하고 싶을 때
                 .map(post -> new PostViewResponse(post, postPhotoService.makePhotoViewList(postPhotoService.findAllByPost(post))))
                 .toList();
 
         return ResponseEntity.ok()
-                .body(viewPosts);
+                .body(challengePostsView);
     }
+
+    @GetMapping("/api/challenges/{id}/posts/me")
+    public ResponseEntity<List<PostViewResponse>> findChallengePostsByMe(
+            @PathVariable Long id, Principal principal) {
+        // todo : principal.getName() : token의 email 주소
+        //      : [email && challenge id] 정보를 합쳐 enrollment id 찾기
+        Long challengeEnrollmentId = 1L; // todo : 임시값
+
+        List<PostViewResponse> challengePostsView = challengePostService.findAllByChallengeEnrollment(challengeEnrollmentId)
+                .stream()
+                .filter(post -> !post.getIsAnnouncement())
+                // .sorted() // todo : 순서 설정하고 싶을 때
+                .map(post -> new PostViewResponse(post, postPhotoService.makePhotoViewList(postPhotoService.findAllByPost(post))))
+                .toList();
+
+        return ResponseEntity.ok()
+                .body(challengePostsView);
+    }
+
+    // todo : 경로 및 필요한 requestParam 설정 완료 후 다시 고치기
+    //      : 'challengeEnrollmentId' or 'memberId' 등 멤버 식별할 수 있는 데이터를 받으면 됨
+//    @GetMapping("/api/challenges/{id}/posts/member")
+//    public ResponseEntity<List<PostViewResponse>> findChallengePostsByMember(
+//            @PathVariable Long id, @RequestParam Optional<Long> challengeEnrollmentId) {
+//
+//        Long challengeEnrollmentId = 1L;
+//
+//        List<PostViewResponse> challengePostsView = challengePostService.findAllByChallengeEnrollment(challengeEnrollmentId)
+//                .stream()
+//                .filter(post -> !post.getIsAnnouncement())
+//                // .sorted() // todo : 순서 설정하고 싶을 때
+//                .map(post -> new PostViewResponse(post, postPhotoService.makePhotoViewList(postPhotoService.findAllByPost(post))))
+//                .toList();
+//
+//        return ResponseEntity.ok()
+//                .body(challengePostsView);
+//    }
 
     @PostMapping("/api/challenge_enrollment/{id}/post")
     public ResponseEntity<List<String>> addPost(@RequestBody AddPostRequest request, @PathVariable Long id, Principal principal) {
