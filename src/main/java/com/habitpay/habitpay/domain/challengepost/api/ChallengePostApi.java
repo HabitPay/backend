@@ -1,15 +1,13 @@
 package com.habitpay.habitpay.domain.challengePost.api;
 
-import com.habitpay.habitpay.domain.challenge.domain.Challenge;
 import com.habitpay.habitpay.domain.challengePost.application.ChallengePostService;
 import com.habitpay.habitpay.domain.challengePost.domain.ChallengePost;
 import com.habitpay.habitpay.domain.challengePost.dto.AddPostRequest;
 import com.habitpay.habitpay.domain.challengePost.dto.ModifyPostRequest;
-import com.habitpay.habitpay.domain.postPhoto.dto.ModifyPostPhotoData;
-import com.habitpay.habitpay.domain.postPhoto.dto.PostPhotoView;
+import com.habitpay.habitpay.domain.postphoto.dto.PostPhotoView;
 import com.habitpay.habitpay.domain.challengePost.dto.PostViewResponse;
-import com.habitpay.habitpay.domain.postPhoto.application.PostPhotoService;
-import com.habitpay.habitpay.domain.postPhoto.domain.PostPhoto;
+import com.habitpay.habitpay.domain.postphoto.application.PostPhotoService;
+import com.habitpay.habitpay.domain.postphoto.domain.PostPhoto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -17,10 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor

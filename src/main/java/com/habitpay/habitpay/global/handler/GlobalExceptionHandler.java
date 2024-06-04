@@ -1,8 +1,8 @@
 package com.habitpay.habitpay.global.handler;
 
 import com.habitpay.habitpay.global.handler.dto.ExceptionResponse;
-import com.habitpay.habitpay.domain.refreshToken.exception.CustomJwtException;
-import com.habitpay.habitpay.domain.postPhoto.exception.CustomPhotoException;
+import com.habitpay.habitpay.domain.refreshtoken.exception.CustomJwtException;
+import com.habitpay.habitpay.domain.postphoto.exception.CustomPhotoException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

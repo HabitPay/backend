@@ -1,7 +1,7 @@
 package com.habitpay.habitpay.domain.challengePost.dto;
 
-import com.habitpay.habitpay.domain.postPhoto.dto.AddPostPhotoData;
-import com.habitpay.habitpay.domain.postPhoto.dto.ModifyPostPhotoData;
+import com.habitpay.habitpay.domain.postphoto.dto.AddPostPhotoData;
+import com.habitpay.habitpay.domain.postphoto.dto.ModifyPostPhotoData;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
