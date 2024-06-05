@@ -1,4 +1,4 @@
-package com.habitpay.habitpay.domain.postPhoto.dto;
+package com.habitpay.habitpay.domain.postphoto.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

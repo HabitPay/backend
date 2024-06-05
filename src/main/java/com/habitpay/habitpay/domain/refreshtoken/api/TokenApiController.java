@@ -1,12 +1,12 @@
-package com.habitpay.habitpay.domain.refreshToken.api;
+package com.habitpay.habitpay.domain.refreshtoken.api;
 
-import com.habitpay.habitpay.domain.refreshToken.application.NewTokenService;
-import com.habitpay.habitpay.domain.refreshToken.application.RefreshTokenService;
-import com.habitpay.habitpay.domain.refreshToken.dto.CreateAccessTokenRequest;
-import com.habitpay.habitpay.domain.refreshToken.dto.CreateAccessTokenResponse;
+import com.habitpay.habitpay.domain.refreshtoken.application.NewTokenService;
+import com.habitpay.habitpay.domain.refreshtoken.application.RefreshTokenService;
+import com.habitpay.habitpay.domain.refreshtoken.dto.CreateAccessTokenRequest;
+import com.habitpay.habitpay.domain.refreshtoken.dto.CreateAccessTokenResponse;
 import com.habitpay.habitpay.global.config.jwt.TokenService;
 import com.habitpay.habitpay.global.error.CustomJwtErrorInfo;
-import com.habitpay.habitpay.domain.refreshToken.exception.CustomJwtException;
+import com.habitpay.habitpay.domain.refreshtoken.exception.CustomJwtException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;

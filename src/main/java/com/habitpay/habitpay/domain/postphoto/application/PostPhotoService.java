@@ -1,13 +1,13 @@
-package com.habitpay.habitpay.domain.postPhoto.application;
+package com.habitpay.habitpay.domain.postphoto.application;
 
-import com.habitpay.habitpay.domain.challengePost.domain.ChallengePost;
-import com.habitpay.habitpay.domain.postPhoto.dto.PostPhotoView;
-import com.habitpay.habitpay.domain.postPhoto.dao.PostPhotoRepository;
-import com.habitpay.habitpay.domain.postPhoto.domain.PostPhoto;
-import com.habitpay.habitpay.domain.postPhoto.dto.AddPostPhotoData;
+import com.habitpay.habitpay.domain.challengepost.domain.ChallengePost;
+import com.habitpay.habitpay.domain.postphoto.dto.PostPhotoView;
+import com.habitpay.habitpay.domain.postphoto.dao.PostPhotoRepository;
+import com.habitpay.habitpay.domain.postphoto.domain.PostPhoto;
+import com.habitpay.habitpay.domain.postphoto.dto.AddPostPhotoData;
 import com.habitpay.habitpay.global.config.aws.S3FileService;
 import com.habitpay.habitpay.global.error.ErrorResponse;
-import com.habitpay.habitpay.domain.postPhoto.exception.CustomPhotoException;
+import com.habitpay.habitpay.domain.postphoto.exception.CustomPhotoException;
 import com.habitpay.habitpay.global.util.ImageUtil;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;

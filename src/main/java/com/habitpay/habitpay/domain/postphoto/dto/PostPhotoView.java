@@ -1,7 +1,7 @@
-package com.habitpay.habitpay.domain.postPhoto.dto;
+package com.habitpay.habitpay.domain.postphoto.dto;
 
-import com.habitpay.habitpay.domain.postPhoto.application.PostPhotoService;
-import com.habitpay.habitpay.domain.postPhoto.domain.PostPhoto;
+import com.habitpay.habitpay.domain.postphoto.application.PostPhotoService;
+import com.habitpay.habitpay.domain.postphoto.domain.PostPhoto;
 import com.habitpay.habitpay.global.config.aws.S3FileService;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

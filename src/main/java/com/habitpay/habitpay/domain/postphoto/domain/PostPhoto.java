@@ -1,6 +1,6 @@
-package com.habitpay.habitpay.domain.postPhoto.domain;
+package com.habitpay.habitpay.domain.postphoto.domain;
 
-import com.habitpay.habitpay.domain.challengePost.domain.ChallengePost;
+import com.habitpay.habitpay.domain.challengepost.domain.ChallengePost;
 import com.habitpay.habitpay.domain.model.BaseTime;
 import jakarta.persistence.*;
 import lombok.AccessLevel;

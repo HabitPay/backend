@@ -1,4 +1,4 @@
-package com.habitpay.habitpay.domain.refreshToken.dto;
+package com.habitpay.habitpay.domain.refreshtoken.dto;
 
 import lombok.Getter;
 import lombok.Setter;

@@ -1,6 +1,6 @@
-package com.habitpay.habitpay.domain.challengePost.dto;
+package com.habitpay.habitpay.domain.challengepost.dto;
 
-import com.habitpay.habitpay.domain.challengePost.domain.ChallengePost;
+import com.habitpay.habitpay.domain.challengepost.domain.ChallengePost;
 import com.habitpay.habitpay.domain.postphoto.dto.PostPhotoView;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

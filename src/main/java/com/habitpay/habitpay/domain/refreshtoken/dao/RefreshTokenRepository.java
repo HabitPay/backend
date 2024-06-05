@@ -1,6 +1,6 @@
-package com.habitpay.habitpay.domain.refreshToken.dao;
+package com.habitpay.habitpay.domain.refreshtoken.dao;
 
-import com.habitpay.habitpay.domain.refreshToken.domain.RefreshToken;
+import com.habitpay.habitpay.domain.refreshtoken.domain.RefreshToken;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

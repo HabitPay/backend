@@ -1,11 +1,11 @@
-package com.habitpay.habitpay.domain.challengePost.api;
+package com.habitpay.habitpay.domain.challengepost.api;
 
-import com.habitpay.habitpay.domain.challengePost.application.ChallengePostService;
-import com.habitpay.habitpay.domain.challengePost.domain.ChallengePost;
-import com.habitpay.habitpay.domain.challengePost.dto.AddPostRequest;
-import com.habitpay.habitpay.domain.challengePost.dto.ModifyPostRequest;
+import com.habitpay.habitpay.domain.challengepost.application.ChallengePostService;
+import com.habitpay.habitpay.domain.challengepost.domain.ChallengePost;
+import com.habitpay.habitpay.domain.challengepost.dto.AddPostRequest;
+import com.habitpay.habitpay.domain.challengepost.dto.ModifyPostRequest;
 import com.habitpay.habitpay.domain.postphoto.dto.PostPhotoView;
-import com.habitpay.habitpay.domain.challengePost.dto.PostViewResponse;
+import com.habitpay.habitpay.domain.challengepost.dto.PostViewResponse;
 import com.habitpay.habitpay.domain.postphoto.application.PostPhotoService;
 import com.habitpay.habitpay.domain.postphoto.domain.PostPhoto;
 import lombok.RequiredArgsConstructor;
