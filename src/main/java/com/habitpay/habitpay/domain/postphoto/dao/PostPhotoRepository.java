@@ -1,7 +1,7 @@
-package com.habitpay.habitpay.domain.postPhoto.dao;
+package com.habitpay.habitpay.domain.postphoto.dao;
 
-import com.habitpay.habitpay.domain.challengePost.domain.ChallengePost;
-import com.habitpay.habitpay.domain.postPhoto.domain.PostPhoto;
+import com.habitpay.habitpay.domain.challengepost.domain.ChallengePost;
+import com.habitpay.habitpay.domain.postphoto.domain.PostPhoto;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

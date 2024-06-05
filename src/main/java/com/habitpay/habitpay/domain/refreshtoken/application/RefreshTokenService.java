@@ -1,9 +1,9 @@
-package com.habitpay.habitpay.domain.refreshToken.application;
+package com.habitpay.habitpay.domain.refreshtoken.application;
 
 import com.habitpay.habitpay.domain.member.application.MemberService;
 import com.habitpay.habitpay.domain.member.domain.Member;
-import com.habitpay.habitpay.domain.refreshToken.dao.RefreshTokenRepository;
-import com.habitpay.habitpay.domain.refreshToken.domain.RefreshToken;
+import com.habitpay.habitpay.domain.refreshtoken.dao.RefreshTokenRepository;
+import com.habitpay.habitpay.domain.refreshtoken.domain.RefreshToken;
 import com.habitpay.habitpay.global.config.jwt.TokenService;
 import com.habitpay.habitpay.global.util.CookieUtil;
 import jakarta.servlet.http.HttpServletRequest;

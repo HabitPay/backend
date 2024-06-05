@@ -1,4 +1,4 @@
-package com.habitpay.habitpay.domain.refreshToken.domain;
+package com.habitpay.habitpay.domain.refreshtoken.domain;
 
 import com.habitpay.habitpay.domain.model.BaseTime;
 import jakarta.persistence.*;

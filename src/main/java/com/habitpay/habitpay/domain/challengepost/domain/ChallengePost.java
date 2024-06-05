@@ -1,4 +1,4 @@
-package com.habitpay.habitpay.domain.challengePost.domain;
+package com.habitpay.habitpay.domain.challengepost.domain;
 
 import com.habitpay.habitpay.domain.member.domain.Member;
 import com.habitpay.habitpay.domain.model.BaseTime;

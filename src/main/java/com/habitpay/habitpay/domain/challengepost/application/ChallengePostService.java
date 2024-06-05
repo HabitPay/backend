@@ -1,9 +1,9 @@
-package com.habitpay.habitpay.domain.challengePost.application;
+package com.habitpay.habitpay.domain.challengepost.application;
 
-import com.habitpay.habitpay.domain.challengePost.dao.ChallengePostRepository;
-import com.habitpay.habitpay.domain.challengePost.domain.ChallengePost;
-import com.habitpay.habitpay.domain.challengePost.dto.AddPostRequest;
-import com.habitpay.habitpay.domain.challengePost.dto.ModifyPostRequest;
+import com.habitpay.habitpay.domain.challengepost.dao.ChallengePostRepository;
+import com.habitpay.habitpay.domain.challengepost.domain.ChallengePost;
+import com.habitpay.habitpay.domain.challengepost.dto.AddPostRequest;
+import com.habitpay.habitpay.domain.challengepost.dto.ModifyPostRequest;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

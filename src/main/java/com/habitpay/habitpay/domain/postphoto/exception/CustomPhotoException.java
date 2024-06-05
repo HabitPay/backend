@@ -1,4 +1,4 @@
-package com.habitpay.habitpay.domain.postPhoto.exception;
+package com.habitpay.habitpay.domain.postphoto.exception;
 
 import com.habitpay.habitpay.global.error.ErrorResponse;
 import lombok.Getter;

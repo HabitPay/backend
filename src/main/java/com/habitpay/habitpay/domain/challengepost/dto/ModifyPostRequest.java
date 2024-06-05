@@ -1,4 +1,4 @@
-package com.habitpay.habitpay.domain.challengePost.dto;
+package com.habitpay.habitpay.domain.challengepost.dto;
 
 import com.habitpay.habitpay.domain.postphoto.dto.AddPostPhotoData;
 import com.habitpay.habitpay.domain.postphoto.dto.ModifyPostPhotoData;

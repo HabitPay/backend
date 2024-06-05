@@ -1,6 +1,6 @@
-package com.habitpay.habitpay.domain.challengePost.dao;
+package com.habitpay.habitpay.domain.challengepost.dao;
 
-import com.habitpay.habitpay.domain.challengePost.domain.ChallengePost;
+import com.habitpay.habitpay.domain.challengepost.domain.ChallengePost;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.query.Param;
 
