@@ -70,6 +70,13 @@ public class PostPhotoService {
         postPhotoRepository.delete(postPhoto);
     }
 
+    public void deleteAllByPost(ChallengePost post) {
+        List<PostPhoto> photoList = postPhotoRepository.findAllByPost(post)
+                .orElseThrow(() -> new NoSuchElementException("(for debugging) not found post : " + post.getId()));
+
+        photoList.forEach(photo -> {delete(photo.getId());});
+    }
+
     public List<PostPhotoView> makePhotoViewList(List<PostPhoto> photoList) {
         List<PostPhotoView> photoViewList = new ArrayList<>();
 

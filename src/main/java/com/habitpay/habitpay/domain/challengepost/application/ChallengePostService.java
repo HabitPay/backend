@@ -4,6 +4,7 @@ import com.habitpay.habitpay.domain.challengepost.dao.ChallengePostRepository;
 import com.habitpay.habitpay.domain.challengepost.domain.ChallengePost;
 import com.habitpay.habitpay.domain.challengepost.dto.AddPostRequest;
 import com.habitpay.habitpay.domain.challengepost.dto.ModifyPostRequest;
+import com.habitpay.habitpay.domain.postphoto.application.PostPhotoService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,6 +20,7 @@ import java.util.NoSuchElementException;
 public class ChallengePostService {
 
     private final ChallengePostRepository challengePostRepository;
+    private final PostPhotoService postPhotoService;
 
     public ChallengePost save(AddPostRequest request, Long challengeEnrollmentId) {
         return challengePostRepository.save(request.toEntity(challengeEnrollmentId));
@@ -46,6 +48,7 @@ public class ChallengePostService {
                 .orElseThrow(() -> new IllegalArgumentException("(for debugging) not found : " + id));
 
         authorizePostWriter(challengePost); // todo : method 미완
+        postPhotoService.deleteAllByPost(challengePost);
         challengePostRepository.delete(challengePost);
     }
 
