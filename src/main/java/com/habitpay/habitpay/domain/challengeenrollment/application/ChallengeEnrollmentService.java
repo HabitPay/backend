@@ -4,6 +4,7 @@ import com.habitpay.habitpay.domain.challenge.application.ChallengeSearchService
 import com.habitpay.habitpay.domain.challenge.domain.Challenge;
 import com.habitpay.habitpay.domain.challengeenrollment.dao.ChallengeEnrollmentRepository;
 import com.habitpay.habitpay.domain.challengeenrollment.domain.ChallengeEnrollment;
+import com.habitpay.habitpay.domain.member.application.MemberService;
 import com.habitpay.habitpay.domain.member.domain.Member;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,11 +20,12 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class ChallengeEnrollmentService {
+    private final MemberService memberService;
     private final ChallengeEnrollmentRepository challengeEnrollmentRepository;
     private final ChallengeSearchService challengeSearchService;
 
     @Transactional
-    public ResponseEntity<String> enroll(Long id, Member member) {
+    public ResponseEntity<String> enroll(Long id, String email) {
         Challenge challenge = challengeSearchService.findById(id);
         ZonedDateTime now = ZonedDateTime.now();
         if (now.isAfter(challenge.getEndDate())) {
@@ -31,8 +33,8 @@ public class ChallengeEnrollmentService {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("챌린지 등록 기간이 지났습니다.");
         }
 
+        Member member = memberService.findByEmail(email);
         Optional<ChallengeEnrollment> optionalChallengeEnrollment = challengeEnrollmentRepository.findByMember(member);
-
         if (optionalChallengeEnrollment.isPresent()) {
             log.error("이미 참여한 챌린지");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("이미 참여한 챌린지입니다.");
