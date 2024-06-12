@@ -7,12 +7,15 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.util.StringTokenizer;
 
+@Component
 @RequiredArgsConstructor
 public class TokenAuthenticationFilter extends OncePerRequestFilter {
     private final TokenService tokenService;
@@ -25,13 +28,18 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
             FilterChain filterChain
     ) throws ServletException, IOException {
         String authorizationHeader = request.getHeader("Authorization");
+        if (authorizationHeader == null) {
+            throw new MissingAuthorizationHeaderException("Authorization Header is missing");
+        }
+
         StringTokenizer tokenizer = new StringTokenizer(authorizationHeader);
         if (tokenizer.countTokens() == 2 && tokenizer.nextToken().equals("Bearer")) {
             String token = tokenizer.nextToken();
 
             if (tokenProvider.validateToken(token)) {
                 Authentication authentication = tokenService.getAuthentication(token);
-                SecurityContextHolder.getContext().setAuthentication(authentication);
+                SecurityContext context = SecurityContextHolder.getContext();
+                context.setAuthentication(authentication);
             }
         }
 
