@@ -5,10 +5,10 @@ import com.habitpay.habitpay.domain.member.domain.Member;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
@@ -19,16 +19,16 @@ import java.util.StringTokenizer;
 
 @RequiredArgsConstructor
 @Service
+@Slf4j
 public class TokenService {
+    private final static Duration ACCESS_TOKEN_EXPIRED_AT = Duration.ofHours(2);
+    private final static Duration REFRESH_TOKEN_EXPIRED_AT = Duration.ofDays(14);
     private final JwtProperties jwtProperties;
-    private final TokenProvider tokenProvider;
-    private final MemberRepository memberRepository;
 
     // todo : for temp
 //    private final static Duration ACCESS_TOKEN_EXPIRED_AT = Duration.ofHours(1);
-
-    private final static Duration ACCESS_TOKEN_EXPIRED_AT = Duration.ofHours(2);
-    private final static Duration REFRESH_TOKEN_EXPIRED_AT = Duration.ofDays(14);
+    private final TokenProvider tokenProvider;
+    private final MemberRepository memberRepository;
 
     public String createAccessToken(String email) {
         Optional<Member> optionalMember = Optional.ofNullable(memberRepository.findByEmail(email)
@@ -50,12 +50,13 @@ public class TokenService {
 
     public Authentication getAuthentication(String token) {
         Claims claims = getClaims(token);
+        String email = claims.getSubject();
         Set<SimpleGrantedAuthority> authorities = Collections.singleton(
                 new SimpleGrantedAuthority("ROLE_GUEST")
         );
 
         return new UsernamePasswordAuthenticationToken(
-                new User(claims.getSubject(), "", authorities),
+                email,
                 token,
                 authorities);
     }
