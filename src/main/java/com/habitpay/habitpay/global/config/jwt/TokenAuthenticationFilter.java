@@ -28,9 +28,9 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
             FilterChain filterChain
     ) throws ServletException, IOException {
         String authorizationHeader = request.getHeader("Authorization");
-        if (authorizationHeader == null) {
-            throw new MissingAuthorizationHeaderException("Authorization Header is missing");
-        }
+//        if (authorizationHeader == null) {
+//            throw new MissingAuthorizationHeaderException("Authorization Header is missing");
+//        }
 
         StringTokenizer tokenizer = new StringTokenizer(authorizationHeader);
         if (tokenizer.countTokens() == 2 && tokenizer.nextToken().equals("Bearer")) {
