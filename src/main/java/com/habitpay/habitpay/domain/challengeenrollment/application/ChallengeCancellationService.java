@@ -6,6 +6,7 @@ import com.habitpay.habitpay.domain.challengeenrollment.dao.ChallengeEnrollmentR
 import com.habitpay.habitpay.domain.challengeenrollment.domain.ChallengeEnrollment;
 import com.habitpay.habitpay.domain.member.application.MemberService;
 import com.habitpay.habitpay.domain.member.domain.Member;
+import com.habitpay.habitpay.global.common.response.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -25,25 +26,28 @@ public class ChallengeCancellationService {
     private final MemberService memberService;
 
     @Transactional
-    public ResponseEntity<String> cancel(Long id, String email) {
+    public ResponseEntity<ApiResponse> cancel(Long id, String email) {
+        ApiResponse response;
         Member member = memberService.findByEmail(email);
         Optional<ChallengeEnrollment> optionalChallengeEnrollment = challengeEnrollmentRepository.findByMember(member);
         if (optionalChallengeEnrollment.isEmpty()) {
             log.error("참여하지 않은 챌린지");
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("참여하지 않은 챌린지입니다.");
+            response = ApiResponse.create("참여하지 않은 챌린지입니다.");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         }
-        
+
         Challenge challenge = challengeSearchService.findById(id);
         ZonedDateTime now = ZonedDateTime.now();
         if (now.isAfter(challenge.getStartDate())) {
             log.error("챌린지 취소 시간 초과");
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("챌린지 취소 가능한 시간이 지났습니다.");
+            response = ApiResponse.create("챌린지 취소 가능한 시간이 지났습니다.");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         }
 
         ChallengeEnrollment challengeEnrollment = optionalChallengeEnrollment.get();
-
         challengeEnrollmentRepository.delete(challengeEnrollment);
         log.info("챌린지 참여 취소");
-        return ResponseEntity.status(HttpStatus.OK).body("정상적으로 챌린지 참여를 취소했습니다.");
+        response = ApiResponse.create("정상적으로 챌린지 참여를 취소했습니다.");
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 }
