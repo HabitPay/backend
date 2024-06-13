@@ -3,17 +3,17 @@ package com.habitpay.habitpay.domain.challengeenrollment.api;
 import com.habitpay.habitpay.domain.challengeenrollment.application.ChallengeCancellationService;
 import com.habitpay.habitpay.domain.challengeenrollment.application.ChallengeEnrollmentService;
 import com.habitpay.habitpay.domain.member.application.MemberService;
-import com.habitpay.habitpay.domain.member.domain.Member;
+import com.habitpay.habitpay.global.common.response.ApiResponse;
 import com.habitpay.habitpay.global.config.jwt.TokenService;
-import com.habitpay.habitpay.global.error.ErrorResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.Optional;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
 @RestController
@@ -26,25 +26,14 @@ public class ChallengeEnrollmentApi {
 
     @PostMapping("/challenges/{id}/enroll")
     @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<?> enrollChallenge(@PathVariable("id") Long id, @RequestHeader("Authorization") String authorizationHeader) {
-
-        // TODO: Interceptor 나 Filter 에서 먼저 처리해주기 때문에 나중에 삭제하기
-        Optional<String> optionalToken = tokenService.getTokenFromHeader(authorizationHeader);
-        if (optionalToken.isEmpty()) {
-            String message = ErrorResponse.UNAUTHORIZED.getMessage();
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(message);
-        }
-
-        String token = optionalToken.get();
-        String email = tokenService.getEmail(token);
-        Member member = memberService.findByEmail(email);
+    public ResponseEntity<ApiResponse> enrollChallenge(@PathVariable("id") Long id, @AuthenticationPrincipal String email) {
         log.info("[POST /challenges/{}/enroll] email: {}", id, email);
-        return challengeEnrollmentService.enroll(id, member);
+        return challengeEnrollmentService.enroll(id, email);
     }
 
     @PostMapping("/challenges/{id}/cancel")
     @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<?> cancelChallenge(@PathVariable("id") Long id, @AuthenticationPrincipal String email) {
+    public ResponseEntity<ApiResponse> cancelChallenge(@PathVariable("id") Long id, @AuthenticationPrincipal String email) {
         log.info("[POST /challenges/{}/cancel]: email {}", id, email);
         return challengeCancellationService.cancel(id, email);
     }
