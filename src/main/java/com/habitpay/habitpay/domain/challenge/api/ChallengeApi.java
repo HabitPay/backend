@@ -9,8 +9,8 @@ import com.habitpay.habitpay.domain.challenge.dto.ChallengePatchRequest;
 import com.habitpay.habitpay.domain.challenge.dto.ChallengeResponse;
 import com.habitpay.habitpay.domain.member.application.MemberService;
 import com.habitpay.habitpay.domain.member.domain.Member;
+import com.habitpay.habitpay.global.common.response.ApiResponse;
 import com.habitpay.habitpay.global.config.jwt.TokenService;
-import com.habitpay.habitpay.global.error.ErrorResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -40,34 +40,10 @@ public class ChallengeApi {
 
     @PostMapping("/challenges")
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<?> createChallenge(@RequestBody ChallengeCreationRequest challengeCreationRequest,
-                                             @RequestHeader("Authorization") String authorizationHeader) {
-
-        // TODO: Interceptor 나 Filter 에서 먼저 처리해주기 때문에 나중에 삭제하기
-        Optional<String> optionalToken = tokenService.getTokenFromHeader(authorizationHeader);
-        if (optionalToken.isEmpty()) {
-            String message = ErrorResponse.UNAUTHORIZED.getMessage();
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(message);
-        }
-
-        String token = optionalToken.get();
-        String email = tokenService.getEmail(token);
-        Member host = memberService.findByEmail(email);
+    public ResponseEntity<ApiResponse> createChallenge(@RequestBody ChallengeCreationRequest challengeCreationRequest,
+                                                       @AuthenticationPrincipal String email) {
         log.info("[POST /challenges] email: {}", email);
-
-        Challenge challenge = Challenge.builder()
-                .member(host)
-                .title(challengeCreationRequest.getTitle())
-                .description(challengeCreationRequest.getDescription())
-                .startDate(challengeCreationRequest.getStartDate())
-                .endDate(challengeCreationRequest.getEndDate())
-                .participatingDays(challengeCreationRequest.getParticipatingDays())
-                .feePerAbsence(challengeCreationRequest.getFeePerAbsence())
-                .build();
-
-        challengeCreationService.save(challenge);
-
-        return ResponseEntity.status(HttpStatus.CREATED).body(challenge.getId());
+        return challengeCreationService.save(challengeCreationRequest, email);
     }
 
     @PatchMapping("/challenges/{id}")
@@ -87,7 +63,8 @@ public class ChallengeApi {
         }
 
         challenge.updateChallengeDescription(challengePatchRequest.getDescription());
-        challengeCreationService.save(challenge);
+        // TODO: update 로 변경하기
+//        challengeCreationService.save(challenge);
 
         return ResponseEntity.status(HttpStatus.OK).body("챌린지 정보 수정이 반영되었습니다.");
     }
