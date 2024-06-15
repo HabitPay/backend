@@ -54,7 +54,7 @@ public class ChallengeApi {
         return ResponseEntity.status(HttpStatus.OK).body(challengeResponse);
     }
 
-    @PostMapping("/challenge")
+    @PostMapping("/challenges")
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<?> createChallenge(@RequestBody ChallengeCreationRequest challengeCreationRequest,
                                              @RequestHeader("Authorization") String authorizationHeader) {
@@ -69,7 +69,7 @@ public class ChallengeApi {
         String token = optionalToken.get();
         String email = tokenService.getEmail(token);
         Member host = memberService.findByEmail(email);
-        log.info("[POST /challenge] email: {}", email);
+        log.info("[POST /challenges] email: {}", email);
 
         Challenge challenge = Challenge.builder()
                 .member(host)
@@ -86,11 +86,11 @@ public class ChallengeApi {
         return ResponseEntity.status(HttpStatus.CREATED).body(challenge.getId());
     }
 
-    @PatchMapping("/challenge/{id}")
+    @PatchMapping("/challenges/{id}")
     @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<?> patchChallengeDetails(@PathVariable("id") Long id, @RequestBody ChallengePatchRequest challengePatchRequest,
                                                    @RequestHeader("Authorization") String authorizationHeader) {
-        log.info("[PATCH /challenge/{}]", id);
+        log.info("[PATCH /challenges/{}]", id);
 
         Optional<String> optionalToken = tokenService.getTokenFromHeader(authorizationHeader);
         String token = optionalToken.get();
