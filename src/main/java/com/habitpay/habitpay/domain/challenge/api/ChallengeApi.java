@@ -1,14 +1,12 @@
 package com.habitpay.habitpay.domain.challenge.api;
 
 import com.habitpay.habitpay.domain.challenge.application.ChallengeCreationService;
+import com.habitpay.habitpay.domain.challenge.application.ChallengeDetailService;
 import com.habitpay.habitpay.domain.challenge.application.ChallengeSearchService;
 import com.habitpay.habitpay.domain.challenge.domain.Challenge;
 import com.habitpay.habitpay.domain.challenge.dto.ChallengeCreationRequest;
 import com.habitpay.habitpay.domain.challenge.dto.ChallengePatchRequest;
 import com.habitpay.habitpay.domain.challenge.dto.ChallengeResponse;
-import com.habitpay.habitpay.domain.challengeenrollment.application.ChallengeEnrollmentSearchService;
-import com.habitpay.habitpay.domain.challengeenrollment.application.ChallengeEnrollmentService;
-import com.habitpay.habitpay.domain.challengeenrollment.domain.ChallengeEnrollment;
 import com.habitpay.habitpay.domain.member.application.MemberService;
 import com.habitpay.habitpay.domain.member.domain.Member;
 import com.habitpay.habitpay.global.config.jwt.TokenService;
@@ -17,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
@@ -27,31 +26,16 @@ import java.util.Optional;
 public class ChallengeApi {
     private final ChallengeCreationService challengeCreationService;
     private final ChallengeSearchService challengeSearchService;
-    private final ChallengeEnrollmentService challengeEnrollmentService;
-    private final ChallengeEnrollmentSearchService challengeEnrollmentSearchService;
+    private final ChallengeDetailService challengeDetailService;
     private final MemberService memberService;
     private final TokenService tokenService;
 
     @GetMapping("/challenges/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<?> getChallenge(@PathVariable("id") Long id,
-                                          @RequestHeader("Authorization") String authorizationHeader) {
-
+    public ResponseEntity<ChallengeResponse> getChallengeDetail(@PathVariable("id") Long id,
+                                                                @AuthenticationPrincipal String email) {
         log.info("[GET /challenges/{}]", id);
-
-        // TODO: Interceptor 나 Filter 에서 먼저 처리해주기 때문에 나중에 삭제하기
-        Optional<String> optionalToken = tokenService.getTokenFromHeader(authorizationHeader);
-        String token = optionalToken.get();
-        String email = tokenService.getEmail(token);
-        Member member = memberService.findByEmail(email);
-
-        // TODO: 사용자의 Challenge 등록 여부를 확인한 후 return 하기
-
-        Challenge challenge = challengeSearchService.findById(id);
-        Optional<ChallengeEnrollment> optionalChallengeEnrollment = challengeEnrollmentSearchService.findByMember(member);
-        ChallengeResponse challengeResponse = new ChallengeResponse(member, challenge, optionalChallengeEnrollment);
-
-        return ResponseEntity.status(HttpStatus.OK).body(challengeResponse);
+        return challengeDetailService.getChallengeDetailById(id, email);
     }
 
     @PostMapping("/challenges")
