@@ -77,16 +77,16 @@ public class ChallengePostService {
         return challengePost;
     }
 
-    public Member getWriter(Long challengeEnrollmentId) {
-        ChallengeEnrollment enrollment = challengeEnrollmentRepository.findById(challengeEnrollmentId)
-                .orElseThrow(() -> new NoSuchElementException("No such enrollment " + challengeEnrollmentId));
+    public Member getWriter(ChallengePost post) {
+        ChallengeEnrollment enrollment = challengeEnrollmentRepository.findById(post.getChallengeEnrollmentId())
+                .orElseThrow(() -> new NoSuchElementException("No such enrollment " + post.getChallengeEnrollmentId()));
         return enrollment.getMember();
     }
 
     public void authorizePostWriter(ChallengePost challengePost) {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         log.info("email : " + email);
-        if (!getWriter(challengePost.getChallengeEnrollmentId()).getEmail().equals(email)) {
+        if (!getWriter(challengePost).getEmail().equals(email)) {
             throw new CustomJwtException(HttpStatus.UNAUTHORIZED, CustomJwtErrorInfo.UNAUTHORIZED, "Not a Member who posted.");
         }
     }
