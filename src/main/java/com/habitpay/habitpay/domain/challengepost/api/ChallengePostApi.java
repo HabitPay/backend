@@ -118,7 +118,7 @@ public class ChallengePostApi {
 
         if (request.getIsAnnouncement()) {
             Challenge challenge = challengeSearchService.findById(id);
-            if (!challenge.getHost().equals(member)) {
+            if (!challengePostService.isHost(challenge, member)) {
                 throw new CustomJwtException(HttpStatus.FORBIDDEN, CustomJwtErrorInfo.FORBIDDEN, "Only Host is able to upload an Announcement Post.");
             }
         }
@@ -147,11 +147,7 @@ public class ChallengePostApi {
         ChallengePost post = challengePostService.findById(id);
 
         if (post.getIsAnnouncement()) {
-            ChallengeEnrollment enrollment = challengeEnrollmentRepository
-                    .findById(post.getChallengeEnrollmentId())
-                    .orElseThrow(() -> new NoSuchElementException("No such enrollment " + post.getChallengeEnrollmentId()));
-
-            if (!enrollment.getChallenge().getHost().getEmail().equals(email)) {
+            if (!challengePostService.isHost(challengePostService.findChallengeByPostId(id), email)) {
                 throw new CustomJwtException(HttpStatus.FORBIDDEN, CustomJwtErrorInfo.FORBIDDEN, "Only Host is able to delete an Announcement Post.");
             }
         }
