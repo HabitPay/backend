@@ -43,9 +43,4 @@ public class ChallengePost extends BaseTime {
     public void modifyPostIsAnnouncement(boolean isAnnouncement) {
         this.isAnnouncement = isAnnouncement;
     }
-
-    // todo : challengeEnrollment에서 id로 멤버 찾기 -> 포스트 작성자 정보
-//    public Member getWriter() {
-//        return challengeEnrollmentRepository.findMemberById(this.challengeEnrollmentId);
-//    }
 }
