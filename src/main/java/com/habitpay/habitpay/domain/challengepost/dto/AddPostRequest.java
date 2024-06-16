@@ -13,7 +13,7 @@ import java.util.List;
 @AllArgsConstructor
 public class AddPostRequest {
     private String content;
-    private boolean isAnnouncement;
+    private Boolean isAnnouncement;
     private List<AddPostPhotoData> photos;
 
     public ChallengePost toEntity(Long challengeEnrollmentId) {

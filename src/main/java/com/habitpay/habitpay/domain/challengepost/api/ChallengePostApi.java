@@ -1,21 +1,34 @@
 package com.habitpay.habitpay.domain.challengepost.api;
 
+import com.habitpay.habitpay.domain.challenge.application.ChallengeSearchService;
+import com.habitpay.habitpay.domain.challenge.dao.ChallengeRepository;
+import com.habitpay.habitpay.domain.challenge.domain.Challenge;
+import com.habitpay.habitpay.domain.challengeenrollment.application.ChallengeEnrollmentSearchService;
+import com.habitpay.habitpay.domain.challengeenrollment.dao.ChallengeEnrollmentRepository;
+import com.habitpay.habitpay.domain.challengeenrollment.domain.ChallengeEnrollment;
 import com.habitpay.habitpay.domain.challengepost.application.ChallengePostService;
 import com.habitpay.habitpay.domain.challengepost.domain.ChallengePost;
 import com.habitpay.habitpay.domain.challengepost.dto.AddPostRequest;
 import com.habitpay.habitpay.domain.challengepost.dto.ModifyPostRequest;
+import com.habitpay.habitpay.domain.member.application.MemberService;
+import com.habitpay.habitpay.domain.member.dao.MemberRepository;
+import com.habitpay.habitpay.domain.member.domain.Member;
 import com.habitpay.habitpay.domain.postphoto.dto.PostPhotoView;
 import com.habitpay.habitpay.domain.challengepost.dto.PostViewResponse;
 import com.habitpay.habitpay.domain.postphoto.application.PostPhotoService;
 import com.habitpay.habitpay.domain.postphoto.domain.PostPhoto;
+import com.habitpay.habitpay.domain.refreshtoken.exception.CustomJwtException;
+import com.habitpay.habitpay.global.error.CustomJwtErrorInfo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @RestController
 @RequiredArgsConstructor
@@ -25,6 +38,12 @@ public class ChallengePostApi {
     private final ChallengePostService challengePostService;
     private final PostPhotoService postPhotoService;
 
+    private final MemberService memberService;
+    private final ChallengeEnrollmentSearchService challengeEnrollmentSearchService;
+    private final ChallengeSearchService challengeSearchService;
+
+    // todo : 서비스에 메서드 만들고 그걸 불러오는 걸로 변경하면 좋을 듯
+    private final ChallengeEnrollmentRepository challengeEnrollmentRepository;
 
     @GetMapping("/api/posts/{id}")
     public ResponseEntity<PostViewResponse> findPost(@PathVariable Long id) {
@@ -87,15 +106,24 @@ public class ChallengePostApi {
 //                .body(challengePostsView);
 //    }
 
-    @PostMapping("/api/challenge_enrollment/{id}/post")
-    public ResponseEntity<List<String>> addPost(@RequestBody AddPostRequest request, @PathVariable Long id, Principal principal) {
+    @PostMapping("/api/challenges/{id}/post")
+    public ResponseEntity<List<String>> addPost(@RequestBody AddPostRequest request, @PathVariable Long id, @AuthenticationPrincipal String email) {
 
-         log.info("Principal Name: {}", principal.getName());
-        // todo : principal.getName() : token의 email 주소
-        //      : API를 '/api/challenges/{id}/post'로 변경하여, 메서드 간 일관성을 유지하고 직관성을 높일 예정
-        //      : [email && challenge id] 정보를 합쳐 enrollment id 찾기만 하면 됨
+         log.info("Authentication Principal Email: {}", email);
 
-        ChallengePost challengePost = challengePostService.save(request, id);
+        Member member = memberService.findByEmail(email);
+        // todo : List<>로 받게 될 경우 'challenge id' 이용해 enrollment 특정해야 함
+        ChallengeEnrollment enrollment = challengeEnrollmentSearchService.findByMember(member)
+                .orElseThrow(() -> new NoSuchElementException("(for debugging) no enrollment for : " + email));
+
+        if (request.getIsAnnouncement()) {
+            Challenge challenge = challengeSearchService.findById(id);
+            if (!challenge.getHost().equals(member)) {
+                throw new CustomJwtException(HttpStatus.FORBIDDEN, CustomJwtErrorInfo.FORBIDDEN, "Only Host is able to upload an Announcement Post.");
+            }
+        }
+
+        ChallengePost challengePost = challengePostService.save(request, enrollment.getId());
         List<String> preSignedUrlList = postPhotoService.save(challengePost, request.getPhotos());
 
         return ResponseEntity.status(HttpStatus.CREATED).body(preSignedUrlList);
@@ -114,9 +142,24 @@ public class ChallengePostApi {
                 .body(presignedUrlList);
     }
 
-    // todo : 공지글만 지워지는 것 확인하기
     @DeleteMapping("/api/posts/{id}")
-    public ResponseEntity<Void> deletePost(@PathVariable Long id) {
+    public ResponseEntity<Void> deletePost(@PathVariable Long id, @AuthenticationPrincipal String email) {
+        ChallengePost post = challengePostService.findById(id);
+
+        if (post.getIsAnnouncement()) {
+            ChallengeEnrollment enrollment = challengeEnrollmentRepository
+                    .findById(post.getChallengeEnrollmentId())
+                    .orElseThrow(() -> new NoSuchElementException("No such enrollment " + post.getChallengeEnrollmentId()));
+
+            if (!enrollment.getChallenge().getHost().getEmail().equals(email)) {
+                throw new CustomJwtException(HttpStatus.FORBIDDEN, CustomJwtErrorInfo.FORBIDDEN, "Only Host is able to delete an Announcement Post.");
+            }
+        }
+        else {
+            // todo : 관리자 계정이 생겨서 일반 포스트도 삭제할 수 있게 되면 수정
+            throw new CustomJwtException(HttpStatus.FORBIDDEN, CustomJwtErrorInfo.FORBIDDEN, "Post cannot be deleted.");
+        }
+
         challengePostService.delete(id);
 
         return ResponseEntity.ok()

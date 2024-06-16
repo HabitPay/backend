@@ -1,13 +1,20 @@
 package com.habitpay.habitpay.domain.challengepost.application;
 
+import com.habitpay.habitpay.domain.challengeenrollment.application.ChallengeEnrollmentSearchService;
+import com.habitpay.habitpay.domain.challengeenrollment.dao.ChallengeEnrollmentRepository;
+import com.habitpay.habitpay.domain.challengeenrollment.domain.ChallengeEnrollment;
 import com.habitpay.habitpay.domain.challengepost.dao.ChallengePostRepository;
 import com.habitpay.habitpay.domain.challengepost.domain.ChallengePost;
 import com.habitpay.habitpay.domain.challengepost.dto.AddPostRequest;
 import com.habitpay.habitpay.domain.challengepost.dto.ModifyPostRequest;
+import com.habitpay.habitpay.domain.member.domain.Member;
 import com.habitpay.habitpay.domain.postphoto.application.PostPhotoService;
+import com.habitpay.habitpay.domain.refreshtoken.exception.CustomJwtException;
+import com.habitpay.habitpay.global.error.CustomJwtErrorInfo;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -21,6 +28,8 @@ public class ChallengePostService {
 
     private final ChallengePostRepository challengePostRepository;
     private final PostPhotoService postPhotoService;
+    private final ChallengeEnrollmentRepository challengeEnrollmentRepository;
+    private final ChallengeEnrollmentSearchService challengeEnrollmentSearchService;
 
     public ChallengePost save(AddPostRequest request, Long challengeEnrollmentId) {
         return challengePostRepository.save(request.toEntity(challengeEnrollmentId));
@@ -55,7 +64,7 @@ public class ChallengePostService {
     @Transactional
     public ChallengePost update(Long id, ModifyPostRequest request) {
         ChallengePost challengePost = challengePostRepository.findById(id)
-                .orElseThrow(() ->  new IllegalArgumentException("(for debugging) not found : " + id));
+                .orElseThrow(() -> new IllegalArgumentException("(for debugging) not found : " + id));
 
         authorizePostWriter(challengePost);
         if (request.getContent() != null) {
@@ -68,12 +77,17 @@ public class ChallengePostService {
         return challengePost;
     }
 
-    // todo : 확인하기
-    private static void authorizePostWriter(ChallengePost challengePost) {
+    public Member getWriter(ChallengePost post) {
+        ChallengeEnrollment enrollment = challengeEnrollmentRepository.findById(post.getChallengeEnrollmentId())
+                .orElseThrow(() -> new NoSuchElementException("No such enrollment " + post.getChallengeEnrollmentId()));
+        return enrollment.getMember();
+    }
+
+    public void authorizePostWriter(ChallengePost challengePost) {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         log.info("email : " + email);
-//        if (!challengePost.getWriter().getEmail().equals(email)) {
-//            throw new IllegalArgumentException("(for debug) not authorized");
-//        }
+        if (!getWriter(challengePost).getEmail().equals(email)) {
+            throw new CustomJwtException(HttpStatus.UNAUTHORIZED, CustomJwtErrorInfo.UNAUTHORIZED, "Not a Member who posted.");
+        }
     }
 }
