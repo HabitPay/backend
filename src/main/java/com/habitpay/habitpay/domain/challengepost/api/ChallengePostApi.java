@@ -19,6 +19,7 @@ import com.habitpay.habitpay.domain.postphoto.application.PostPhotoService;
 import com.habitpay.habitpay.domain.postphoto.domain.PostPhoto;
 import com.habitpay.habitpay.domain.refreshtoken.exception.CustomJwtException;
 import com.habitpay.habitpay.global.error.CustomJwtErrorInfo;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -106,6 +107,7 @@ public class ChallengePostApi {
 //                .body(challengePostsView);
 //    }
 
+    @Transactional
     @PostMapping("/api/challenges/{id}/post")
     public ResponseEntity<List<String>> addPost(@RequestBody AddPostRequest request, @PathVariable Long id, @AuthenticationPrincipal String email) {
 

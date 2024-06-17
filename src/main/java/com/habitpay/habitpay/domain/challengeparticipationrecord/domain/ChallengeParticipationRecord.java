@@ -1,9 +1,11 @@
 package com.habitpay.habitpay.domain.challengeparticipationrecord.domain;
 
+import com.habitpay.habitpay.domain.challengeenrollment.domain.ChallengeEnrollment;
 import com.habitpay.habitpay.domain.challengepost.domain.ChallengePost;
 import com.habitpay.habitpay.domain.model.BaseTime;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -18,15 +20,17 @@ public class ChallengeParticipationRecord extends BaseTime {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // todo : enrollment 도메인 적용하기
-//    @ManyToOne
-//    @JoinColumn
-//    private ChallengeEnrollment enrollment;
+    @ManyToOne
+    @JoinColumn
+    private ChallengeEnrollment enrollment;
 
     @OneToOne
     @JoinColumn
     private ChallengePost post;
 
-//    @Builder
-//    public ChallengeParticipationRecord() {}
+    @Builder
+    public ChallengeParticipationRecord(ChallengeEnrollment enrollment, ChallengePost post) {
+        this.enrollment = enrollment;
+        this.post = post;
+    }
 }

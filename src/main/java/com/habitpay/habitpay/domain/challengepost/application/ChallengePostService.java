@@ -4,6 +4,8 @@ import com.habitpay.habitpay.domain.challenge.domain.Challenge;
 import com.habitpay.habitpay.domain.challengeenrollment.application.ChallengeEnrollmentSearchService;
 import com.habitpay.habitpay.domain.challengeenrollment.dao.ChallengeEnrollmentRepository;
 import com.habitpay.habitpay.domain.challengeenrollment.domain.ChallengeEnrollment;
+import com.habitpay.habitpay.domain.challengeparticipationrecord.application.ChallengeParticipationRecordService;
+import com.habitpay.habitpay.domain.challengeparticipationrecord.domain.ChallengeParticipationRecord;
 import com.habitpay.habitpay.domain.challengepost.dao.ChallengePostRepository;
 import com.habitpay.habitpay.domain.challengepost.domain.ChallengePost;
 import com.habitpay.habitpay.domain.challengepost.dto.AddPostRequest;
@@ -32,9 +34,15 @@ public class ChallengePostService {
     private final PostPhotoService postPhotoService;
     private final ChallengeEnrollmentRepository challengeEnrollmentRepository;
     private final ChallengeEnrollmentSearchService challengeEnrollmentSearchService;
+    private final ChallengeParticipationRecordService challengeParticipationRecordService;
 
     public ChallengePost save(AddPostRequest request, Long challengeEnrollmentId) {
-        return challengePostRepository.save(request.toEntity(challengeEnrollmentId));
+        ChallengePost post = challengePostRepository.save(request.toEntity(challengeEnrollmentId));
+        // todo : service 메서드로 대체하기
+        ChallengeEnrollment enrollment = challengeEnrollmentRepository.findById(challengeEnrollmentId)
+                .orElseThrow(() -> new NoSuchElementException("No Such enrollment " + challengeEnrollmentId));
+        challengeParticipationRecordService.save(enrollment, post);
+        return post;
     }
 
     // todo : 각 챌린지 별로 findAll 해주는 메서드 (ChallengeEnrollment 도메인 만들고 거기서 ChallengeId 가져온 뒤에 할 수 있을 듯)
