@@ -20,12 +20,12 @@ public class ChallengeDetailService {
     private final ChallengeSearchService challengeSearchService;
     private final ChallengeEnrollmentSearchService challengeEnrollmentSearchService;
 
-    public ResponseEntity<ChallengeResponse> getChallengeDetailById(Long id, String email) {
+    public ResponseEntity<ChallengeResponse> findById(Long id, String email) {
         Member member = memberService.findByEmail(email);
         Challenge challenge = challengeSearchService.findById(id);
         Optional<ChallengeEnrollment> optionalChallengeEnrollment = challengeEnrollmentSearchService.findByMember(member);
         ChallengeResponse challengeResponse = new ChallengeResponse(member, challenge, optionalChallengeEnrollment);
-        
+
         return ResponseEntity.status(HttpStatus.OK).body(challengeResponse);
     }
 }
