@@ -15,6 +15,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
+@RequestMapping("/api")
 @RequiredArgsConstructor
 @Slf4j
 public class ChallengeApi {
@@ -26,7 +27,6 @@ public class ChallengeApi {
     @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<ChallengeResponse> getChallengeDetail(@PathVariable("id") Long id,
                                                                 @AuthenticationPrincipal String email) {
-        log.info("[GET /challenges/{}]", id);
         return challengeDetailService.findById(id, email);
     }
 
@@ -34,7 +34,6 @@ public class ChallengeApi {
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<ApiResponse> createChallenge(@RequestBody ChallengeCreationRequest challengeCreationRequest,
                                                        @AuthenticationPrincipal String email) {
-        log.info("[POST /challenges] email: {}", email);
         return challengeCreationService.save(challengeCreationRequest, email);
     }
 
@@ -42,7 +41,6 @@ public class ChallengeApi {
     @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<ApiResponse> patchChallengeDetails(@PathVariable("id") Long id, @RequestBody ChallengePatchRequest challengePatchRequest,
                                                              @AuthenticationPrincipal String email) {
-        log.info("[PATCH /challenges/{}]: email {}", id, email);
         return challengeUpdateService.update(id, challengePatchRequest, email);
     }
 }
