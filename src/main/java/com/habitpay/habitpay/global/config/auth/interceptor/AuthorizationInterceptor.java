@@ -35,7 +35,6 @@ public class AuthorizationInterceptor implements HandlerInterceptor {
             HttpServletRequest request,
             HttpServletResponse response,
             Object handler) throws Exception {
-
         // final String REDIRECT_URL = "http://localhost:3000";
 
         // todo
@@ -82,6 +81,7 @@ public class AuthorizationInterceptor implements HandlerInterceptor {
             // todo : 인가
             Collection<GrantedAuthority> collection = (Collection<GrantedAuthority>) authentication.getAuthorities();
             log.info("[check ROLE] {}", collection);
+            log.info("[{} {}] email: {}", request.getMethod(), request.getRequestURI(), authentication.getPrincipal());
 
 //            if (!collection.toString().equals("[ROLE_GUEST]")) {
 //                throw new CustomJwtException(HttpStatus.FORBIDDEN, CustomJwtErrorInfo.FORBIDDEN, "request required higher privileges than provided by the

@@ -10,13 +10,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RestController
+@RequestMapping("/api")
 @RequiredArgsConstructor
 public class ChallengeEnrollmentApi {
     private final MemberService memberService;
@@ -27,14 +25,12 @@ public class ChallengeEnrollmentApi {
     @PostMapping("/challenges/{id}/enroll")
     @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<ApiResponse> enrollChallenge(@PathVariable("id") Long id, @AuthenticationPrincipal String email) {
-        log.info("[POST /challenges/{}/enroll] email: {}", id, email);
         return challengeEnrollmentService.enroll(id, email);
     }
 
     @PostMapping("/challenges/{id}/cancel")
     @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<ApiResponse> cancelChallenge(@PathVariable("id") Long id, @AuthenticationPrincipal String email) {
-        log.info("[POST /challenges/{}/cancel]: email {}", id, email);
         return challengeCancellationService.cancel(id, email);
     }
 
