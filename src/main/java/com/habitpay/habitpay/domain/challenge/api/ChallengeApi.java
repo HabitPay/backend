@@ -27,7 +27,7 @@ public class ChallengeApi {
     public ResponseEntity<ChallengeResponse> getChallengeDetail(@PathVariable("id") Long id,
                                                                 @AuthenticationPrincipal String email) {
         log.info("[GET /challenges/{}]", id);
-        return challengeDetailService.getChallengeDetailById(id, email);
+        return challengeDetailService.findById(id, email);
     }
 
     @PostMapping("/challenges")
