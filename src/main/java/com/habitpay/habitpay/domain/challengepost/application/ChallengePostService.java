@@ -82,12 +82,14 @@ public class ChallengePostService {
         authorizePostWriter(challengePost);
         if (request.getContent() != null) {
             challengePost.modifyPostContent(request.getContent());
+            challengePostRepository.save(challengePost);
         }
         if (request.getIsAnnouncement() != null) {
             if (request.getIsAnnouncement() && !isChallengeHost(findChallengeByPostId(id), getWriter(challengePost))) {
                 throw new CustomJwtException(HttpStatus.FORBIDDEN, CustomJwtErrorInfo.FORBIDDEN, "Only Host is able to upload an Announcement Post.");
             }
             challengePost.modifyPostIsAnnouncement(request.getIsAnnouncement());
+            challengePostRepository.save(challengePost);
         }
 
         return challengePost;
@@ -110,5 +112,8 @@ public class ChallengePostService {
         return challenge.getHost().equals(member);
     }
 
-    public boolean isChallengeHost(Challenge challenge, String email) { return challenge.getHost().getEmail().equals(email); }
+    public boolean isChallengeHost(Challenge challenge, String email) {
+        String hostEmail = challenge.getHost().getEmail();
+        return hostEmail.equals(email);
+    }
 }
