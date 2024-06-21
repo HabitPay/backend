@@ -84,7 +84,7 @@ public class ChallengePostService {
             challengePost.modifyPostContent(request.getContent());
         }
         if (request.getIsAnnouncement() != null) {
-            if (request.getIsAnnouncement() && !isChallengeHost(id, getWriter(challengePost))) {
+            if (request.getIsAnnouncement() && !isChallengeHost(findChallengeByPostId(id), getWriter(challengePost))) {
                 throw new CustomJwtException(HttpStatus.FORBIDDEN, CustomJwtErrorInfo.FORBIDDEN, "Only Host is able to upload an Announcement Post.");
             }
             challengePost.modifyPostIsAnnouncement(request.getIsAnnouncement());
@@ -106,13 +106,9 @@ public class ChallengePostService {
             throw new CustomJwtException(HttpStatus.UNAUTHORIZED, CustomJwtErrorInfo.UNAUTHORIZED, "Not a Member who posted.");
         }
     }
-
-    // todo : ChallengePostConroller 리팩토링 후에 메서드 개수 줄이거나 코드 간단하게 만들기
     public boolean isChallengeHost(Challenge challenge, Member member) {
         return challenge.getHost().equals(member);
     }
 
     public boolean isChallengeHost(Challenge challenge, String email) { return challenge.getHost().getEmail().equals(email); }
-
-    public boolean isChallengeHost(Long postId, Member member) { return findChallengeByPostId(postId).getHost().equals(member); }
 }
