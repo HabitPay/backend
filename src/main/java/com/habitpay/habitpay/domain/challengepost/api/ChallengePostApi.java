@@ -1,7 +1,6 @@
 package com.habitpay.habitpay.domain.challengepost.api;
 
 import com.habitpay.habitpay.domain.challenge.application.ChallengeSearchService;
-import com.habitpay.habitpay.domain.challenge.dao.ChallengeRepository;
 import com.habitpay.habitpay.domain.challenge.domain.Challenge;
 import com.habitpay.habitpay.domain.challengeenrollment.application.ChallengeEnrollmentSearchService;
 import com.habitpay.habitpay.domain.challengeenrollment.dao.ChallengeEnrollmentRepository;
@@ -11,7 +10,6 @@ import com.habitpay.habitpay.domain.challengepost.domain.ChallengePost;
 import com.habitpay.habitpay.domain.challengepost.dto.AddPostRequest;
 import com.habitpay.habitpay.domain.challengepost.dto.ModifyPostRequest;
 import com.habitpay.habitpay.domain.member.application.MemberService;
-import com.habitpay.habitpay.domain.member.dao.MemberRepository;
 import com.habitpay.habitpay.domain.member.domain.Member;
 import com.habitpay.habitpay.domain.postphoto.dto.PostPhotoView;
 import com.habitpay.habitpay.domain.challengepost.dto.PostViewResponse;
@@ -120,7 +118,7 @@ public class ChallengePostApi {
 
         if (request.getIsAnnouncement()) {
             Challenge challenge = challengeSearchService.findById(id);
-            if (!challengePostService.isHost(challenge, member)) {
+            if (!challengePostService.isChallengeHost(challenge, member)) {
                 throw new CustomJwtException(HttpStatus.FORBIDDEN, CustomJwtErrorInfo.FORBIDDEN, "Only Host is able to upload an Announcement Post.");
             }
         }
@@ -149,7 +147,7 @@ public class ChallengePostApi {
         ChallengePost post = challengePostService.findById(id);
 
         if (post.getIsAnnouncement()) {
-            if (!challengePostService.isHost(challengePostService.findChallengeByPostId(id), email)) {
+            if (!challengePostService.isChallengeHost(challengePostService.findChallengeByPostId(id), email)) {
                 throw new CustomJwtException(HttpStatus.FORBIDDEN, CustomJwtErrorInfo.FORBIDDEN, "Only Host is able to delete an Announcement Post.");
             }
         }
