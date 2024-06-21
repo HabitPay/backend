@@ -5,7 +5,6 @@ import com.habitpay.habitpay.domain.challengeenrollment.application.ChallengeEnr
 import com.habitpay.habitpay.domain.challengeenrollment.dao.ChallengeEnrollmentRepository;
 import com.habitpay.habitpay.domain.challengeenrollment.domain.ChallengeEnrollment;
 import com.habitpay.habitpay.domain.challengeparticipationrecord.application.ChallengeParticipationRecordService;
-import com.habitpay.habitpay.domain.challengeparticipationrecord.domain.ChallengeParticipationRecord;
 import com.habitpay.habitpay.domain.challengepost.dao.ChallengePostRepository;
 import com.habitpay.habitpay.domain.challengepost.domain.ChallengePost;
 import com.habitpay.habitpay.domain.challengepost.dto.AddPostRequest;
@@ -16,7 +15,6 @@ import com.habitpay.habitpay.domain.refreshtoken.exception.CustomJwtException;
 import com.habitpay.habitpay.global.error.CustomJwtErrorInfo;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.java.Log;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -86,7 +84,7 @@ public class ChallengePostService {
             challengePost.modifyPostContent(request.getContent());
         }
         if (request.getIsAnnouncement() != null) {
-            if (request.getIsAnnouncement() && !isHost(id, getWriter(challengePost))) {
+            if (request.getIsAnnouncement() && !isChallengeHost(findChallengeByPostId(id), getWriter(challengePost))) {
                 throw new CustomJwtException(HttpStatus.FORBIDDEN, CustomJwtErrorInfo.FORBIDDEN, "Only Host is able to upload an Announcement Post.");
             }
             challengePost.modifyPostIsAnnouncement(request.getIsAnnouncement());
@@ -108,17 +106,9 @@ public class ChallengePostService {
             throw new CustomJwtException(HttpStatus.UNAUTHORIZED, CustomJwtErrorInfo.UNAUTHORIZED, "Not a Member who posted.");
         }
     }
-
-    public boolean isHost(Challenge challenge, Member member) {
+    public boolean isChallengeHost(Challenge challenge, Member member) {
         return challenge.getHost().equals(member);
     }
 
-    public boolean isHost(Challenge challenge, String email) {
-        return challenge.getHost().getEmail().equals(email);
-    }
-
-    public boolean isHost(Long postId, Member member) {
-        Challenge challenge = findChallengeByPostId(postId);
-        return challenge.getHost().equals(member);
-    }
+    public boolean isChallengeHost(Challenge challenge, String email) { return challenge.getHost().getEmail().equals(email); }
 }
