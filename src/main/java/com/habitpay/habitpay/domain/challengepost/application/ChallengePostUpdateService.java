@@ -5,7 +5,7 @@ import com.habitpay.habitpay.domain.challengeparticipationrecord.application.Cha
 import com.habitpay.habitpay.domain.challengepost.dao.ChallengePostRepository;
 import com.habitpay.habitpay.domain.challengepost.domain.ChallengePost;
 import com.habitpay.habitpay.domain.challengepost.dto.ModifyPostRequest;
-import com.habitpay.habitpay.domain.postphoto.application.PostPhotoService;
+import com.habitpay.habitpay.domain.postphoto.application.PostPhotoCreationService;
 import com.habitpay.habitpay.domain.refreshtoken.exception.CustomJwtException;
 import com.habitpay.habitpay.global.error.CustomJwtErrorInfo;
 import jakarta.transaction.Transactional;
@@ -20,7 +20,7 @@ import org.springframework.stereotype.Service;
 public class ChallengePostUpdateService {
 
     private final ChallengePostRepository challengePostRepository;
-    private final PostPhotoService postPhotoService;
+    private final PostPhotoCreationService postPhotoCreationService;
     private final ChallengePostSearchService challengePostSearchService;
     private final ChallengePostUtilService challengePostUtilService;
     private final ChallengeEnrollmentRepository challengeEnrollmentRepository;

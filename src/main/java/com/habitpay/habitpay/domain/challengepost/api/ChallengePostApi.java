@@ -11,9 +11,12 @@ import com.habitpay.habitpay.domain.challengepost.dto.AddPostRequest;
 import com.habitpay.habitpay.domain.challengepost.dto.ModifyPostRequest;
 import com.habitpay.habitpay.domain.member.application.MemberService;
 import com.habitpay.habitpay.domain.member.domain.Member;
+import com.habitpay.habitpay.domain.postphoto.application.PostPhotoCreationService;
+import com.habitpay.habitpay.domain.postphoto.application.PostPhotoDeleteService;
+import com.habitpay.habitpay.domain.postphoto.application.PostPhotoSearchService;
+import com.habitpay.habitpay.domain.postphoto.application.PostPhotoUtilService;
 import com.habitpay.habitpay.domain.postphoto.dto.PostPhotoView;
 import com.habitpay.habitpay.domain.challengepost.dto.PostViewResponse;
-import com.habitpay.habitpay.domain.postphoto.application.PostPhotoService;
 import com.habitpay.habitpay.domain.postphoto.domain.PostPhoto;
 import com.habitpay.habitpay.domain.refreshtoken.exception.CustomJwtException;
 import com.habitpay.habitpay.global.error.CustomJwtErrorInfo;
@@ -39,7 +42,10 @@ public class ChallengePostApi {
     private final ChallengePostUtilService challengePostUtilService;
     private final ChallengePostUpdateService challengePostUpdateService;
     private final ChallengePostDeleteService challengePostDeleteService;
-    private final PostPhotoService postPhotoService;
+    private final PostPhotoCreationService postPhotoCreationService;
+    private final PostPhotoSearchService postPhotoSearchService;
+    private final PostPhotoDeleteService postPhotoDeleteService;
+    private final PostPhotoUtilService postPhotoUtilService;
 
     private final MemberService memberService;
     private final ChallengeEnrollmentSearchService challengeEnrollmentSearchService;
@@ -52,8 +58,8 @@ public class ChallengePostApi {
     public ResponseEntity<PostViewResponse> findPost(@PathVariable Long id) {
 
         ChallengePost challengePost = challengePostSearchService.findById(id);
-        List<PostPhoto> photoList = postPhotoService.findAllByPost(challengePost);
-        List<PostPhotoView> photoViewList = postPhotoService.makePhotoViewList(photoList);
+        List<PostPhoto> photoList = postPhotoSearchService.findAllByPost(challengePost);
+        List<PostPhotoView> photoViewList = postPhotoUtilService.makePhotoViewList(photoList);
 
         return ResponseEntity.ok()
                 .body(new PostViewResponse(challengePost, photoViewList));
@@ -65,7 +71,7 @@ public class ChallengePostApi {
                 .stream()
                 .filter(post -> !post.getIsAnnouncement())
                 // .sorted() // todo : 순서 설정하고 싶을 때
-                .map(post -> new PostViewResponse(post, postPhotoService.makePhotoViewList(postPhotoService.findAllByPost(post))))
+                .map(post -> new PostViewResponse(post, postPhotoUtilService.makePhotoViewList(postPhotoSearchService.findAllByPost(post))))
                 .toList();
 
         return ResponseEntity.ok()
@@ -83,7 +89,7 @@ public class ChallengePostApi {
                 .stream()
                 .filter(post -> !post.getIsAnnouncement())
                 // .sorted() // todo : 순서 설정하고 싶을 때
-                .map(post -> new PostViewResponse(post, postPhotoService.makePhotoViewList(postPhotoService.findAllByPost(post))))
+                .map(post -> new PostViewResponse(post, postPhotoUtilService.makePhotoViewList(postPhotoSearchService.findAllByPost(post))))
                 .toList();
 
         return ResponseEntity.ok()
@@ -128,24 +134,26 @@ public class ChallengePostApi {
         }
 
         ChallengePost challengePost = challengePostCreationService.save(request, enrollment.getId());
-        List<String> preSignedUrlList = postPhotoService.save(challengePost, request.getPhotos());
+        List<String> preSignedUrlList = postPhotoCreationService.save(challengePost, request.getPhotos());
 
         return ResponseEntity.status(HttpStatus.CREATED).body(preSignedUrlList);
     }
 
+    @Transactional
     @PutMapping("/api/posts/{id}")
     public ResponseEntity<List<String>> modifyPost(@PathVariable Long id,
                                                     @RequestBody ModifyPostRequest request) {
 
         ChallengePost modifiedPost = challengePostUpdateService.update(id, request);
-        request.getDeletedPhotoIds().forEach(postPhotoService::delete);
-        request.getModifiedPhotos().forEach(photo -> postPhotoService.changeViewOrder(photo.getPhotoId(), photo.getViewOrder()));
-        List<String> presignedUrlList =  postPhotoService.save(challengePostSearchService.findById(id), request.getNewPhotos());
+        request.getDeletedPhotoIds().forEach(postPhotoDeleteService::delete);
+        request.getModifiedPhotos().forEach(photo -> postPhotoUtilService.changeViewOrder(photo.getPhotoId(), photo.getViewOrder()));
+        List<String> presignedUrlList =  postPhotoCreationService.save(challengePostSearchService.findById(id), request.getNewPhotos());
 
         return ResponseEntity.ok()
                 .body(presignedUrlList);
     }
 
+    @Transactional
     @DeleteMapping("/api/posts/{id}")
     public ResponseEntity<Void> deletePost(@PathVariable Long id, @AuthenticationPrincipal String email) {
         ChallengePost post = challengePostSearchService.findById(id);
