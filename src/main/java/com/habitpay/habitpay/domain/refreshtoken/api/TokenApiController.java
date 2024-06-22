@@ -1,7 +1,6 @@
 package com.habitpay.habitpay.domain.refreshtoken.api;
 
-import com.habitpay.habitpay.domain.refreshtoken.application.NewTokenService;
-import com.habitpay.habitpay.domain.refreshtoken.application.RefreshTokenService;
+import com.habitpay.habitpay.domain.refreshtoken.application.RefreshTokenCreationService;
 import com.habitpay.habitpay.domain.refreshtoken.dto.CreateAccessTokenRequest;
 import com.habitpay.habitpay.domain.refreshtoken.dto.CreateAccessTokenResponse;
 import com.habitpay.habitpay.global.config.jwt.TokenService;
@@ -23,8 +22,7 @@ import java.util.Optional;
 public class TokenApiController {
 
     private final TokenService tokenService;
-    private final NewTokenService newTokenService;
-    private final RefreshTokenService refreshTokenService;
+    private final RefreshTokenCreationService refreshTokenCreationService;
 
     @PostMapping("/token")
     public ResponseEntity<CreateAccessTokenResponse> createNewAccessTokenAndNewRefreshToken(
@@ -35,8 +33,8 @@ public class TokenApiController {
                 throw new CustomJwtException(HttpStatus.BAD_REQUEST, CustomJwtErrorInfo.BAD_REQUEST, "Request was missing the 'grantType' parameter.");
         }
 
-        String newAccessToken = newTokenService.createNewAccessToken(requestBody.getRefreshToken());
-        String refreshToken = refreshTokenService.setRefreshTokenByEmail(tokenService.getEmail(newAccessToken));
+        String newAccessToken = refreshTokenCreationService.createNewAccessToken(requestBody.getRefreshToken());
+        String refreshToken = refreshTokenCreationService.setRefreshTokenByEmail(tokenService.getEmail(newAccessToken));
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(new CreateAccessTokenResponse(

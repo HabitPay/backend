@@ -6,7 +6,7 @@ import com.habitpay.habitpay.domain.member.domain.Member;
 import com.habitpay.habitpay.domain.member.dto.MemberRequest;
 import com.habitpay.habitpay.domain.member.dto.MemberResponse;
 import com.habitpay.habitpay.domain.model.Response;
-import com.habitpay.habitpay.domain.refreshtoken.application.RefreshTokenService;
+import com.habitpay.habitpay.domain.refreshtoken.application.RefreshTokenCreationService;
 import com.habitpay.habitpay.domain.refreshtoken.dto.CreateAccessTokenResponse;
 import com.habitpay.habitpay.global.config.aws.S3FileService;
 import com.habitpay.habitpay.global.config.jwt.TokenService;
@@ -30,7 +30,7 @@ public class MemberApi {
     private final MemberService memberService;
     private final MemberProfileService memberProfileService;
     private final TokenService tokenService;
-    private final RefreshTokenService refreshTokenService;
+    private final RefreshTokenCreationService refreshTokenCreationService;
     private final S3FileService s3FileService;
 
     @GetMapping("/member")
@@ -100,7 +100,7 @@ public class MemberApi {
         log.info("[POST /member] 회원 활성화 성공");
 
         String newToken = tokenService.createAccessToken(email);
-        String refreshToken = refreshTokenService.setRefreshTokenByEmail(email);
+        String refreshToken = refreshTokenCreationService.setRefreshTokenByEmail(email);
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(new CreateAccessTokenResponse(

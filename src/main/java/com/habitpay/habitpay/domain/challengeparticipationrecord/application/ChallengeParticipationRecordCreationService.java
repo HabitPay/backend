@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class ChallengeParticipationRecordService {
+public class ChallengeParticipationRecordCreationService {
 
     private final ChallengeParticipationRecordRepository challengeParticipationRecordRepository;
 
