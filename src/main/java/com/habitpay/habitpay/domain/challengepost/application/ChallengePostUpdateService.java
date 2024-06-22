@@ -1,7 +1,7 @@
 package com.habitpay.habitpay.domain.challengepost.application;
 
 import com.habitpay.habitpay.domain.challengeenrollment.dao.ChallengeEnrollmentRepository;
-import com.habitpay.habitpay.domain.challengeparticipationrecord.application.ChallengeParticipationRecordService;
+import com.habitpay.habitpay.domain.challengeparticipationrecord.application.ChallengeParticipationRecordCreationService;
 import com.habitpay.habitpay.domain.challengepost.dao.ChallengePostRepository;
 import com.habitpay.habitpay.domain.challengepost.domain.ChallengePost;
 import com.habitpay.habitpay.domain.challengepost.dto.ModifyPostRequest;
@@ -24,7 +24,7 @@ public class ChallengePostUpdateService {
     private final ChallengePostSearchService challengePostSearchService;
     private final ChallengePostUtilService challengePostUtilService;
     private final ChallengeEnrollmentRepository challengeEnrollmentRepository;
-    private final ChallengeParticipationRecordService challengeParticipationRecordService;
+    private final ChallengeParticipationRecordCreationService challengeParticipationRecordCreationService;
 
     @Transactional
     public ChallengePost update(Long id, ModifyPostRequest request) {
