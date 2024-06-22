@@ -5,7 +5,7 @@ import com.habitpay.habitpay.domain.challenge.domain.Challenge;
 import com.habitpay.habitpay.domain.challengeenrollment.application.ChallengeEnrollmentSearchService;
 import com.habitpay.habitpay.domain.challengeenrollment.dao.ChallengeEnrollmentRepository;
 import com.habitpay.habitpay.domain.challengeenrollment.domain.ChallengeEnrollment;
-import com.habitpay.habitpay.domain.challengepost.application.ChallengePostService;
+import com.habitpay.habitpay.domain.challengepost.application.*;
 import com.habitpay.habitpay.domain.challengepost.domain.ChallengePost;
 import com.habitpay.habitpay.domain.challengepost.dto.AddPostRequest;
 import com.habitpay.habitpay.domain.challengepost.dto.ModifyPostRequest;
@@ -34,7 +34,11 @@ import java.util.NoSuchElementException;
 @Slf4j
 public class ChallengePostApi {
 
-    private final ChallengePostService challengePostService;
+    private final ChallengePostCreationService challengePostCreationService;
+    private final ChallengePostSearchService challengePostSearchService;
+    private final ChallengePostUtilService challengePostUtilService;
+    private final ChallengePostUpdateService challengePostUpdateService;
+    private final ChallengePostDeleteService challengePostDeleteService;
     private final PostPhotoService postPhotoService;
 
     private final MemberService memberService;
@@ -47,7 +51,7 @@ public class ChallengePostApi {
     @GetMapping("/api/posts/{id}")
     public ResponseEntity<PostViewResponse> findPost(@PathVariable Long id) {
 
-        ChallengePost challengePost = challengePostService.findById(id);
+        ChallengePost challengePost = challengePostSearchService.findById(id);
         List<PostPhoto> photoList = postPhotoService.findAllByPost(challengePost);
         List<PostPhotoView> photoViewList = postPhotoService.makePhotoViewList(photoList);
 
@@ -57,7 +61,7 @@ public class ChallengePostApi {
 
     @GetMapping("/api/challenges/{id}/posts")
     public ResponseEntity<List<PostViewResponse>> findChallengePosts(@PathVariable Long id) {
-        List<PostViewResponse> challengePostsView = challengePostService.findAllByChallenge(id)
+        List<PostViewResponse> challengePostsView = challengePostSearchService.findAllByChallenge(id)
                 .stream()
                 .filter(post -> !post.getIsAnnouncement())
                 // .sorted() // todo : 순서 설정하고 싶을 때
@@ -75,7 +79,7 @@ public class ChallengePostApi {
         //      : [email && challenge id] 정보를 합쳐 enrollment id 찾기
         Long challengeEnrollmentId = 1L; // todo : 임시값
 
-        List<PostViewResponse> challengePostsView = challengePostService.findAllByChallengeEnrollment(challengeEnrollmentId)
+        List<PostViewResponse> challengePostsView = challengePostSearchService.findAllByChallengeEnrollment(challengeEnrollmentId)
                 .stream()
                 .filter(post -> !post.getIsAnnouncement())
                 // .sorted() // todo : 순서 설정하고 싶을 때
@@ -118,12 +122,12 @@ public class ChallengePostApi {
 
         if (request.getIsAnnouncement()) {
             Challenge challenge = challengeSearchService.findById(id);
-            if (!challengePostService.isChallengeHost(challenge, member)) {
+            if (!challengePostUtilService.isChallengeHost(challenge, member)) {
                 throw new CustomJwtException(HttpStatus.FORBIDDEN, CustomJwtErrorInfo.FORBIDDEN, "Only Host is able to upload an Announcement Post.");
             }
         }
 
-        ChallengePost challengePost = challengePostService.save(request, enrollment.getId());
+        ChallengePost challengePost = challengePostCreationService.save(request, enrollment.getId());
         List<String> preSignedUrlList = postPhotoService.save(challengePost, request.getPhotos());
 
         return ResponseEntity.status(HttpStatus.CREATED).body(preSignedUrlList);
@@ -133,10 +137,10 @@ public class ChallengePostApi {
     public ResponseEntity<List<String>> modifyPost(@PathVariable Long id,
                                                     @RequestBody ModifyPostRequest request) {
 
-        ChallengePost modifiedPost = challengePostService.update(id, request);
+        ChallengePost modifiedPost = challengePostUpdateService.update(id, request);
         request.getDeletedPhotoIds().forEach(postPhotoService::delete);
         request.getModifiedPhotos().forEach(photo -> postPhotoService.changeViewOrder(photo.getPhotoId(), photo.getViewOrder()));
-        List<String> presignedUrlList =  postPhotoService.save(challengePostService.findById(id), request.getNewPhotos());
+        List<String> presignedUrlList =  postPhotoService.save(challengePostSearchService.findById(id), request.getNewPhotos());
 
         return ResponseEntity.ok()
                 .body(presignedUrlList);
@@ -144,10 +148,10 @@ public class ChallengePostApi {
 
     @DeleteMapping("/api/posts/{id}")
     public ResponseEntity<Void> deletePost(@PathVariable Long id, @AuthenticationPrincipal String email) {
-        ChallengePost post = challengePostService.findById(id);
+        ChallengePost post = challengePostSearchService.findById(id);
 
         if (post.getIsAnnouncement()) {
-            if (!challengePostService.isChallengeHost(challengePostService.findChallengeByPostId(id), email)) {
+            if (!challengePostUtilService.isChallengeHost(challengePostSearchService.findChallengeByPostId(id), email)) {
                 throw new CustomJwtException(HttpStatus.FORBIDDEN, CustomJwtErrorInfo.FORBIDDEN, "Only Host is able to delete an Announcement Post.");
             }
         }
@@ -156,7 +160,7 @@ public class ChallengePostApi {
             throw new CustomJwtException(HttpStatus.FORBIDDEN, CustomJwtErrorInfo.FORBIDDEN, "Post cannot be deleted.");
         }
 
-        challengePostService.delete(id);
+        challengePostDeleteService.delete(id);
 
         return ResponseEntity.ok()
                 .build();
