@@ -26,7 +26,6 @@ import java.util.NoSuchElementException;
 @Slf4j
 public class ChallengePostSearchService {
 
-    private final ChallengePostSearchService challengePostSearchService;
     private final PostPhotoSearchService postPhotoSearchService;
     private final PostPhotoUtilService postPhotoUtilService;
     private final MemberService memberService;
@@ -36,7 +35,7 @@ public class ChallengePostSearchService {
     private final ChallengeEnrollmentRepository challengeEnrollmentRepository;
 
     public PostViewResponse findPost(Long postId) {
-        ChallengePost challengePost = challengePostSearchService.findById(postId);
+        ChallengePost challengePost = this.findById(postId);
         List<PostPhoto> photoList = postPhotoSearchService.findAllByPost(challengePost);
         List<PostPhotoView> photoViewList = postPhotoUtilService.makePhotoViewList(photoList);
 
@@ -45,7 +44,7 @@ public class ChallengePostSearchService {
 
     public List<PostViewResponse> findChallengePosts(Long challengeId) {
 
-        return challengePostSearchService.findAllByChallenge(challengeId)
+        return this.findAllByChallenge(challengeId)
                 .stream()
                 .filter(post -> !post.getIsAnnouncement())
                 // .sorted() // todo : 순서 설정하고 싶을 때
@@ -60,7 +59,7 @@ public class ChallengePostSearchService {
 
         Long challengeEnrollmentId = 1L; // todo : 임시값
 
-        return challengePostSearchService.findAllByChallengeEnrollment(challengeEnrollmentId)
+        return this.findAllByChallengeEnrollment(challengeEnrollmentId)
                 .stream()
                 .filter(post -> !post.getIsAnnouncement())
                 // .sorted() // todo : 순서 설정하고 싶을 때
@@ -72,7 +71,7 @@ public class ChallengePostSearchService {
     public List<PostViewResponse> findChallengePostsByMember(Long challengeId, String email) {
         Long challengeEnrollmentId = 1L; // todo : 임시값
 
-        return challengePostSearchService.findAllByChallengeEnrollment(challengeEnrollmentId)
+        return this.findAllByChallengeEnrollment(challengeEnrollmentId)
                 .stream()
                 .filter(post -> !post.getIsAnnouncement())
                 // .sorted() // todo : 순서 설정하고 싶을 때
