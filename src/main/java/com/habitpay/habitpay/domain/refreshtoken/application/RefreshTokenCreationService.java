@@ -4,6 +4,8 @@ import com.habitpay.habitpay.domain.member.application.MemberService;
 import com.habitpay.habitpay.domain.member.domain.Member;
 import com.habitpay.habitpay.domain.refreshtoken.dao.RefreshTokenRepository;
 import com.habitpay.habitpay.domain.refreshtoken.domain.RefreshToken;
+import com.habitpay.habitpay.domain.refreshtoken.dto.CreateAccessTokenRequest;
+import com.habitpay.habitpay.domain.refreshtoken.dto.CreateAccessTokenResponse;
 import com.habitpay.habitpay.domain.refreshtoken.exception.CustomJwtException;
 import com.habitpay.habitpay.global.config.jwt.TokenProvider;
 import com.habitpay.habitpay.global.config.jwt.TokenService;
@@ -11,24 +13,46 @@ import com.habitpay.habitpay.global.error.CustomJwtErrorInfo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
 import java.util.Objects;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
 @Slf4j
 public class RefreshTokenCreationService {
 
+    private final TokenProvider tokenProvider;
+
     private final MemberService memberService;
     private final TokenService tokenService;
     private final RefreshTokenUtilService refreshTokenUtilService;
-    private final RefreshTokenRepository refreshTokenRepository;
-    private final TokenProvider tokenProvider;
     private final RefreshTokenSearchService refreshTokenSearchService;
 
-    public String createNewAccessToken(String refreshToken) {
+    private final RefreshTokenRepository refreshTokenRepository;
+
+
+    public CreateAccessTokenResponse createNewAccessTokenAndNewRefreshToken(CreateAccessTokenRequest requestBody) {
+
+        Optional<String> optionalGrantType = Optional.ofNullable(requestBody.getGrantType());
+        if (optionalGrantType.isEmpty() || !requestBody.getGrantType().equals("refresh_token")) {
+            throw new CustomJwtException(HttpStatus.BAD_REQUEST, CustomJwtErrorInfo.BAD_REQUEST, "Request was missing the 'grantType' parameter.");
+        }
+
+        String newAccessToken = this.createNewAccessToken(requestBody.getRefreshToken());
+        String refreshToken = this.setRefreshTokenByEmail(tokenService.getEmail(newAccessToken));
+
+        return new CreateAccessTokenResponse(
+                        newAccessToken,
+                        "Bearer",
+                        tokenService.getAccessTokenExpiresInToMillis(),
+                        refreshToken);
+    }
+
+    private String createNewAccessToken(String refreshToken) {
 
         tokenProvider.validateToken(refreshToken);
 
@@ -47,7 +71,7 @@ public class RefreshTokenCreationService {
         return tokenProvider.generateToken(member, Duration.ofHours(2));
     }
 
-    public void saveRefreshToken(Long userId, String newRefreshToken) {
+    private void saveRefreshToken(Long userId, String newRefreshToken) {
         String loginId = refreshTokenUtilService.getClientIpAddress();
         RefreshToken refreshToken = refreshTokenRepository.findByUserId(userId)
                 .map(entity -> entity.update(newRefreshToken, loginId))
