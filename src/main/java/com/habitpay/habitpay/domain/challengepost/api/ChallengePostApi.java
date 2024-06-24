@@ -39,137 +39,66 @@ public class ChallengePostApi {
 
     private final ChallengePostCreationService challengePostCreationService;
     private final ChallengePostSearchService challengePostSearchService;
-    private final ChallengePostUtilService challengePostUtilService;
     private final ChallengePostUpdateService challengePostUpdateService;
     private final ChallengePostDeleteService challengePostDeleteService;
-    private final PostPhotoCreationService postPhotoCreationService;
-    private final PostPhotoSearchService postPhotoSearchService;
-    private final PostPhotoDeleteService postPhotoDeleteService;
-    private final PostPhotoUtilService postPhotoUtilService;
-
-    private final MemberService memberService;
-    private final ChallengeEnrollmentSearchService challengeEnrollmentSearchService;
-    private final ChallengeSearchService challengeSearchService;
-
-    // todo : 서비스에 메서드 만들고 그걸 불러오는 걸로 변경하면 좋을 듯
-    private final ChallengeEnrollmentRepository challengeEnrollmentRepository;
 
     @GetMapping("/api/posts/{id}")
     public ResponseEntity<PostViewResponse> findPost(@PathVariable Long id) {
 
-        ChallengePost challengePost = challengePostSearchService.findById(id);
-        List<PostPhoto> photoList = postPhotoSearchService.findAllByPost(challengePost);
-        List<PostPhotoView> photoViewList = postPhotoUtilService.makePhotoViewList(photoList);
-
         return ResponseEntity.ok()
-                .body(new PostViewResponse(challengePost, photoViewList));
+                .body(challengePostSearchService.findPost(id));
     }
 
     @GetMapping("/api/challenges/{id}/posts")
     public ResponseEntity<List<PostViewResponse>> findChallengePosts(@PathVariable Long id) {
-        List<PostViewResponse> challengePostsView = challengePostSearchService.findAllByChallenge(id)
-                .stream()
-                .filter(post -> !post.getIsAnnouncement())
-                // .sorted() // todo : 순서 설정하고 싶을 때
-                .map(post -> new PostViewResponse(post, postPhotoUtilService.makePhotoViewList(postPhotoSearchService.findAllByPost(post))))
-                .toList();
 
         return ResponseEntity.ok()
-                .body(challengePostsView);
+                .body(challengePostSearchService.findChallengePosts(id));
     }
 
     @GetMapping("/api/challenges/{id}/posts/me")
     public ResponseEntity<List<PostViewResponse>> findChallengePostsByMe(
-            @PathVariable Long id, Principal principal) {
-        // todo : principal.getName() : token의 email 주소
-        //      : [email && challenge id] 정보를 합쳐 enrollment id 찾기
-        Long challengeEnrollmentId = 1L; // todo : 임시값
-
-        List<PostViewResponse> challengePostsView = challengePostSearchService.findAllByChallengeEnrollment(challengeEnrollmentId)
-                .stream()
-                .filter(post -> !post.getIsAnnouncement())
-                // .sorted() // todo : 순서 설정하고 싶을 때
-                .map(post -> new PostViewResponse(post, postPhotoUtilService.makePhotoViewList(postPhotoSearchService.findAllByPost(post))))
-                .toList();
+            @PathVariable Long id, @AuthenticationPrincipal String email) {
 
         return ResponseEntity.ok()
-                .body(challengePostsView);
+                .body(challengePostSearchService.findChallengePostsByMe(id, email));
     }
 
-    // todo : 경로 및 필요한 requestParam 설정 완료 후 다시 고치기
-    //      : 'challengeEnrollmentId' or 'memberId' 등 멤버 식별할 수 있는 데이터를 받으면 됨
-//    @GetMapping("/api/challenges/{id}/posts/member")
-//    public ResponseEntity<List<PostViewResponse>> findChallengePostsByMember(
-//            @PathVariable Long id, @RequestParam Optional<Long> challengeEnrollmentId) {
-//
-//        Long challengeEnrollmentId = 1L;
-//
-//        List<PostViewResponse> challengePostsView = challengePostService.findAllByChallengeEnrollment(challengeEnrollmentId)
-//                .stream()
-//                .filter(post -> !post.getIsAnnouncement())
-//                // .sorted() // todo : 순서 설정하고 싶을 때
-//                .map(post -> new PostViewResponse(post, postPhotoService.makePhotoViewList(postPhotoService.findAllByPost(post))))
-//                .toList();
-//
-//        return ResponseEntity.ok()
-//                .body(challengePostsView);
-//    }
+    // -----------------------------------------------------------------------------
+    // todo : 'challengeEnrollmentId' or 'memberId' 등 멤버 식별할 수 있는 데이터를 받아야 함
+    @GetMapping("/api/challenges/{id}/posts/member")
+    public ResponseEntity<List<PostViewResponse>> findChallengePostsByMember(
+            @PathVariable Long id, @AuthenticationPrincipal String email) {
 
-    @Transactional
+        return ResponseEntity.ok()
+                .body(challengePostSearchService.findChallengePostsByMember(id, email));
+    }
+    // -------------------------------------------------------------------------------
+
     @PostMapping("/api/challenges/{id}/post")
-    public ResponseEntity<List<String>> addPost(@RequestBody AddPostRequest request, @PathVariable Long id, @AuthenticationPrincipal String email) {
+    public ResponseEntity<List<String>> addPost(
+            @RequestBody AddPostRequest request,
+            @PathVariable Long id,
+            @AuthenticationPrincipal String email) {
 
-         log.info("Authentication Principal Email: {}", email);
-
-        Member member = memberService.findByEmail(email);
-        // todo : List<>로 받게 될 경우 'challenge id' 이용해 enrollment 특정해야 함
-        ChallengeEnrollment enrollment = challengeEnrollmentSearchService.findByMember(member)
-                .orElseThrow(() -> new NoSuchElementException("(for debugging) no enrollment for : " + email));
-
-        if (request.getIsAnnouncement()) {
-            Challenge challenge = challengeSearchService.findById(id);
-            if (!challengePostUtilService.isChallengeHost(challenge, member)) {
-                throw new CustomJwtException(HttpStatus.FORBIDDEN, CustomJwtErrorInfo.FORBIDDEN, "Only Host is able to upload an Announcement Post.");
-            }
-        }
-
-        ChallengePost challengePost = challengePostCreationService.save(request, enrollment.getId());
-        List<String> preSignedUrlList = postPhotoCreationService.save(challengePost, request.getPhotos());
-
-        return ResponseEntity.status(HttpStatus.CREATED).body(preSignedUrlList);
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(challengePostCreationService.addPost(request, id, email));
     }
 
-    @Transactional
     @PutMapping("/api/posts/{id}")
-    public ResponseEntity<List<String>> modifyPost(@PathVariable Long id,
-                                                    @RequestBody ModifyPostRequest request) {
-
-        ChallengePost modifiedPost = challengePostUpdateService.update(id, request);
-        request.getDeletedPhotoIds().forEach(postPhotoDeleteService::delete);
-        request.getModifiedPhotos().forEach(photo -> postPhotoUtilService.changeViewOrder(photo.getPhotoId(), photo.getViewOrder()));
-        List<String> presignedUrlList =  postPhotoCreationService.save(challengePostSearchService.findById(id), request.getNewPhotos());
+    public ResponseEntity<List<String>> modifyPost(
+            @RequestBody ModifyPostRequest request, @PathVariable Long id) {
 
         return ResponseEntity.ok()
-                .body(presignedUrlList);
+                .body(challengePostUpdateService.modifyPost(request, id));
     }
 
-    @Transactional
     @DeleteMapping("/api/posts/{id}")
-    public ResponseEntity<Void> deletePost(@PathVariable Long id, @AuthenticationPrincipal String email) {
-        ChallengePost post = challengePostSearchService.findById(id);
+    public ResponseEntity<Void> deletePost(
+            @PathVariable Long id, @AuthenticationPrincipal String email) {
 
-        if (post.getIsAnnouncement()) {
-            if (!challengePostUtilService.isChallengeHost(challengePostSearchService.findChallengeByPostId(id), email)) {
-                throw new CustomJwtException(HttpStatus.FORBIDDEN, CustomJwtErrorInfo.FORBIDDEN, "Only Host is able to delete an Announcement Post.");
-            }
-        }
-        else {
-            // todo : 관리자 계정이 생겨서 일반 포스트도 삭제할 수 있게 되면 수정
-            throw new CustomJwtException(HttpStatus.FORBIDDEN, CustomJwtErrorInfo.FORBIDDEN, "Post cannot be deleted.");
-        }
-
-        challengePostDeleteService.delete(id);
-
+        challengePostDeleteService.deletePost(id, email);
         return ResponseEntity.ok()
                 .build();
     }

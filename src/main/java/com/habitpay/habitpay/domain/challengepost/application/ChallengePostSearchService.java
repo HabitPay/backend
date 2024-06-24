@@ -1,12 +1,21 @@
 package com.habitpay.habitpay.domain.challengepost.application;
 
 import com.habitpay.habitpay.domain.challenge.domain.Challenge;
+import com.habitpay.habitpay.domain.challengeenrollment.application.ChallengeEnrollmentSearchService;
 import com.habitpay.habitpay.domain.challengeenrollment.dao.ChallengeEnrollmentRepository;
 import com.habitpay.habitpay.domain.challengeenrollment.domain.ChallengeEnrollment;
 import com.habitpay.habitpay.domain.challengepost.dao.ChallengePostRepository;
 import com.habitpay.habitpay.domain.challengepost.domain.ChallengePost;
+import com.habitpay.habitpay.domain.challengepost.dto.PostViewResponse;
+import com.habitpay.habitpay.domain.member.application.MemberService;
+import com.habitpay.habitpay.domain.member.domain.Member;
+import com.habitpay.habitpay.domain.postphoto.application.PostPhotoSearchService;
+import com.habitpay.habitpay.domain.postphoto.application.PostPhotoUtilService;
+import com.habitpay.habitpay.domain.postphoto.domain.PostPhoto;
+import com.habitpay.habitpay.domain.postphoto.dto.PostPhotoView;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -17,9 +26,59 @@ import java.util.NoSuchElementException;
 @Slf4j
 public class ChallengePostSearchService {
 
+    private final ChallengePostSearchService challengePostSearchService;
+    private final PostPhotoSearchService postPhotoSearchService;
+    private final PostPhotoUtilService postPhotoUtilService;
+    private final MemberService memberService;
+    private final ChallengeEnrollmentSearchService challengeEnrollmentSearchService;
+
     private final ChallengePostRepository challengePostRepository;
     private final ChallengeEnrollmentRepository challengeEnrollmentRepository;
 
+    public PostViewResponse findPost(Long postId) {
+        ChallengePost challengePost = challengePostSearchService.findById(postId);
+        List<PostPhoto> photoList = postPhotoSearchService.findAllByPost(challengePost);
+        List<PostPhotoView> photoViewList = postPhotoUtilService.makePhotoViewList(photoList);
+
+        return new PostViewResponse(challengePost, photoViewList);
+    }
+
+    public List<PostViewResponse> findChallengePosts(Long challengeId) {
+
+        return challengePostSearchService.findAllByChallenge(challengeId)
+                .stream()
+                .filter(post -> !post.getIsAnnouncement())
+                // .sorted() // todo : 순서 설정하고 싶을 때
+                .map(post -> new PostViewResponse(post, postPhotoUtilService.makePhotoViewList(postPhotoSearchService.findAllByPost(post))))
+                .toList();
+    }
+
+    public List<PostViewResponse> findChallengePostsByMe(Long challengeId, String email) {
+        Member member = memberService.findByEmail(email);
+        // todo : List로 받아서 찾거나 challengeId까지 특정해서 받기
+        // ChallengeEnrollment enrollment = challengeEnrollmentSearchService.findByMember(member);
+
+        Long challengeEnrollmentId = 1L; // todo : 임시값
+
+        return challengePostSearchService.findAllByChallengeEnrollment(challengeEnrollmentId)
+                .stream()
+                .filter(post -> !post.getIsAnnouncement())
+                // .sorted() // todo : 순서 설정하고 싶을 때
+                .map(post -> new PostViewResponse(post, postPhotoUtilService.makePhotoViewList(postPhotoSearchService.findAllByPost(post))))
+                .toList();
+    }
+
+    // todo : 수정해야 함
+    public List<PostViewResponse> findChallengePostsByMember(Long challengeId, String email) {
+        Long challengeEnrollmentId = 1L; // todo : 임시값
+
+        return challengePostSearchService.findAllByChallengeEnrollment(challengeEnrollmentId)
+                .stream()
+                .filter(post -> !post.getIsAnnouncement())
+                // .sorted() // todo : 순서 설정하고 싶을 때
+                .map(post -> new PostViewResponse(post, postPhotoUtilService.makePhotoViewList(postPhotoSearchService.findAllByPost(post))))
+                .toList();
+    }
 
     public ChallengePost findById(Long id) {
         return challengePostRepository.findById(id)
