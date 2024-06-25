@@ -21,7 +21,18 @@ public class PostPhotoDeleteService {
     private final PostPhotoSearchService postPhotoSearchService;
     private final PostPhotoUtilService postPhotoUtilService;
 
-    public void delete(Long id) {
+    public void deleteByPost(ChallengePost post) {
+        List<PostPhoto> photoList = postPhotoRepository.findAllByPost(post)
+                .orElseThrow(() -> new NoSuchElementException("(for debugging) not found post : " + post.getId()));
+
+        photoList.forEach(photo -> deletePhoto(photo.getId()));
+    }
+
+    public void deletePhotoList(List<Long> photoIdList) {
+        photoIdList.forEach(this::deletePhoto);
+    }
+
+    private void deletePhoto(Long id) {
         PostPhoto postPhoto = postPhotoRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("(for debugging) not found : " + id));
 
@@ -33,10 +44,4 @@ public class PostPhotoDeleteService {
         postPhotoRepository.delete(postPhoto);
     }
 
-    public void deleteAllByPost(ChallengePost post) {
-        List<PostPhoto> photoList = postPhotoRepository.findAllByPost(post)
-                .orElseThrow(() -> new NoSuchElementException("(for debugging) not found post : " + post.getId()));
-
-        photoList.forEach(photo -> {delete(photo.getId());});
-    }
 }

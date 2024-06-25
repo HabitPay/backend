@@ -35,7 +35,7 @@ public class ChallengePostUpdateService {
     public List<String> update(ModifyPostRequest request, Long postId) {
         this.updatePost(request, postId);
 
-        request.getDeletedPhotoIds().forEach(postPhotoDeleteService::delete);
+        postPhotoDeleteService.deletePhotoList(request.getDeletedPhotoIds());
         request.getModifiedPhotos().forEach(photo -> postPhotoUtilService.changeViewOrder(photo.getPhotoId(), photo.getViewOrder()));
         return postPhotoCreationService.save(challengePostSearchService.findById(postId), request.getNewPhotos());
     }

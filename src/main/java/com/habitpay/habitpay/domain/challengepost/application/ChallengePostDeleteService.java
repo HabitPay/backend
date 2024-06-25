@@ -42,7 +42,7 @@ public class ChallengePostDeleteService {
     private void deletePost(Long id) {
         ChallengePost challengePost = challengePostSearchService.findById(id);
 
-        postPhotoDeleteService.deleteAllByPost(challengePost);
+        postPhotoDeleteService.deleteByPost(challengePost);
         challengePostRepository.delete(challengePost);
     }
 }
