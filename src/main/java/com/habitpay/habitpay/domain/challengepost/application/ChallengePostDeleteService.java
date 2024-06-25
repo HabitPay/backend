@@ -1,5 +1,6 @@
 package com.habitpay.habitpay.domain.challengepost.application;
 
+import com.habitpay.habitpay.domain.challenge.domain.Challenge;
 import com.habitpay.habitpay.domain.challengepost.dao.ChallengePostRepository;
 import com.habitpay.habitpay.domain.challengepost.domain.ChallengePost;
 import com.habitpay.habitpay.domain.postphoto.application.PostPhotoDeleteService;
@@ -9,8 +10,6 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -24,23 +23,23 @@ public class ChallengePostDeleteService {
     private final ChallengePostUtilService challengePostUtilService;
 
     @Transactional
-    public void deletePost(Long postId, String email) {
+    public void delete(Long postId, String email) {
         ChallengePost post = challengePostSearchService.findById(postId);
+        Challenge challenge = challengePostSearchService.findChallengeByPostId(postId);
 
         if (post.getIsAnnouncement()) {
-            if (!challengePostUtilService.isChallengeHost(challengePostSearchService.findChallengeByPostId(postId), email)) {
+            if (!challengePostUtilService.isChallengeHost(challenge, email)) {
                 throw new CustomJwtException(HttpStatus.FORBIDDEN, CustomJwtErrorInfo.FORBIDDEN, "Only Host is able to delete an Announcement Post.");
             }
         }
         else {
-            // todo : 관리자 계정이 생겨서 일반 포스트도 삭제할 수 있게 되면 수정
             throw new CustomJwtException(HttpStatus.FORBIDDEN, CustomJwtErrorInfo.FORBIDDEN, "Post cannot be deleted.");
         }
 
-        this.delete(postId);
+        this.deletePost(postId);
     }
 
-    private void delete(Long id) {
+    private void deletePost(Long id) {
         ChallengePost challengePost = challengePostSearchService.findById(id);
 
         postPhotoDeleteService.deleteAllByPost(challengePost);

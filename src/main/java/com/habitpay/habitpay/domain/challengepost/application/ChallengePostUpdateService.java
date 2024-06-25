@@ -1,10 +1,10 @@
 package com.habitpay.habitpay.domain.challengepost.application;
 
-import com.habitpay.habitpay.domain.challengeenrollment.dao.ChallengeEnrollmentRepository;
-import com.habitpay.habitpay.domain.challengeparticipationrecord.application.ChallengeParticipationRecordCreationService;
+import com.habitpay.habitpay.domain.challenge.domain.Challenge;
 import com.habitpay.habitpay.domain.challengepost.dao.ChallengePostRepository;
 import com.habitpay.habitpay.domain.challengepost.domain.ChallengePost;
 import com.habitpay.habitpay.domain.challengepost.dto.ModifyPostRequest;
+import com.habitpay.habitpay.domain.member.domain.Member;
 import com.habitpay.habitpay.domain.postphoto.application.PostPhotoCreationService;
 import com.habitpay.habitpay.domain.postphoto.application.PostPhotoDeleteService;
 import com.habitpay.habitpay.domain.postphoto.application.PostPhotoUtilService;
@@ -31,31 +31,40 @@ public class ChallengePostUpdateService {
 
     private final ChallengePostRepository challengePostRepository;
 
-    private final ChallengeEnrollmentRepository challengeEnrollmentRepository;
-    private final ChallengeParticipationRecordCreationService challengeParticipationRecordCreationService;
-
     @Transactional
-    public List<String> modifyPost(ModifyPostRequest request, Long postId) {
-        this.update(request, postId);
+    public List<String> update(ModifyPostRequest request, Long postId) {
+        this.updatePost(request, postId);
+
         request.getDeletedPhotoIds().forEach(postPhotoDeleteService::delete);
         request.getModifiedPhotos().forEach(photo -> postPhotoUtilService.changeViewOrder(photo.getPhotoId(), photo.getViewOrder()));
         return postPhotoCreationService.save(challengePostSearchService.findById(postId), request.getNewPhotos());
     }
 
-    private void update(ModifyPostRequest request, Long id) {
+    private void updatePost(ModifyPostRequest request, Long id) {
         ChallengePost challengePost = challengePostSearchService.findById(id);
-
         challengePostUtilService.authorizePostWriter(challengePost);
-        if (request.getContent() != null) {
-            challengePost.modifyPostContent(request.getContent());
-            challengePostRepository.save(challengePost);
+
+        updateContent(challengePost, request.getContent());
+        updateIsAnnouncement(challengePost, request.getIsAnnouncement());
+    }
+
+    private void updateContent(ChallengePost post, String content) {
+        if (content != null) {
+            post.modifyPostContent(content);
+            challengePostRepository.save(post);
         }
-        if (request.getIsAnnouncement() != null) {
-            if (request.getIsAnnouncement() && !challengePostUtilService.isChallengeHost(challengePostSearchService.findChallengeByPostId(id), challengePostUtilService.getWriter(challengePost))) {
+    }
+
+    private void updateIsAnnouncement(ChallengePost post, Boolean isAnnouncement) {
+        Challenge challenge = challengePostSearchService.findChallengeByPostId(post.getId());
+        Member member = challengePostUtilService.getWriter(post);
+
+        if (isAnnouncement != null) {
+            if (isAnnouncement && !challengePostUtilService.isChallengeHost(challenge, member)) {
                 throw new CustomJwtException(HttpStatus.FORBIDDEN, CustomJwtErrorInfo.FORBIDDEN, "Only Host is able to upload an Announcement Post.");
             }
-            challengePost.modifyPostIsAnnouncement(request.getIsAnnouncement());
-            challengePostRepository.save(challengePost);
+            post.modifyPostIsAnnouncement(isAnnouncement);
+            challengePostRepository.save(post);
         }
     }
 

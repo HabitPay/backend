@@ -15,7 +15,6 @@ import com.habitpay.habitpay.domain.postphoto.domain.PostPhoto;
 import com.habitpay.habitpay.domain.postphoto.dto.PostPhotoView;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -34,7 +33,7 @@ public class ChallengePostSearchService {
     private final ChallengePostRepository challengePostRepository;
     private final ChallengeEnrollmentRepository challengeEnrollmentRepository;
 
-    public PostViewResponse findPost(Long postId) {
+    public PostViewResponse findPostById(Long postId) {
         ChallengePost challengePost = this.findById(postId);
         List<PostPhoto> photoList = postPhotoSearchService.findAllByPost(challengePost);
         List<PostPhotoView> photoViewList = postPhotoUtilService.makePhotoViewList(photoList);
@@ -42,7 +41,7 @@ public class ChallengePostSearchService {
         return new PostViewResponse(challengePost, photoViewList);
     }
 
-    public List<PostViewResponse> findChallengePosts(Long challengeId) {
+    public List<PostViewResponse> findChallengePostsByChallengeId(Long challengeId) {
 
         return this.findAllByChallenge(challengeId)
                 .stream()
