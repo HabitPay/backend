@@ -41,6 +41,7 @@ public class ChallengePostDeleteService {
 
     private void deletePost(Long id) {
         ChallengePost challengePost = challengePostSearchService.findById(id);
+        challengePostUtilService.authorizePostWriter(challengePost);
 
         postPhotoDeleteService.deleteByPost(challengePost);
         challengePostRepository.delete(challengePost);

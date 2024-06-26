@@ -20,8 +20,8 @@ public class PostPhoto extends BaseTime {
     private Long id;
 
     @ManyToOne
-    @JoinColumn
-    private ChallengePost post;
+    @JoinColumn(name = "challenge_post_id")
+    private ChallengePost challengePost;
 
     @Column
     private String imageFileName;
@@ -31,7 +31,7 @@ public class PostPhoto extends BaseTime {
 
     @Builder
     public PostPhoto(ChallengePost post, String imageFileName, Long viewOrder) {
-        this.post = post;
+        this.challengePost = post;
         this.imageFileName = imageFileName;
         this.viewOrder = viewOrder;
     }
@@ -41,7 +41,4 @@ public class PostPhoto extends BaseTime {
         this.viewOrder = newOrder;
     }
 
-//    public Member getUploader() {
-//        // todo : postId -> challengePost.getWriter()로 작성자 찾기
-//    }
 }

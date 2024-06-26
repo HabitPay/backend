@@ -35,7 +35,7 @@ public class ChallengePostUpdateService {
     public List<String> update(ModifyPostRequest request, Long postId) {
         this.updatePost(request, postId);
 
-        postPhotoDeleteService.deletePhotoList(request.getDeletedPhotoIds());
+        postPhotoDeleteService.deleteByIds(postId, request.getDeletedPhotoIds());
         request.getModifiedPhotos().forEach(photo -> postPhotoUtilService.changeViewOrder(photo.getPhotoId(), photo.getViewOrder()));
         return postPhotoCreationService.save(challengePostSearchService.findById(postId), request.getNewPhotos());
     }
@@ -57,7 +57,7 @@ public class ChallengePostUpdateService {
 
     private void updateIsAnnouncement(ChallengePost post, Boolean isAnnouncement) {
         Challenge challenge = challengePostSearchService.findChallengeByPostId(post.getId());
-        Member member = challengePostUtilService.getWriter(post);
+        Member member = post.getWriter();
 
         if (isAnnouncement != null) {
             if (isAnnouncement && !challengePostUtilService.isChallengeHost(challenge, member)) {

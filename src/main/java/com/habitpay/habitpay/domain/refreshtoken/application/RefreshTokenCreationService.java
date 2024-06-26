@@ -13,7 +13,6 @@ import com.habitpay.habitpay.global.error.CustomJwtErrorInfo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
@@ -64,18 +63,18 @@ public class RefreshTokenCreationService {
             throw new CustomJwtException(HttpStatus.BAD_REQUEST, CustomJwtErrorInfo.BAD_REQUEST, "request IP address is different from login IP address.");
         }
 
-        Long userId = refreshTokenSearchService.findByRefreshToken(refreshToken).getUserId();
-        Member member = memberService.findById(userId);
+        Long memberId = refreshTokenSearchService.findByRefreshToken(refreshToken).getMember().getId();
+        Member member = memberService.findById(memberId);
 
         // todo : 토큰 유효 기간
         return tokenProvider.generateToken(member, Duration.ofHours(2));
     }
 
-    private void saveRefreshToken(Long userId, String newRefreshToken) {
+    private void saveRefreshToken(Member member, String newRefreshToken) {
         String loginId = refreshTokenUtilService.getClientIpAddress();
-        RefreshToken refreshToken = refreshTokenRepository.findByUserId(userId)
+        RefreshToken refreshToken = refreshTokenRepository.findByMemberId(member.getId())
                 .map(entity -> entity.update(newRefreshToken, loginId))
-                .orElse(new RefreshToken(userId, newRefreshToken, loginId));
+                .orElse(new RefreshToken(member, newRefreshToken, loginId));
 
         refreshTokenRepository.save(refreshToken);
     }
@@ -84,10 +83,7 @@ public class RefreshTokenCreationService {
         Member member = memberService.findByEmail(email);
 
         String refreshToken = tokenService.createRefreshToken(email);
-        saveRefreshToken(member.getId(), refreshToken);
-
-        //todo : for test
-        System.out.println("refresh token : " + refreshToken);
+        saveRefreshToken(member, refreshToken);
 
         return refreshToken;
     }

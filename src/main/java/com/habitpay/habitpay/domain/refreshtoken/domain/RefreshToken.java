@@ -1,5 +1,6 @@
 package com.habitpay.habitpay.domain.refreshtoken.domain;
 
+import com.habitpay.habitpay.domain.member.domain.Member;
 import com.habitpay.habitpay.domain.model.BaseTime;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -16,19 +17,19 @@ public class RefreshToken {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // todo: 외래키 연결
-    @Column(name = "user_id", nullable = false, unique = true)
-    private Long userId;
+    @OneToOne
+    @JoinColumn(name = "member_id")
+    private Member member;
 
-    @Column(name = "refresh_token", nullable = false)
+    @Column(nullable = false)
     private String refreshToken;
 
     // todo: 과정 좀 복잡하면 즉시 삭제
-    @Column(name = "login_ip", nullable = false)
+    @Column(nullable = false)
     private String loginIp;
 
-    public RefreshToken(Long userId, String refreshToken, String loginIp) {
-        this.userId = userId;
+    public RefreshToken(Member member, String refreshToken, String loginIp) {
+        this.member = member;
         this.refreshToken = refreshToken;
         this.loginIp = loginIp;
     }

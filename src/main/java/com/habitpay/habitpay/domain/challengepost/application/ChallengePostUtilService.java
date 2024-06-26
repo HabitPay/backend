@@ -20,22 +20,13 @@ import java.util.NoSuchElementException;
 @Slf4j
 public class ChallengePostUtilService {
 
-    private final ChallengeEnrollmentRepository challengeEnrollmentRepository;
-
-    public Member getWriter(ChallengePost post) {
-        // todo: enrollment에 findById 메서드로 추후 교체
-        ChallengeEnrollment enrollment = challengeEnrollmentRepository.findById(post.getChallengeEnrollmentId())
-                .orElseThrow(() -> new NoSuchElementException("No such enrollment " + post.getChallengeEnrollmentId()));
-        return enrollment.getMember();
-    }
-
     public void authorizePostWriter(ChallengePost challengePost) {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
-        log.info("email : " + email);
-        if (!getWriter(challengePost).getEmail().equals(email)) {
+        if (!challengePost.getWriter().getEmail().equals(email)) {
             throw new CustomJwtException(HttpStatus.UNAUTHORIZED, CustomJwtErrorInfo.UNAUTHORIZED, "Not a Member who posted.");
         }
     }
+
     public boolean isChallengeHost(Challenge challenge, Member member) {
         return challenge.getHost().equals(member);
     }

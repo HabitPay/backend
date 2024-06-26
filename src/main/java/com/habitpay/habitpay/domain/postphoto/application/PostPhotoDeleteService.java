@@ -1,5 +1,6 @@
 package com.habitpay.habitpay.domain.postphoto.application;
 
+import com.habitpay.habitpay.domain.challengepost.application.ChallengePostSearchService;
 import com.habitpay.habitpay.domain.challengepost.domain.ChallengePost;
 import com.habitpay.habitpay.domain.postphoto.dao.PostPhotoRepository;
 import com.habitpay.habitpay.domain.postphoto.domain.PostPhoto;
@@ -18,30 +19,33 @@ public class PostPhotoDeleteService {
 
     private final S3FileService s3FileService;
     private final PostPhotoRepository postPhotoRepository;
+    private final ChallengePostSearchService challengePostSearchService;
     private final PostPhotoSearchService postPhotoSearchService;
     private final PostPhotoUtilService postPhotoUtilService;
 
     public void deleteByPost(ChallengePost post) {
-        List<PostPhoto> photoList = postPhotoRepository.findAllByPost(post)
+        List<PostPhoto> photoList = postPhotoRepository.findAllByChallengePost(post)
                 .orElseThrow(() -> new NoSuchElementException("(for debugging) not found post : " + post.getId()));
 
-        photoList.forEach(photo -> deletePhoto(photo.getId()));
+        photoList.forEach(photo -> this.deleteById(photo.getId()));
     }
 
-    public void deletePhotoList(List<Long> photoIdList) {
-        photoIdList.forEach(this::deletePhoto);
+    public void deleteByIds(Long postId, List<Long> photoIdList) {
+        ChallengePost post = challengePostSearchService.findById(postId);
+
+        photoIdList.forEach(photoId -> {
+            if (postPhotoUtilService.photoBelongToPost(photoId, post)) {
+                this.deleteById(photoId);
+            }
+        });
     }
 
-    private void deletePhoto(Long id) {
-        PostPhoto postPhoto = postPhotoRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("(for debugging) not found : " + id));
+    private void deleteById(Long id) {
+        PostPhoto photo = postPhotoSearchService.findById(id);
+        String targetUrl = postPhotoUtilService.makeS3TargetPath(photo);
 
-        postPhotoUtilService.authorizePhotoUploader(postPhoto);
-
-        // todo : enrollment 엔티티 만들어지면, 통해서 challengeId 가져오기
-        //      : 목표 경로 'challenges/{challenge_id}/{post_id}'
-        s3FileService.deleteImage(postPhotoUtilService.POST_PHOTOS_PREFIX, postPhotoSearchService.findById(id).getImageFileName());
-        postPhotoRepository.delete(postPhoto);
+        s3FileService.deleteImage(targetUrl, postPhotoSearchService.findById(id).getImageFileName());
+        postPhotoRepository.delete(photo);
     }
 
 }
