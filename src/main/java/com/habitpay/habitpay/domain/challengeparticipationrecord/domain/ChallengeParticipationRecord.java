@@ -22,15 +22,15 @@ public class ChallengeParticipationRecord extends BaseTime {
 
     @ManyToOne
     @JoinColumn(name = "challenge_enrollment_id")
-    private ChallengeEnrollment enrollment;
+    private ChallengeEnrollment challengeEnrollment;
 
     @OneToOne
     @JoinColumn(name = "challenge_post_id")
-    private ChallengePost post;
+    private ChallengePost challengePost;
 
     @Builder
     public ChallengeParticipationRecord(ChallengeEnrollment enrollment, ChallengePost post) {
-        this.enrollment = enrollment;
-        this.post = post;
+        this.challengeEnrollment = enrollment;
+        this.challengePost = post;
     }
 }

@@ -10,8 +10,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import java.util.NoSuchElementException;
-
 @EntityListeners(AuditingEntityListener.class)
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -23,8 +21,8 @@ public class ChallengePost extends BaseTime {
     private Long id;
 
     @ManyToOne
-    @Column(name = "challenge_enrollment_id")
-    private ChallengeEnrollment enrollment;
+    @JoinColumn(name = "challenge_enrollment_id")
+    private ChallengeEnrollment challengeEnrollment;
 
     @Column()
     private String content;
@@ -34,13 +32,13 @@ public class ChallengePost extends BaseTime {
 
     @Builder
     public ChallengePost(ChallengeEnrollment enrollment, String content, boolean isAnnouncement) {
-        this.enrollment = enrollment;
+        this.challengeEnrollment = enrollment;
         this.content = content;
         this.isAnnouncement = isAnnouncement;
     }
 
     public Member getWriter() {
-        return enrollment.getMember();
+        return challengeEnrollment.getMember();
     }
 
     public void modifyPostContent(String modifiedContent) {

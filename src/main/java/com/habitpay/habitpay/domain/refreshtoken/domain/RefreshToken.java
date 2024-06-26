@@ -18,7 +18,7 @@ public class RefreshToken {
     private Long id;
 
     @OneToOne
-    @Column(name = "member_id", nullable = false, unique = true)
+    @JoinColumn(name = "member_id")
     private Member member;
 
     @Column(nullable = false)

@@ -22,7 +22,7 @@ public class PostViewResponse {
 
     public PostViewResponse(ChallengePost post, List<PostPhotoView> photoViewList) {
         this.id = post.getId();
-        this.challengeEnrollmentId = post.getEnrollment().getId();
+        this.challengeEnrollmentId = post.getChallengeEnrollment().getId();
         this.content = post.getContent();
         this.writer = post.getWriter().getNickname();
         this.isAnnouncement = post.getIsAnnouncement();

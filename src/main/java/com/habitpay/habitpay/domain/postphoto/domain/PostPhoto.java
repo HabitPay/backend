@@ -1,7 +1,6 @@
 package com.habitpay.habitpay.domain.postphoto.domain;
 
 import com.habitpay.habitpay.domain.challengepost.domain.ChallengePost;
-import com.habitpay.habitpay.domain.member.domain.Member;
 import com.habitpay.habitpay.domain.model.BaseTime;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -22,7 +21,7 @@ public class PostPhoto extends BaseTime {
 
     @ManyToOne
     @JoinColumn(name = "challenge_post_id")
-    private ChallengePost post;
+    private ChallengePost challengePost;
 
     @Column
     private String imageFileName;
@@ -32,7 +31,7 @@ public class PostPhoto extends BaseTime {
 
     @Builder
     public PostPhoto(ChallengePost post, String imageFileName, Long viewOrder) {
-        this.post = post;
+        this.challengePost = post;
         this.imageFileName = imageFileName;
         this.viewOrder = viewOrder;
     }

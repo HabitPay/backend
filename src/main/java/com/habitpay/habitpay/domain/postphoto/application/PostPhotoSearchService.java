@@ -23,7 +23,7 @@ public class PostPhotoSearchService {
     }
 
     public List<PostPhoto> findAllByPost(ChallengePost post) {
-        return postPhotoRepository.findAllByPost(post)
+        return postPhotoRepository.findAllByChallengePost(post)
                 .orElseThrow(() -> new NoSuchElementException("(for debugging) not found challenge post : " + post.getId()));
     }
 }

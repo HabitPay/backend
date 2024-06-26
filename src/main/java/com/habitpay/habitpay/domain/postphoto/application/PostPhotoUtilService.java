@@ -36,12 +36,12 @@ public class PostPhotoUtilService {
     }
 
     public String makeS3TargetPath(PostPhoto photo) {
-        ChallengePost post = photo.getPost();
+        ChallengePost post = photo.getChallengePost();
 
         // result : challenges/{challenge_id}/{post_id}
         return this.POST_PHOTOS_PREFIX +
                 "/" +
-                post.getEnrollment().getChallenge().getId() +
+                post.getChallengeEnrollment().getChallenge().getId() +
                 "/" +
                 post.getId();
     }
@@ -54,6 +54,6 @@ public class PostPhotoUtilService {
     }
 
     public boolean photoBelongToPost(Long photoId, ChallengePost post) {
-        return postPhotoSearchService.findById(photoId).getPost().equals(post);
+        return postPhotoSearchService.findById(photoId).getChallengePost().equals(post);
     }
 }

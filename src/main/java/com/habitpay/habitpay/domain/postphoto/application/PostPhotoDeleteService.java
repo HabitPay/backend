@@ -24,7 +24,7 @@ public class PostPhotoDeleteService {
     private final PostPhotoUtilService postPhotoUtilService;
 
     public void deleteByPost(ChallengePost post) {
-        List<PostPhoto> photoList = postPhotoRepository.findAllByPost(post)
+        List<PostPhoto> photoList = postPhotoRepository.findAllByChallengePost(post)
                 .orElseThrow(() -> new NoSuchElementException("(for debugging) not found post : " + post.getId()));
 
         photoList.forEach(photo -> this.deleteById(photo.getId()));
