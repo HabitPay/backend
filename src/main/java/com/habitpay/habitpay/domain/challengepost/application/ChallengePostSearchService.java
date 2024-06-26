@@ -92,8 +92,8 @@ public class ChallengePostSearchService {
         ChallengePost post = findById(postId);
         // todo : enrollment service에 findById() 메서드 만들기
         ChallengeEnrollment enrollment = challengeEnrollmentRepository
-                .findById(post.getChallengeEnrollmentId())
-                .orElseThrow(() -> new NoSuchElementException("No such enrollment " + post.getChallengeEnrollmentId()));
+                .findById(post.getEnrollment().getId())
+                .orElseThrow(() -> new NoSuchElementException("No such enrollment " + post.getEnrollment().getId()));
         return enrollment.getChallenge();
     }
 

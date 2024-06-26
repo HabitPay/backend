@@ -51,14 +51,14 @@ public class ChallengePostCreationService {
             }
         }
 
-        ChallengePost challengePost = this.savePost(request, enrollment.getId());
-        checkChallengeParticipationRecord(challengePost, enrollment);
+        ChallengePost challengePost = this.savePost(request, enrollment);
+        this.checkChallengeParticipationRecord(challengePost, enrollment);
         return postPhotoCreationService.save(challengePost, request.getPhotos());
     }
 
-    private ChallengePost savePost(AddPostRequest request, Long challengeEnrollmentId) {
+    private ChallengePost savePost(AddPostRequest request, ChallengeEnrollment enrollment) {
 
-        return challengePostRepository.save(request.toEntity(challengeEnrollmentId));
+        return challengePostRepository.save(request.toEntity(enrollment));
     }
 
     private void checkChallengeParticipationRecord(ChallengePost post, ChallengeEnrollment enrollment) {

@@ -1,6 +1,7 @@
 package com.habitpay.habitpay.domain.postphoto.domain;
 
 import com.habitpay.habitpay.domain.challengepost.domain.ChallengePost;
+import com.habitpay.habitpay.domain.member.domain.Member;
 import com.habitpay.habitpay.domain.model.BaseTime;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -20,7 +21,7 @@ public class PostPhoto extends BaseTime {
     private Long id;
 
     @ManyToOne
-    @JoinColumn
+    @JoinColumn(name = "challenge_post_id")
     private ChallengePost post;
 
     @Column
@@ -41,7 +42,4 @@ public class PostPhoto extends BaseTime {
         this.viewOrder = newOrder;
     }
 
-//    public Member getUploader() {
-//        // todo : postId -> challengePost.getWriter()로 작성자 찾기
-//    }
 }

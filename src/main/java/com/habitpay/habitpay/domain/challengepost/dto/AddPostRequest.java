@@ -1,5 +1,6 @@
 package com.habitpay.habitpay.domain.challengepost.dto;
 
+import com.habitpay.habitpay.domain.challengeenrollment.domain.ChallengeEnrollment;
 import com.habitpay.habitpay.domain.challengepost.domain.ChallengePost;
 import com.habitpay.habitpay.domain.postphoto.dto.AddPostPhotoData;
 import lombok.AllArgsConstructor;
@@ -16,11 +17,11 @@ public class AddPostRequest {
     private Boolean isAnnouncement;
     private List<AddPostPhotoData> photos;
 
-    public ChallengePost toEntity(Long challengeEnrollmentId) {
+    public ChallengePost toEntity(ChallengeEnrollment enrollment) {
         return ChallengePost.builder()
                 .content(content)
                 .isAnnouncement(isAnnouncement)
-                .challengeEnrollmentId(challengeEnrollmentId)
+                .enrollment(enrollment)
                 .build();
     }
 }
