@@ -59,15 +59,14 @@ public class PostPhotoCreationService {
         String savedFileName = String.format("%s.%s", randomFileName, imageExtension);
         log.info("[save] savedFileName: {}", savedFileName);
 
-        postPhotoRepository.save(PostPhoto.builder()
+        PostPhoto postPhoto = postPhotoRepository.save(PostPhoto.builder()
                 .post(post)
                 .imageFileName(savedFileName)
                 .viewOrder(photo.getViewOrder())
                 .build());
 
-        // todo : enrollment 엔티티 만들어지면, 통해서 challengeId 가져오기
-        //      : 목표 경로 'challenges/{challenge_id}/{post_id}'
-        return s3FileService.getPutPreSignedUrl(postPhotoUtilService.POST_PHOTOS_PREFIX, savedFileName, imageExtension, contentLength);
+        String targetUrl = postPhotoUtilService.makeS3TargetPath(postPhoto);
+        return s3FileService.getPutPreSignedUrl(targetUrl, savedFileName, imageExtension, contentLength);
     }
 
 }
