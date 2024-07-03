@@ -1,12 +1,15 @@
 package com.habitpay.habitpay.domain.challengeparticipationrecord.application;
 
+import com.habitpay.habitpay.domain.challengeenrollment.domain.ChallengeEnrollment;
 import com.habitpay.habitpay.domain.challengeparticipationrecord.dao.ChallengeParticipationRecordRepository;
 import com.habitpay.habitpay.domain.challengeparticipationrecord.domain.ChallengeParticipationRecord;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -18,5 +21,9 @@ public class ChallengeParticipationRecordSearchService {
     public ChallengeParticipationRecord findById(Long id) {
         return challengeParticipationRecordRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("No Such Record " + id));
+    }
+
+    public Optional<List<ChallengeParticipationRecord>> findAllByChallengeEnrollment(ChallengeEnrollment enrollment) {
+        return challengeParticipationRecordRepository.findAllByChallengeEnrollment(enrollment);
     }
 }
