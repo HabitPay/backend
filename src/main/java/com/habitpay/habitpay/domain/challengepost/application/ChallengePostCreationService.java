@@ -19,6 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -32,7 +33,6 @@ public class ChallengePostCreationService {
     private final ChallengePostUtilService challengePostUtilService;
     private final PostPhotoCreationService postPhotoCreationService;
     private final ChallengeEnrollmentSearchService challengeEnrollmentSearchService;
-    private final ChallengeParticipationRecordCreationService challengeParticipationRecordCreationService;
 
     private final ChallengePostRepository challengePostRepository;
 
@@ -52,19 +52,13 @@ public class ChallengePostCreationService {
         }
 
         ChallengePost challengePost = this.savePost(request, enrollment);
-        this.checkChallengeParticipationRecord(challengePost, enrollment);
+        challengePostUtilService.verifyChallengeParticipationRecord(challengePost, enrollment);
         return postPhotoCreationService.save(challengePost, request.getPhotos());
     }
 
     private ChallengePost savePost(AddPostRequest request, ChallengeEnrollment enrollment) {
 
         return challengePostRepository.save(request.toEntity(enrollment));
-    }
-
-    private void checkChallengeParticipationRecord(ChallengePost post, ChallengeEnrollment enrollment) {
-
-        // todo : record 인정되는지 확인하는 코드 추가해야 함
-        challengeParticipationRecordCreationService.save(enrollment, post);
     }
 
 }
