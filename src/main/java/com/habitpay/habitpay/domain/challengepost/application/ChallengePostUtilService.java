@@ -1,7 +1,6 @@
 package com.habitpay.habitpay.domain.challengepost.application;
 
 import com.habitpay.habitpay.domain.challenge.domain.Challenge;
-import com.habitpay.habitpay.domain.challengeenrollment.dao.ChallengeEnrollmentRepository;
 import com.habitpay.habitpay.domain.challengeenrollment.domain.ChallengeEnrollment;
 import com.habitpay.habitpay.domain.challengeparticipationrecord.application.ChallengeParticipationRecordCreationService;
 import com.habitpay.habitpay.domain.challengeparticipationrecord.application.ChallengeParticipationRecordSearchService;
@@ -17,12 +16,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.DayOfWeek;
-import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.ZonedDateTime;
-import java.time.chrono.ChronoLocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @Service
@@ -49,9 +44,9 @@ public class ChallengePostUtilService {
         return hostEmail.equals(email);
     }
 
-    public void verifyChallengeParticipationRecord(ChallengePost post, ChallengeEnrollment enrollment) {
-        Challenge challenge = post.getChallengeEnrollment().getChallenge();
-
+    public void verifyChallengePostForRecord(ChallengePost post) {
+        ChallengeEnrollment enrollment = post.getChallengeEnrollment();
+        Challenge challenge = enrollment.getChallenge();
         ZonedDateTime now = ZonedDateTime.now();
 
         if (!now.isAfter(challenge.getStartDate()) || !now.isBefore(challenge.getEndDate())) {
@@ -79,30 +74,28 @@ public class ChallengePostUtilService {
             return;
         }
 
-        //todo: challenge.numberOfParticipants +1 하는 메서드 만들기 (challenge 도메인이나 서비스 내 위치?)
+        //todo: challengeEnrollment.successCount +1 하는 메서드 만들기 (challenge 도메인이나 서비스 내 위치?)
         challengeParticipationRecordCreationService.save(enrollment, post);
     }
 
     private boolean alreadyParticipateToday(ChallengeEnrollment enrollment, ZonedDateTime now) {
-        List<ChallengeParticipationRecord> optionalRecordList = challengeParticipationRecordSearchService.findAllByChallengeEnrollment(enrollment)
-                .orElse(new ArrayList<>());
+        // todo : 인정 시간대 확인하고 남기거나 삭제
+        //      해당일 00:00 ~ 23:59:59999...
+        Optional<ChallengeParticipationRecord> optionalRecord
+                = challengeParticipationRecordSearchService.findByChallengeEnrollmentAndCreatedAtBetween(
+                enrollment,
+                now.toLocalDate().atStartOfDay(),
+                now.toLocalDate().atTime(LocalTime.MAX)
+        );
 
-        if (optionalRecordList.isEmpty()) { return false; }
-
-        LocalDateTime today = now.toLocalDate().atStartOfDay();
-
-        Optional<ChallengeParticipationRecord> optionalRecord = optionalRecordList
-                .stream()
-//                .filter(record -> record.getCreatedAt().toLocalDate().isEqual(ChronoLocalDate.from(today)))
-                .filter(record -> {
-                    log.info("레코드 toLocalDate {}", record.getCreatedAt().toLocalDate());
-                    log.info("크로노 today {}", String.valueOf(ChronoLocalDate.from(today)));
-                    return record.getCreatedAt().toLocalDate().isEqual(ChronoLocalDate.from(today));
-                })
-                .findFirst();
-
-        // todo : 디버깅 용도
-        log.info("투데이 atStartOfDay {}", today);
+        // todo : 인정 시간대 확인하고 남기거나 삭제
+        //      해당일 00:00 ~ 24:00 (다음날 00:00까지)
+//        Optional<ChallengeParticipationRecord> optionalRecord
+//                = challengeParticipationRecordSearchService.findByChallengeEnrollmentAndCreatedAtBetween(
+//                enrollment,
+//                now.toLocalDate().atStartOfDay(),
+//                now.toLocalDate().plusDays(1).atStartOfDay()
+//        );
 
         return optionalRecord.isPresent();
     }

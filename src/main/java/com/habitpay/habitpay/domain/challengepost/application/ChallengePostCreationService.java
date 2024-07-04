@@ -4,7 +4,6 @@ import com.habitpay.habitpay.domain.challenge.application.ChallengeSearchService
 import com.habitpay.habitpay.domain.challenge.domain.Challenge;
 import com.habitpay.habitpay.domain.challengeenrollment.application.ChallengeEnrollmentSearchService;
 import com.habitpay.habitpay.domain.challengeenrollment.domain.ChallengeEnrollment;
-import com.habitpay.habitpay.domain.challengeparticipationrecord.application.ChallengeParticipationRecordCreationService;
 import com.habitpay.habitpay.domain.challengepost.dao.ChallengePostRepository;
 import com.habitpay.habitpay.domain.challengepost.domain.ChallengePost;
 import com.habitpay.habitpay.domain.challengepost.dto.AddPostRequest;
@@ -19,7 +18,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -52,7 +50,7 @@ public class ChallengePostCreationService {
         }
 
         ChallengePost challengePost = this.savePost(request, enrollment);
-        challengePostUtilService.verifyChallengeParticipationRecord(challengePost, enrollment);
+        challengePostUtilService.verifyChallengePostForRecord(challengePost);
         return postPhotoCreationService.save(challengePost, request.getPhotos());
     }
 
