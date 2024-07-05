@@ -28,7 +28,7 @@ public class ChallengeParticipationRecordSearchService {
         return challengeParticipationRecordRepository.findAllByChallengeEnrollment(enrollment);
     }
 
-    public Optional<ChallengeParticipationRecord> findByChallengeEnrollmentAndCreatedAtBetween(
+    public Optional<ChallengeParticipationRecord> findTodayRecordInEnrollment(
             ChallengeEnrollment enrollment,
             LocalDateTime startOfDay,
             LocalDateTime endOfDay) {

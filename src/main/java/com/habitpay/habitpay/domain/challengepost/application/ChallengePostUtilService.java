@@ -70,7 +70,7 @@ public class ChallengePostUtilService {
             return;
         }
 
-        if (alreadyParticipateToday(enrollment, now)) {
+        if (isAlreadyParticipateToday(enrollment, now)) {
             return;
         }
 
@@ -78,24 +78,14 @@ public class ChallengePostUtilService {
         challengeParticipationRecordCreationService.save(enrollment, post);
     }
 
-    private boolean alreadyParticipateToday(ChallengeEnrollment enrollment, ZonedDateTime now) {
-        // todo : 인정 시간대 확인하고 남기거나 삭제
-        //      해당일 00:00 ~ 23:59:59999...
+    private boolean isAlreadyParticipateToday(ChallengeEnrollment enrollment, ZonedDateTime now) {
+
         Optional<ChallengeParticipationRecord> optionalRecord
-                = challengeParticipationRecordSearchService.findByChallengeEnrollmentAndCreatedAtBetween(
+                = challengeParticipationRecordSearchService.findTodayRecordInEnrollment(
                 enrollment,
                 now.toLocalDate().atStartOfDay(),
                 now.toLocalDate().atTime(LocalTime.MAX)
         );
-
-        // todo : 인정 시간대 확인하고 남기거나 삭제
-        //      해당일 00:00 ~ 24:00 (다음날 00:00까지)
-//        Optional<ChallengeParticipationRecord> optionalRecord
-//                = challengeParticipationRecordSearchService.findByChallengeEnrollmentAndCreatedAtBetween(
-//                enrollment,
-//                now.toLocalDate().atStartOfDay(),
-//                now.toLocalDate().plusDays(1).atStartOfDay()
-//        );
 
         return optionalRecord.isPresent();
     }
