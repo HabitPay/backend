@@ -1,6 +1,7 @@
 package com.habitpay.habitpay.domain.member.api;
 
 import com.habitpay.habitpay.domain.member.application.MemberProfileService;
+import com.habitpay.habitpay.domain.member.application.MemberSearchService;
 import com.habitpay.habitpay.domain.member.application.MemberService;
 import com.habitpay.habitpay.domain.member.domain.Member;
 import com.habitpay.habitpay.domain.member.dto.MemberRequest;
@@ -18,6 +19,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
@@ -28,41 +30,16 @@ import java.util.UUID;
 @Slf4j
 public class MemberApi {
     private final MemberService memberService;
+    private final MemberSearchService memberSearchService;
     private final MemberProfileService memberProfileService;
     private final TokenService tokenService;
     private final RefreshTokenCreationService refreshTokenCreationService;
     private final S3FileService s3FileService;
 
     @GetMapping("/member")
-    @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<?> getMember(@RequestHeader("Authorization") String authorizationHeader) {
-        Optional<String> optionalToken = tokenService.getTokenFromHeader(authorizationHeader);
-        if (optionalToken.isEmpty()) {
-            String message = ErrorResponse.UNAUTHORIZED.getMessage();
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(message);
-        }
-
-        String token = optionalToken.get();
-        log.info("[GET /member] token: {}", token);
-
-        String email = tokenService.getEmail(token);
-        log.info("[GET /member] email: {}", email);
-
-        Member member = memberService.findByEmail(email);
-        String nickname = member.getNickname();
-        Optional<String> optionalImageFileName = Optional.ofNullable(member.getImageFileName());
-        MemberResponse memberResponse;
-
-        if (optionalImageFileName.isEmpty()) {
-            memberResponse = new MemberResponse(nickname, "");
-        } else {
-            String imageFileName = optionalImageFileName.get();
-            log.info("[GET /member] imageFileName: {}", imageFileName);
-            String preSignedGetUrl = s3FileService.getGetPreSignedUrl("profiles", imageFileName);
-            memberResponse = new MemberResponse(nickname, preSignedGetUrl);
-        }
-
-        return ResponseEntity.status(HttpStatus.OK).body(memberResponse);
+    public ResponseEntity<MemberResponse> getMember(@AuthenticationPrincipal String email) {
+        MemberResponse memberResponse = memberSearchService.getMemberProfile(email);
+        return ResponseEntity.ok(memberResponse);
     }
 
     @PostMapping("/member")

@@ -1,0 +1,8 @@
+= HabitPay API
+:doctype: book
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+:seclinks:
+
+include::test.adoc[]

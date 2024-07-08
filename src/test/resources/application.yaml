@@ -1,0 +1,42 @@
+spring:
+  config:
+    activate:
+      on-profile: test
+---
+spring:
+  h2:
+    console:
+      enabled: true
+  jpa:
+    database: h2
+    hibernate:
+      ddl-auto: create
+  datasource:
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:mem:test;MODE=PostgreSQL;
+    username: sa
+    password:
+---
+spring:
+  cloud:
+    aws:
+      s3:
+        bucket: hello
+      stack:
+        auto: false
+      region:
+        static: ap-northeast-2
+      credentials:
+        access-key: hello
+        secret-key: world
+---
+spring:
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: ${GOOGLE_CLIENT_ID}
+            client-secret: ${GOOGLE_CLIENT_SECRET}
+            redirect-uri: ${GOOGLE_REDIRECT_URI}
+            scope: ${GOOGLE_SCOPE}
