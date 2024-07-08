@@ -15,7 +15,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(RestDocsController.class)
-@Import({CorsConfig.class, TokenService.class, TokenProvider.class})
 public class RestDocsControllerTest extends AbstractRestDocsTests {
 
     @MockBean
