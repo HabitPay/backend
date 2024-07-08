@@ -36,7 +36,7 @@ jobs:
       - name: Build Asciidoc
         run: ./gradlew asciidoctor
       - name: Upload pages artifact
-        uses: actions/upload-pages-artifact@v4
+        uses: actions/upload-pages-artifact@v3
         with:
           path: './build/docs/asciidoc'
       - name: Deploy to GitHub Pages
