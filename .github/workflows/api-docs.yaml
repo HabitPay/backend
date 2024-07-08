@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - main
+      - chore/spring-rest-docs-적용#102
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
