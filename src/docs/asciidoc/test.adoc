@@ -1,3 +1,8 @@
 == RestDocsTestController
+:doctype: book
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+:seclinks:
 
 operation::rest-docs[snippets="http-request,http-response"]
