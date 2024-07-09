@@ -38,16 +38,16 @@ public class SignUpInterceptor implements HandlerInterceptor {
         // todo
 //        if (!(handler instanceof HandlerMethod)) {}
 
-        String httpRequestMethod = request.getMethod();
-        if (!"/api/member".equals(request.getRequestURI()) || !"POST".equalsIgnoreCase(httpRequestMethod)) {
-            return true;
-        }
-
         // todo : for debug
         HandlerMethod handlerMethod = (HandlerMethod) handler;
         Method method = handlerMethod.getMethod();
         log.info("Bean : {}", handlerMethod.getBean());
         log.info("Method : {}", method);
+
+        String httpMethod = request.getMethod();
+        if (!"/api/member".equals(request.getRequestURI()) || !"POST".equalsIgnoreCase(httpMethod)) {
+            return true;
+        }
 
         String authorizationHeader = request.getHeader("Authorization");
         // todo : authorization header가 빈 값인 경우와, 아예 헤더 자체가 없는 경우 분리 안 되나? 안 되면 에러 메시지 숨겨야 할 듯?
@@ -68,7 +68,6 @@ public class SignUpInterceptor implements HandlerInterceptor {
                 throw new CustomJwtException(HttpStatus.UNAUTHORIZED, CustomJwtErrorInfo.UNAUTHORIZED, "");
             }
 
-            String httpMethod = request.getMethod();
             if ("POST".equals(httpMethod)) {
                 if (tokenService.getIsActive(token)) {
                     throw new CustomJwtException(HttpStatus.UNAUTHORIZED, CustomJwtErrorInfo.UNAUTHORIZED, "Request was trying to signup with a member already signed up.");
