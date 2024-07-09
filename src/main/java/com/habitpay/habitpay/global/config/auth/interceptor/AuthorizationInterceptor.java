@@ -35,10 +35,14 @@ public class AuthorizationInterceptor implements HandlerInterceptor {
             HttpServletRequest request,
             HttpServletResponse response,
             Object handler) throws Exception {
-        // final String REDIRECT_URL = "http://localhost:3000";
 
         // todo
 //        if (!(handler instanceof HandlerMethod)) {}
+
+        String httpRequestMethod = request.getMethod();
+        if ("/api/member".equals(request.getRequestURI()) && "POST".equalsIgnoreCase(httpRequestMethod)) {
+            return true;
+        }
 
         // todo : for debug
         HandlerMethod handlerMethod = (HandlerMethod) handler;
@@ -51,8 +55,6 @@ public class AuthorizationInterceptor implements HandlerInterceptor {
         if (authorizationHeader == null) {
             // todo : 분리 못 하면 그냥 'the request lacks any authentication information' 상태로 보고 처리해도 될 듯
             //      이 경우면, 어떤 error 코드나 정보를 주어선 안 된다고 함! by RFC
-            //response.sendRedirect(REDIRECT_URL);
-            //return false;
             throw new CustomJwtException(HttpStatus.BAD_REQUEST, CustomJwtErrorInfo.BAD_REQUEST, "Request was missing the 'Authorization' header.");
         }
 
@@ -90,8 +92,6 @@ public class AuthorizationInterceptor implements HandlerInterceptor {
             return true;
         }
 
-        // todo
-//        response.sendRedirect(REDIRECT_URL);
         return false;
     }
 

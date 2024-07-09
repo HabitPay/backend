@@ -33,9 +33,7 @@ public class CorsConfig implements WebMvcConfigurer {
     public void addInterceptors(InterceptorRegistry registry) {
 
         registry.addInterceptor(signUpInterceptor()).addPathPatterns("/api/member");
-        registry.addInterceptor(authorizationInterceptor())
-                .addPathPatterns("/api/**")
-                .excludePathPatterns("/api/member");
+        registry.addInterceptor(authorizationInterceptor()).addPathPatterns("/api/**");
     }
 
     @Bean
