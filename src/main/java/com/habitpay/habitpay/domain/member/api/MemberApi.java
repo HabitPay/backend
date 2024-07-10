@@ -1,20 +1,20 @@
 package com.habitpay.habitpay.domain.member.api;
 
+import com.habitpay.habitpay.domain.member.application.MemberCreationService;
 import com.habitpay.habitpay.domain.member.application.MemberProfileService;
 import com.habitpay.habitpay.domain.member.application.MemberSearchService;
 import com.habitpay.habitpay.domain.member.application.MemberService;
 import com.habitpay.habitpay.domain.member.domain.Member;
-import com.habitpay.habitpay.domain.member.dto.MemberRequest;
+import com.habitpay.habitpay.domain.member.dto.MemberCreationRequest;
+import com.habitpay.habitpay.domain.member.dto.MemberCreationResponse;
 import com.habitpay.habitpay.domain.member.dto.MemberResponse;
+import com.habitpay.habitpay.domain.member.dto.MemberUpdateRequest;
 import com.habitpay.habitpay.domain.model.Response;
 import com.habitpay.habitpay.domain.refreshtoken.application.RefreshTokenCreationService;
-import com.habitpay.habitpay.domain.refreshtoken.dto.CreateAccessTokenResponse;
 import com.habitpay.habitpay.global.config.auth.CustomUserDetails;
 import com.habitpay.habitpay.global.config.aws.S3FileService;
 import com.habitpay.habitpay.global.config.jwt.TokenService;
-import com.habitpay.habitpay.global.error.CustomJwtErrorInfo;
 import com.habitpay.habitpay.global.error.ErrorResponse;
-import com.habitpay.habitpay.domain.refreshtoken.exception.CustomJwtException;
 import com.habitpay.habitpay.global.util.ImageUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -32,6 +32,7 @@ import java.util.UUID;
 public class MemberApi {
     private final MemberService memberService;
     private final MemberSearchService memberSearchService;
+    private final MemberCreationService memberCreationService;
     private final MemberProfileService memberProfileService;
     private final TokenService tokenService;
     private final RefreshTokenCreationService refreshTokenCreationService;
@@ -44,53 +45,20 @@ public class MemberApi {
     }
 
     @PostMapping("/member")
-    @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<CreateAccessTokenResponse> activateMember(
-            @RequestBody MemberRequest memberRequest,
-            @RequestHeader("Authorization") String authorizationHeader) {
-
-        // TODO: Interceptor 나 Filter 에서 먼저 처리해주기 때문에 나중에 삭제하기 -> 보류
-        Optional<String> optionalToken = tokenService.getTokenFromHeader(authorizationHeader);
-        if (optionalToken.isEmpty()) {
-            String message = ErrorResponse.UNAUTHORIZED.getMessage();
-            throw new CustomJwtException(HttpStatus.UNAUTHORIZED, CustomJwtErrorInfo.UNAUTHORIZED, message);
-        }
-
-        String token = optionalToken.get();
-        log.info("[POST /member] token: {}", token);
-
-        String email = tokenService.getEmail(token);
-        String nickname = memberRequest.getNickname();
-        log.info("[POST /member] email: {}, nickname: {}", email, nickname);
-        if (!memberProfileService.isValidNickname(nickname)) {
-            String message = ErrorResponse.INVALID_NICKNAME_RULE.getMessage();
-//            todo : CustomJwtErrorInfo 바꾸거나 추가하기
-            throw new CustomJwtException(HttpStatus.UNPROCESSABLE_ENTITY, CustomJwtErrorInfo.BAD_REQUEST, message);
-        }
-
-        Member member = memberService.findByEmail(email);
-
-        log.info("[POST /member] 회원 조회 성공");
-
-        member.activate(nickname);
-        memberService.save(member);
-
-        log.info("[POST /member] 회원 활성화 성공");
-
-        String newToken = tokenService.createAccessToken(email);
-        String refreshToken = refreshTokenCreationService.setRefreshTokenByEmail(email);
-
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(new CreateAccessTokenResponse(
-                        newToken,
-                        "Bearer",
-                        tokenService.getAccessTokenExpiresInToMillis(),
-                        refreshToken));
+    public ResponseEntity<MemberCreationResponse> activateMember(
+            @RequestBody MemberCreationRequest memberCreationRequest,
+            @AuthenticationPrincipal CustomUserDetails user) {
+        log.info("[POST /member] email: {}, nickname: {}", user.getEmail(), memberCreationRequest.getNickname());
+        memberCreationService.activate(memberCreationRequest, user.getId());
+        MemberCreationResponse memberCreationResponse = MemberCreationResponse.builder()
+                .nickname(memberCreationRequest.getNickname())
+                .build();
+        return ResponseEntity.status(HttpStatus.CREATED).body(memberCreationResponse);
     }
 
     @PatchMapping("/member")
     @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<String> patchMember(@RequestBody MemberRequest memberRequest,
+    public ResponseEntity<String> patchMember(@RequestBody MemberUpdateRequest memberUpdateRequest,
                                               @RequestHeader("Authorization") String authorizationHeader) {
         // TODO: Interceptor 나 Filter 에서 먼저 처리해주기 때문에 나중에 삭제하기
         Optional<String> optionalToken = tokenService.getTokenFromHeader(authorizationHeader);
@@ -98,15 +66,15 @@ public class MemberApi {
             String message = ErrorResponse.UNAUTHORIZED.getMessage();
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(message);
         }
-        String nickname = memberRequest.getNickname();
-        String imageExtension = memberRequest.getImageExtension();
+        String nickname = memberUpdateRequest.getNickname();
+        String imageExtension = memberUpdateRequest.getImageExtension();
         log.info("[PATCH /member] nickname: {}, imageExtension: {}", nickname, imageExtension);
 
         String token = optionalToken.get();
         String email = tokenService.getEmail(token);
         Member member = memberService.findByEmail(email);
 
-        Long contentLength = memberRequest.getContentLength();
+        Long contentLength = memberUpdateRequest.getContentLength();
 
         // 1. 이미지 크기 제한이 넘을 경우
         if (ImageUtil.isValidFileSize(contentLength) == false) {
@@ -121,7 +89,7 @@ public class MemberApi {
         }
 
         // 3. 닉네임 규칙이 맞지 않은 경우
-        if (memberProfileService.isValidNickname(nickname) == false) {
+        if (memberProfileService.isValidNicknameRule(nickname) == false) {
             String message = ErrorResponse.INVALID_NICKNAME_RULE.getMessage();
             return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(message);
         }
@@ -141,7 +109,7 @@ public class MemberApi {
         String savedFileName = String.format("%s.%s", randomFileName, imageExtension);
         log.info("[PATCH /member] savedFileName: {}", savedFileName);
 
-        member.updateProfile(memberRequest.getNickname(), savedFileName);
+        member.updateProfile(memberUpdateRequest.getNickname(), savedFileName);
         memberService.save(member);
 
         String preSignedUrl = s3FileService.getPutPreSignedUrl("profiles", savedFileName, imageExtension, contentLength);
