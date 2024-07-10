@@ -14,3 +14,9 @@ Request Header 에는 ``Authorization: Bearer {access token}`` 와 같은 형식
 사용자의 정보를 조회합니다.
 
 operation::member/get-member[snippets='http-request,http-response,response-fields']
+
+=== 사용자 활성화
+
+최초 가입한 사용자가 닉네임을 입력하면 ``active`` 상태로 변경합니다.
+
+operation::member/post-member[snippets='http-request,http-response,response-fields']
