@@ -20,7 +20,7 @@ public class MemberCreationService {
 
     public void activate(MemberCreationRequest memberCreationRequest, Long id) {
         String nickname = memberCreationRequest.getNickname();
-        if (!memberProfileService.isValidNicknameRule(nickname)) {
+        if (!memberProfileService.isNicknameValidFormat(nickname)) {
             String message = ErrorResponse.INVALID_NICKNAME_RULE.getMessage();
             throw new CustomJwtException(HttpStatus.UNPROCESSABLE_ENTITY, CustomJwtErrorInfo.BAD_REQUEST, message);
         }

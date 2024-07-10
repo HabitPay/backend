@@ -89,7 +89,7 @@ public class MemberApi {
         }
 
         // 3. 닉네임 규칙이 맞지 않은 경우
-        if (memberProfileService.isValidNicknameRule(nickname) == false) {
+        if (memberProfileService.isNicknameValidFormat(nickname) == false) {
             String message = ErrorResponse.INVALID_NICKNAME_RULE.getMessage();
             return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(message);
         }
