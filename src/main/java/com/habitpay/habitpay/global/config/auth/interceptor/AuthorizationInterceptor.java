@@ -36,41 +36,34 @@ public class AuthorizationInterceptor implements HandlerInterceptor {
             HttpServletResponse response,
             Object handler) throws Exception {
 
-        // todo
-//        if (!(handler instanceof HandlerMethod)) {}
-
-        // todo : for debug
-        HandlerMethod handlerMethod = (HandlerMethod) handler;
-        Method method = handlerMethod.getMethod();
-        log.info("Bean : {}", handlerMethod.getBean());
-        log.info("Method : {}", method);
-
-        String httpMethod = request.getMethod();
-        if ("/api/member".equals(request.getRequestURI()) && "POST".equalsIgnoreCase(httpMethod)) {
-            return true;
+        if (!(handler instanceof HandlerMethod)) {
+            // todo : response로 error 응답 보내기 or throw
+            log.error("handler is not instanceof HandlerMethod"); // 임시
+            return false;
         }
 
+        // todo : 디버깅 목적
+        printDebugLine(handler);
+
         String authorizationHeader = request.getHeader("Authorization");
-        // todo : authorization header가 빈 값인 경우와, 아예 헤더 자체가 없는 경우 분리 안 되나? 안 되면 에러 메시지 숨겨야 할 듯?
         if (authorizationHeader == null) {
-            // todo : 분리 못 하면 그냥 'the request lacks any authentication information' 상태로 보고 처리해도 될 듯
-            //      이 경우면, 어떤 error 코드나 정보를 주어선 안 된다고 함! by RFC
+            // return false;
+            // todo : 예외 정보를 숨기는 방향으로 에러 메시지 수정
             throw new CustomJwtException(HttpStatus.BAD_REQUEST, CustomJwtErrorInfo.BAD_REQUEST, "Request was missing the 'Authorization' header.");
         }
 
         StringTokenizer tokenizer = new StringTokenizer(authorizationHeader);
         if (tokenizer.countTokens() == 2 && tokenizer.nextToken().equals("Bearer")) {
-            String token = tokenizer.nextToken();
 
-            // todo : for debug
-            log.info("[token (before validation)] {}", token);
-            if (!tokenProvider.validateToken(token)) {
-                // todo : validateToken 메서드 안에서 throw 해서 여기까지 안 옴. 에러 메시지 숨기고 싶을 때 이 코드 사용하기.
-                throw new CustomJwtException(HttpStatus.UNAUTHORIZED, CustomJwtErrorInfo.UNAUTHORIZED, "");
-            }
+            String token = tokenizer.nextToken();
+            log.info(token);
+            tokenProvider.validateToken(token);
+
+            boolean isSignupRequest = getIsSignupRequest(request, token);
+            if (isSignupRequest) { return true; }
 
             if (!tokenService.getIsActive(token)) {
-                throw new CustomJwtException(HttpStatus.UNAUTHORIZED, CustomJwtErrorInfo.UNAUTHORIZED, "Request was not with a proper token.");
+                throw new CustomJwtException(HttpStatus.UNAUTHORIZED, CustomJwtErrorInfo.UNAUTHORIZED, "Not an available token.");
             }
 
             Authentication authentication = tokenService.getAuthentication(token);
@@ -83,7 +76,6 @@ public class AuthorizationInterceptor implements HandlerInterceptor {
             // todo : 인가
             Collection<GrantedAuthority> collection = (Collection<GrantedAuthority>) authentication.getAuthorities();
             log.info("[check ROLE] {}", collection);
-            log.info("[{} {}] email: {}", request.getMethod(), request.getRequestURI(), authentication.getPrincipal());
 
 //            if (!collection.toString().equals("[ROLE_GUEST]")) {
 //                throw new CustomJwtException(HttpStatus.FORBIDDEN, CustomJwtErrorInfo.FORBIDDEN, "request required higher privileges than provided by the
@@ -91,7 +83,33 @@ public class AuthorizationInterceptor implements HandlerInterceptor {
 //            }
             return true;
         }
+        // todo : response로 error 응답 보내기 or throw
+        log.error("might not be Bearer token"); // 임시
+        return false;
+    }
 
+    // todo : 나중에 삭제 예정
+    private void printDebugLine(Object handler) {
+        HandlerMethod handlerMethod = (HandlerMethod) handler;
+        Method method = handlerMethod.getMethod();
+        log.info("Bean : {}", handlerMethod.getBean());
+        log.info("Method : {}", method);
+    }
+
+    private boolean getIsSignupRequest(HttpServletRequest request, String token) {
+        String httpMethod = request.getMethod();
+        String requestURI = request.getRequestURI();
+
+        boolean isPostMethod = "POST".equalsIgnoreCase(httpMethod);
+        boolean isMemberApi = "/api/member".equals(requestURI);
+
+        if (isMemberApi && isPostMethod) {
+            if (!tokenService.getIsActive(token)) {
+                return true;
+            } else {
+                throw new CustomJwtException(HttpStatus.UNAUTHORIZED, CustomJwtErrorInfo.UNAUTHORIZED, "Signup try with a member already signed up.");
+            }
+        }
         return false;
     }
 
@@ -105,7 +123,6 @@ public class AuthorizationInterceptor implements HandlerInterceptor {
         HandlerMethod handlerMethod = (HandlerMethod) handler;
         Method method = handlerMethod.getMethod();
 
-        log.info("Interceptor : postHandle()");
         log.info("Method : {}", method);
     }
 
@@ -116,7 +133,12 @@ public class AuthorizationInterceptor implements HandlerInterceptor {
             Object handler,
             Exception exception) throws Exception {
 
+        // todo : 삭제 예정
         log.info("Interceptor : afterCompletion()");
+
+        if (exception != null) {
+            log.error(exception.getMessage());
+        }
     }
 
 }
