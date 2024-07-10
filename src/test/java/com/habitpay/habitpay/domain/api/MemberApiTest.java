@@ -66,8 +66,8 @@ public class MemberApiTest extends AbstractRestDocsTests {
 
         // given
         MemberResponse memberResponse = MemberResponse.builder()
-                .imageUrl("https://picsum.photos/id/40/200/300")
                 .nickname("HabitPay")
+                .imageUrl("https://picsum.photos/id/40/200/300")
                 .build();
         given(memberSearchService.getMemberProfile(anyString()))
                 .willReturn(memberResponse);
@@ -83,9 +83,9 @@ public class MemberApiTest extends AbstractRestDocsTests {
                                 headerWithName(HttpHeaders.AUTHORIZATION).description("액세스 토큰")
                         ),
                         responseFields(
-                                fieldWithPath("status").description("응답 상태 코드"),
-                                fieldWithPath("data.nickname").description("사용자 닉네임"),
-                                fieldWithPath("data.imageUrl").description("사용자 이미지 URL")
+//                                fieldWithPath("status").description("응답 상태 코드"),
+                                fieldWithPath("nickname").description("사용자 닉네임"),
+                                fieldWithPath("imageUrl").description("사용자 이미지 URL")
                         )
                 ));
     }
