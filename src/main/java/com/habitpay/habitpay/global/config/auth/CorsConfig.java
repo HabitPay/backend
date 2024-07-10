@@ -2,7 +2,6 @@ package com.habitpay.habitpay.global.config.auth;
 
 import com.habitpay.habitpay.domain.member.application.MemberService;
 import com.habitpay.habitpay.global.config.auth.interceptor.AuthorizationInterceptor;
-import com.habitpay.habitpay.global.config.auth.interceptor.SignUpInterceptor;
 import com.habitpay.habitpay.global.config.jwt.TokenProvider;
 import com.habitpay.habitpay.global.config.jwt.TokenService;
 import org.springframework.context.annotation.Bean;
@@ -31,8 +30,6 @@ public class CorsConfig implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-
-        registry.addInterceptor(signUpInterceptor()).addPathPatterns("/api/member");
         registry.addInterceptor(authorizationInterceptor()).addPathPatterns("/api/**");
     }
 
@@ -41,8 +38,4 @@ public class CorsConfig implements WebMvcConfigurer {
         return new AuthorizationInterceptor(tokenService, tokenProvider);
     }
 
-    @Bean
-    public SignUpInterceptor signUpInterceptor() {
-        return new SignUpInterceptor(tokenService, tokenProvider);
-    }
 }
