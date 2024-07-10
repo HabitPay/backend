@@ -9,6 +9,7 @@ import com.habitpay.habitpay.domain.member.dto.MemberResponse;
 import com.habitpay.habitpay.domain.model.Response;
 import com.habitpay.habitpay.domain.refreshtoken.application.RefreshTokenCreationService;
 import com.habitpay.habitpay.domain.refreshtoken.dto.CreateAccessTokenResponse;
+import com.habitpay.habitpay.global.config.auth.CustomUserDetails;
 import com.habitpay.habitpay.global.config.aws.S3FileService;
 import com.habitpay.habitpay.global.config.jwt.TokenService;
 import com.habitpay.habitpay.global.error.CustomJwtErrorInfo;
@@ -37,8 +38,8 @@ public class MemberApi {
     private final S3FileService s3FileService;
 
     @GetMapping("/member")
-    public ResponseEntity<MemberResponse> getMember(@AuthenticationPrincipal String email) {
-        MemberResponse memberResponse = memberSearchService.getMemberProfile(email);
+    public ResponseEntity<MemberResponse> getMember(@AuthenticationPrincipal CustomUserDetails user) {
+        MemberResponse memberResponse = memberSearchService.getMemberProfile(user.getId());
         return ResponseEntity.ok(memberResponse);
     }
 
