@@ -17,12 +17,14 @@ public class WithMockOAuth2UserSecurityContextFactory implements WithSecurityCon
     @Override
     public SecurityContext createSecurityContext(WithMockOAuth2User annotation) {
         SecurityContext context = SecurityContextHolder.createEmptyContext();
+        Map<String, Object> attributes = Map.of(
+                "name", annotation.name(),
+                "email", annotation.email()
+        );
+
         OAuth2User oAuth2User = new DefaultOAuth2User(
                 Collections.singleton(new SimpleGrantedAuthority(annotation.role())),
-                Map.of(
-                        "name", annotation.name(),
-                        "email", annotation.email()
-                ),
+                attributes,
                 "name"
         );
 
