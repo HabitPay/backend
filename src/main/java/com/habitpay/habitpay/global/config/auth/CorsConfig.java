@@ -31,11 +31,9 @@ public class CorsConfig implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-//        registry.addInterceptor(authorizationInterceptor());
 
-        // todo
+        registry.addInterceptor(signUpInterceptor()).addPathPatterns("/api/member");
         registry.addInterceptor(authorizationInterceptor()).addPathPatterns("/api/**");
-        registry.addInterceptor(signUpInterceptor()).addPathPatterns("/member");
     }
 
     @Bean

@@ -35,8 +35,6 @@ public class SignUpInterceptor implements HandlerInterceptor {
             HttpServletResponse response,
             Object handler) throws Exception {
 
-        // final String REDIRECT_URL = "http://localhost:3000";
-
         // todo
 //        if (!(handler instanceof HandlerMethod)) {}
 
@@ -46,13 +44,16 @@ public class SignUpInterceptor implements HandlerInterceptor {
         log.info("Bean : {}", handlerMethod.getBean());
         log.info("Method : {}", method);
 
+        String httpMethod = request.getMethod();
+        if (!"/api/member".equals(request.getRequestURI()) || !"POST".equalsIgnoreCase(httpMethod)) {
+            return true;
+        }
+
         String authorizationHeader = request.getHeader("Authorization");
         // todo : authorization header가 빈 값인 경우와, 아예 헤더 자체가 없는 경우 분리 안 되나? 안 되면 에러 메시지 숨겨야 할 듯?
         if (authorizationHeader == null) {
             // todo : 분리 못 하면 그냥 'the request lacks any authentication information' 상태로 보고 처리해도 될 듯
             //      이 경우면, 어떤 error 코드나 정보를 주어선 안 된다고 함! by RFC
-            //response.sendRedirect(REDIRECT_URL);
-            //return false;
             throw new CustomJwtException(HttpStatus.BAD_REQUEST, CustomJwtErrorInfo.BAD_REQUEST, "Request was missing the 'Authorization' header.");
         }
 
@@ -67,7 +68,6 @@ public class SignUpInterceptor implements HandlerInterceptor {
                 throw new CustomJwtException(HttpStatus.UNAUTHORIZED, CustomJwtErrorInfo.UNAUTHORIZED, "");
             }
 
-            String httpMethod = request.getMethod();
             if ("POST".equals(httpMethod)) {
                 if (tokenService.getIsActive(token)) {
                     throw new CustomJwtException(HttpStatus.UNAUTHORIZED, CustomJwtErrorInfo.UNAUTHORIZED, "Request was trying to signup with a member already signed up.");
@@ -95,8 +95,6 @@ public class SignUpInterceptor implements HandlerInterceptor {
             return true;
         }
 
-        // todo
-//        response.sendRedirect(REDIRECT_URL);
         return false;
     }
 
