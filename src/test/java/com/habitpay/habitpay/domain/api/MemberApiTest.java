@@ -11,16 +11,16 @@ import com.habitpay.habitpay.domain.refreshtoken.application.RefreshTokenCreatio
 import com.habitpay.habitpay.global.config.aws.S3FileService;
 import com.habitpay.habitpay.global.config.jwt.TokenProvider;
 import com.habitpay.habitpay.global.config.jwt.TokenService;
+import com.habitpay.habitpay.global.security.WithMockOAuth2User;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
-import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.test.web.servlet.ResultActions;
 
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
@@ -60,7 +60,7 @@ public class MemberApiTest extends AbstractRestDocsTests {
     S3FileService s3FileService;
 
     @Test
-    @WithAnonymousUser
+    @WithMockOAuth2User
     @DisplayName("사용자 조회")
     void getMember() throws Exception {
 
@@ -69,7 +69,7 @@ public class MemberApiTest extends AbstractRestDocsTests {
                 .nickname("HabitPay")
                 .imageUrl("https://picsum.photos/id/40/200/300")
                 .build();
-        given(memberSearchService.getMemberProfile(anyString()))
+        given(memberSearchService.getMemberProfile(anyLong()))
                 .willReturn(memberResponse);
 
         // when
@@ -83,7 +83,6 @@ public class MemberApiTest extends AbstractRestDocsTests {
                                 headerWithName(HttpHeaders.AUTHORIZATION).description("액세스 토큰")
                         ),
                         responseFields(
-//                                fieldWithPath("status").description("응답 상태 코드"),
                                 fieldWithPath("nickname").description("사용자 닉네임"),
                                 fieldWithPath("imageUrl").description("사용자 이미지 URL")
                         )
