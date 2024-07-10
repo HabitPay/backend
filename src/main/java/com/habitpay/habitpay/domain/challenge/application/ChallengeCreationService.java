@@ -5,7 +5,7 @@ import com.habitpay.habitpay.domain.challenge.domain.Challenge;
 import com.habitpay.habitpay.domain.challenge.dto.ChallengeCreationRequest;
 import com.habitpay.habitpay.domain.member.application.MemberService;
 import com.habitpay.habitpay.domain.member.domain.Member;
-import com.habitpay.habitpay.global.common.response.ApiResponse;
+import com.habitpay.habitpay.global.response.ApiResponse;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,7 +31,7 @@ public class ChallengeCreationService {
                 .feePerAbsence(challengeCreationRequest.getFeePerAbsence())
                 .build();
         challengeRepository.save(challenge);
-        
+
         // TODO: 챌린지 id 도 함께 전달하기
         ApiResponse apiResponse = ApiResponse.create("챌린지가 생성되었습니다.");
         return ResponseEntity.status(HttpStatus.CREATED).body(apiResponse);
