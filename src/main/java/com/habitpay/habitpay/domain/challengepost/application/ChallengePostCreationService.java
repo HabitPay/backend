@@ -39,8 +39,7 @@ public class ChallengePostCreationService {
 
         Member member = memberService.findByEmail(email);
         Challenge challenge = challengeSearchService.findById(challengeId);
-        // todo : List<>로 받게 될 경우 'challenge id' 이용해 enrollment 특정해야 함
-        ChallengeEnrollment enrollment = challengeEnrollmentSearchService.findByMember(member)
+        ChallengeEnrollment enrollment = challengeEnrollmentSearchService.findByMemberAndChallenge(member, challenge)
                 .orElseThrow(() -> new NoSuchElementException("(for debugging) no enrollment for : " + email));
 
         if (request.getIsAnnouncement()) {

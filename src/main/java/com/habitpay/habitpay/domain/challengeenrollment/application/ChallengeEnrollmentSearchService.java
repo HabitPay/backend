@@ -1,5 +1,6 @@
 package com.habitpay.habitpay.domain.challengeenrollment.application;
 
+import com.habitpay.habitpay.domain.challenge.domain.Challenge;
 import com.habitpay.habitpay.domain.challengeenrollment.dao.ChallengeEnrollmentRepository;
 import com.habitpay.habitpay.domain.challengeenrollment.domain.ChallengeEnrollment;
 import com.habitpay.habitpay.domain.member.domain.Member;
@@ -15,5 +16,9 @@ public class ChallengeEnrollmentSearchService {
 
     public Optional<ChallengeEnrollment> findByMember(Member member) {
         return challengeEnrollmentRepository.findByMember(member);
+    }
+
+    public Optional<ChallengeEnrollment> findByMemberAndChallenge(Member member, Challenge challenge) {
+        return challengeEnrollmentRepository.findByMemberAndChallenge(member, challenge);
     }
 }
