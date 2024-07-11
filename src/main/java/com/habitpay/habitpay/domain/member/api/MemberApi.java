@@ -28,6 +28,7 @@ import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/api")
 @Slf4j
 public class MemberApi {
     private final MemberService memberService;
@@ -45,15 +46,15 @@ public class MemberApi {
     }
 
     @PostMapping("/member")
-    public ResponseEntity<MemberCreationResponse> activateMember(
+    public MemberCreationResponse activateMember(
             @RequestBody MemberCreationRequest memberCreationRequest,
             @AuthenticationPrincipal CustomUserDetails user) {
         log.info("[POST /member] email: {}, nickname: {}", user.getEmail(), memberCreationRequest.getNickname());
         memberCreationService.activate(memberCreationRequest, user.getId());
-        MemberCreationResponse memberCreationResponse = MemberCreationResponse.builder()
+        return MemberCreationResponse.builder()
                 .nickname(memberCreationRequest.getNickname())
+                .message("회원가입이 완료되었습니다.")
                 .build();
-        return ResponseEntity.status(HttpStatus.CREATED).body(memberCreationResponse);
     }
 
     @PatchMapping("/member")
