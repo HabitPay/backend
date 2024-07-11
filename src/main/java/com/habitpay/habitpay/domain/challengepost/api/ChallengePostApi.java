@@ -42,17 +42,19 @@ public class ChallengePostApi {
             @PathVariable Long id, @AuthenticationPrincipal String email) {
 
         return ResponseEntity.ok()
-                .body(challengePostSearchService.findChallengePostsByMe(id, email));
+                .body(challengePostSearchService.findChallengePostsByMember(id, email));
     }
 
     // -----------------------------------------------------------------------------
     // todo : 'challengeEnrollmentId' or 'memberId' 등 멤버 식별할 수 있는 데이터를 받아야 함
     @GetMapping("/api/challenges/{id}/posts/member")
     public ResponseEntity<List<PostViewResponse>> findChallengePostsByMember(
-            @PathVariable Long id, @AuthenticationPrincipal String email) {
+            @PathVariable Long id) {
+
+        String memberEmail = "otherMember's@email.address"; // todo : 임시
 
         return ResponseEntity.ok()
-                .body(challengePostSearchService.findChallengePostsByMember(id, email));
+                .body(challengePostSearchService.findChallengePostsByMember(id, memberEmail));
     }
     // -------------------------------------------------------------------------------
 
