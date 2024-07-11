@@ -53,22 +53,6 @@ public class ChallengePostSearchService {
                 .toList();
     }
 
-    public List<PostViewResponse> findChallengePostsByMe(Long challengeId, String email) {
-        Member member = memberService.findByEmail(email);
-        Challenge challenge = challengeSearchService.findById(challengeId);
-         ChallengeEnrollment enrollment = challengeEnrollmentSearchService.findByMemberAndChallenge(member, challenge)
-                 .orElseThrow(() -> new NoSuchElementException("No Challenge for this Member"));
-
-        Long challengeEnrollmentId = enrollment.getId();
-
-        return this.findAllByChallengeEnrollment(challengeEnrollmentId)
-                .stream()
-                .filter(post -> !post.getIsAnnouncement())
-                // .sorted() // todo : 순서 설정하고 싶을 때
-                .map(post -> new PostViewResponse(post, postPhotoUtilService.makePhotoViewList(postPhotoSearchService.findAllByPost(post))))
-                .toList();
-    }
-
     // todo : 수정해야 함
     public List<PostViewResponse> findChallengePostsByMember(Long challengeId, String email) {
         Member member = memberService.findByEmail(email);
