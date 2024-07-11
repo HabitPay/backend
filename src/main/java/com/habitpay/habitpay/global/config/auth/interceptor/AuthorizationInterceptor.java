@@ -38,7 +38,7 @@ public class AuthorizationInterceptor implements HandlerInterceptor {
 
         if (!(handler instanceof HandlerMethod)) {
             // todo : response로 error 응답 보내기 or throw
-            log.error("handler is not instanceof HandlerMethod"); // 임시
+            log.error("handler is not instanceof HandlerMethod, but {}", handler.getClass().getName()); // 임시
             return false;
         }
 
@@ -63,7 +63,7 @@ public class AuthorizationInterceptor implements HandlerInterceptor {
             if (isSignupRequest) { return true; }
 
             if (!tokenService.getIsActive(token)) {
-                throw new CustomJwtException(HttpStatus.UNAUTHORIZED, CustomJwtErrorInfo.UNAUTHORIZED, "Not an available token.");
+                throw new CustomJwtException(HttpStatus.FORBIDDEN, CustomJwtErrorInfo.FORBIDDEN, "Unavailable token.");
             }
 
             Authentication authentication = tokenService.getAuthentication(token);
@@ -107,7 +107,7 @@ public class AuthorizationInterceptor implements HandlerInterceptor {
             if (!tokenService.getIsActive(token)) {
                 return true;
             } else {
-                throw new CustomJwtException(HttpStatus.UNAUTHORIZED, CustomJwtErrorInfo.UNAUTHORIZED, "Signup try with a member already signed up.");
+                throw new CustomJwtException(HttpStatus.FORBIDDEN, CustomJwtErrorInfo.FORBIDDEN, "Signup try with a member already signed up.");
             }
         }
         return false;
