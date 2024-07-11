@@ -1,5 +1,6 @@
 package com.habitpay.habitpay.domain.challengepost.application;
 
+import com.habitpay.habitpay.domain.challenge.application.ChallengeSearchService;
 import com.habitpay.habitpay.domain.challenge.domain.Challenge;
 import com.habitpay.habitpay.domain.challengeenrollment.application.ChallengeEnrollmentSearchService;
 import com.habitpay.habitpay.domain.challengeenrollment.dao.ChallengeEnrollmentRepository;
@@ -29,6 +30,7 @@ public class ChallengePostSearchService {
     private final PostPhotoUtilService postPhotoUtilService;
     private final MemberService memberService;
     private final ChallengeEnrollmentSearchService challengeEnrollmentSearchService;
+    private final ChallengeSearchService challengeSearchService;
 
     private final ChallengePostRepository challengePostRepository;
     private final ChallengeEnrollmentRepository challengeEnrollmentRepository;
@@ -53,10 +55,11 @@ public class ChallengePostSearchService {
 
     public List<PostViewResponse> findChallengePostsByMe(Long challengeId, String email) {
         Member member = memberService.findByEmail(email);
-        // todo : List로 받아서 찾거나 challengeId까지 특정해서 받기
-        // ChallengeEnrollment enrollment = challengeEnrollmentSearchService.findByMember(member);
+        Challenge challenge = challengeSearchService.findById(challengeId);
+         ChallengeEnrollment enrollment = challengeEnrollmentSearchService.findByMemberAndChallenge(member, challenge)
+                 .orElseThrow(() -> new NoSuchElementException("No Challenge for this Member"));
 
-        Long challengeEnrollmentId = 1L; // todo : 임시값
+        Long challengeEnrollmentId = enrollment.getId();
 
         return this.findAllByChallengeEnrollment(challengeEnrollmentId)
                 .stream()
@@ -68,7 +71,12 @@ public class ChallengePostSearchService {
 
     // todo : 수정해야 함
     public List<PostViewResponse> findChallengePostsByMember(Long challengeId, String email) {
-        Long challengeEnrollmentId = 1L; // todo : 임시값
+        Member member = memberService.findByEmail(email);
+        Challenge challenge = challengeSearchService.findById(challengeId);
+        ChallengeEnrollment enrollment = challengeEnrollmentSearchService.findByMemberAndChallenge(member, challenge)
+                .orElseThrow(() -> new NoSuchElementException("No Challenge for this Member"));
+
+        Long challengeEnrollmentId = enrollment.getId();
 
         return this.findAllByChallengeEnrollment(challengeEnrollmentId)
                 .stream()
