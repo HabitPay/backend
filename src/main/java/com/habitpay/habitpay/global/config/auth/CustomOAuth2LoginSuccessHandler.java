@@ -2,7 +2,6 @@ package com.habitpay.habitpay.global.config.auth;
 
 import com.habitpay.habitpay.domain.member.application.MemberService;
 import com.habitpay.habitpay.domain.member.domain.Member;
-import com.habitpay.habitpay.domain.refreshtoken.application.RefreshTokenCreationService;
 import com.habitpay.habitpay.global.config.jwt.TokenService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -31,10 +30,12 @@ public class CustomOAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSucc
     ) throws IOException {
 
         if (authentication.getPrincipal() instanceof OAuth2User oAuth2User) {
+            log.info("principal: {}", authentication.getPrincipal());
             String redirectUrl = "http://localhost:3000";
-            String email = oAuth2User.getAttribute("email");
-            Member member = memberService.findByEmail(email);
-            String accessToken = tokenService.createAccessToken(email);
+            CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
+            Long memberId = customUserDetails.getId();
+            Member member = memberService.findById(memberId);
+            String accessToken = tokenService.createAccessToken(memberId);
 
             super.clearAuthenticationAttributes(request);
             log.info("[onAuthenticationSuccess] isActive: {}", member.isActive());
