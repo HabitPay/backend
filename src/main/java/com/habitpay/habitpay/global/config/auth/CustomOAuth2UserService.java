@@ -2,6 +2,7 @@ package com.habitpay.habitpay.global.config.auth;
 
 import com.habitpay.habitpay.domain.member.dao.MemberRepository;
 import com.habitpay.habitpay.domain.member.domain.Member;
+import com.habitpay.habitpay.domain.member.domain.Role;
 import com.habitpay.habitpay.global.config.auth.dto.OAuthAttributes;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -11,6 +12,8 @@ import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -28,21 +31,27 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
 
         OAuthAttributes attributes = OAuthAttributes.of(registrationId, userNameAttributeName, oAuth2User.getAttributes());
 
-        Member member = saveOrUpdate(attributes);
-
-        log.info("loadUser: 회원 생성 완료 {}", member.getEmail());
+        String email = attributes.getEmail();
+        Optional<Member> optionalMember = memberRepository.findByEmail(email);
+        Member member;
+        if (optionalMember.isEmpty()) {
+            member = createMember(email);
+            log.info("loadUser: 회원 생성 완료 {}", member.getEmail());
+        } else {
+            member = optionalMember.get();
+            log.info("loadUser: 기존 회원 조회 성공 {}", member.getEmail());
+        }
 
         return new CustomUserDetails(
                 member, oAuth2User.getAttributes()
         );
-
     }
 
-    private Member saveOrUpdate(OAuthAttributes attributes) {
-        Member member = memberRepository.findByEmail(attributes.getEmail())
-                .map(entity -> entity.create(attributes.getEmail()))
-                .orElse(attributes.toEntity());
-
+    private Member createMember(String email) {
+        Member member = Member.builder()
+                .email(email)
+                .role(Role.USER)
+                .build();
         return memberRepository.save(member);
     }
 }
