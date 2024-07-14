@@ -23,18 +23,23 @@ public class MemberActivationService {
     private final TokenService tokenService;
 
     public SuccessResponse<MemberActivationResponse> activate(MemberActivationRequest memberActivationRequest, Long id) {
-        String nickname = memberActivationRequest.getNickname();
+        Member member = memberRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자 입니다."));
+        if (member.isActive()) {
+            // TODO: 500 이 아닌 403 에러 반환하기
+            throw new IllegalArgumentException("이미 활성된 사용자 입니다.");
+        }
 
-        // TODO: 예외처리 구현하기
+        String nickname = memberActivationRequest.getNickname();
         if (!memberProfileService.isNicknameValidFormat(nickname)) {
             String message = ErrorResponse.INVALID_NICKNAME_RULE.getMessage();
             throw new CustomJwtException(HttpStatus.UNPROCESSABLE_ENTITY, CustomJwtErrorInfo.BAD_REQUEST, message);
         }
 
-        Member member = memberRepository.findById(id).
-                orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
         member.activate(nickname);
         memberRepository.save(member);
+
+        // TODO: 토큰 생성 여부 논의 필요
         String accessToken = tokenService.createAccessToken(member.getId());
         Long expiresIn = tokenService.getAccessTokenExpiresInToMillis();
         return SuccessResponse.of(
