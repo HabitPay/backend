@@ -46,6 +46,7 @@ public class MemberApi {
         return ResponseEntity.ok(memberResponse);
     }
 
+    // TODO: /member/activate 로 변경하기
     @PostMapping("/member")
     public SuccessResponse<MemberActivationResponse> activateMember(
             @RequestBody MemberActivationRequest memberActivationRequest,
