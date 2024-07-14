@@ -79,7 +79,7 @@ public class MemberApiTest extends AbstractRestDocsTests {
                 .willReturn(memberResponse);
 
         // when
-        ResultActions result = mockMvc.perform(get("/member")
+        ResultActions result = mockMvc.perform(get("/api/member")
                 .header(HttpHeaders.AUTHORIZATION, AUTHORIZATION_HEADER_PREFIX + "ACCESS_TOKEN"));
 
         // then
@@ -106,7 +106,7 @@ public class MemberApiTest extends AbstractRestDocsTests {
                 .build();
 
         // when
-        ResultActions result = mockMvc.perform(post("/member")
+        ResultActions result = mockMvc.perform(post("/api/member")
                 .header(HttpHeaders.AUTHORIZATION, AUTHORIZATION_HEADER_PREFIX + "ACCESS_TOKEN")
                 .content(objectMapper.writeValueAsString(memberActivationRequest))
                 .contentType(MediaType.APPLICATION_JSON));
@@ -121,7 +121,10 @@ public class MemberApiTest extends AbstractRestDocsTests {
                                 fieldWithPath("nickname").description("닉네임")
                         ),
                         responseFields(
-                                fieldWithPath("nickname").description("닉네임")
+                                fieldWithPath("nickname").description("닉네임"),
+                                fieldWithPath("accessToken").description("액세스 토큰"),
+                                fieldWithPath("expiresIn").description("토큰 유효 시간"),
+                                fieldWithPath("tokenType").description("토큰 타입")
                         )
                 ));
     }
