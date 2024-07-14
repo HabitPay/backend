@@ -30,13 +30,14 @@ public class TokenProvider {
 
     private String makeToken(Date expiry, Member member) {
         Date now = new Date();
+        Long memberId = member.getId();
 
         return Jwts.builder()
                 .setHeaderParam(Header.TYPE, Header.JWT_TYPE)
                 .setIssuer(jwtProperties.getIssuer())
                 .setIssuedAt(now)
                 .setExpiration(expiry)
-                .setSubject(member.getEmail())
+                .setSubject(String.valueOf(memberId))
                 .claim("nickname", String.valueOf(member.getNickname()))
                 .claim("isActive", String.valueOf(member.isActive()))
                 .signWith(SignatureAlgorithm.HS256, jwtProperties.getSecret())
@@ -45,13 +46,14 @@ public class TokenProvider {
 
     private String makeRefreshToken(Date expiry, Member member) {
         Date now = new Date();
+        Long memberId = member.getId();
 
         return Jwts.builder()
                 .setHeaderParam(Header.TYPE, Header.JWT_TYPE)
                 .setIssuer(jwtProperties.getIssuer())
                 .setIssuedAt(now)
                 .setExpiration(expiry)
-                .setSubject(member.getEmail())
+                .setSubject(String.valueOf(memberId))
                 .signWith(SignatureAlgorithm.HS256, jwtProperties.getSecret())
                 .compact();
     }

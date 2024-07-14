@@ -33,8 +33,8 @@ public class TokenService {
     private final MemberRepository memberRepository;
     private final UserDetailsService userDetailsService;
 
-    public String createAccessToken(String email) {
-        Optional<Member> optionalMember = Optional.ofNullable(memberRepository.findByEmail(email)
+    public String createAccessToken(Long id) {
+        Optional<Member> optionalMember = Optional.ofNullable(memberRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다.")));
 
         Member member = optionalMember.get();

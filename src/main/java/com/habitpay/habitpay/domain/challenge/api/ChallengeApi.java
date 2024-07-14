@@ -6,7 +6,7 @@ import com.habitpay.habitpay.domain.challenge.application.ChallengeUpdateService
 import com.habitpay.habitpay.domain.challenge.dto.ChallengeCreationRequest;
 import com.habitpay.habitpay.domain.challenge.dto.ChallengePatchRequest;
 import com.habitpay.habitpay.domain.challenge.dto.ChallengeResponse;
-import com.habitpay.habitpay.global.common.response.ApiResponse;
+import com.habitpay.habitpay.global.response.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;

@@ -6,7 +6,7 @@ import com.habitpay.habitpay.domain.challengeenrollment.dao.ChallengeEnrollmentR
 import com.habitpay.habitpay.domain.challengeenrollment.domain.ChallengeEnrollment;
 import com.habitpay.habitpay.domain.member.application.MemberService;
 import com.habitpay.habitpay.domain.member.domain.Member;
-import com.habitpay.habitpay.global.common.response.ApiResponse;
+import com.habitpay.habitpay.global.response.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;

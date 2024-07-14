@@ -1,12 +1,12 @@
 package com.habitpay.habitpay.domain.member.api;
 
-import com.habitpay.habitpay.domain.member.application.MemberCreationService;
+import com.habitpay.habitpay.domain.member.application.MemberActivationService;
 import com.habitpay.habitpay.domain.member.application.MemberProfileService;
 import com.habitpay.habitpay.domain.member.application.MemberSearchService;
 import com.habitpay.habitpay.domain.member.application.MemberService;
 import com.habitpay.habitpay.domain.member.domain.Member;
-import com.habitpay.habitpay.domain.member.dto.MemberCreationRequest;
-import com.habitpay.habitpay.domain.member.dto.MemberCreationResponse;
+import com.habitpay.habitpay.domain.member.dto.MemberActivationRequest;
+import com.habitpay.habitpay.domain.member.dto.MemberActivationResponse;
 import com.habitpay.habitpay.domain.member.dto.MemberResponse;
 import com.habitpay.habitpay.domain.member.dto.MemberUpdateRequest;
 import com.habitpay.habitpay.domain.model.Response;
@@ -15,6 +15,7 @@ import com.habitpay.habitpay.global.config.auth.CustomUserDetails;
 import com.habitpay.habitpay.global.config.aws.S3FileService;
 import com.habitpay.habitpay.global.config.jwt.TokenService;
 import com.habitpay.habitpay.global.error.ErrorResponse;
+import com.habitpay.habitpay.global.response.SuccessResponse;
 import com.habitpay.habitpay.global.util.ImageUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,11 +29,12 @@ import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/api")
 @Slf4j
 public class MemberApi {
     private final MemberService memberService;
     private final MemberSearchService memberSearchService;
-    private final MemberCreationService memberCreationService;
+    private final MemberActivationService memberActivationService;
     private final MemberProfileService memberProfileService;
     private final TokenService tokenService;
     private final RefreshTokenCreationService refreshTokenCreationService;
@@ -44,16 +46,13 @@ public class MemberApi {
         return ResponseEntity.ok(memberResponse);
     }
 
+    // TODO: /member/activate 로 변경하기
     @PostMapping("/member")
-    public ResponseEntity<MemberCreationResponse> activateMember(
-            @RequestBody MemberCreationRequest memberCreationRequest,
+    public SuccessResponse<MemberActivationResponse> activateMember(
+            @RequestBody MemberActivationRequest memberActivationRequest,
             @AuthenticationPrincipal CustomUserDetails user) {
-        log.info("[POST /member] email: {}, nickname: {}", user.getEmail(), memberCreationRequest.getNickname());
-        memberCreationService.activate(memberCreationRequest, user.getId());
-        MemberCreationResponse memberCreationResponse = MemberCreationResponse.builder()
-                .nickname(memberCreationRequest.getNickname())
-                .build();
-        return ResponseEntity.status(HttpStatus.CREATED).body(memberCreationResponse);
+        log.info("[POST /member] email: {}, nickname: {}", user.getEmail(), memberActivationRequest.getNickname());
+        return memberActivationService.activate(memberActivationRequest, user.getId());
     }
 
     @PatchMapping("/member")

@@ -2,6 +2,7 @@ package com.habitpay.habitpay.global.config.auth;
 
 import com.habitpay.habitpay.domain.member.dao.MemberRepository;
 import com.habitpay.habitpay.domain.member.domain.Member;
+import com.habitpay.habitpay.domain.member.domain.Role;
 import com.habitpay.habitpay.global.config.auth.dto.OAuthAttributes;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,21 +29,20 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
 
         OAuthAttributes attributes = OAuthAttributes.of(registrationId, userNameAttributeName, oAuth2User.getAttributes());
 
-        Member member = saveOrUpdate(attributes);
-
-        log.info("loadUser: 회원 생성 완료 {}", member.getEmail());
+        String email = attributes.getEmail();
+        Member member = memberRepository.findByEmail(email)
+                .orElse(createMember(email));
 
         return new CustomUserDetails(
                 member, oAuth2User.getAttributes()
         );
-
     }
 
-    private Member saveOrUpdate(OAuthAttributes attributes) {
-        Member member = memberRepository.findByEmail(attributes.getEmail())
-                .map(entity -> entity.create(attributes.getEmail()))
-                .orElse(attributes.toEntity());
-
+    private Member createMember(String email) {
+        Member member = Member.builder()
+                .email(email)
+                .role(Role.USER)
+                .build();
         return memberRepository.save(member);
     }
 }
