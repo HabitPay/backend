@@ -13,8 +13,6 @@ import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
-
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -32,15 +30,8 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
         OAuthAttributes attributes = OAuthAttributes.of(registrationId, userNameAttributeName, oAuth2User.getAttributes());
 
         String email = attributes.getEmail();
-        Optional<Member> optionalMember = memberRepository.findByEmail(email);
-        Member member;
-        if (optionalMember.isEmpty()) {
-            member = createMember(email);
-            log.info("loadUser: 회원 생성 완료 {}", member.getEmail());
-        } else {
-            member = optionalMember.get();
-            log.info("loadUser: 기존 회원 조회 성공 {}", member.getEmail());
-        }
+        Member member = memberRepository.findByEmail(email)
+                .orElse(createMember(email));
 
         return new CustomUserDetails(
                 member, oAuth2User.getAttributes()
