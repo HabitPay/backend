@@ -2,8 +2,9 @@ package com.habitpay.habitpay.domain.member.application;
 
 import com.habitpay.habitpay.domain.member.dao.MemberRepository;
 import com.habitpay.habitpay.domain.member.domain.Member;
-import com.habitpay.habitpay.domain.member.dto.MemberResponse;
+import com.habitpay.habitpay.domain.member.dto.MemberProfileResponse;
 import com.habitpay.habitpay.global.config.aws.S3FileService;
+import com.habitpay.habitpay.global.response.SuccessResponse;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,7 +17,7 @@ public class MemberSearchService {
     private final MemberRepository memberRepository;
     private final S3FileService s3FileService;
 
-    public MemberResponse getMemberProfile(Long id) {
+    public SuccessResponse<MemberProfileResponse> getMemberProfile(Long id) {
         Member member = getMemberById(id).
                 orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
         String imageFileName = Optional.ofNullable(member.getImageFileName()).orElse("");
@@ -26,7 +27,7 @@ public class MemberSearchService {
         if (imageFileName.isEmpty() == false) {
             imageUrl = s3FileService.getGetPreSignedUrl("profiles", imageFileName);
         }
-        return new MemberResponse(member.getNickname(), imageUrl);
+        return SuccessResponse.of("", MemberProfileResponse.of(member, imageUrl));
     }
 
     @Transactional(readOnly = true)

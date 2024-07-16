@@ -7,7 +7,7 @@ import com.habitpay.habitpay.domain.member.application.MemberService;
 import com.habitpay.habitpay.domain.member.domain.Member;
 import com.habitpay.habitpay.domain.member.dto.MemberActivationRequest;
 import com.habitpay.habitpay.domain.member.dto.MemberActivationResponse;
-import com.habitpay.habitpay.domain.member.dto.MemberResponse;
+import com.habitpay.habitpay.domain.member.dto.MemberProfileResponse;
 import com.habitpay.habitpay.domain.member.dto.MemberUpdateRequest;
 import com.habitpay.habitpay.domain.model.Response;
 import com.habitpay.habitpay.domain.refreshtoken.application.RefreshTokenCreationService;
@@ -41,9 +41,8 @@ public class MemberApi {
     private final S3FileService s3FileService;
 
     @GetMapping("/member")
-    public ResponseEntity<MemberResponse> getMember(@AuthenticationPrincipal CustomUserDetails user) {
-        MemberResponse memberResponse = memberSearchService.getMemberProfile(user.getId());
-        return ResponseEntity.ok(memberResponse);
+    public SuccessResponse<MemberProfileResponse> getMember(@AuthenticationPrincipal CustomUserDetails user) {
+        return memberSearchService.getMemberProfile(user.getId());
     }
 
     // TODO: /member/activate 로 변경하기
