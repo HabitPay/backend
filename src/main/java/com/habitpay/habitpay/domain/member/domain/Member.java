@@ -41,6 +41,10 @@ public class Member extends BaseTime {
         this.role = role;
     }
 
+    public void setNickname(String nickname) {
+        this.nickname = nickname;
+    }
+
     public void updateProfile(String nickname, String imageFileName) {
         this.nickname = nickname;
         this.imageFileName = imageFileName;
