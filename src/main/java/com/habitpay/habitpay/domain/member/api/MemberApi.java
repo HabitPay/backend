@@ -46,19 +46,17 @@ public class MemberApi {
         return memberActivationService.activate(memberActivationRequest, user.getId());
     }
 
-
     @PatchMapping("/member/nickname")
     public SuccessResponse<NicknameDto> patchNickname(@RequestBody NicknameDto nicknameDto,
                                                       @AuthenticationPrincipal CustomUserDetails user) {
         return memberUpdateService.updateNickname(nicknameDto, user.getId());
     }
 
-//    @PatchMapping("/member")
-//    @ResponseStatus(HttpStatus.OK)
-//    public ResponseEntity<String> patchMember(@RequestBody MemberUpdateRequest memberUpdateRequest,
-//                                              @AuthenticationPrincipal CustomUserDetails user) {
-//        return memberUpdateService.updateProfile(memberUpdateRequest, user.getId());
-//    }
+    @PatchMapping("/member/image")
+    public SuccessResponse<ImageUpdateResponse> patchImage(@RequestBody ImageUpdateRequest imageUpdateRequest,
+                                                           @AuthenticationPrincipal CustomUserDetails user) {
+        return memberUpdateService.updateImage(imageUpdateRequest, user.getId());
+    }
 
     @DeleteMapping("/member")
     @ResponseStatus(HttpStatus.OK)

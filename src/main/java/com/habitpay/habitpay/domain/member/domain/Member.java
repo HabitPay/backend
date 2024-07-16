@@ -45,6 +45,10 @@ public class Member extends BaseTime {
         this.nickname = nickname;
     }
 
+    public void setImageFileName(String imageFileName) {
+        this.imageFileName = imageFileName;
+    }
+
     public void updateProfile(String nickname, String imageFileName) {
         this.nickname = nickname;
         this.imageFileName = imageFileName;
