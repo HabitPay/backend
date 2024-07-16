@@ -18,7 +18,7 @@ import org.springframework.stereotype.Service;
 @Service
 @AllArgsConstructor
 public class MemberActivationService {
-    private final MemberProfileService memberProfileService;
+    private final MemberUpdateService memberUpdateService;
     private final MemberRepository memberRepository;
     private final TokenService tokenService;
 
@@ -31,7 +31,7 @@ public class MemberActivationService {
         }
 
         String nickname = memberActivationRequest.getNickname();
-        if (!memberProfileService.isNicknameValidFormat(nickname)) {
+        if (!memberUpdateService.isNicknameValidFormat(nickname)) {
             String message = ErrorResponse.INVALID_NICKNAME_RULE.getMessage();
             throw new CustomJwtException(HttpStatus.UNPROCESSABLE_ENTITY, CustomJwtErrorInfo.BAD_REQUEST, message);
         }
