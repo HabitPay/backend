@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.habitpay.habitpay.docs.springrestdocs.AbstractRestDocsTests;
 import com.habitpay.habitpay.domain.member.api.MemberApi;
 import com.habitpay.habitpay.domain.member.application.MemberActivationService;
-import com.habitpay.habitpay.domain.member.application.MemberProfileService;
+import com.habitpay.habitpay.domain.member.application.MemberUpdateService;
 import com.habitpay.habitpay.domain.member.application.MemberSearchService;
 import com.habitpay.habitpay.domain.member.application.MemberService;
 import com.habitpay.habitpay.domain.member.dto.MemberActivationRequest;
@@ -54,7 +54,7 @@ public class MemberApiTest extends AbstractRestDocsTests {
     MemberActivationService memberActivationService;
 
     @MockBean
-    MemberProfileService memberProfileService;
+    MemberUpdateService memberUpdateService;
 
     @MockBean
     TokenService tokenService;
