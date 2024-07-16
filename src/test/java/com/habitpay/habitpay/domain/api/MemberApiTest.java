@@ -8,11 +8,13 @@ import com.habitpay.habitpay.domain.member.application.MemberProfileService;
 import com.habitpay.habitpay.domain.member.application.MemberSearchService;
 import com.habitpay.habitpay.domain.member.application.MemberService;
 import com.habitpay.habitpay.domain.member.dto.MemberActivationRequest;
-import com.habitpay.habitpay.domain.member.dto.MemberResponse;
+import com.habitpay.habitpay.domain.member.dto.MemberActivationResponse;
+import com.habitpay.habitpay.domain.member.dto.MemberProfileResponse;
 import com.habitpay.habitpay.domain.refreshtoken.application.RefreshTokenCreationService;
 import com.habitpay.habitpay.global.config.aws.S3FileService;
 import com.habitpay.habitpay.global.config.jwt.TokenProvider;
 import com.habitpay.habitpay.global.config.jwt.TokenService;
+import com.habitpay.habitpay.global.response.SuccessResponse;
 import com.habitpay.habitpay.global.security.WithMockOAuth2User;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -23,6 +25,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
@@ -71,12 +74,13 @@ public class MemberApiTest extends AbstractRestDocsTests {
     void getMember() throws Exception {
 
         // given
-        MemberResponse memberResponse = MemberResponse.builder()
+        MemberProfileResponse memberProfileResponse = MemberProfileResponse.builder()
                 .nickname("HabitPay")
                 .imageUrl("https://picsum.photos/id/40/200/300")
                 .build();
+
         given(memberSearchService.getMemberProfile(anyLong()))
-                .willReturn(memberResponse);
+                .willReturn(SuccessResponse.of("", memberProfileResponse));
 
         // when
         ResultActions result = mockMvc.perform(get("/api/member")
@@ -89,8 +93,9 @@ public class MemberApiTest extends AbstractRestDocsTests {
                                 headerWithName(HttpHeaders.AUTHORIZATION).description("액세스 토큰")
                         ),
                         responseFields(
-                                fieldWithPath("nickname").description("사용자 닉네임"),
-                                fieldWithPath("imageUrl").description("사용자 이미지 URL")
+                                fieldWithPath("message").description("메세지"),
+                                fieldWithPath("data.nickname").description("사용자 닉네임"),
+                                fieldWithPath("data.imageUrl").description("사용자 이미지 URL")
                         )
                 ));
     }
@@ -104,6 +109,15 @@ public class MemberApiTest extends AbstractRestDocsTests {
         MemberActivationRequest memberActivationRequest = MemberActivationRequest.builder()
                 .nickname("testNickname")
                 .build();
+        MemberActivationResponse memberActivationResponse = MemberActivationResponse.builder()
+                .nickname("testNickname")
+                .accessToken("ACCESS_TOKEN")
+                .expiresIn(3600L)
+                .tokenType(AUTHORIZATION_HEADER_PREFIX)
+                .build();
+        SuccessResponse<MemberActivationResponse> successResponse = SuccessResponse.of("회원가입이 완료되었습니다.", memberActivationResponse);
+        given(memberActivationService.activate(any(MemberActivationRequest.class), anyLong()))
+                .willReturn(successResponse);
 
         // when
         ResultActions result = mockMvc.perform(post("/api/member")
@@ -112,7 +126,7 @@ public class MemberApiTest extends AbstractRestDocsTests {
                 .contentType(MediaType.APPLICATION_JSON));
 
         // then
-        result.andExpect(status().isCreated())
+        result.andExpect(status().isOk())
                 .andDo(document("member/post-member",
                         requestHeaders(
                                 headerWithName(HttpHeaders.AUTHORIZATION).description("액세스 토큰")
@@ -121,10 +135,11 @@ public class MemberApiTest extends AbstractRestDocsTests {
                                 fieldWithPath("nickname").description("닉네임")
                         ),
                         responseFields(
-                                fieldWithPath("nickname").description("닉네임"),
-                                fieldWithPath("accessToken").description("액세스 토큰"),
-                                fieldWithPath("expiresIn").description("토큰 유효 시간"),
-                                fieldWithPath("tokenType").description("토큰 타입")
+                                fieldWithPath("message").description("메세지"),
+                                fieldWithPath("data.nickname").description("닉네임"),
+                                fieldWithPath("data.accessToken").description("액세스 토큰"),
+                                fieldWithPath("data.expiresIn").description("토큰 유효 시간"),
+                                fieldWithPath("data.tokenType").description("토큰 타입")
                         )
                 ));
     }
