@@ -220,7 +220,7 @@ public class MemberApiTest extends AbstractRestDocsTests {
 
     @Test
     @WithMockOAuth2User
-    @DisplayName("회ㅣ 탈퇴")
+    @DisplayName("회원 탈퇴")
     void deleteMember() throws Exception {
 
         // given
