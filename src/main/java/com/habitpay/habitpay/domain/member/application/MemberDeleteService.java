@@ -24,7 +24,9 @@ public class MemberDeleteService {
 
         String imageFileName = member.getImageFileName();
         log.info("[DELETE /member] imageFileName: {}", imageFileName);
-        s3FileService.deleteImage("profiles", imageFileName);
+        if (imageFileName != null) {
+            s3FileService.deleteImage("profiles", imageFileName);
+        }
 
         member.clear();
         memberRepository.save(member);
