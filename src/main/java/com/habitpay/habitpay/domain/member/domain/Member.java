@@ -26,9 +26,6 @@ public class Member extends BaseTime {
     @Column()
     private String email;
 
-    @Column(nullable = false)
-    private boolean isActive;
-
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Role role;
@@ -39,7 +36,6 @@ public class Member extends BaseTime {
         this.email = email;
         this.imageFileName = imageFileName;
         this.nickname = nickname;
-        this.isActive = false;
         this.role = role;
     }
 
@@ -55,13 +51,15 @@ public class Member extends BaseTime {
         this.nickname = "탈퇴한 사용자";
         this.imageFileName = null;
         this.email = null;
-        this.isActive = false;
         this.setDeletedAt(LocalDateTime.now());
+    }
+
+    public boolean isActive() {
+        return this.getDeletedAt() == null;
     }
 
     public void activate(String nickname) {
         this.nickname = nickname;
-        this.isActive = true;
     }
 
     public Member create(String email) {
