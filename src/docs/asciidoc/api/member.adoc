@@ -20,3 +20,28 @@ operation::member/get-member[snippets='http-request,http-response,response-field
 최초 가입한 사용자가 닉네임을 입력하면 ``active`` 상태로 변경합니다.
 
 operation::member/post-member[snippets='http-request,http-response,response-fields']
+
+=== 사용자 닉네임 변경
+
+사용자의 닉네임을 변경합니다.
+
+닉네임 규칙은 아래와 같습니다.
+
+- 길이: 2~15자
+- 문자: 영어 대소문자, 한글 (특수문자 제외)
+
+operation::member/patch-member-nickname[snippets='http-request,http-response,response-fields']
+
+=== 사용자 이미지 변경
+
+사용자의 이미지를 변경합니다.
+
+이미지 파일은 아래의 조건을 만족해야 합니다.
+
+- 확장자: jpg, jpeg, png
+- 크기: 1MB 이하
+
+응답으로 반환되는 `preSignedUrl` 은 프론트엔드에서 S3 로 이미지를 직접 업로드 하기 위한 링크입니다.
+
+operation::member/patch-member-image[snippets='http-request,http-response,response-fields']
+
