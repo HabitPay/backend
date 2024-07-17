@@ -3,10 +3,7 @@ package com.habitpay.habitpay.domain.api;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.habitpay.habitpay.docs.springrestdocs.AbstractRestDocsTests;
 import com.habitpay.habitpay.domain.member.api.MemberApi;
-import com.habitpay.habitpay.domain.member.application.MemberActivationService;
-import com.habitpay.habitpay.domain.member.application.MemberUpdateService;
-import com.habitpay.habitpay.domain.member.application.MemberSearchService;
-import com.habitpay.habitpay.domain.member.application.MemberService;
+import com.habitpay.habitpay.domain.member.application.*;
 import com.habitpay.habitpay.domain.member.dto.*;
 import com.habitpay.habitpay.domain.refreshtoken.application.RefreshTokenCreationService;
 import com.habitpay.habitpay.global.config.aws.S3FileService;
@@ -52,6 +49,9 @@ public class MemberApiTest extends AbstractRestDocsTests {
 
     @MockBean
     MemberUpdateService memberUpdateService;
+
+    @MockBean
+    MemberDeleteService memberDeleteService;
 
     @MockBean
     TokenService tokenService;
@@ -214,6 +214,35 @@ public class MemberApiTest extends AbstractRestDocsTests {
                         responseFields(
                                 fieldWithPath("message").description("메세지"),
                                 fieldWithPath("data.preSignedUrl").description("AWS S3 업로드를 위한 preSignedUrl")
+                        )
+                ));
+    }
+
+    @Test
+    @WithMockOAuth2User
+    @DisplayName("회ㅣ 탈퇴")
+    void deleteMember() throws Exception {
+
+        // given
+        // TODO: 응답 메세지 enum 으로 관리하기
+        SuccessResponse<Long> successResponse = SuccessResponse.of("정상적으로 탈퇴되었습니다.", 1L);
+        given(memberDeleteService.delete(anyLong()))
+                .willReturn(successResponse);
+
+        // when
+        ResultActions result = mockMvc.perform(delete("/api/member")
+                .header(HttpHeaders.AUTHORIZATION, AUTHORIZATION_HEADER_PREFIX + "ACCESS_TOKEN")
+                .contentType(MediaType.APPLICATION_JSON));
+
+        // then
+        result.andExpect(status().isOk())
+                .andDo(document("member/delete-member",
+                        requestHeaders(
+                                headerWithName(HttpHeaders.AUTHORIZATION).description("액세스 토큰")
+                        ),
+                        responseFields(
+                                fieldWithPath("message").description("메세지"),
+                                fieldWithPath("data").description("Member ID")
                         )
                 ));
     }
