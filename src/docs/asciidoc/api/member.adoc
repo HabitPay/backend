@@ -45,3 +45,11 @@ operation::member/patch-member-nickname[snippets='http-request,http-response,res
 
 operation::member/patch-member-image[snippets='http-request,http-response,response-fields']
 
+=== 회원 탈퇴
+
+회원 탈퇴를 진행합니다.
+
+반환되는 값은 DB 테이블의 Primary Key 에 해당하는 사용자의 ID 입니다.
+
+operation::member/delete-member[snippets='http-request,http-response,response-fields']
+
