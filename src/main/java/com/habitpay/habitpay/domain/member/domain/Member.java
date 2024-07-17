@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Getter
 @NoArgsConstructor
 @Entity
@@ -18,10 +20,10 @@ public class Member extends BaseTime {
     @Column()
     private String nickname;
 
-    @Column()
+    @Column(unique = true)
     private String imageFileName;
 
-    @Column(nullable = false)
+    @Column(unique = true, nullable = false)
     private String email;
 
     @Column(nullable = false)
@@ -49,9 +51,12 @@ public class Member extends BaseTime {
         this.imageFileName = imageFileName;
     }
 
-    public void updateProfile(String nickname, String imageFileName) {
-        this.nickname = nickname;
-        this.imageFileName = imageFileName;
+    public void clear() {
+        this.nickname = "탈퇴한 사용자";
+        this.imageFileName = null;
+        this.email = null;
+        this.isActive = false;
+        this.setDeletedAt(LocalDateTime.now());
     }
 
     public void activate(String nickname) {
