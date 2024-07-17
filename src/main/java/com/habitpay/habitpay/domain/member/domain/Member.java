@@ -32,12 +32,21 @@ public class Member extends BaseTime {
     private Role role;
 
     @Builder
-    public Member(String email, String imageFileName, String nickname, Role role) {
+    public Member(Long id, String email, String imageFileName, String nickname, Role role) {
+        this.id = id;
         this.email = email;
         this.imageFileName = imageFileName;
         this.nickname = nickname;
         this.isActive = false;
         this.role = role;
+    }
+
+    public void setNickname(String nickname) {
+        this.nickname = nickname;
+    }
+
+    public void setImageFileName(String imageFileName) {
+        this.imageFileName = imageFileName;
     }
 
     public void updateProfile(String nickname, String imageFileName) {

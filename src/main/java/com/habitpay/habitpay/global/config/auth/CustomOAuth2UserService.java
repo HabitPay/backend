@@ -2,19 +2,16 @@ package com.habitpay.habitpay.global.config.auth;
 
 import com.habitpay.habitpay.domain.member.dao.MemberRepository;
 import com.habitpay.habitpay.domain.member.domain.Member;
+import com.habitpay.habitpay.domain.member.domain.Role;
 import com.habitpay.habitpay.global.config.auth.dto.OAuthAttributes;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
-import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
-
-import java.util.Collections;
 
 @Service
 @RequiredArgsConstructor
@@ -32,24 +29,20 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
 
         OAuthAttributes attributes = OAuthAttributes.of(registrationId, userNameAttributeName, oAuth2User.getAttributes());
 
-        Member member = saveOrUpdate(attributes);
+        String email = attributes.getEmail();
+        Member member = memberRepository.findByEmail(email)
+                .orElse(createMember(email));
 
-        log.info("loadUser: 회원 생성 완료 {}", member.getEmail());
-
-        return new DefaultOAuth2User(
-                Collections.singleton(new SimpleGrantedAuthority(
-                        member.getRoleKey())),
-                attributes.getAttributes(),
-                attributes.getNameAttributeKey()
+        return new CustomUserDetails(
+                member, oAuth2User.getAttributes()
         );
-
     }
 
-    private Member saveOrUpdate(OAuthAttributes attributes) {
-        Member member = memberRepository.findByEmail(attributes.getEmail())
-                .map(entity -> entity.create(attributes.getEmail()))
-                .orElse(attributes.toEntity());
-
+    private Member createMember(String email) {
+        Member member = Member.builder()
+                .email(email)
+                .role(Role.USER)
+                .build();
         return memberRepository.save(member);
     }
 }

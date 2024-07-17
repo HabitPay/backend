@@ -9,6 +9,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
@@ -29,9 +31,10 @@ public class TokenService {
 //    private final static Duration ACCESS_TOKEN_EXPIRED_AT = Duration.ofHours(1);
     private final TokenProvider tokenProvider;
     private final MemberRepository memberRepository;
+    private final UserDetailsService userDetailsService;
 
-    public String createAccessToken(String email) {
-        Optional<Member> optionalMember = Optional.ofNullable(memberRepository.findByEmail(email)
+    public String createAccessToken(Long id) {
+        Optional<Member> optionalMember = Optional.ofNullable(memberRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다.")));
 
         Member member = optionalMember.get();
@@ -50,13 +53,13 @@ public class TokenService {
 
     public Authentication getAuthentication(String token) {
         Claims claims = getClaims(token);
-        String email = claims.getSubject();
+        UserDetails userDetails = userDetailsService.loadUserByUsername(claims.getSubject());
         Set<SimpleGrantedAuthority> authorities = Collections.singleton(
                 new SimpleGrantedAuthority("ROLE_GUEST")
         );
 
         return new UsernamePasswordAuthenticationToken(
-                email,
+                userDetails,
                 token,
                 authorities);
     }

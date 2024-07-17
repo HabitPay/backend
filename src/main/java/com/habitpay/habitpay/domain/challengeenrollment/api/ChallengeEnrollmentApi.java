@@ -3,7 +3,7 @@ package com.habitpay.habitpay.domain.challengeenrollment.api;
 import com.habitpay.habitpay.domain.challengeenrollment.application.ChallengeCancellationService;
 import com.habitpay.habitpay.domain.challengeenrollment.application.ChallengeEnrollmentService;
 import com.habitpay.habitpay.domain.member.application.MemberService;
-import com.habitpay.habitpay.global.common.response.ApiResponse;
+import com.habitpay.habitpay.global.response.ApiResponse;
 import com.habitpay.habitpay.global.config.jwt.TokenService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
