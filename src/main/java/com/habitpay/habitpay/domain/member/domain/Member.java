@@ -20,10 +20,10 @@ public class Member extends BaseTime {
     @Column()
     private String nickname;
 
-    @Column(unique = true)
+    @Column()
     private String imageFileName;
 
-    @Column(unique = true, nullable = false)
+    @Column()
     private String email;
 
     @Column(nullable = false)
