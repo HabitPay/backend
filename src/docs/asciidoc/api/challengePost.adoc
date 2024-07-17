@@ -1,0 +1,16 @@
+== 챌린지 포스트 API
+:doctype: book
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+:seclinks:
+
+챌린지 포스트를 등록, 조회, 수정 및 삭제할 수 있습니다.
+
+Request Header 에는 ``Authorization: Bearer {access token}`` 와 같은 형식으로 보내야 하며, 사용자의 ``액세스 토큰``이 필요합니다.
+
+=== 챌린지 포스트 조회
+
+경로 변수로 받은 id값을 이용해 챌린지 포스트를 조회합니다.
+
+operation::challengePost/get-challengePost[snippets='http-request,http-response,response-fields']
