@@ -10,6 +10,7 @@ import com.habitpay.habitpay.domain.member.application.MemberService;
 import com.habitpay.habitpay.domain.member.dto.MemberActivationRequest;
 import com.habitpay.habitpay.domain.member.dto.MemberActivationResponse;
 import com.habitpay.habitpay.domain.member.dto.MemberProfileResponse;
+import com.habitpay.habitpay.domain.member.dto.NicknameDto;
 import com.habitpay.habitpay.domain.refreshtoken.application.RefreshTokenCreationService;
 import com.habitpay.habitpay.global.config.aws.S3FileService;
 import com.habitpay.habitpay.global.config.jwt.TokenProvider;
@@ -31,8 +32,7 @@ import static org.mockito.BDDMockito.given;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -140,6 +140,42 @@ public class MemberApiTest extends AbstractRestDocsTests {
                                 fieldWithPath("data.accessToken").description("액세스 토큰"),
                                 fieldWithPath("data.expiresIn").description("토큰 유효 시간"),
                                 fieldWithPath("data.tokenType").description("토큰 타입")
+                        )
+                ));
+    }
+
+    @Test
+    @WithMockOAuth2User
+    @DisplayName("사용자 닉네임 변경")
+    void patchNickname() throws Exception {
+
+        // given
+        NicknameDto nicknameDto = NicknameDto.builder()
+                .nickname("testNickname")
+                .build();
+        // TODO: 응답 메세지 enum 으로 관리하기
+        SuccessResponse<NicknameDto> successResponse = SuccessResponse.of("프로필 업데이트에 성공했습니다.", nicknameDto);
+        given(memberUpdateService.updateNickname(any(NicknameDto.class), anyLong()))
+                .willReturn(successResponse);
+
+        // when
+        ResultActions result = mockMvc.perform(patch("/api/member/nickname")
+                .header(HttpHeaders.AUTHORIZATION, AUTHORIZATION_HEADER_PREFIX + "ACCESS_TOKEN")
+                .content(objectMapper.writeValueAsString(nicknameDto))
+                .contentType(MediaType.APPLICATION_JSON));
+
+        // then
+        result.andExpect(status().isOk())
+                .andDo(document("member/patch-member-nickname",
+                        requestHeaders(
+                                headerWithName(HttpHeaders.AUTHORIZATION).description("액세스 토큰")
+                        ),
+                        requestFields(
+                                fieldWithPath("nickname").description("닉네임")
+                        ),
+                        responseFields(
+                                fieldWithPath("message").description("메세지"),
+                                fieldWithPath("data.nickname").description("닉네임")
                         )
                 ));
     }
