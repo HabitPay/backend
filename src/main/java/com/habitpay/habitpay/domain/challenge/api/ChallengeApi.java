@@ -4,6 +4,7 @@ import com.habitpay.habitpay.domain.challenge.application.ChallengeCreationServi
 import com.habitpay.habitpay.domain.challenge.application.ChallengeDetailsService;
 import com.habitpay.habitpay.domain.challenge.application.ChallengeUpdateService;
 import com.habitpay.habitpay.domain.challenge.dto.ChallengeCreationRequest;
+import com.habitpay.habitpay.domain.challenge.dto.ChallengeCreationResponse;
 import com.habitpay.habitpay.domain.challenge.dto.ChallengeDetailsResponse;
 import com.habitpay.habitpay.domain.challenge.dto.ChallengePatchRequest;
 import com.habitpay.habitpay.global.config.auth.CustomUserDetails;
@@ -31,9 +32,9 @@ public class ChallengeApi {
     }
 
     @PostMapping("/challenges")
-    public ResponseEntity<ApiResponse> createChallenge(@RequestBody ChallengeCreationRequest challengeCreationRequest,
-                                                       @AuthenticationPrincipal CustomUserDetails user) {
-        return challengeCreationService.save(challengeCreationRequest, user.getId());
+    public SuccessResponse<ChallengeCreationResponse> createChallenge(@RequestBody ChallengeCreationRequest challengeCreationRequest,
+                                                                      @AuthenticationPrincipal CustomUserDetails user) {
+        return challengeCreationService.createChallenge(challengeCreationRequest, user.getId());
     }
 
     @PatchMapping("/challenges/{id}")
