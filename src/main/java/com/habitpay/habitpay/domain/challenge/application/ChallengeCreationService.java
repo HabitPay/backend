@@ -10,6 +10,8 @@ import com.habitpay.habitpay.global.response.SuccessResponse;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.ZonedDateTime;
+
 @Service
 @AllArgsConstructor
 public class ChallengeCreationService {
@@ -18,6 +20,11 @@ public class ChallengeCreationService {
 
     public SuccessResponse<ChallengeCreationResponse> createChallenge(ChallengeCreationRequest challengeCreationRequest, Long id) {
         Member host = memberSearchService.getMemberById(id);
+        if (isStartDateBeforeNow(challengeCreationRequest.getStartDate())) {
+            // TODO: 예외 처리 공통 응답 적용하기
+            throw new IllegalArgumentException("챌린지 시작 시간은 현재 시간 이후만 가능합니다.");
+        }
+
         Challenge newChallenge = Challenge.of(host, challengeCreationRequest);
         challengeRepository.save(newChallenge);
 
@@ -25,5 +32,9 @@ public class ChallengeCreationService {
                 "챌린지가 생성되었습니다.",
                 ChallengeCreationResponse.of(host, newChallenge)
         );
+    }
+
+    private boolean isStartDateBeforeNow(ZonedDateTime startDate) {
+        return startDate.isBefore(ZonedDateTime.now());
     }
 }
