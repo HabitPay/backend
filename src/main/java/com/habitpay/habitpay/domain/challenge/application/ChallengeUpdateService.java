@@ -3,7 +3,7 @@ package com.habitpay.habitpay.domain.challenge.application;
 import com.habitpay.habitpay.domain.challenge.dao.ChallengeRepository;
 import com.habitpay.habitpay.domain.challenge.domain.Challenge;
 import com.habitpay.habitpay.domain.challenge.dto.ChallengePatchRequest;
-import com.habitpay.habitpay.domain.member.application.MemberService;
+import com.habitpay.habitpay.domain.member.application.MemberSearchService;
 import com.habitpay.habitpay.domain.member.domain.Member;
 import com.habitpay.habitpay.global.response.ApiResponse;
 import lombok.RequiredArgsConstructor;
@@ -15,15 +15,15 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 public class ChallengeUpdateService {
-    private final MemberService memberService;
+    private final MemberSearchService memberSearchService;
     private final ChallengeRepository challengeRepository;
     private final ChallengeSearchService challengeSearchService;
 
     @Transactional
-    public ResponseEntity<ApiResponse> update(Long id, ChallengePatchRequest challengePatchRequest, String email) {
+    public ResponseEntity<ApiResponse> update(Long challengeId, ChallengePatchRequest challengePatchRequest, Long userId) {
         ApiResponse apiResponse;
-        Member member = memberService.findByEmail(email);
-        Challenge challenge = challengeSearchService.findById(id);
+        Member member = memberSearchService.getMemberById(userId);
+        Challenge challenge = challengeSearchService.getChallengeById(challengeId);
 
         if (isChallengeHost(member, challenge) == false) {
             // TODO: throw 로 예외 처리 가능한지 확인하기

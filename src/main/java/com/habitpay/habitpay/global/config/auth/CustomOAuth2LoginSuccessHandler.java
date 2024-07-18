@@ -1,6 +1,6 @@
 package com.habitpay.habitpay.global.config.auth;
 
-import com.habitpay.habitpay.domain.member.application.MemberService;
+import com.habitpay.habitpay.domain.member.application.MemberSearchService;
 import com.habitpay.habitpay.domain.member.domain.Member;
 import com.habitpay.habitpay.global.config.jwt.TokenService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -19,7 +19,7 @@ import java.io.IOException;
 @Slf4j
 public class CustomOAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
-    private final MemberService memberService;
+    private final MemberSearchService memberSearchService;
     private final TokenService tokenService;
 
     @Override
@@ -34,7 +34,7 @@ public class CustomOAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSucc
             String redirectUrl = "http://localhost:3000";
             CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
             Long memberId = customUserDetails.getId();
-            Member member = memberService.findById(memberId);
+            Member member = memberSearchService.getMemberById(memberId);
             String accessToken = tokenService.createAccessToken(memberId);
 
             super.clearAuthenticationAttributes(request);

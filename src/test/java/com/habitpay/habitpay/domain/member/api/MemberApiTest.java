@@ -1,9 +1,11 @@
-package com.habitpay.habitpay.domain.api;
+package com.habitpay.habitpay.domain.member.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.habitpay.habitpay.docs.springrestdocs.AbstractRestDocsTests;
-import com.habitpay.habitpay.domain.member.api.MemberApi;
-import com.habitpay.habitpay.domain.member.application.*;
+import com.habitpay.habitpay.domain.member.application.MemberActivationService;
+import com.habitpay.habitpay.domain.member.application.MemberDeleteService;
+import com.habitpay.habitpay.domain.member.application.MemberSearchService;
+import com.habitpay.habitpay.domain.member.application.MemberUpdateService;
 import com.habitpay.habitpay.domain.member.dto.*;
 import com.habitpay.habitpay.domain.refreshtoken.application.RefreshTokenCreationService;
 import com.habitpay.habitpay.global.config.aws.S3FileService;
@@ -37,9 +39,6 @@ public class MemberApiTest extends AbstractRestDocsTests {
 
     @Autowired
     ObjectMapper objectMapper;
-
-    @MockBean
-    MemberService memberService;
 
     @MockBean
     MemberSearchService memberSearchService;

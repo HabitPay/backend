@@ -56,7 +56,7 @@ public class ChallengePostSearchService {
     // todo : 수정해야 함
     public List<PostViewResponse> findChallengePostsByMember(Long challengeId, String email) {
         Member member = memberService.findByEmail(email);
-        Challenge challenge = challengeSearchService.findById(challengeId);
+        Challenge challenge = challengeSearchService.getChallengeById(challengeId);
         ChallengeEnrollment enrollment = challengeEnrollmentSearchService.findByMemberAndChallenge(member, challenge)
                 .orElseThrow(() -> new NoSuchElementException("No Challenge for this Member"));
 

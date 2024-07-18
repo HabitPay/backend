@@ -38,7 +38,7 @@ public class ChallengePostCreationService {
     public List<String> save(AddPostRequest request, Long challengeId, String email) {
 
         Member member = memberService.findByEmail(email);
-        Challenge challenge = challengeSearchService.findById(challengeId);
+        Challenge challenge = challengeSearchService.getChallengeById(challengeId);
         ChallengeEnrollment enrollment = challengeEnrollmentSearchService.findByMemberAndChallenge(member, challenge)
                 .orElseThrow(() -> new NoSuchElementException("(for debugging) no enrollment for : " + email));
 

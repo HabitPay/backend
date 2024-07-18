@@ -1,6 +1,6 @@
 package com.habitpay.habitpay.global.config.jwt;
 
-import com.habitpay.habitpay.domain.member.dao.MemberRepository;
+import com.habitpay.habitpay.domain.member.application.MemberSearchService;
 import com.habitpay.habitpay.domain.member.domain.Member;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -30,23 +30,17 @@ public class TokenService {
     // todo : for temp
 //    private final static Duration ACCESS_TOKEN_EXPIRED_AT = Duration.ofHours(1);
     private final TokenProvider tokenProvider;
-    private final MemberRepository memberRepository;
+    private final MemberSearchService memberSearchService;
     private final UserDetailsService userDetailsService;
 
     public String createAccessToken(Long id) {
-        Optional<Member> optionalMember = Optional.ofNullable(memberRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다.")));
-
-        Member member = optionalMember.get();
+        Member member = memberSearchService.getMemberById(id);
 
         return tokenProvider.generateToken(member, ACCESS_TOKEN_EXPIRED_AT);
     }
 
-    public String createRefreshToken(String email) {
-        Optional<Member> optionalMember = Optional.ofNullable(memberRepository.findByEmail(email)
-                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다.")));
-
-        Member member = optionalMember.get();
+    public String createRefreshToken(Long id) {
+        Member member = memberSearchService.getMemberById(id);
 
         return tokenProvider.generateRefreshToken(member, REFRESH_TOKEN_EXPIRED_AT);
     }
@@ -71,9 +65,9 @@ public class TokenService {
                 .getBody();
     }
 
-    public String getEmail(String token) {
+    public Long getUserId(String token) {
         Claims claims = getClaims(token);
-        return claims.getSubject();
+        return Long.valueOf(claims.getSubject());
     }
 
     public Boolean getIsActive(String token) {
