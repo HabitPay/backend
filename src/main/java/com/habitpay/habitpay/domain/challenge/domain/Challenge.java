@@ -44,7 +44,7 @@ public class Challenge extends BaseTime {
     private int numberOfParticipants;
 
     @Column(nullable = false)
-    private int participatingDays;
+    private byte participatingDays;
 
     @Column(nullable = false)
     private int feePerAbsence;

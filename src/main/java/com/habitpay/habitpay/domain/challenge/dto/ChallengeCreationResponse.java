@@ -16,7 +16,7 @@ public class ChallengeCreationResponse {
     private String description;
     private ZonedDateTime startDate;
     private ZonedDateTime endDate;
-    private int participatingDays;
+    private byte participatingDays;
     private int feePerAbsence;
 
     public static ChallengeCreationResponse of(Member host, Challenge challenge) {
