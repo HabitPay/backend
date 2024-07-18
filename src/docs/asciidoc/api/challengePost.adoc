@@ -11,6 +11,20 @@ Request Header 에는 ``Authorization: Bearer {access token}`` 와 같은 형식
 
 === 챌린지 포스트 조회
 
-경로 변수로 받은 id값을 이용해 챌린지 포스트를 조회합니다.
+경로 변수로 받은 challengePost의 id값을 이용해 특정 챌린지 포스트를 조회합니다.
 
 operation::challengePost/get-challengePost[snippets='http-request,http-response,response-fields']
+
+=== 챌린지 내 전체 포스트 조회
+
+경로 변수로 받은 challenge의 id값을 이용해 해당 챌린지 내의 모든 포스트를 조회합니다.
+해당 챌린지에 등록되어 있는 멤버만 포스트를 조회할 수 있습니다.
+
+operation::challengePost/get-challengePosts[snippets='http-request,http-response,response-fields']
+
+=== 챌린지 내 본인이 작성한 모든 포스트 조회
+
+경로 변수로 받은 challenge의 id값을 이용해 해당 챌린지 내에서 본인이 작성한 모든 포스트를 조회합니다.
+'본인'이란 요청을 보낸 멤버를 의미합니다.
+
+operation::challengePost/get-challengePosts-by-me[snippets='http-request,http-response,response-fields']

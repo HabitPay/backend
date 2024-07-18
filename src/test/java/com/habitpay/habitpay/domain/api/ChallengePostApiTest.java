@@ -18,15 +18,19 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.ResultActions;
 
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import static java.util.Date.*;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
@@ -34,8 +38,12 @@ import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.docu
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+
 
 @WebMvcTest(ChallengePostApi.class)
 public class ChallengePostApiTest extends AbstractRestDocsTests {
@@ -67,7 +75,7 @@ public class ChallengePostApiTest extends AbstractRestDocsTests {
                 .email("test@gmail.com")
 //                .role(Role.valueOf("ROLE_GUEST"))
                 .imageFileName(null)
-                .nickname("test user")
+                .nickname("test member")
                 .build();
     }
 
@@ -90,6 +98,24 @@ public class ChallengePostApiTest extends AbstractRestDocsTests {
                 .build();
     }
 
+    private ChallengePost createTestChallengePost(ChallengeEnrollment testEnrollment) {
+        return ChallengePost.builder()
+                .content("This is test post.")
+                .isAnnouncement(false)
+                .enrollment(testEnrollment)
+                .build();
+    }
+
+    private List<ChallengePost> createTestChallengePostList(ChallengeEnrollment testEnrollment) {
+        return IntStream.rangeClosed(1,10)
+                .mapToObj(i -> ChallengePost.builder()
+                        .content("This is test post" + i)
+                            .isAnnouncement(false)
+                            .enrollment(testEnrollment)
+                            .build())
+                .toList();
+    }
+
     // given.(의존관계에 있는 객체의 메서드(인자)).willReturn(반환값);
 
     @Test
@@ -99,14 +125,8 @@ public class ChallengePostApiTest extends AbstractRestDocsTests {
         // given
         Member testMember = createTestMember();
         Challenge testChallenge = createTestChallenge(testMember);
-
-        ChallengeEnrollment mockEnrollment = createTestChallengeEnrollment(testMember, testChallenge);
-
-        ChallengePost mockPost = ChallengePost.builder()
-                .content("This is test post.")
-                .isAnnouncement(false)
-                .enrollment(mockEnrollment)
-                .build();
+        ChallengeEnrollment testEnrollment = createTestChallengeEnrollment(testMember, testChallenge);
+        ChallengePost mockPost = createTestChallengePost(testEnrollment);
 
         List<PostPhotoView> mockPostPhotoViewList = null;
 
@@ -122,6 +142,7 @@ public class ChallengePostApiTest extends AbstractRestDocsTests {
 
         //then
         result.andExpect(status().isOk())
+                //.andExpect(jsonPath("$.id").value(1L))
                 .andDo(document("challengePost/get-challengePost",
                         requestHeaders(
                                 headerWithName(HttpHeaders.AUTHORIZATION).description("액세스 토큰")
@@ -152,45 +173,13 @@ public class ChallengePostApiTest extends AbstractRestDocsTests {
     void findChallengePosts() throws Exception {
 
         // given
-        Member mockMember = Member.builder()
-                .id(1L)
-                .email("test@gmail.com")
-//                .role(Role.valueOf("ROLE_GUEST"))
-                .imageFileName(null)
-                .nickname("testy user")
-                .build();
-
-        Challenge mockChallenge = Challenge.builder()
-                .member(mockMember)
-                .title("making test code")
-                .description("making test code for restDocs")
-                .startDate(ZonedDateTime.now())
-                .endDate(ZonedDateTime.now())
-                .feePerAbsence(1000)
-                .build();
-
-        ChallengeEnrollment mockEnrollment = ChallengeEnrollment.builder()
-                .challenge(mockChallenge)
-                .member(mockMember)
-                .enrolledDate(ZonedDateTime.now())
-                .build();
-
-        List<ChallengePost> mockPostList = new ArrayList<ChallengePost>();
-
-        int i = 0;
-        while (i < 10) {
-            mockPostList.add(
-                    ChallengePost.builder()
-                            .content("This is test post" + i)
-                            .isAnnouncement(false)
-                            .enrollment(mockEnrollment)
-                            .build()
-            );
-            ++i;
-        }
+        Member testMember = createTestMember();
+        Challenge testChallenge = createTestChallenge(testMember);
+        ChallengeEnrollment testEnrollment = createTestChallengeEnrollment(testMember, testChallenge);
+        List<ChallengePost> mockPostList = createTestChallengePostList(testEnrollment);
 
         List<PostPhotoView> mockPostPhotoViewList = null;
-        List<PostViewResponse> mockPostViewResponseList = new ArrayList<PostViewResponse>();
+        List<PostViewResponse> mockPostViewResponseList = new ArrayList<>();
 
         // todo: 리턴 타입 SuccessResponse로 바꾸고 수정
         for (ChallengePost mockPost : mockPostList) {
@@ -222,6 +211,53 @@ public class ChallengePostApiTest extends AbstractRestDocsTests {
                                 fieldWithPath("[].photoViewList").description("포스트 포토 URL을 담은 배열")
                         )
                 ));
+    }
+
+    @Test
+    @DisplayName("챌린지 내 본인이 작성한 모든 포스트 조회")
+    void findChallengePostsByMe() throws Exception {
+
+        // given
+        Member testMember = createTestMember();
+        Challenge testChallenge = createTestChallenge(testMember);
+        ChallengeEnrollment testEnrollment = createTestChallengeEnrollment(testMember, testChallenge);
+        List<ChallengePost> mockPostList = createTestChallengePostList(testEnrollment);
+
+        List<PostPhotoView> mockPostPhotoViewList = null;
+        List<PostViewResponse> mockPostViewResponseList = new ArrayList<>();
+
+        // todo: 리턴 타입 SuccessResponse로 바꾸고 수정
+        for (ChallengePost mockPost : mockPostList) {
+            mockPostViewResponseList.add(new PostViewResponse(mockPost, mockPostPhotoViewList));
+        }
+        System.out.println(mockPostViewResponseList);
+
+        given(challengePostSearchService.findChallengePostsByMember(1L, "test@gmail.com")).willReturn(mockPostViewResponseList);
+
+        // when
+        // Mock을 통해 실행한 요청의 결과 (체이닝 방식?)
+        ResultActions result = mockMvc.perform(get("/api/challenges/{id}/posts/me", 1L)
+                .header(HttpHeaders.AUTHORIZATION, AUTHORIZATION_HEADER_PREFIX + "ACCESS_TOKEN"));
+
+        //then
+        result.andExpect(status().isOk())
+//                .andExpect(jsonPath("$[0].id").value(1L))
+                .andDo(document("challengePost/get-challengePosts-by-me",
+                        requestHeaders(
+                                headerWithName(HttpHeaders.AUTHORIZATION).description("액세스 토큰")
+                        ),
+                        responseFields(
+                                // todo: API 리턴 타입을 SuccessResponse로 바꾸고 수정하기
+                                fieldWithPath("[].id").description("포스트 id"),
+                                fieldWithPath("[].challengeEnrollmentId").description("포스트가 소속된 enrollment id"),
+                                fieldWithPath("[].content").description("포스트 내용"),
+                                fieldWithPath("[].writer").description("작성자"),
+                                fieldWithPath("[].isAnnouncement").description("공지글 여부"),
+                                fieldWithPath("[].createdAt").description("생성 일시"),
+                                fieldWithPath("[].photoViewList").description("포스트 포토 URL을 담은 배열")
+                        )
+                ));
+
     }
 
 }
