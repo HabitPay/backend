@@ -39,9 +39,6 @@ public class MemberApiTest extends AbstractRestDocsTests {
     ObjectMapper objectMapper;
 
     @MockBean
-    MemberService memberService;
-
-    @MockBean
     MemberSearchService memberSearchService;
 
     @MockBean
