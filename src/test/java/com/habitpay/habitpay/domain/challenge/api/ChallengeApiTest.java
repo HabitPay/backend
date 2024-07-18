@@ -5,6 +5,8 @@ import com.habitpay.habitpay.docs.springrestdocs.AbstractRestDocsTests;
 import com.habitpay.habitpay.domain.challenge.application.ChallengeCreationService;
 import com.habitpay.habitpay.domain.challenge.application.ChallengeDetailsService;
 import com.habitpay.habitpay.domain.challenge.application.ChallengeUpdateService;
+import com.habitpay.habitpay.domain.challenge.dto.ChallengeCreationRequest;
+import com.habitpay.habitpay.domain.challenge.dto.ChallengeCreationResponse;
 import com.habitpay.habitpay.domain.challenge.dto.ChallengeDetailsResponse;
 import com.habitpay.habitpay.global.config.jwt.TokenProvider;
 import com.habitpay.habitpay.global.config.jwt.TokenService;
@@ -16,18 +18,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
 
 import java.time.ZonedDateTime;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
-import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
-import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
+import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(ChallengeApi.class)
@@ -92,11 +96,73 @@ public class ChallengeApiTest extends AbstractRestDocsTests {
                                 fieldWithPath("data.startDate").description("챌린지 시작 일시"),
                                 fieldWithPath("data.endDate").description("챌린지 종료 일시"),
                                 fieldWithPath("data.participatingDays").description("챌린지 참여 요일"),
-                                fieldWithPath("data.feePerAbsence").description("1회당 미참여 벌금"),
+                                fieldWithPath("data.feePerAbsence").description("미참여 1회당 벌금"),
                                 fieldWithPath("data.hostNickname").description("챌린지 주최자 닉네임"),
                                 fieldWithPath("data.hostProfileImage").description("챌린지 주최자 프로필 이미지"),
                                 fieldWithPath("data.isHost").description("현재 접속한 사용자 == 챌린지 주최자"),
                                 fieldWithPath("data.isMemberEnrolledInChallenge").description("현재 접속한 사용자의 챌린지 참여 여부")
+                        )
+                ));
+    }
+
+    @Test
+    @WithMockOAuth2User
+    @DisplayName("챌린지 생성")
+    void createChallenge() throws Exception {
+
+        // given
+        ChallengeCreationRequest challengeCreationRequest = ChallengeCreationRequest.builder()
+                .title("챌린지 제목")
+                .description("챌린지 설명")
+                .startDate(ZonedDateTime.now().plusHours(1))
+                .endDate(ZonedDateTime.now().plusDays(5))
+                .participatingDays((byte) (1 << 2))
+                .feePerAbsence(1000)
+                .build();
+        ChallengeCreationResponse challengeCreationResponse = ChallengeCreationResponse.builder()
+                .hostNickname("IamHost")
+                .challengeId(1L)
+                .title("챌린지 제목")
+                .description("챌린지 설명")
+                .startDate(ZonedDateTime.now().plusHours(1))
+                .endDate(ZonedDateTime.now().plusDays(5))
+                .participatingDays((byte) (1 << 2))
+                .feePerAbsence(1000)
+                .build();
+
+        given(challengeCreationService.createChallenge(any(ChallengeCreationRequest.class), anyLong()))
+                .willReturn(SuccessResponse.of("챌린지가 생성되었습니다.", challengeCreationResponse));
+
+        // when
+        ResultActions result = mockMvc.perform(post("/api/challenges")
+                .header(HttpHeaders.AUTHORIZATION, AUTHORIZATION_HEADER_PREFIX + "ACCESS_TOKEN")
+                .content(objectMapper.writeValueAsString(challengeCreationRequest))
+                .contentType(MediaType.APPLICATION_JSON));
+
+        // then
+        result.andExpect(status().isOk())
+                .andDo(document("member/create-challenge",
+                        requestHeaders(
+                                headerWithName(HttpHeaders.AUTHORIZATION).description("액세스 토큰")
+                        ),
+                        requestFields(
+                                fieldWithPath("title").description("챌린지 제목"),
+                                fieldWithPath("description").description("챌린지 설명"),
+                                fieldWithPath("startDate").description("챌린지 시작 일시"),
+                                fieldWithPath("endDate").description("챌린지 종료 일시"),
+                                fieldWithPath("participatingDays").description("챌린지 참여 요일"),
+                                fieldWithPath("feePerAbsence").description("미참여 1회당 벌금")
+                        ),
+                        responseFields(
+                                fieldWithPath("message").description("메세지"),
+                                fieldWithPath("data.hostNickname").description("챌린지 주최자 닉네임"),
+                                fieldWithPath("data.challengeId").description("챌린지 ID"),
+                                fieldWithPath("data.title").description("챌린지 제목"),
+                                fieldWithPath("data.description").description("챌린지 설명"),
+                                fieldWithPath("data.startDate").description("챌린지 시작 일시"),
+                                fieldWithPath("data.endDate").description("챌린지 종료 일시"),
+                                fieldWithPath("data.participatingDays").description("챌린지 참여 요일"),
+                                fieldWithPath("data.feePerAbsence").description("1회당 미참여 벌금")
                         )
                 ));
     }
