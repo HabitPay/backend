@@ -6,3 +6,4 @@
 :seclinks:
 
 include::api/member.adoc[]
+include::api/challenge.adoc[]
