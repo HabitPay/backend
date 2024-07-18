@@ -6,18 +6,15 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
-
 @Service
 @AllArgsConstructor
 public class ChallengeSearchService {
     private final ChallengeRepository challengeRepository;
 
-    @Transactional
-    public Challenge findById(Long id) {
-        Optional<Challenge> optionalChallenge = Optional.ofNullable(challengeRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("존재하는 챌린지가 아닙니다.")));
-
-        return optionalChallenge.get();
+    @Transactional(readOnly = true)
+    public Challenge getChallengeById(Long id) {
+        // TODO: 공통 예외처리 적용하기
+        return challengeRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("존재하는 챌린지가 아닙니다."));
     }
 }

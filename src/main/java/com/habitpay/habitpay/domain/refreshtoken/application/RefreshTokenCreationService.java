@@ -1,6 +1,7 @@
 package com.habitpay.habitpay.domain.refreshtoken.application;
 
-import com.habitpay.habitpay.domain.member.application.MemberService;
+import com.habitpay.habitpay.domain.member.application.MemberSearchService;
+import com.habitpay.habitpay.domain.member.dao.MemberRepository;
 import com.habitpay.habitpay.domain.member.domain.Member;
 import com.habitpay.habitpay.domain.refreshtoken.dao.RefreshTokenRepository;
 import com.habitpay.habitpay.domain.refreshtoken.domain.RefreshToken;
@@ -26,7 +27,8 @@ public class RefreshTokenCreationService {
 
     private final TokenProvider tokenProvider;
 
-    private final MemberService memberService;
+    private final MemberSearchService memberSearchService;
+    private final MemberRepository memberRepository;
     private final TokenService tokenService;
     private final RefreshTokenUtilService refreshTokenUtilService;
     private final RefreshTokenSearchService refreshTokenSearchService;
@@ -42,13 +44,13 @@ public class RefreshTokenCreationService {
         }
 
         String newAccessToken = this.createNewAccessToken(requestBody.getRefreshToken());
-        String refreshToken = this.setRefreshTokenByEmail(tokenService.getEmail(newAccessToken));
+        String refreshToken = this.setRefreshTokenByEmail(tokenService.getUserId(newAccessToken));
 
         return new CreateAccessTokenResponse(
-                        newAccessToken,
-                        "Bearer",
-                        tokenService.getAccessTokenExpiresInToMillis(),
-                        refreshToken);
+                newAccessToken,
+                "Bearer",
+                tokenService.getAccessTokenExpiresInToMillis(),
+                refreshToken);
     }
 
     private String createNewAccessToken(String refreshToken) {
@@ -64,7 +66,7 @@ public class RefreshTokenCreationService {
         }
 
         Long memberId = refreshTokenSearchService.findByRefreshToken(refreshToken).getMember().getId();
-        Member member = memberService.findById(memberId);
+        Member member = memberSearchService.getMemberById(memberId);
 
         // todo : 토큰 유효 기간
         return tokenProvider.generateToken(member, Duration.ofHours(2));
@@ -79,10 +81,9 @@ public class RefreshTokenCreationService {
         refreshTokenRepository.save(refreshToken);
     }
 
-    public String setRefreshTokenByEmail(String email) {
-        Member member = memberService.findByEmail(email);
-
-        String refreshToken = tokenService.createRefreshToken(email);
+    public String setRefreshTokenByEmail(Long id) {
+        Member member = memberSearchService.getMemberById(id);
+        String refreshToken = tokenService.createRefreshToken(id);
         saveRefreshToken(member, refreshToken);
 
         return refreshToken;

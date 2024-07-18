@@ -4,7 +4,7 @@ import com.habitpay.habitpay.domain.challenge.application.ChallengeSearchService
 import com.habitpay.habitpay.domain.challenge.domain.Challenge;
 import com.habitpay.habitpay.domain.challengeenrollment.dao.ChallengeEnrollmentRepository;
 import com.habitpay.habitpay.domain.challengeenrollment.domain.ChallengeEnrollment;
-import com.habitpay.habitpay.domain.member.application.MemberService;
+import com.habitpay.habitpay.domain.member.application.MemberSearchService;
 import com.habitpay.habitpay.domain.member.domain.Member;
 import com.habitpay.habitpay.global.response.ApiResponse;
 import lombok.RequiredArgsConstructor;
@@ -23,12 +23,12 @@ import java.util.Optional;
 public class ChallengeCancellationService {
     private final ChallengeEnrollmentRepository challengeEnrollmentRepository;
     private final ChallengeSearchService challengeSearchService;
-    private final MemberService memberService;
+    private final MemberSearchService memberSearchService;
 
     @Transactional
-    public ResponseEntity<ApiResponse> cancel(Long id, String email) {
+    public ResponseEntity<ApiResponse> cancel(Long challengeId, Long userId) {
         ApiResponse response;
-        Member member = memberService.findByEmail(email);
+        Member member = memberSearchService.getMemberById(userId);
         Optional<ChallengeEnrollment> optionalChallengeEnrollment = challengeEnrollmentRepository.findByMember(member);
         if (optionalChallengeEnrollment.isEmpty()) {
             log.error("참여하지 않은 챌린지");
@@ -36,7 +36,7 @@ public class ChallengeCancellationService {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         }
 
-        Challenge challenge = challengeSearchService.findById(id);
+        Challenge challenge = challengeSearchService.getChallengeById(challengeId);
         ZonedDateTime now = ZonedDateTime.now();
         if (now.isAfter(challenge.getStartDate())) {
             log.error("챌린지 취소 시간 초과");

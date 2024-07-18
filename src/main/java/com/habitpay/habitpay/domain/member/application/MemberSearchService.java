@@ -18,8 +18,7 @@ public class MemberSearchService {
     private final S3FileService s3FileService;
 
     public SuccessResponse<MemberProfileResponse> getMemberProfile(Long id) {
-        Member member = getMemberById(id).
-                orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+        Member member = getMemberById(id);
         String imageFileName = Optional.ofNullable(member.getImageFileName()).orElse("");
 
         // TODO: 꼭 이미지를 presigned url 로 받아와야 할 필요가 있을까?
@@ -31,7 +30,8 @@ public class MemberSearchService {
     }
 
     @Transactional(readOnly = true)
-    public Optional<Member> getMemberById(Long id) {
-        return memberRepository.findById(id);
+    public Member getMemberById(Long id) {
+        return memberRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
     }
 }
