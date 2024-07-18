@@ -3,12 +3,11 @@ package com.habitpay.habitpay.domain.challenge.application;
 import com.habitpay.habitpay.domain.challenge.dao.ChallengeRepository;
 import com.habitpay.habitpay.domain.challenge.domain.Challenge;
 import com.habitpay.habitpay.domain.challenge.dto.ChallengeCreationRequest;
+import com.habitpay.habitpay.domain.challenge.dto.ChallengeCreationResponse;
 import com.habitpay.habitpay.domain.member.application.MemberSearchService;
 import com.habitpay.habitpay.domain.member.domain.Member;
-import com.habitpay.habitpay.global.response.ApiResponse;
+import com.habitpay.habitpay.global.response.SuccessResponse;
 import lombok.AllArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -17,21 +16,14 @@ public class ChallengeCreationService {
     private final MemberSearchService memberSearchService;
     private final ChallengeRepository challengeRepository;
 
-    public ResponseEntity<ApiResponse> save(ChallengeCreationRequest challengeCreationRequest, Long id) {
+    public SuccessResponse<ChallengeCreationResponse> createChallenge(ChallengeCreationRequest challengeCreationRequest, Long id) {
         Member host = memberSearchService.getMemberById(id);
-        Challenge challenge = Challenge.builder()
-                .member(host)
-                .title(challengeCreationRequest.getTitle())
-                .description(challengeCreationRequest.getDescription())
-                .startDate(challengeCreationRequest.getStartDate())
-                .endDate(challengeCreationRequest.getEndDate())
-                .participatingDays(challengeCreationRequest.getParticipatingDays())
-                .feePerAbsence(challengeCreationRequest.getFeePerAbsence())
-                .build();
-        challengeRepository.save(challenge);
+        Challenge newChallenge = Challenge.of(host, challengeCreationRequest);
+        challengeRepository.save(newChallenge);
 
-        // TODO: 챌린지 id 도 함께 전달하기
-        ApiResponse apiResponse = ApiResponse.create("챌린지가 생성되었습니다.");
-        return ResponseEntity.status(HttpStatus.CREATED).body(apiResponse);
+        return SuccessResponse.of(
+                "챌린지가 생성되었습니다.",
+                ChallengeCreationResponse.of(host, newChallenge)
+        );
     }
 }

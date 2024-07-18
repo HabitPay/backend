@@ -1,5 +1,6 @@
 package com.habitpay.habitpay.domain.challenge.domain;
 
+import com.habitpay.habitpay.domain.challenge.dto.ChallengeCreationRequest;
 import com.habitpay.habitpay.domain.member.domain.Member;
 import com.habitpay.habitpay.domain.model.BaseTime;
 import jakarta.persistence.*;
@@ -64,6 +65,18 @@ public class Challenge extends BaseTime {
         this.endDate = endDate;
         this.participatingDays = participatingDays;
         this.feePerAbsence = feePerAbsence;
+    }
+
+    public static Challenge of(Member host, ChallengeCreationRequest challengeCreationRequest) {
+        return Challenge.builder()
+                .member(host)
+                .title(challengeCreationRequest.getTitle())
+                .description(challengeCreationRequest.getDescription())
+                .startDate(challengeCreationRequest.getStartDate())
+                .endDate(challengeCreationRequest.getEndDate())
+                .participatingDays(challengeCreationRequest.getParticipatingDays())
+                .feePerAbsence(challengeCreationRequest.getFeePerAbsence())
+                .build();
     }
 
     public void updateDescription(String description) {
