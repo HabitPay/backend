@@ -45,13 +45,20 @@ public class ChallengeEnrollment {
     private int totalFee;
 
     @Builder
-    public ChallengeEnrollment(Challenge challenge, Member member, ZonedDateTime enrolledDate) {
+    public ChallengeEnrollment(Challenge challenge, Member member) {
         this.challenge = challenge;
         this.member = member;
         this.isGivenUp = false;
-        this.enrolledDate = enrolledDate;
+        this.enrolledDate = ZonedDateTime.now();
         this.successCount = 0;
         this.failureCount = 0;
         this.totalFee = 0;
+    }
+
+    public static ChallengeEnrollment of(Member member, Challenge challenge) {
+        return ChallengeEnrollment.builder()
+                .challenge(challenge)
+                .member(member)
+                .build();
     }
 }
