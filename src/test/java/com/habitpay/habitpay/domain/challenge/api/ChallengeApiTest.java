@@ -4,10 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.habitpay.habitpay.docs.springrestdocs.AbstractRestDocsTests;
 import com.habitpay.habitpay.domain.challenge.application.ChallengeCreationService;
 import com.habitpay.habitpay.domain.challenge.application.ChallengeDetailsService;
-import com.habitpay.habitpay.domain.challenge.application.ChallengeUpdateService;
-import com.habitpay.habitpay.domain.challenge.dto.ChallengeCreationRequest;
-import com.habitpay.habitpay.domain.challenge.dto.ChallengeCreationResponse;
-import com.habitpay.habitpay.domain.challenge.dto.ChallengeDetailsResponse;
+import com.habitpay.habitpay.domain.challenge.application.ChallengePatchService;
+import com.habitpay.habitpay.domain.challenge.dto.*;
 import com.habitpay.habitpay.global.config.jwt.TokenProvider;
 import com.habitpay.habitpay.global.config.jwt.TokenService;
 import com.habitpay.habitpay.global.response.SuccessResponse;
@@ -29,8 +27,7 @@ import static org.mockito.BDDMockito.given;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -49,7 +46,7 @@ public class ChallengeApiTest extends AbstractRestDocsTests {
     ChallengeCreationService challengeCreationService;
 
     @MockBean
-    ChallengeUpdateService challengeUpdateService;
+    ChallengePatchService challengePatchService;
 
     @MockBean
     TokenService tokenService;
@@ -85,7 +82,7 @@ public class ChallengeApiTest extends AbstractRestDocsTests {
 
         // then
         result.andExpect(status().isOk())
-                .andDo(document("member/get-challenge-details",
+                .andDo(document("challenge/get-challenge-details",
                         requestHeaders(
                                 headerWithName(HttpHeaders.AUTHORIZATION).description("액세스 토큰")
                         ),
@@ -141,7 +138,7 @@ public class ChallengeApiTest extends AbstractRestDocsTests {
 
         // then
         result.andExpect(status().isOk())
-                .andDo(document("member/create-challenge",
+                .andDo(document("challenge/create-challenge",
                         requestHeaders(
                                 headerWithName(HttpHeaders.AUTHORIZATION).description("액세스 토큰")
                         ),
@@ -157,6 +154,54 @@ public class ChallengeApiTest extends AbstractRestDocsTests {
                                 fieldWithPath("message").description("메세지"),
                                 fieldWithPath("data.hostNickname").description("챌린지 주최자 닉네임"),
                                 fieldWithPath("data.challengeId").description("챌린지 ID"),
+                                fieldWithPath("data.title").description("챌린지 제목"),
+                                fieldWithPath("data.description").description("챌린지 설명"),
+                                fieldWithPath("data.startDate").description("챌린지 시작 일시"),
+                                fieldWithPath("data.endDate").description("챌린지 종료 일시"),
+                                fieldWithPath("data.participatingDays").description("챌린지 참여 요일"),
+                                fieldWithPath("data.feePerAbsence").description("1회당 미참여 벌금")
+                        )
+                ));
+    }
+
+    @Test
+    @WithMockOAuth2User
+    @DisplayName("챌린지 정보 수정")
+    void patchChallenge() throws Exception {
+
+        // given
+        ChallengePatchRequest challengePatchRequest = ChallengePatchRequest.builder()
+                .description("챌린지 설명")
+                .build();
+        ChallengePatchResponse challengePatchResponse = ChallengePatchResponse.builder()
+                .title("챌린지 제목")
+                .description("챌린지 설명")
+                .startDate(ZonedDateTime.now().plusHours(1))
+                .endDate(ZonedDateTime.now().plusDays(5))
+                .participatingDays((byte) (1 << 2))
+                .feePerAbsence(1000)
+                .build();
+
+        given(challengePatchService.patch(anyLong(), any(ChallengePatchRequest.class), anyLong()))
+                .willReturn(SuccessResponse.of("챌린지 정보 수정이 반영되었습니다.", challengePatchResponse));
+
+        // when
+        ResultActions result = mockMvc.perform(patch("/api/challenges/{id}", 1L)
+                .header(HttpHeaders.AUTHORIZATION, AUTHORIZATION_HEADER_PREFIX + "ACCESS_TOKEN")
+                .content(objectMapper.writeValueAsString(challengePatchRequest))
+                .contentType(MediaType.APPLICATION_JSON));
+
+        // then
+        result.andExpect(status().isOk())
+                .andDo(document("challenge/patch-challenge",
+                        requestHeaders(
+                                headerWithName(HttpHeaders.AUTHORIZATION).description("액세스 토큰")
+                        ),
+                        requestFields(
+                                fieldWithPath("description").description("챌린지 설명")
+                        ),
+                        responseFields(
+                                fieldWithPath("message").description("메세지"),
                                 fieldWithPath("data.title").description("챌린지 제목"),
                                 fieldWithPath("data.description").description("챌린지 설명"),
                                 fieldWithPath("data.startDate").description("챌린지 시작 일시"),
