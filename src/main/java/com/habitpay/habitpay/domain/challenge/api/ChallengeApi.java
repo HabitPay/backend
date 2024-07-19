@@ -2,17 +2,12 @@ package com.habitpay.habitpay.domain.challenge.api;
 
 import com.habitpay.habitpay.domain.challenge.application.ChallengeCreationService;
 import com.habitpay.habitpay.domain.challenge.application.ChallengeDetailsService;
-import com.habitpay.habitpay.domain.challenge.application.ChallengeUpdateService;
-import com.habitpay.habitpay.domain.challenge.dto.ChallengeCreationRequest;
-import com.habitpay.habitpay.domain.challenge.dto.ChallengeCreationResponse;
-import com.habitpay.habitpay.domain.challenge.dto.ChallengeDetailsResponse;
-import com.habitpay.habitpay.domain.challenge.dto.ChallengePatchRequest;
+import com.habitpay.habitpay.domain.challenge.application.ChallengePatchService;
+import com.habitpay.habitpay.domain.challenge.dto.*;
 import com.habitpay.habitpay.global.config.auth.CustomUserDetails;
-import com.habitpay.habitpay.global.response.ApiResponse;
 import com.habitpay.habitpay.global.response.SuccessResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 public class ChallengeApi {
     private final ChallengeCreationService challengeCreationService;
-    private final ChallengeUpdateService challengeUpdateService;
+    private final ChallengePatchService challengePatchService;
     private final ChallengeDetailsService challengeDetailsService;
 
     @GetMapping("/challenges/{id}")
@@ -38,8 +33,8 @@ public class ChallengeApi {
     }
 
     @PatchMapping("/challenges/{id}")
-    public ResponseEntity<ApiResponse> patchChallengeDetails(@PathVariable("id") Long id, @RequestBody ChallengePatchRequest challengePatchRequest,
-                                                             @AuthenticationPrincipal CustomUserDetails user) {
-        return challengeUpdateService.update(id, challengePatchRequest, user.getId());
+    public SuccessResponse<ChallengePatchResponse> patchChallengeDetails(@PathVariable("id") Long id, @RequestBody ChallengePatchRequest challengePatchRequest,
+                                                                         @AuthenticationPrincipal CustomUserDetails user) {
+        return challengePatchService.patch(id, challengePatchRequest, user.getId());
     }
 }

@@ -19,10 +19,16 @@
 
 HTTP response 예시에 나온 `participatingDays` 의 값 `4` 는 10진수 `4` 를 의미하고 2진수로 `0000011` 이기 때문에 `금요일` 과 `토요일` 이 챌린지 참여 요일이 됩니다.
 
-operation::member/get-challenge-details[snippets='http-request,http-response,response-fields']
+operation::challenge/get-challenge-details[snippets='http-request,http-response,response-fields']
 
 === 챌린지 생성
 
 새로운 첼린지를 생성합니다.
 
-operation::member/create-challenge[snippets='http-request,http-response,response-fields']
+operation::challenge/create-challenge[snippets='http-request,http-response,response-fields']
+
+=== 챌린지 정보 수정
+
+챌린지 정보를 수정합니다.
+
+operation::challenge/patch-challenge[snippets='http-request,http-response,response-fields']
