@@ -1,5 +1,6 @@
 package com.habitpay.habitpay.domain.challengepost.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.habitpay.habitpay.domain.challengepost.domain.ChallengePost;
 import com.habitpay.habitpay.domain.postphoto.dto.PostPhotoView;
 import lombok.Getter;
@@ -17,6 +18,7 @@ public class PostViewResponse {
     private String content;
     private String writer;
     private Boolean isAnnouncement;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime createdAt;
     private List<PostPhotoView> photoViewList;
 
