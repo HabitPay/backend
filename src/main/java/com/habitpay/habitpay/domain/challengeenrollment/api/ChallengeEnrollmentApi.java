@@ -1,9 +1,11 @@
 package com.habitpay.habitpay.domain.challengeenrollment.api;
 
-import com.habitpay.habitpay.domain.challengeenrollment.application.ChallengeCancellationService;
+import com.habitpay.habitpay.domain.challengeenrollment.application.ChallengeEnrollmentCancellationService;
 import com.habitpay.habitpay.domain.challengeenrollment.application.ChallengeEnrollmentService;
+import com.habitpay.habitpay.domain.challengeenrollment.dto.ChallengeEnrollmentResponse;
 import com.habitpay.habitpay.global.config.auth.CustomUserDetails;
 import com.habitpay.habitpay.global.response.ApiResponse;
+import com.habitpay.habitpay.global.response.SuccessResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -19,16 +21,16 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class ChallengeEnrollmentApi {
     private final ChallengeEnrollmentService challengeEnrollmentService;
-    private final ChallengeCancellationService challengeCancellationService;
+    private final ChallengeEnrollmentCancellationService challengeEnrollmentCancellationService;
 
     @PostMapping("/challenges/{id}/enroll")
-    public ResponseEntity<ApiResponse> enrollChallenge(@PathVariable("id") Long id, @AuthenticationPrincipal CustomUserDetails user) {
+    public SuccessResponse<ChallengeEnrollmentResponse> enrollChallenge(@PathVariable("id") Long id, @AuthenticationPrincipal CustomUserDetails user) {
         return challengeEnrollmentService.enroll(id, user.getId());
     }
 
     @PostMapping("/challenges/{id}/cancel")
     public ResponseEntity<ApiResponse> cancelChallenge(@PathVariable("id") Long id, @AuthenticationPrincipal CustomUserDetails user) {
-        return challengeCancellationService.cancel(id, user.getId());
+        return challengeEnrollmentCancellationService.cancel(id, user.getId());
     }
 
 }
