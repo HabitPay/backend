@@ -6,6 +6,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
@@ -13,6 +14,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.IOException;
+
+import static com.habitpay.habitpay.global.config.jwt.TokenService.REFRESH_TOKEN_EXPIRED_AT;
 
 @Slf4j
 @Component
@@ -36,9 +39,18 @@ public class CustomOAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSucc
             CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
             Long memberId = customUserDetails.getId();
             String accessToken = tokenService.createAccessToken(memberId);
+            String refreshToken = tokenService.createRefreshToken(memberId);
 
             super.clearAuthenticationAttributes(request);
 
+            ResponseCookie responseCookie = ResponseCookie.from("refresh", refreshToken)
+                    .httpOnly(true)
+                    .maxAge(REFRESH_TOKEN_EXPIRED_AT)
+                    .domain("localhost")
+                    .path("/")
+                    .build();
+
+            response.addHeader("Set-Cookie", responseCookie.toString());
             response.sendRedirect(UriComponentsBuilder.fromUriString(redirectUrl)
                     .queryParam("accessToken", accessToken)
                     .build().toUriString());
