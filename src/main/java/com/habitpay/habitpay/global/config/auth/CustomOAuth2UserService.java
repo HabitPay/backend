@@ -41,8 +41,14 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
     private Member createMember(String email) {
         Member member = Member.builder()
                 .email(email)
+                .nickname(extractEmailId(email))
                 .role(Role.USER)
                 .build();
         return memberRepository.save(member);
+    }
+
+    private String extractEmailId(String email) {
+        int atIndex = email.indexOf('@');
+        return email.substring(0, atIndex);
     }
 }

@@ -16,22 +16,12 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 public class MemberApi {
     private final MemberSearchService memberSearchService;
-    private final MemberActivationService memberActivationService;
     private final MemberUpdateService memberUpdateService;
     private final MemberDeleteService memberDeleteService;
 
     @GetMapping("/member")
     public SuccessResponse<MemberProfileResponse> getMember(@AuthenticationPrincipal CustomUserDetails user) {
         return memberSearchService.getMemberProfile(user.getId());
-    }
-
-    // TODO: /member/activate 로 변경하기
-    @PostMapping("/member")
-    public SuccessResponse<MemberActivationResponse> activateMember(
-            @RequestBody MemberActivationRequest memberActivationRequest,
-            @AuthenticationPrincipal CustomUserDetails user) {
-        log.info("[POST /member] email: {}, nickname: {}", user.getEmail(), memberActivationRequest.getNickname());
-        return memberActivationService.activate(memberActivationRequest, user.getId());
     }
 
     @PatchMapping("/member/nickname")
