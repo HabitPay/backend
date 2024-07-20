@@ -15,16 +15,14 @@ import org.springframework.stereotype.Service;
 
 import java.time.Duration;
 import java.util.Collections;
-import java.util.Optional;
 import java.util.Set;
-import java.util.StringTokenizer;
 
 @RequiredArgsConstructor
 @Service
 @Slf4j
 public class TokenService {
     private final static Duration ACCESS_TOKEN_EXPIRED_AT = Duration.ofHours(2);
-    private final static Duration REFRESH_TOKEN_EXPIRED_AT = Duration.ofDays(14);
+    public final static Duration REFRESH_TOKEN_EXPIRED_AT = Duration.ofDays(14);
     private final JwtProperties jwtProperties;
 
     // todo : for temp
@@ -68,19 +66,6 @@ public class TokenService {
     public Long getUserId(String token) {
         Claims claims = getClaims(token);
         return Long.valueOf(claims.getSubject());
-    }
-
-    public Boolean getIsActive(String token) {
-        Claims claims = getClaims(token);
-        return claims.get("isActive", String.class).equals("true");
-    }
-
-    public Optional<String> getTokenFromHeader(String header) {
-        StringTokenizer tokenizer = new StringTokenizer(header);
-        if (tokenizer.countTokens() != 2 || !tokenizer.nextToken().equals("Bearer")) {
-            return Optional.empty();
-        }
-        return Optional.of(tokenizer.nextToken());
     }
 
     public Long getAccessTokenExpiresInToMillis() {
