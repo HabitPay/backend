@@ -5,44 +5,36 @@ import com.habitpay.habitpay.domain.challenge.dao.ChallengeRepository;
 import com.habitpay.habitpay.domain.challenge.domain.Challenge;
 import com.habitpay.habitpay.domain.challengeenrollment.dao.ChallengeEnrollmentRepository;
 import com.habitpay.habitpay.domain.challengeenrollment.domain.ChallengeEnrollment;
-import com.habitpay.habitpay.domain.challengepost.api.ChallengePostApi;
-import com.habitpay.habitpay.domain.challengepost.application.*;
+import com.habitpay.habitpay.domain.challengepost.application.ChallengePostCreationService;
+import com.habitpay.habitpay.domain.challengepost.application.ChallengePostDeleteService;
+import com.habitpay.habitpay.domain.challengepost.application.ChallengePostSearchService;
+import com.habitpay.habitpay.domain.challengepost.application.ChallengePostUpdateService;
 import com.habitpay.habitpay.domain.challengepost.dao.ChallengePostRepository;
 import com.habitpay.habitpay.domain.challengepost.domain.ChallengePost;
 import com.habitpay.habitpay.domain.challengepost.dto.PostViewResponse;
 import com.habitpay.habitpay.domain.member.dao.MemberRepository;
 import com.habitpay.habitpay.domain.member.domain.Member;
 import com.habitpay.habitpay.domain.member.domain.Role;
-import com.habitpay.habitpay.domain.model.BaseTime;
 import com.habitpay.habitpay.domain.postphoto.dao.PostPhotoRepository;
 import com.habitpay.habitpay.domain.postphoto.domain.PostPhoto;
 import com.habitpay.habitpay.domain.postphoto.dto.PostPhotoView;
 import com.habitpay.habitpay.global.config.jwt.TokenProvider;
 import com.habitpay.habitpay.global.config.jwt.TokenService;
-import com.habitpay.habitpay.global.security.WithMockOAuth2User;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
-import org.springframework.restdocs.payload.JsonFieldType;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.ResultActions;
 
-import java.lang.reflect.Field;
-import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import static java.util.Date.*;
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
@@ -50,11 +42,7 @@ import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.docu
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 
 
 //@WebMvcTest(ChallengePostApi.class)
@@ -121,7 +109,6 @@ public class ChallengePostApiTest extends AbstractRestDocsTests {
         return challengeEnrollmentRepository.save(ChallengeEnrollment.builder()
                 .challenge(testChallenge)
                 .member(testMember)
-                .enrolledDate(ZonedDateTime.now())
                 .build());
     }
 
@@ -137,9 +124,9 @@ public class ChallengePostApiTest extends AbstractRestDocsTests {
         List<ChallengePost> postList = IntStream.rangeClosed(1, i)
                 .mapToObj(index -> challengePostRepository.save(ChallengePost.builder()
                         .content("This is test post" + index)
-                            .isAnnouncement(false)
-                            .enrollment(testEnrollment)
-                            .build()))
+                        .isAnnouncement(false)
+                        .enrollment(testEnrollment)
+                        .build()))
                 .toList();
 
         return postList;
