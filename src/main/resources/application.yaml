@@ -25,6 +25,9 @@ spring:
         access-key: ${AWS_ACCESS_KEY}
         secret-key: ${AWS_SECRET_KEY}
 ---
+application:
+  origin-url: ${ORIGIN_URL}
+---
 spring:
   profiles:
     active: local
