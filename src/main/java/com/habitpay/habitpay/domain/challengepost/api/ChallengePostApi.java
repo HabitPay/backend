@@ -79,12 +79,14 @@ public class ChallengePostApi {
         );
     }
 
-    @PutMapping("/api/posts/{id}")
-    public ResponseEntity<List<String>> modifyPost(
-            @RequestBody ModifyPostRequest request, @PathVariable Long id) {
+    @PatchMapping("/api/posts/{id}")
+    public SuccessResponse<List<String>> patchPost(
+            @RequestBody ModifyPostRequest request, @PathVariable Long id, @AuthenticationPrincipal CustomUserDetails user) {
 
-        return ResponseEntity.ok()
-                .body(challengePostUpdateService.update(request, id));
+        return SuccessResponse.of(
+                "포스트가 수정되었습니다.",
+                challengePostUpdateService.patchPost(request, id, user.getEmail())
+        );
     }
 
     @DeleteMapping("/api/posts/{id}")

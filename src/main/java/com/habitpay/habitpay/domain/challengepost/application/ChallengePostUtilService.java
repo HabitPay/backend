@@ -28,10 +28,9 @@ public class ChallengePostUtilService {
     private final ChallengeParticipationRecordCreationService challengeParticipationRecordCreationService;
     private final ChallengeParticipationRecordSearchService challengeParticipationRecordSearchService;
 
-    public void authorizePostWriter(ChallengePost challengePost) {
-        String email = SecurityContextHolder.getContext().getAuthentication().getName();
-        if (!challengePost.getWriter().getEmail().equals(email)) {
-            throw new CustomJwtException(HttpStatus.UNAUTHORIZED, CustomJwtErrorInfo.UNAUTHORIZED, "Not a Member who posted.");
+    public void authorizePostWriter(ChallengePost post, String memberEmail) {
+        if (!post.getWriter().getEmail().equals(memberEmail)) {
+            throw new CustomJwtException(HttpStatus.UNAUTHORIZED, CustomJwtErrorInfo.UNAUTHORIZED, "해당 포스트의 작성자가 아닙니다.");
         }
     }
 

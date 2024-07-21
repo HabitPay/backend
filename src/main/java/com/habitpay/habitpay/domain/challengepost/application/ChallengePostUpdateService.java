@@ -32,36 +32,33 @@ public class ChallengePostUpdateService {
     private final ChallengePostRepository challengePostRepository;
 
     @Transactional
-    public List<String> update(ModifyPostRequest request, Long postId) {
-        this.updatePost(request, postId);
+    public List<String> patchPost(ModifyPostRequest request, Long postId, String memberEmail) {
+        ChallengePost post = challengePostSearchService.getChallengePostById(postId);
+        challengePostUtilService.authorizePostWriter(post, memberEmail);
+
+        patchContent(post, request.getContent());
+        patchIsAnnouncement(post, request.getIsAnnouncement());
 
         postPhotoDeleteService.deleteByIds(postId, request.getDeletedPhotoIds());
         request.getModifiedPhotos().forEach(photo -> postPhotoUtilService.changeViewOrder(photo.getPhotoId(), photo.getViewOrder()));
+
         return postPhotoCreationService.save(challengePostSearchService.getChallengePostById(postId), request.getNewPhotos());
     }
 
-    private void updatePost(ModifyPostRequest request, Long id) {
-        ChallengePost challengePost = challengePostSearchService.getChallengePostById(id);
-        challengePostUtilService.authorizePostWriter(challengePost);
-
-        updateContent(challengePost, request.getContent());
-        updateIsAnnouncement(challengePost, request.getIsAnnouncement());
-    }
-
-    private void updateContent(ChallengePost post, String content) {
+    private void patchContent(ChallengePost post, String content) {
         if (content != null) {
             post.modifyPostContent(content);
             challengePostRepository.save(post);
         }
     }
 
-    private void updateIsAnnouncement(ChallengePost post, Boolean isAnnouncement) {
+    private void patchIsAnnouncement(ChallengePost post, Boolean isAnnouncement) {
         Challenge challenge = challengePostSearchService.getChallengeByPostId(post.getId());
         Member member = post.getWriter();
 
         if (isAnnouncement != null) {
             if (isAnnouncement && !challengePostUtilService.isChallengeHost(challenge, member)) {
-                throw new CustomJwtException(HttpStatus.FORBIDDEN, CustomJwtErrorInfo.FORBIDDEN, "Only Host is able to upload an Announcement Post.");
+                throw new CustomJwtException(HttpStatus.FORBIDDEN, CustomJwtErrorInfo.FORBIDDEN, "공지 포스트는 챌린지 호스트만 작성할 수 있습니다.");
             }
             post.modifyPostIsAnnouncement(isAnnouncement);
             challengePostRepository.save(post);
