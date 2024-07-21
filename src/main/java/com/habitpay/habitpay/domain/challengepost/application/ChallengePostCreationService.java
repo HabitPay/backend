@@ -39,7 +39,7 @@ public class ChallengePostCreationService {
 
         ChallengePost challengePost = this.savePost(request, challengeId, email);
         challengePostUtilService.verifyChallengePostForRecord(challengePost);
-        return postPhotoCreationService.save(challengePost, request.getPhotos());
+        return postPhotoCreationService.createPhotoUrlList(challengePost, request.getPhotos());
     }
 
     private ChallengePost savePost(AddPostRequest request, Long challengeId, String email) {

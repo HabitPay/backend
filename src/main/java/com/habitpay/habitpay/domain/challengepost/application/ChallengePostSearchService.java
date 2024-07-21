@@ -60,7 +60,7 @@ public class ChallengePostSearchService {
         Member member = memberService.findByEmail(email);
         Challenge challenge = challengeSearchService.getChallengeById(challengeId);
         ChallengeEnrollment enrollment = challengeEnrollmentSearchService.findByMemberAndChallenge(member, challenge)
-                .orElseThrow(() -> new NoSuchElementException("No Challenge for this Member"));
+                .orElseThrow(() -> new NoSuchElementException("챌린지에 등록된 멤버가 아닙니다."));
 
         Long challengeEnrollmentId = enrollment.getId();
 
@@ -111,7 +111,7 @@ public class ChallengePostSearchService {
         // todo : enrollment service에 findById() 메서드 만들기
         ChallengeEnrollment enrollment = challengeEnrollmentRepository
                 .findById(post.getChallengeEnrollment().getId())
-                .orElseThrow(() -> new NoSuchElementException("No such enrollment " + post.getChallengeEnrollment().getId()));
+                .orElseThrow(() -> new NoSuchElementException("포스트 소속 정보를 찾을 수 없습니다."));
         return enrollment.getChallenge();
     }
 

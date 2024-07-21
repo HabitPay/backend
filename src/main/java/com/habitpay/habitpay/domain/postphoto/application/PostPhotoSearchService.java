@@ -17,13 +17,12 @@ public class PostPhotoSearchService {
 
     private final PostPhotoRepository postPhotoRepository;
 
-    public PostPhoto findById(Long id) {
+    public PostPhoto getPostPhotoById(Long id) {
         return postPhotoRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("(for debugging) not found : " + id));
+                .orElseThrow(() -> new NoSuchElementException("이미지 정보를 찾을 수 없습니다."));
     }
 
     public List<PostPhoto> findAllByPost(ChallengePost post) {
-        return postPhotoRepository.findAllByChallengePost(post)
-                .orElseThrow(() -> new NoSuchElementException("(for debugging) not found challenge post : " + post.getId()));
+        return postPhotoRepository.findAllByChallengePost(post);
     }
 }

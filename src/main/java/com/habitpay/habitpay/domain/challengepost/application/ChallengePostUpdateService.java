@@ -42,7 +42,7 @@ public class ChallengePostUpdateService {
         postPhotoDeleteService.deleteByIds(postId, request.getDeletedPhotoIds());
         request.getModifiedPhotos().forEach(photo -> postPhotoUtilService.changeViewOrder(photo.getPhotoId(), photo.getViewOrder()));
 
-        return postPhotoCreationService.save(challengePostSearchService.getChallengePostById(postId), request.getNewPhotos());
+        return postPhotoCreationService.createPhotoUrlList(challengePostSearchService.getChallengePostById(postId), request.getNewPhotos());
     }
 
     private void patchContent(ChallengePost post, String content) {

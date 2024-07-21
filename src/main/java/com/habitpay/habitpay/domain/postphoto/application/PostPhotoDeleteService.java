@@ -24,8 +24,7 @@ public class PostPhotoDeleteService {
     private final PostPhotoUtilService postPhotoUtilService;
 
     public void deleteByPost(ChallengePost post) {
-        List<PostPhoto> photoList = postPhotoRepository.findAllByChallengePost(post)
-                .orElseThrow(() -> new NoSuchElementException("(for debugging) not found post : " + post.getId()));
+        List<PostPhoto> photoList = postPhotoRepository.findAllByChallengePost(post);
 
         photoList.forEach(photo -> this.deleteById(photo.getId()));
     }
@@ -41,10 +40,10 @@ public class PostPhotoDeleteService {
     }
 
     private void deleteById(Long id) {
-        PostPhoto photo = postPhotoSearchService.findById(id);
+        PostPhoto photo = postPhotoSearchService.getPostPhotoById(id);
         String targetUrl = postPhotoUtilService.makeS3TargetPath(photo);
 
-        s3FileService.deleteImage(targetUrl, postPhotoSearchService.findById(id).getImageFileName());
+        s3FileService.deleteImage(targetUrl, postPhotoSearchService.getPostPhotoById(id).getImageFileName());
         postPhotoRepository.delete(photo);
     }
 
