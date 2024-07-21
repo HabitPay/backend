@@ -35,25 +35,25 @@ public class ChallengePostCreationService {
     private final ChallengePostRepository challengePostRepository;
 
     @Transactional
-    public List<String> save(AddPostRequest request, Long challengeId, String email) {
+    public List<String> createPost(AddPostRequest request, Long challengeId, String email) {
 
-        Member member = memberService.findByEmail(email);
-        Challenge challenge = challengeSearchService.getChallengeById(challengeId);
-        ChallengeEnrollment enrollment = challengeEnrollmentSearchService.findByMemberAndChallenge(member, challenge)
-                .orElseThrow(() -> new NoSuchElementException("(for debugging) no enrollment for : " + email));
-
-        if (request.getIsAnnouncement()) {
-            if (!challengePostUtilService.isChallengeHost(challenge, member)) {
-                throw new CustomJwtException(HttpStatus.FORBIDDEN, CustomJwtErrorInfo.FORBIDDEN, "Only Host is able to upload an Announcement Post.");
-            }
-        }
-
-        ChallengePost challengePost = this.savePost(request, enrollment);
+        ChallengePost challengePost = this.savePost(request, challengeId, email);
         challengePostUtilService.verifyChallengePostForRecord(challengePost);
         return postPhotoCreationService.save(challengePost, request.getPhotos());
     }
 
-    private ChallengePost savePost(AddPostRequest request, ChallengeEnrollment enrollment) {
+    private ChallengePost savePost(AddPostRequest request, Long challengeId, String email) {
+
+        Member member = memberService.findByEmail(email);
+        Challenge challenge = challengeSearchService.getChallengeById(challengeId);
+        ChallengeEnrollment enrollment = challengeEnrollmentSearchService.findByMemberAndChallenge(member, challenge)
+                .orElseThrow(() -> new NoSuchElementException("챌린지에 등록된 멤버가 아니면 포스트를 작성할 수 없습니다."));
+
+        if (request.getIsAnnouncement()) {
+            if (!challengePostUtilService.isChallengeHost(challenge, member)) {
+                throw new CustomJwtException(HttpStatus.FORBIDDEN, CustomJwtErrorInfo.FORBIDDEN, "공지 포스트는 챌린지 호스트만 작성할 수 있습니다.");
+            }
+        }
 
         return challengePostRepository.save(request.toEntity(enrollment));
     }

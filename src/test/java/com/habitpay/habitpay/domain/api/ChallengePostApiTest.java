@@ -5,7 +5,6 @@ import com.habitpay.habitpay.domain.challenge.dao.ChallengeRepository;
 import com.habitpay.habitpay.domain.challenge.domain.Challenge;
 import com.habitpay.habitpay.domain.challengeenrollment.dao.ChallengeEnrollmentRepository;
 import com.habitpay.habitpay.domain.challengeenrollment.domain.ChallengeEnrollment;
-import com.habitpay.habitpay.domain.challengepost.api.ChallengePostApi;
 import com.habitpay.habitpay.domain.challengepost.application.*;
 import com.habitpay.habitpay.domain.challengepost.dao.ChallengePostRepository;
 import com.habitpay.habitpay.domain.challengepost.domain.ChallengePost;
@@ -13,35 +12,25 @@ import com.habitpay.habitpay.domain.challengepost.dto.PostViewResponse;
 import com.habitpay.habitpay.domain.member.dao.MemberRepository;
 import com.habitpay.habitpay.domain.member.domain.Member;
 import com.habitpay.habitpay.domain.member.domain.Role;
-import com.habitpay.habitpay.domain.model.BaseTime;
 import com.habitpay.habitpay.domain.postphoto.dao.PostPhotoRepository;
 import com.habitpay.habitpay.domain.postphoto.domain.PostPhoto;
 import com.habitpay.habitpay.domain.postphoto.dto.PostPhotoView;
 import com.habitpay.habitpay.global.config.jwt.TokenProvider;
 import com.habitpay.habitpay.global.config.jwt.TokenService;
-import com.habitpay.habitpay.global.security.WithMockOAuth2User;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
-import org.springframework.restdocs.payload.JsonFieldType;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.ResultActions;
 
-import java.lang.reflect.Field;
-import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import static java.util.Date.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
@@ -172,7 +161,7 @@ public class ChallengePostApiTest extends AbstractRestDocsTests {
         // todo: API 리턴 타입을 SuccessResponse로 바꾸고 수정하기
         PostViewResponse mockPostViewResponse = new PostViewResponse(testPost, mockPostPhotoViewList);
 
-        given(challengePostSearchService.findPostById(1L)).willReturn(mockPostViewResponse);
+        given(challengePostSearchService.getPostViewResponseByPostId(1L)).willReturn(mockPostViewResponse);
 
         // when
         // Mock을 통해 실행한 요청의 결과 (체이닝 방식?)
@@ -227,7 +216,7 @@ public class ChallengePostApiTest extends AbstractRestDocsTests {
             testPostViewResponseList.add(new PostViewResponse(post, createTestPostPhotoViewList(post)));
         }
 
-        given(challengePostSearchService.findChallengePostsByChallengeId(anyLong())).willReturn(testPostViewResponseList);
+        given(challengePostSearchService.findPostViewResponseListByChallengeId(anyLong())).willReturn(testPostViewResponseList);
 
         // when
         // Mock을 통해 실행한 요청의 결과 (체이닝 방식?)

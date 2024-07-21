@@ -10,5 +10,5 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ChallengePostRepository extends JpaRepository<ChallengePost, Long> {
-    Optional<List<ChallengePost>> findAllByChallengeEnrollmentId(Long challengeEnrollmentId);
+    List<ChallengePost> findAllByChallengeEnrollmentId(Long challengeEnrollmentId);
 }

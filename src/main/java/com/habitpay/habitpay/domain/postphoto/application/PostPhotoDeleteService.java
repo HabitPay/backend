@@ -31,7 +31,7 @@ public class PostPhotoDeleteService {
     }
 
     public void deleteByIds(Long postId, List<Long> photoIdList) {
-        ChallengePost post = challengePostSearchService.findById(postId);
+        ChallengePost post = challengePostSearchService.getChallengePostById(postId);
 
         photoIdList.forEach(photoId -> {
             if (postPhotoUtilService.photoBelongToPost(photoId, post)) {

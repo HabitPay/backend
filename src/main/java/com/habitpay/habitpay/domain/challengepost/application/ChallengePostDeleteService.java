@@ -24,8 +24,8 @@ public class ChallengePostDeleteService {
 
     @Transactional
     public void delete(Long postId, String email) {
-        ChallengePost post = challengePostSearchService.findById(postId);
-        Challenge challenge = challengePostSearchService.findChallengeByPostId(postId);
+        ChallengePost post = challengePostSearchService.getChallengePostById(postId);
+        Challenge challenge = challengePostSearchService.getChallengeByPostId(postId);
 
         if (post.getIsAnnouncement()) {
             if (!challengePostUtilService.isChallengeHost(challenge, email)) {
@@ -40,7 +40,7 @@ public class ChallengePostDeleteService {
     }
 
     private void deletePost(Long id) {
-        ChallengePost challengePost = challengePostSearchService.findById(id);
+        ChallengePost challengePost = challengePostSearchService.getChallengePostById(id);
         challengePostUtilService.authorizePostWriter(challengePost);
 
         postPhotoDeleteService.deleteByPost(challengePost);

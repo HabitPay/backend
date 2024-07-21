@@ -4,9 +4,10 @@ import com.habitpay.habitpay.domain.challengepost.application.*;
 import com.habitpay.habitpay.domain.challengepost.dto.AddPostRequest;
 import com.habitpay.habitpay.domain.challengepost.dto.ModifyPostRequest;
 import com.habitpay.habitpay.domain.challengepost.dto.PostViewResponse;
+import com.habitpay.habitpay.global.config.auth.CustomUserDetails;
+import com.habitpay.habitpay.global.response.SuccessResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -24,49 +25,58 @@ public class ChallengePostApi {
     private final ChallengePostDeleteService challengePostDeleteService;
 
     @GetMapping("/api/posts/{id}")
-    public ResponseEntity<PostViewResponse> findPost(@PathVariable Long id) {
+    public SuccessResponse<PostViewResponse> getPost(@PathVariable Long id) {
 
-        return ResponseEntity.ok()
-                .body(challengePostSearchService.findPostById(id));
+        return SuccessResponse.of(
+                "",
+                challengePostSearchService.getPostViewResponseByPostId(id)
+        );
     }
 
     @GetMapping("/api/challenges/{id}/posts")
-    public ResponseEntity<List<PostViewResponse>> findChallengePosts(@PathVariable Long id) {
+    public SuccessResponse<List<PostViewResponse>> getChallengePosts(@PathVariable Long id) {
 
-        return ResponseEntity.ok()
-                .body(challengePostSearchService.findChallengePostsByChallengeId(id));
+        return SuccessResponse.of(
+                "",
+                challengePostSearchService.findPostViewResponseListByChallengeId(id)
+        );
     }
 
     @GetMapping("/api/challenges/{id}/posts/me")
-    public ResponseEntity<List<PostViewResponse>> findChallengePostsByMe(
-            @PathVariable Long id, @AuthenticationPrincipal String email) {
+    public SuccessResponse<List<PostViewResponse>> getChallengePostsByMe(
+            @PathVariable Long id, @AuthenticationPrincipal CustomUserDetails user) {
 
-        return ResponseEntity.ok()
-                .body(challengePostSearchService.findChallengePostsByMember(id, email));
+        return SuccessResponse.of(
+          "",
+          challengePostSearchService.findChallengePostsByMember(id, user.getEmail())
+        );
     }
 
     // -----------------------------------------------------------------------------
     // todo : 'challengeEnrollmentId' or 'memberId' 등 멤버 식별할 수 있는 데이터를 받아야 함
     @GetMapping("/api/challenges/{id}/posts/member")
-    public ResponseEntity<List<PostViewResponse>> findChallengePostsByMember(
+    public SuccessResponse<List<PostViewResponse>> getChallengePostsByMember(
             @PathVariable Long id) {
 
-        String memberEmail = "otherMember's@email.address"; // todo : 임시
+        String memberEmail = "otherMember@email.address"; // todo : 임시
 
-        return ResponseEntity.ok()
-                .body(challengePostSearchService.findChallengePostsByMember(id, memberEmail));
+        return SuccessResponse.of(
+                "",
+                challengePostSearchService.findChallengePostsByMember(id, memberEmail)
+        );
     }
     // -------------------------------------------------------------------------------
 
     @PostMapping("/api/challenges/{id}/post")
-    public ResponseEntity<List<String>> addPost(
+    public SuccessResponse<List<String>> createPost(
             @RequestBody AddPostRequest request,
             @PathVariable Long id,
-            @AuthenticationPrincipal String email) {
+            @AuthenticationPrincipal CustomUserDetails user) {
 
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(challengePostCreationService.save(request, id, email));
+        return SuccessResponse.of(
+                "포스트가 생성되었습니다.",
+                challengePostCreationService.createPost(request, id, user.getEmail())
+        );
     }
 
     @PutMapping("/api/posts/{id}")
