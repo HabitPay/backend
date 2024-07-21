@@ -8,7 +8,6 @@ import com.habitpay.habitpay.global.config.auth.CustomUserDetails;
 import com.habitpay.habitpay.global.response.SuccessResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -90,11 +89,13 @@ public class ChallengePostApi {
     }
 
     @DeleteMapping("/api/posts/{id}")
-    public ResponseEntity<Void> deletePost(
-            @PathVariable Long id, @AuthenticationPrincipal String email) {
+    public SuccessResponse<Void> deletePost(
+            @PathVariable Long id, @AuthenticationPrincipal CustomUserDetails user) {
 
-        challengePostDeleteService.delete(id, email);
-        return ResponseEntity.ok()
-                .build();
+        challengePostDeleteService.deletePost(id, user.getEmail());
+        return SuccessResponse.of(
+                "포스트가 정상적으로 삭제되었습니다.",
+                null
+        );
     }
 }
