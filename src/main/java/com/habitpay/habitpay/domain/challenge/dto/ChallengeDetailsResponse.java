@@ -14,8 +14,11 @@ public class ChallengeDetailsResponse {
     private String description;
     private ZonedDateTime startDate;
     private ZonedDateTime endDate;
+    private ZonedDateTime stopDate;
+    private int numberOfParticipants;
     private int participatingDays;
     private int feePerAbsence;
+    private Boolean isPaidAll;
     private String hostNickname;
     private String hostProfileImage;
     private Boolean isHost;
@@ -27,6 +30,9 @@ public class ChallengeDetailsResponse {
                 .description(challenge.getDescription())
                 .startDate(challenge.getStartDate())
                 .endDate(challenge.getEndDate())
+                .stopDate(challenge.getStopDate())
+                .numberOfParticipants(challenge.getNumberOfParticipants())
+                .isPaidAll(challenge.isPaidAll())
                 .participatingDays(challenge.getParticipatingDays())
                 .feePerAbsence(challenge.getFeePerAbsence())
                 .hostNickname(challenge.getHost().getNickname())
