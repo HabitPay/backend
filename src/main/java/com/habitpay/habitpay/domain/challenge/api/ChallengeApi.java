@@ -3,6 +3,7 @@ package com.habitpay.habitpay.domain.challenge.api;
 import com.habitpay.habitpay.domain.challenge.application.ChallengeCreationService;
 import com.habitpay.habitpay.domain.challenge.application.ChallengeDetailsService;
 import com.habitpay.habitpay.domain.challenge.application.ChallengePatchService;
+import com.habitpay.habitpay.domain.challenge.application.ChallengeSearchService;
 import com.habitpay.habitpay.domain.challenge.dto.*;
 import com.habitpay.habitpay.global.config.auth.CustomUserDetails;
 import com.habitpay.habitpay.global.response.SuccessResponse;
@@ -19,6 +20,13 @@ public class ChallengeApi {
     private final ChallengeCreationService challengeCreationService;
     private final ChallengePatchService challengePatchService;
     private final ChallengeDetailsService challengeDetailsService;
+    private final ChallengeSearchService challengeSearchService;
+
+    @GetMapping("/challenges/me")
+    public SuccessResponse<ChallengeEnrolledListItemResponse[]> getEnrolledChallengeList(
+            @AuthenticationPrincipal CustomUserDetails user) {
+        return challengeSearchService.getEnrolledChallengeList(user.getMember());
+    }
 
     @GetMapping("/challenges/{id}")
     public SuccessResponse<ChallengeDetailsResponse> getChallengeDetails(@PathVariable("id") Long id,
@@ -29,7 +37,7 @@ public class ChallengeApi {
     @PostMapping("/challenges")
     public SuccessResponse<ChallengeCreationResponse> createChallenge(@RequestBody ChallengeCreationRequest challengeCreationRequest,
                                                                       @AuthenticationPrincipal CustomUserDetails user) {
-        return challengeCreationService.createChallenge(challengeCreationRequest, user.getId());
+        return challengeCreationService.createChallenge(challengeCreationRequest, user.getMember());
     }
 
     @PatchMapping("/challenges/{id}")
