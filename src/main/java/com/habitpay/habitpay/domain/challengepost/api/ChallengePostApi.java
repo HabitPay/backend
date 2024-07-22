@@ -25,6 +25,10 @@ public class ChallengePostApi {
     private final ChallengePostDeleteService challengePostDeleteService;
     private final ChallengePostUtilService challengePostUtilService;
 
+    private static final String DEFAULT_PAGE = "0";
+    private static final String DEFAULT_SIZE = "5";
+    private static final String DEFAULT_SORT = "asc";
+
     @GetMapping("/api/posts/{id}")
     public SuccessResponse<PostViewResponse> getPost(@PathVariable Long id) {
 
@@ -37,9 +41,9 @@ public class ChallengePostApi {
     @GetMapping("/api/challenges/{id}/posts")
     public SuccessResponse<List<PostViewResponse>> getChallengePosts(
             @PathVariable Long id,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "5") int size,
-            @RequestParam(defaultValue = "asc") String[] sort) {
+            @RequestParam(defaultValue = DEFAULT_PAGE) int page,
+            @RequestParam(defaultValue = DEFAULT_SIZE) int size,
+            @RequestParam(defaultValue = DEFAULT_SORT) String[] sort) {
 
         Pageable pageable = challengePostUtilService.makePageable(page, size, sort);
 
@@ -53,9 +57,9 @@ public class ChallengePostApi {
     public SuccessResponse<List<PostViewResponse>> getChallengePostsByMe(
             @PathVariable Long id,
             @AuthenticationPrincipal CustomUserDetails user,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "5") int size,
-            @RequestParam(defaultValue = "asc") String[] sort) {
+            @RequestParam(defaultValue = DEFAULT_PAGE) int page,
+            @RequestParam(defaultValue = DEFAULT_SIZE) int size,
+            @RequestParam(defaultValue = DEFAULT_SORT) String[] sort) {
 
         Pageable pageable = challengePostUtilService.makePageable(page, size, sort);
 
@@ -70,9 +74,9 @@ public class ChallengePostApi {
     @GetMapping("/api/challenges/{id}/posts/member")
     public SuccessResponse<List<PostViewResponse>> getChallengePostsByMember(
             @PathVariable Long id,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "5") int size,
-            @RequestParam(defaultValue = "asc") String[] sort) {
+            @RequestParam(defaultValue = DEFAULT_PAGE) int page,
+            @RequestParam(defaultValue = DEFAULT_SIZE) int size,
+            @RequestParam(defaultValue = DEFAULT_SORT) String[] sort) {
 
         String memberEmail = "otherMember@email.address"; // todo : 임시
         Pageable pageable = challengePostUtilService.makePageable(page, size, sort);
