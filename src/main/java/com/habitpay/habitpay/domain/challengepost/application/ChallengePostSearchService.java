@@ -16,6 +16,8 @@ import com.habitpay.habitpay.domain.postphoto.domain.PostPhoto;
 import com.habitpay.habitpay.domain.postphoto.dto.PostPhotoView;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -43,9 +45,9 @@ public class ChallengePostSearchService {
         return new PostViewResponse(challengePost, photoViewList);
     }
 
-    public List<PostViewResponse> findPostViewResponseListByChallengeId(Long challengeId) {
+    public List<PostViewResponse> findPostViewResponseListByChallengeId(Long challengeId, Pageable pageable) {
 
-        return this.findAllByChallengeId(challengeId)
+        return this.findAllByChallengeId(challengeId, pageable)
                 .stream()
                 // .filter(post -> !post.getIsAnnouncement()) // todo
                 // .sorted() // todo : 순서 설정하고 싶을 때
@@ -56,7 +58,7 @@ public class ChallengePostSearchService {
                 .toList();
     }
 
-    public List<PostViewResponse> findChallengePostsByMember(Long challengeId, String email) {
+    public List<PostViewResponse> findChallengePostsByMember(Long challengeId, String email, Pageable pageable) {
         Member member = memberService.findByEmail(email);
         Challenge challenge = challengeSearchService.getChallengeById(challengeId);
         ChallengeEnrollment enrollment = challengeEnrollmentSearchService.findByMemberAndChallenge(member, challenge)
@@ -64,7 +66,7 @@ public class ChallengePostSearchService {
 
         Long challengeEnrollmentId = enrollment.getId();
 
-        return challengePostRepository.findAllByChallengeEnrollmentId(challengeEnrollmentId)
+        return challengePostRepository.findAllByChallengeEnrollmentId(challengeEnrollmentId, pageable)
                 .stream()
                 // .filter(post -> !post.getIsAnnouncement()) // todo
                 // .sorted() // todo : 순서 설정하고 싶을 때
@@ -81,8 +83,8 @@ public class ChallengePostSearchService {
     }
 
     // todo : 각 챌린지 별로 findAll 해주는 메서드
-    public List<ChallengePost> findAllByChallengeId(Long challengeId) {
-        return challengePostRepository.findAllByChallengeEnrollmentId(1L); // todo : 임시값
+    public List<ChallengePost> findAllByChallengeId(Long challengeId, Pageable pageable) {
+        return challengePostRepository.findAllByChallengeEnrollmentId(1L, pageable); // todo : 임시값
 
         // 방법 1 :
         // 챌린지 아이디를 이용해 챌린지를 찾는다 (DB 검색1)

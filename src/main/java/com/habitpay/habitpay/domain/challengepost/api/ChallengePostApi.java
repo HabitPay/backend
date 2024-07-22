@@ -24,6 +24,7 @@ public class ChallengePostApi {
     private final ChallengePostSearchService challengePostSearchService;
     private final ChallengePostUpdateService challengePostUpdateService;
     private final ChallengePostDeleteService challengePostDeleteService;
+    private final ChallengePostUtilService challengePostUtilService;
 
     @GetMapping("/api/posts/{id}")
     public SuccessResponse<PostViewResponse> getPost(@PathVariable Long id) {
@@ -37,21 +38,31 @@ public class ChallengePostApi {
     @GetMapping("/api/challenges/{id}/posts")
     public SuccessResponse<List<PostViewResponse>> getChallengePosts(
             @PathVariable Long id,
-            @PageableDefault(page = 0, size = 5) Pageable pageable) {
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size,
+            @RequestParam(defaultValue = "asc") String[] sort) {
+
+        Pageable pageable = challengePostUtilService.checkPageableParam(page, size, sort);
 
         return SuccessResponse.of(
                 "",
-                challengePostSearchService.findPostViewResponseListByChallengeId(id)
+                challengePostSearchService.findPostViewResponseListByChallengeId(id, pageable)
         );
     }
 
     @GetMapping("/api/challenges/{id}/posts/me")
     public SuccessResponse<List<PostViewResponse>> getChallengePostsByMe(
-            @PathVariable Long id, @AuthenticationPrincipal CustomUserDetails user) {
+            @PathVariable Long id,
+            @AuthenticationPrincipal CustomUserDetails user,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size,
+            @RequestParam(defaultValue = "asc") String[] sort) {
+
+        Pageable pageable = challengePostUtilService.checkPageableParam(page, size, sort);
 
         return SuccessResponse.of(
           "",
-          challengePostSearchService.findChallengePostsByMember(id, user.getEmail())
+          challengePostSearchService.findChallengePostsByMember(id, user.getEmail(), pageable)
         );
     }
 
@@ -59,13 +70,17 @@ public class ChallengePostApi {
     // todo : 'challengeEnrollmentId' or 'memberId' 등 멤버 식별할 수 있는 데이터를 받아야 함
     @GetMapping("/api/challenges/{id}/posts/member")
     public SuccessResponse<List<PostViewResponse>> getChallengePostsByMember(
-            @PathVariable Long id) {
+            @PathVariable Long id,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size,
+            @RequestParam(defaultValue = "asc") String[] sort) {
 
         String memberEmail = "otherMember@email.address"; // todo : 임시
+        Pageable pageable = challengePostUtilService.checkPageableParam(page, size, sort);
 
         return SuccessResponse.of(
                 "",
-                challengePostSearchService.findChallengePostsByMember(id, memberEmail)
+                challengePostSearchService.findChallengePostsByMember(id, memberEmail, pageable)
         );
     }
     // -------------------------------------------------------------------------------

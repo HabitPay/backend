@@ -11,6 +11,9 @@ import com.habitpay.habitpay.domain.refreshtoken.exception.CustomJwtException;
 import com.habitpay.habitpay.global.error.CustomJwtErrorInfo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -28,6 +31,12 @@ public class ChallengePostUtilService {
     private final ChallengeParticipationRecordCreationService challengeParticipationRecordCreationService;
     private final ChallengeParticipationRecordSearchService challengeParticipationRecordSearchService;
 
+    private static final int DEFAULT_PAGE = 0;
+    private static final int DEFAULT_SIZE = 5;
+    private static final int MAX_SIZE = 100;
+    private static final String DEFAULT_SORT = "asc";
+
+
     public void authorizePostWriter(ChallengePost post, String memberEmail) {
         if (!post.getWriter().getEmail().equals(memberEmail)) {
             throw new CustomJwtException(HttpStatus.UNAUTHORIZED, CustomJwtErrorInfo.UNAUTHORIZED, "해당 포스트의 작성자가 아닙니다.");
@@ -41,6 +50,25 @@ public class ChallengePostUtilService {
     public boolean isChallengeHost(Challenge challenge, String email) {
         String hostEmail = challenge.getHost().getEmail();
         return hostEmail.equals(email);
+    }
+
+    public Pageable checkPageableParam(int page, int size, String[] sort) {
+
+        if (page < 0) {
+            page = DEFAULT_PAGE;
+        }
+
+        if (size < 1) {
+            size = DEFAULT_SIZE;
+        } else if (size > MAX_SIZE) {
+            size = MAX_SIZE;
+        }
+
+        // todo : sort 제공할 것인지
+//        if (sort.length > 1) {
+//        }
+
+        return PageRequest.of(page, size);
     }
 
     public void verifyChallengePostForRecord(ChallengePost post) {
