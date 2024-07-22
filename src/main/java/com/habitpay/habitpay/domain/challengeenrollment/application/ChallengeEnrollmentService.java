@@ -27,11 +27,13 @@ public class ChallengeEnrollmentService {
         validateChallengeEnrollmentTime(challenge);
 
         Member member = memberSearchService.getMemberById(userId);
-        challengeEnrollmentRepository.findByMember(member)
+        challengeEnrollmentRepository.findByMemberAndChallenge(member, challenge)
                 .ifPresent(entity -> {
                     // TODO: 공통 예외 처리 추가하기
                     throw new IllegalStateException("이미 참여한 챌린지입니다.");
                 });
+
+        challenge.setNumberOfParticipants(challenge.getNumberOfParticipants() + 1);
 
         ChallengeEnrollment challengeEnrollment = ChallengeEnrollment.of(member, challenge);
         challengeEnrollmentRepository.save(challengeEnrollment);
