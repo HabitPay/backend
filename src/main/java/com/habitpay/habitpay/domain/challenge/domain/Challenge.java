@@ -10,6 +10,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import java.time.DayOfWeek;
 import java.time.ZonedDateTime;
 
 @Getter
@@ -82,5 +83,15 @@ public class Challenge extends BaseTime {
 
     public void patch(ChallengePatchRequest challengePatchRequest) {
         this.description = challengePatchRequest.getDescription();
+    }
+
+    public void setNumberOfParticipants(int numberOfParticipants) {
+        this.numberOfParticipants += numberOfParticipants;
+    }
+
+    public boolean isTodayParticipatingDay() {
+        DayOfWeek today = ZonedDateTime.now().getDayOfWeek();
+        int todayBitPosition = 6 - (today.getValue() - 1);
+        return (this.participatingDays & (1 << todayBitPosition)) != 0;
     }
 }
