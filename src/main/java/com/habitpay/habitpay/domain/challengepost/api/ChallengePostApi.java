@@ -8,6 +8,8 @@ import com.habitpay.habitpay.global.config.auth.CustomUserDetails;
 import com.habitpay.habitpay.global.response.SuccessResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -33,7 +35,9 @@ public class ChallengePostApi {
     }
 
     @GetMapping("/api/challenges/{id}/posts")
-    public SuccessResponse<List<PostViewResponse>> getChallengePosts(@PathVariable Long id) {
+    public SuccessResponse<List<PostViewResponse>> getChallengePosts(
+            @PathVariable Long id,
+            @PageableDefault(page = 0, size = 5) Pageable pageable) {
 
         return SuccessResponse.of(
                 "",
