@@ -13,9 +13,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.DayOfWeek;
@@ -52,7 +50,7 @@ public class ChallengePostUtilService {
         return hostEmail.equals(email);
     }
 
-    public Pageable checkPageableParam(int page, int size, String[] sort) {
+    public Pageable makePageable(int page, int size, String[] sort) {
 
         if (page < 0) {
             page = DEFAULT_PAGE;

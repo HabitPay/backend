@@ -9,7 +9,6 @@ import com.habitpay.habitpay.global.response.SuccessResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -42,7 +41,7 @@ public class ChallengePostApi {
             @RequestParam(defaultValue = "5") int size,
             @RequestParam(defaultValue = "asc") String[] sort) {
 
-        Pageable pageable = challengePostUtilService.checkPageableParam(page, size, sort);
+        Pageable pageable = challengePostUtilService.makePageable(page, size, sort);
 
         return SuccessResponse.of(
                 "",
@@ -58,7 +57,7 @@ public class ChallengePostApi {
             @RequestParam(defaultValue = "5") int size,
             @RequestParam(defaultValue = "asc") String[] sort) {
 
-        Pageable pageable = challengePostUtilService.checkPageableParam(page, size, sort);
+        Pageable pageable = challengePostUtilService.makePageable(page, size, sort);
 
         return SuccessResponse.of(
           "",
@@ -76,7 +75,7 @@ public class ChallengePostApi {
             @RequestParam(defaultValue = "asc") String[] sort) {
 
         String memberEmail = "otherMember@email.address"; // todo : 임시
-        Pageable pageable = challengePostUtilService.checkPageableParam(page, size, sort);
+        Pageable pageable = challengePostUtilService.makePageable(page, size, sort);
 
         return SuccessResponse.of(
                 "",
