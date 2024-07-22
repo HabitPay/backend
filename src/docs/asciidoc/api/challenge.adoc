@@ -32,3 +32,9 @@ operation::challenge/create-challenge[snippets='http-request,http-response,respo
 챌린지 정보를 수정합니다.
 
 operation::challenge/patch-challenge[snippets='http-request,http-response,response-fields']
+
+=== 챌린지 참여자 등록
+
+사용자를 챌린지 참여자에 등록합니다.
+
+operation::challenge/enroll-challenge[snippets='http-request,http-response,response-fields']

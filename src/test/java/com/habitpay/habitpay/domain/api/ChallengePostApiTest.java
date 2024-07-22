@@ -5,7 +5,10 @@ import com.habitpay.habitpay.domain.challenge.dao.ChallengeRepository;
 import com.habitpay.habitpay.domain.challenge.domain.Challenge;
 import com.habitpay.habitpay.domain.challengeenrollment.dao.ChallengeEnrollmentRepository;
 import com.habitpay.habitpay.domain.challengeenrollment.domain.ChallengeEnrollment;
-import com.habitpay.habitpay.domain.challengepost.application.*;
+import com.habitpay.habitpay.domain.challengepost.application.ChallengePostCreationService;
+import com.habitpay.habitpay.domain.challengepost.application.ChallengePostDeleteService;
+import com.habitpay.habitpay.domain.challengepost.application.ChallengePostSearchService;
+import com.habitpay.habitpay.domain.challengepost.application.ChallengePostUpdateService;
 import com.habitpay.habitpay.domain.challengepost.dao.ChallengePostRepository;
 import com.habitpay.habitpay.domain.challengepost.domain.ChallengePost;
 import com.habitpay.habitpay.domain.challengepost.dto.PostViewResponse;
@@ -31,7 +34,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.IntStream;
 
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
@@ -39,11 +42,7 @@ import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.docu
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 
 
 //@WebMvcTest(ChallengePostApi.class)
@@ -110,7 +109,6 @@ public class ChallengePostApiTest extends AbstractRestDocsTests {
         return challengeEnrollmentRepository.save(ChallengeEnrollment.builder()
                 .challenge(testChallenge)
                 .member(testMember)
-                .enrolledDate(ZonedDateTime.now())
                 .build());
     }
 
@@ -126,9 +124,9 @@ public class ChallengePostApiTest extends AbstractRestDocsTests {
         List<ChallengePost> postList = IntStream.rangeClosed(1, i)
                 .mapToObj(index -> challengePostRepository.save(ChallengePost.builder()
                         .content("This is test post" + index)
-                            .isAnnouncement(false)
-                            .enrollment(testEnrollment)
-                            .build()))
+                        .isAnnouncement(false)
+                        .enrollment(testEnrollment)
+                        .build()))
                 .toList();
 
         return postList;

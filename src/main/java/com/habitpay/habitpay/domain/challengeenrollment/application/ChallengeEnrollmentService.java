@@ -4,18 +4,15 @@ import com.habitpay.habitpay.domain.challenge.application.ChallengeSearchService
 import com.habitpay.habitpay.domain.challenge.domain.Challenge;
 import com.habitpay.habitpay.domain.challengeenrollment.dao.ChallengeEnrollmentRepository;
 import com.habitpay.habitpay.domain.challengeenrollment.domain.ChallengeEnrollment;
+import com.habitpay.habitpay.domain.challengeenrollment.dto.ChallengeEnrollmentResponse;
 import com.habitpay.habitpay.domain.member.application.MemberSearchService;
 import com.habitpay.habitpay.domain.member.domain.Member;
-import com.habitpay.habitpay.global.response.ApiResponse;
+import com.habitpay.habitpay.global.response.SuccessResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.ZonedDateTime;
-import java.util.Optional;
 
 @Slf4j
 @Service
@@ -25,34 +22,33 @@ public class ChallengeEnrollmentService {
     private final ChallengeEnrollmentRepository challengeEnrollmentRepository;
     private final ChallengeSearchService challengeSearchService;
 
-    @Transactional
-    public ResponseEntity<ApiResponse> enroll(Long challengeId, Long userId) {
-        ApiResponse response;
+    public SuccessResponse<ChallengeEnrollmentResponse> enroll(Long challengeId, Long userId) {
         Challenge challenge = challengeSearchService.getChallengeById(challengeId);
-        ZonedDateTime now = ZonedDateTime.now();
-        if (now.isAfter(challenge.getEndDate())) {
-            log.error("챌린지 등록 기간 초과");
-            response = ApiResponse.create("챌린지 참여 가능한 시간이 지났습니다.");
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
-        }
+        validateChallengeEnrollmentTime(challenge);
 
         Member member = memberSearchService.getMemberById(userId);
-        Optional<ChallengeEnrollment> optionalChallengeEnrollment = challengeEnrollmentRepository.findByMember(member);
-        if (optionalChallengeEnrollment.isPresent()) {
-            log.error("이미 참여한 챌린지");
-            response = ApiResponse.create("이미 참여한 챌린지입니다.");
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
-        }
+        challengeEnrollmentRepository.findByMember(member)
+                .ifPresent(entity -> {
+                    // TODO: 공통 예외 처리 추가하기
+                    throw new IllegalStateException("이미 참여한 챌린지입니다.");
+                });
 
-        ChallengeEnrollment challengeEnrollment = ChallengeEnrollment.builder()
-                .member(member)
-                .challenge(challenge)
-                .enrolledDate(now)
-                .build();
-
+        ChallengeEnrollment challengeEnrollment = ChallengeEnrollment.of(member, challenge);
         challengeEnrollmentRepository.save(challengeEnrollment);
-        log.info("챌린지 참여 완료");
-        response = ApiResponse.create("챌린지에 정상적으로 참여했습니다.");
-        return ResponseEntity.status(HttpStatus.OK).body(response);
+        log.info("챌린지 등록 완료");
+        return SuccessResponse.of(
+                "챌린지에 정상적으로 등록했습니다.",
+                ChallengeEnrollmentResponse.of(
+                        challenge, challengeEnrollment, member
+                )
+        );
+    }
+
+    private void validateChallengeEnrollmentTime(Challenge challenge) {
+        ZonedDateTime now = ZonedDateTime.now();
+        if (now.isAfter(challenge.getStartDate())) {
+            // TODO: 공통 예외 처리 추가하기
+            throw new IllegalStateException("챌린지 등록 가능 시간이 아닙니다.");
+        }
     }
 }

@@ -2,11 +2,13 @@ package com.habitpay.habitpay.domain.member.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.habitpay.habitpay.docs.springrestdocs.AbstractRestDocsTests;
-import com.habitpay.habitpay.domain.member.application.MemberActivationService;
 import com.habitpay.habitpay.domain.member.application.MemberDeleteService;
 import com.habitpay.habitpay.domain.member.application.MemberSearchService;
 import com.habitpay.habitpay.domain.member.application.MemberUpdateService;
-import com.habitpay.habitpay.domain.member.dto.*;
+import com.habitpay.habitpay.domain.member.dto.ImageUpdateRequest;
+import com.habitpay.habitpay.domain.member.dto.ImageUpdateResponse;
+import com.habitpay.habitpay.domain.member.dto.MemberProfileResponse;
+import com.habitpay.habitpay.domain.member.dto.NicknameDto;
 import com.habitpay.habitpay.domain.refreshtoken.application.RefreshTokenCreationService;
 import com.habitpay.habitpay.global.config.aws.S3FileService;
 import com.habitpay.habitpay.global.config.jwt.TokenProvider;
@@ -42,9 +44,6 @@ public class MemberApiTest extends AbstractRestDocsTests {
 
     @MockBean
     MemberSearchService memberSearchService;
-
-    @MockBean
-    MemberActivationService memberActivationService;
 
     @MockBean
     MemberUpdateService memberUpdateService;
@@ -92,50 +91,6 @@ public class MemberApiTest extends AbstractRestDocsTests {
                                 fieldWithPath("message").description("메세지"),
                                 fieldWithPath("data.nickname").description("사용자 닉네임"),
                                 fieldWithPath("data.imageUrl").description("사용자 이미지 URL")
-                        )
-                ));
-    }
-
-    @Test
-    @WithMockOAuth2User
-    @DisplayName("사용자 활성화")
-    void activateMember() throws Exception {
-
-        // given
-        MemberActivationRequest memberActivationRequest = MemberActivationRequest.builder()
-                .nickname("testNickname")
-                .build();
-        MemberActivationResponse memberActivationResponse = MemberActivationResponse.builder()
-                .nickname("testNickname")
-                .accessToken("ACCESS_TOKEN")
-                .expiresIn(3600L)
-                .tokenType(AUTHORIZATION_HEADER_PREFIX)
-                .build();
-        SuccessResponse<MemberActivationResponse> successResponse = SuccessResponse.of("회원가입이 완료되었습니다.", memberActivationResponse);
-        given(memberActivationService.activate(any(MemberActivationRequest.class), anyLong()))
-                .willReturn(successResponse);
-
-        // when
-        ResultActions result = mockMvc.perform(post("/api/member")
-                .header(HttpHeaders.AUTHORIZATION, AUTHORIZATION_HEADER_PREFIX + "ACCESS_TOKEN")
-                .content(objectMapper.writeValueAsString(memberActivationRequest))
-                .contentType(MediaType.APPLICATION_JSON));
-
-        // then
-        result.andExpect(status().isOk())
-                .andDo(document("member/post-member",
-                        requestHeaders(
-                                headerWithName(HttpHeaders.AUTHORIZATION).description("액세스 토큰")
-                        ),
-                        requestFields(
-                                fieldWithPath("nickname").description("닉네임")
-                        ),
-                        responseFields(
-                                fieldWithPath("message").description("메세지"),
-                                fieldWithPath("data.nickname").description("닉네임"),
-                                fieldWithPath("data.accessToken").description("액세스 토큰"),
-                                fieldWithPath("data.expiresIn").description("토큰 유효 시간"),
-                                fieldWithPath("data.tokenType").description("토큰 타입")
                         )
                 ));
     }

@@ -20,7 +20,7 @@ import java.util.Optional;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class ChallengeCancellationService {
+public class ChallengeEnrollmentCancellationService {
     private final ChallengeEnrollmentRepository challengeEnrollmentRepository;
     private final ChallengeSearchService challengeSearchService;
     private final MemberSearchService memberSearchService;
