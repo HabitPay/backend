@@ -6,6 +6,7 @@ import com.habitpay.habitpay.domain.challenge.application.ChallengeCreationServi
 import com.habitpay.habitpay.domain.challenge.application.ChallengeDetailsService;
 import com.habitpay.habitpay.domain.challenge.application.ChallengePatchService;
 import com.habitpay.habitpay.domain.challenge.dto.*;
+import com.habitpay.habitpay.domain.member.domain.Member;
 import com.habitpay.habitpay.global.config.jwt.TokenProvider;
 import com.habitpay.habitpay.global.config.jwt.TokenService;
 import com.habitpay.habitpay.global.response.SuccessResponse;
@@ -127,7 +128,7 @@ public class ChallengeApiTest extends AbstractRestDocsTests {
                 .feePerAbsence(1000)
                 .build();
 
-        given(challengeCreationService.createChallenge(any(ChallengeCreationRequest.class), anyLong()))
+        given(challengeCreationService.createChallenge(any(ChallengeCreationRequest.class), any(Member.class)))
                 .willReturn(SuccessResponse.of("챌린지가 생성되었습니다.", challengeCreationResponse));
 
         // when
