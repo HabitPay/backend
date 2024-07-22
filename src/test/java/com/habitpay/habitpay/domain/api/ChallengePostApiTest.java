@@ -159,7 +159,7 @@ public class ChallengePostApiTest extends AbstractRestDocsTests {
         // todo: API 리턴 타입을 SuccessResponse로 바꾸고 수정하기
         PostViewResponse mockPostViewResponse = new PostViewResponse(testPost, mockPostPhotoViewList);
 
-        given(challengePostSearchService.findPostById(1L)).willReturn(mockPostViewResponse);
+        given(challengePostSearchService.getPostViewResponseByPostId(1L)).willReturn(mockPostViewResponse);
 
         // when
         // Mock을 통해 실행한 요청의 결과 (체이닝 방식?)
@@ -214,7 +214,7 @@ public class ChallengePostApiTest extends AbstractRestDocsTests {
             testPostViewResponseList.add(new PostViewResponse(post, createTestPostPhotoViewList(post)));
         }
 
-        given(challengePostSearchService.findChallengePostsByChallengeId(anyLong())).willReturn(testPostViewResponseList);
+        given(challengePostSearchService.findPostViewResponseListByChallengeId(anyLong())).willReturn(testPostViewResponseList);
 
         // when
         // Mock을 통해 실행한 요청의 결과 (체이닝 방식?)

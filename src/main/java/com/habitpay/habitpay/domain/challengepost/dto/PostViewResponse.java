@@ -18,7 +18,6 @@ public class PostViewResponse {
     private String content;
     private String writer;
     private Boolean isAnnouncement;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime createdAt;
     private List<PostPhotoView> photoViewList;
 

@@ -8,5 +8,5 @@ import java.util.List;
 import java.util.Optional;
 
 public interface PostPhotoRepository extends JpaRepository<PostPhoto, Long> {
-    Optional<List<PostPhoto>> findAllByChallengePost(ChallengePost post);
+    List<PostPhoto> findAllByChallengePost(ChallengePost post);
 }

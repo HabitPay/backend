@@ -49,11 +49,11 @@ public class PostPhotoUtilService {
     // todo : 사진 순서 데이터 어떻게 오는지 확인하고 작성하기
     @Transactional
     public void changeViewOrder(Long photoId, Long newViewOrder) {
-        PostPhoto photo = postPhotoSearchService.findById(photoId);
+        PostPhoto photo = postPhotoSearchService.getPostPhotoById(photoId);
         photo.changeViewOrder(newViewOrder);
     }
 
     public boolean photoBelongToPost(Long photoId, ChallengePost post) {
-        return postPhotoSearchService.findById(photoId).getChallengePost().equals(post);
+        return postPhotoSearchService.getPostPhotoById(photoId).getChallengePost().equals(post);
     }
 }

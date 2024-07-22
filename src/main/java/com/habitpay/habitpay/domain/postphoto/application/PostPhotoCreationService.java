@@ -1,7 +1,6 @@
 package com.habitpay.habitpay.domain.postphoto.application;
 
 import com.habitpay.habitpay.domain.challengepost.domain.ChallengePost;
-import com.habitpay.habitpay.domain.postphoto.dto.PostPhotoView;
 import com.habitpay.habitpay.domain.postphoto.dao.PostPhotoRepository;
 import com.habitpay.habitpay.domain.postphoto.domain.PostPhoto;
 import com.habitpay.habitpay.domain.postphoto.dto.AddPostPhotoData;
@@ -27,7 +26,7 @@ public class PostPhotoCreationService {
     private final PostPhotoRepository postPhotoRepository;
     private final PostPhotoUtilService postPhotoUtilService;
 
-    public List<String> save(ChallengePost post, List<AddPostPhotoData> photos) {
+    public List<String> createPhotoUrlList(ChallengePost post, List<AddPostPhotoData> photos) {
 
         if (photos == null) {
             return null;

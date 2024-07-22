@@ -35,64 +35,84 @@ public class ChallengePostSearchService {
     private final ChallengePostRepository challengePostRepository;
     private final ChallengeEnrollmentRepository challengeEnrollmentRepository;
 
-    public PostViewResponse findPostById(Long postId) {
-        ChallengePost challengePost = this.findById(postId);
+    public PostViewResponse getPostViewResponseByPostId(Long postId) {
+        ChallengePost challengePost = this.getChallengePostById(postId);
         List<PostPhoto> photoList = postPhotoSearchService.findAllByPost(challengePost);
         List<PostPhotoView> photoViewList = postPhotoUtilService.makePhotoViewList(photoList);
 
         return new PostViewResponse(challengePost, photoViewList);
     }
 
-    public List<PostViewResponse> findChallengePostsByChallengeId(Long challengeId) {
+    public List<PostViewResponse> findPostViewResponseListByChallengeId(Long challengeId) {
 
-        return this.findAllByChallenge(challengeId)
+        return this.findAllByChallengeId(challengeId)
                 .stream()
-                .filter(post -> !post.getIsAnnouncement())
+                // .filter(post -> !post.getIsAnnouncement()) // todo
                 // .sorted() // todo : 순서 설정하고 싶을 때
-                .map(post -> new PostViewResponse(post, postPhotoUtilService.makePhotoViewList(postPhotoSearchService.findAllByPost(post))))
+                .map(post -> {
+                    List<PostPhotoView> photoViewList = postPhotoUtilService.makePhotoViewList(postPhotoSearchService.findAllByPost(post));
+                    return new PostViewResponse(post, photoViewList);
+                })
                 .toList();
     }
 
-    // todo : 수정해야 함
     public List<PostViewResponse> findChallengePostsByMember(Long challengeId, String email) {
         Member member = memberService.findByEmail(email);
         Challenge challenge = challengeSearchService.getChallengeById(challengeId);
         ChallengeEnrollment enrollment = challengeEnrollmentSearchService.findByMemberAndChallenge(member, challenge)
-                .orElseThrow(() -> new NoSuchElementException("No Challenge for this Member"));
+                .orElseThrow(() -> new NoSuchElementException("챌린지에 등록된 멤버가 아닙니다."));
 
         Long challengeEnrollmentId = enrollment.getId();
 
-        return this.findAllByChallengeEnrollment(challengeEnrollmentId)
+        return challengePostRepository.findAllByChallengeEnrollmentId(challengeEnrollmentId)
                 .stream()
-                .filter(post -> !post.getIsAnnouncement())
+                // .filter(post -> !post.getIsAnnouncement()) // todo
                 // .sorted() // todo : 순서 설정하고 싶을 때
-                .map(post -> new PostViewResponse(post, postPhotoUtilService.makePhotoViewList(postPhotoSearchService.findAllByPost(post))))
+                .map(post -> {
+                    List<PostPhotoView> photoViewList = postPhotoUtilService.makePhotoViewList(postPhotoSearchService.findAllByPost(post));
+                    return new PostViewResponse(post, photoViewList);
+                })
                 .toList();
     }
 
-    public ChallengePost findById(Long id) {
+    public ChallengePost getChallengePostById(Long id) {
         return challengePostRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("(for debugging) not found : " + id));
+                .orElseThrow(() -> new NoSuchElementException("포스트를 찾을 수 없습니다."));
     }
 
-    // todo : 각 챌린지 별로 findAll 해주는 메서드 (ChallengeEnrollment 도메인 만들고 거기서 ChallengeId 가져온 뒤에 할 수 있을 듯)
-    public List<ChallengePost> findAllByChallenge(Long challengeId) {
-        return challengePostRepository.findAll();
+    // todo : 각 챌린지 별로 findAll 해주는 메서드
+    public List<ChallengePost> findAllByChallengeId(Long challengeId) {
+        return challengePostRepository.findAllByChallengeEnrollmentId(1L); // todo : 임시값
+
+        // 방법 1 :
+        // 챌린지 아이디를 이용해 챌린지를 찾는다 (DB 검색1)
+        // 챌린지 등록 레포에서 해당 챌린지에 맞는 등록 객체 리스트를 얻는다 (DB 검색2)
+        // 각 등록 객체를 기반으로 포스트 목록을 불러온다 (DB 검색3)
+        // 이걸 또 시간이나 id 순서로 재정렬,,
+
+        // 방법 2 :
+        // 포스트 도메인에 챌린지도 외래키로 연결한다
+        // 챌린지 아이디로 모든 포스트를 찾는다! (DB 검색1)
+
+        // 방법 3 :
+        // DB View 사용하기 (잘 몰라서 학습 필요)
+
+        // 방법 1로 하려고 처음에 DB를 구성했지만, DB 검색을 3번이나 거치는 비용 + 멤버 별 포스트 목록을 각각 불러온 다음 다시 순서대로 리스트업 하는 비용이 클 듯함
+        // 특히 포스트는 아마 전체 도메인 중 가장 많은 DB 객체가 생성되는 도메인이 될 것임
+        // 조회도 자주 발생할 것이라, 많은 양을 자주 조회하는 DB가 될 것,,
+
+        // 조회 성능과 데이터 정합성 중에 선택의 기로
+
+        // 각각 만들어보고 처리 시간 비교해보고 이것저것 고민해야 할 듯 하다
     }
 
-    public Challenge findChallengeByPostId(Long postId) {
-        ChallengePost post = findById(postId);
+    public Challenge getChallengeByPostId(Long postId) {
+        ChallengePost post = getChallengePostById(postId);
         // todo : enrollment service에 findById() 메서드 만들기
         ChallengeEnrollment enrollment = challengeEnrollmentRepository
                 .findById(post.getChallengeEnrollment().getId())
-                .orElseThrow(() -> new NoSuchElementException("No such enrollment " + post.getChallengeEnrollment().getId()));
+                .orElseThrow(() -> new NoSuchElementException("포스트 소속 정보를 찾을 수 없습니다."));
         return enrollment.getChallenge();
-    }
-
-    // todo : 없는 id를 입력했을 때 예외 던지지 않고 빈 값으로 나와서 뭔가 처리되는 듯. -> 예외 던지기로 고쳐야 함
-    public List<ChallengePost> findAllByChallengeEnrollment(Long challengeEnrollmentId) {
-        return challengePostRepository.findAllByChallengeEnrollmentId(challengeEnrollmentId)
-                .orElseThrow(() -> new NoSuchElementException("(for debugging) not found challengeEnrollmentId : " + challengeEnrollmentId));
     }
 
 }

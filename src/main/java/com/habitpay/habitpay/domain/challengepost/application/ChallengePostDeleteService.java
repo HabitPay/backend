@@ -23,27 +23,23 @@ public class ChallengePostDeleteService {
     private final ChallengePostUtilService challengePostUtilService;
 
     @Transactional
-    public void delete(Long postId, String email) {
-        ChallengePost post = challengePostSearchService.findById(postId);
-        Challenge challenge = challengePostSearchService.findChallengeByPostId(postId);
+    public void deletePost(Long postId, String email) {
+        ChallengePost post = challengePostSearchService.getChallengePostById(postId);
+        Challenge challenge = challengePostSearchService.getChallengeByPostId(postId);
 
         if (post.getIsAnnouncement()) {
             if (!challengePostUtilService.isChallengeHost(challenge, email)) {
-                throw new CustomJwtException(HttpStatus.FORBIDDEN, CustomJwtErrorInfo.FORBIDDEN, "Only Host is able to delete an Announcement Post.");
+                throw new CustomJwtException(HttpStatus.FORBIDDEN, CustomJwtErrorInfo.FORBIDDEN, "공지 포스트는 챌린지 호스트만 삭제할 수 있습니다.");
             }
         }
         else {
-            throw new CustomJwtException(HttpStatus.FORBIDDEN, CustomJwtErrorInfo.FORBIDDEN, "Post cannot be deleted.");
+            throw new CustomJwtException(HttpStatus.FORBIDDEN, CustomJwtErrorInfo.FORBIDDEN, "일반 포스트 삭제는 제공되지 않는 기능입니다.");
         }
 
-        this.deletePost(postId);
+        challengePostUtilService.authorizePostWriter(post, email);
+
+        postPhotoDeleteService.deleteByPost(post);
+        challengePostRepository.delete(post);
     }
 
-    private void deletePost(Long id) {
-        ChallengePost challengePost = challengePostSearchService.findById(id);
-        challengePostUtilService.authorizePostWriter(challengePost);
-
-        postPhotoDeleteService.deleteByPost(challengePost);
-        challengePostRepository.delete(challengePost);
-    }
 }

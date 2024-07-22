@@ -44,7 +44,7 @@ public class RefreshTokenCreationService {
         }
 
         String newAccessToken = this.createNewAccessToken(requestBody.getRefreshToken());
-        String refreshToken = this.setRefreshTokenByEmail(tokenService.getUserId(newAccessToken));
+        String refreshToken = this.createRefreshToken(tokenService.getUserId(newAccessToken));
 
         return new CreateAccessTokenResponse(
                 newAccessToken,
@@ -72,6 +72,14 @@ public class RefreshTokenCreationService {
         return tokenProvider.generateToken(member, Duration.ofHours(2));
     }
 
+    public String createRefreshToken(Long id) {
+        Member member = memberSearchService.getMemberById(id);
+        String refreshToken = tokenService.createRefreshToken(id);
+        saveRefreshToken(member, refreshToken);
+
+        return refreshToken;
+    }
+
     private void saveRefreshToken(Member member, String newRefreshToken) {
         String loginId = refreshTokenUtilService.getClientIpAddress();
         RefreshToken refreshToken = refreshTokenRepository.findByMemberId(member.getId())
@@ -79,14 +87,6 @@ public class RefreshTokenCreationService {
                 .orElse(new RefreshToken(member, newRefreshToken, loginId));
 
         refreshTokenRepository.save(refreshToken);
-    }
-
-    public String setRefreshTokenByEmail(Long id) {
-        Member member = memberSearchService.getMemberById(id);
-        String refreshToken = tokenService.createRefreshToken(id);
-        saveRefreshToken(member, refreshToken);
-
-        return refreshToken;
     }
 
 }
