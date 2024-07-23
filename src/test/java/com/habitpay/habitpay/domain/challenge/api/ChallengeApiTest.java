@@ -5,6 +5,7 @@ import com.habitpay.habitpay.docs.springrestdocs.AbstractRestDocsTests;
 import com.habitpay.habitpay.domain.challenge.application.ChallengeCreationService;
 import com.habitpay.habitpay.domain.challenge.application.ChallengeDetailsService;
 import com.habitpay.habitpay.domain.challenge.application.ChallengePatchService;
+import com.habitpay.habitpay.domain.challenge.application.ChallengeSearchService;
 import com.habitpay.habitpay.domain.challenge.dto.*;
 import com.habitpay.habitpay.domain.member.domain.Member;
 import com.habitpay.habitpay.global.config.jwt.TokenProvider;
@@ -50,6 +51,9 @@ public class ChallengeApiTest extends AbstractRestDocsTests {
     ChallengePatchService challengePatchService;
 
     @MockBean
+    ChallengeSearchService challengeSearchService;
+
+    @MockBean
     TokenService tokenService;
 
     @MockBean
@@ -66,11 +70,14 @@ public class ChallengeApiTest extends AbstractRestDocsTests {
                 .description("챌린지 설명")
                 .startDate(ZonedDateTime.now())
                 .endDate(ZonedDateTime.now().plusDays(5))
+                .stopDate(null)
+                .numberOfParticipants(1)
+                .participatingDays(1 << 2)
+                .feePerAbsence(1000)
+                .isPaidAll(false)
                 .hostNickname("챌린지 주최자 닉네임")
                 .hostProfileImage("챌린지 주최자 프로필 이미지")
                 .isHost(true)
-                .participatingDays(1 << 2)
-                .feePerAbsence(1000)
                 .isMemberEnrolledInChallenge(true)
                 .build();
 
@@ -93,8 +100,11 @@ public class ChallengeApiTest extends AbstractRestDocsTests {
                                 fieldWithPath("data.description").description("챌린지 설명"),
                                 fieldWithPath("data.startDate").description("챌린지 시작 일시"),
                                 fieldWithPath("data.endDate").description("챌린지 종료 일시"),
+                                fieldWithPath("data.stopDate").description("챌린지 중단 일시"),
+                                fieldWithPath("data.numberOfParticipants").description("챌린지 참여 인"),
                                 fieldWithPath("data.participatingDays").description("챌린지 참여 요일"),
                                 fieldWithPath("data.feePerAbsence").description("미참여 1회당 벌금"),
+                                fieldWithPath("data.isPaidAll").description("최종 정산 여부"),
                                 fieldWithPath("data.hostNickname").description("챌린지 주최자 닉네임"),
                                 fieldWithPath("data.hostProfileImage").description("챌린지 주최자 프로필 이미지"),
                                 fieldWithPath("data.isHost").description("현재 접속한 사용자 == 챌린지 주최자"),
