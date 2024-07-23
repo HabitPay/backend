@@ -39,6 +39,7 @@ import static org.springframework.restdocs.headers.HeaderDocumentation.requestHe
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(ChallengePostApi.class)
@@ -95,7 +96,8 @@ public class ChallengePostApiTest extends AbstractRestDocsTests {
                 .photoViewList(List.of(new PostPhotoView(1L, 1L, "https://picsum.photos/id/40/200/300")))
                 .build();
 
-        given(challengePostSearchService.getPostViewResponseByPostId(anyLong())).willReturn(SuccessResponse.of("", mockPostViewResponse));
+        given(challengePostSearchService.getPostViewResponseByPostId(anyLong()))
+                .willReturn(SuccessResponse.of("", mockPostViewResponse));
 
         // when
         ResultActions result = mockMvc.perform(get("/api/posts/{id}", 1L)
@@ -138,9 +140,8 @@ public class ChallengePostApiTest extends AbstractRestDocsTests {
                 .photoViewList(List.of(new PostPhotoView(1L, 1L, "https://picsum.photos/id/40/200/300")))
                 .build());
 
-        Pageable pageable = PageRequest.of(0, 10);
-
-        given(challengePostSearchService.findPostViewResponseListByChallengeId(1L, pageable)).willReturn(SuccessResponse.of("", mockPostViewResponseList));
+        given(challengePostSearchService.findPostViewResponseListByChallengeId(anyLong(), any(Pageable.class)))
+                .willReturn(SuccessResponse.of("", mockPostViewResponseList));
 
         // when
         ResultActions result = mockMvc.perform(get("/api/challenges/{id}/posts", 1L)
@@ -187,11 +188,8 @@ public class ChallengePostApiTest extends AbstractRestDocsTests {
                 .photoViewList(List.of(new PostPhotoView(1L, 1L, "https://picsum.photos/id/40/200/300")))
                 .build());
 
-        Member mockMember = createMockMember();
-
-        Pageable pageable = PageRequest.of(0, 10);
-
-        given(challengePostSearchService.findChallengePostsByMember(1L, mockMember, pageable)).willReturn(SuccessResponse.of("", mockPostViewResponseList));
+        given(challengePostSearchService.findChallengePostsByMember(anyLong(), any(Member.class), any(Pageable.class)))
+                .willReturn(SuccessResponse.of("", mockPostViewResponseList));
 
         // when
         ResultActions result = mockMvc.perform(get("/api/challenges/{id}/posts/me", 1L)
@@ -234,11 +232,10 @@ public class ChallengePostApiTest extends AbstractRestDocsTests {
                 .photos(List.of(new AddPostPhotoData(1L, "jpg", anyLong())))
                 .build();
 
-        Member mockMember = createMockMember();
-
         List<String> presignedUrlList = List.of("https://please.upload/your-photo/here");
 
-        given(challengePostCreationService.createPost(mockAddPostRequest, 1L, mockMember)).willReturn(SuccessResponse.of("포스트가 생성되었습니다.", presignedUrlList));
+        given(challengePostCreationService.createPost(any(AddPostRequest.class), anyLong(), any(Member.class)))
+                .willReturn(SuccessResponse.of("포스트가 생성되었습니다.", presignedUrlList));
 
         //when
         ResultActions result = mockMvc.perform(post("/api/challenges/{id}/post", 1L)
@@ -277,19 +274,18 @@ public class ChallengePostApiTest extends AbstractRestDocsTests {
         ModifyPostRequest mockmodifyPostRequest = ModifyPostRequest.builder()
                 .content("I want to patch this to post.")
                 .isAnnouncement(false)
-                .newPhotos(List.of(new AddPostPhotoData(2L, "jpg", anyLong())))
-                .modifiedPhotos(List.of(new ModifyPostPhotoData(3L, anyLong())))
+                .newPhotos(List.of(new AddPostPhotoData(2L, "jpg", 100L)))
+                .modifiedPhotos(List.of(new ModifyPostPhotoData(3L, 1L)))
                 .deletedPhotoIds(List.of(1L))
                 .build();
 
-        Member mockMember = createMockMember();
-
         List<String> presignedUrlList = List.of("https://please.upload/your-photo/here");
 
-        given(challengePostUpdateService.patchPost(mockmodifyPostRequest, 1L, mockMember)).willReturn(SuccessResponse.of("포스트가 수정되었습니다.", presignedUrlList));
+        given(challengePostUpdateService.patchPost(any(ModifyPostRequest.class), anyLong(), any(Member.class)))
+                .willReturn(SuccessResponse.of("포스트가 수정되었습니다.", presignedUrlList));
 
         //when
-        ResultActions result = mockMvc.perform(post("/api/challenges/{id}/post", 1L)
+        ResultActions result = mockMvc.perform(patch("/api/posts/{id}", 1L)
                 .header(HttpHeaders.AUTHORIZATION, AUTHORIZATION_HEADER_PREFIX + "ACCESS_TOKEN")
                 .content(objectMapper.writeValueAsString(mockmodifyPostRequest))
                 .contentType(MediaType.APPLICATION_JSON));
@@ -310,8 +306,8 @@ public class ChallengePostApiTest extends AbstractRestDocsTests {
                                 fieldWithPath("modifiedPhotos").description("포스트 내 정렬 순서가 변경된 이미지 파일 목록"),
                                 fieldWithPath("modifiedPhotos[].photoId").description("정렬 순서를 변경하려는 이미지 파일의 PostPhotoId"),
                                 fieldWithPath("modifiedPhotos[].viewOrder").description("변경하려는 정렬 순서"),
-                                fieldWithPath("deletedPhotos").description("삭제한 이미지 파일 목록"),
-                                fieldWithPath("deletedPhotos[]").description("삭제할 이미지 파일의 PostPhotoId")
+                                fieldWithPath("deletedPhotoIds").description("삭제한 이미지 파일 목록"),
+                                fieldWithPath("deletedPhotoIds[]").description("삭제할 이미지 파일의 PostPhotoId")
                                 ),
                         responseFields(
                                 fieldWithPath("message").description("메시지"),
@@ -327,9 +323,8 @@ public class ChallengePostApiTest extends AbstractRestDocsTests {
     void deletePost() throws Exception {
 
         //given
-        Member mockMember = createMockMember();
+        doNothing().when(challengePostDeleteService).deletePost(anyLong(), any(Member.class));
 
-        doNothing().when(challengePostDeleteService).deletePost(1L, mockMember);
         //when
         ResultActions result = mockMvc.perform(delete("/api/posts/{id}", 1L)
                 .header(HttpHeaders.AUTHORIZATION, AUTHORIZATION_HEADER_PREFIX + "ACCESS_TOKEN"));
