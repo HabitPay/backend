@@ -5,7 +5,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.core.user.OAuth2User;
@@ -22,8 +21,7 @@ import static com.habitpay.habitpay.global.config.jwt.TokenService.REFRESH_TOKEN
 @RequiredArgsConstructor
 public class CustomOAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
-    @Value("${application.origin-url}")
-    private String redirectUrl;
+    private final String redirectUrl = "http://localhost:3000/auth";
 
     private final TokenService tokenService;
 

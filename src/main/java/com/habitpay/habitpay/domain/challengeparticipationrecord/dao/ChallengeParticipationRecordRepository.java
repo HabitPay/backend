@@ -10,5 +10,8 @@ import java.util.Optional;
 
 public interface ChallengeParticipationRecordRepository extends JpaRepository<ChallengeParticipationRecord, Long> {
     Optional<List<ChallengeParticipationRecord>> findAllByChallengeEnrollment(ChallengeEnrollment enrollment);
+
+    Optional<ChallengeParticipationRecord> findByChallengeEnrollment(ChallengeEnrollment challengeEnrollment);
+
     Optional<ChallengeParticipationRecord> findByChallengeEnrollmentAndCreatedAtBetween(ChallengeEnrollment enrollment, LocalDateTime startOfDay, LocalDateTime endOfDay);
 }
