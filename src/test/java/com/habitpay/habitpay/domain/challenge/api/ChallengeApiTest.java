@@ -22,6 +22,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
 
 import java.time.ZonedDateTime;
+import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -58,6 +59,62 @@ public class ChallengeApiTest extends AbstractRestDocsTests {
 
     @MockBean
     TokenProvider tokenProvider;
+
+    @Test
+    @WithMockOAuth2User
+    @DisplayName("나의 챌린지 참여 목록 조회")
+    void getEnrolledChallengeList() throws Exception {
+
+        // given
+        ChallengeEnrolledListItemResponse response = ChallengeEnrolledListItemResponse.builder()
+                .title("챌린지 제목")
+                .description("챌린지 설명")
+                .startDate(ZonedDateTime.now())
+                .endDate(ZonedDateTime.now().plusDays(5))
+                .stopDate(null)
+                .numberOfParticipants(1)
+                .participatingDays(1 << 2)
+                .totalFee(1000)
+                .isPaidAll(false)
+                .hostProfileImage("챌린지 주최자 프로필 이미지")
+                .isMemberGivenUp(false)
+                .successCount(4)
+                .isTodayParticipatingDay(true)
+                .isParticipatedToday(false)
+                .build();
+
+        given(challengeSearchService.getEnrolledChallengeList(any(Member.class)))
+                .willReturn(SuccessResponse.of("", List.of(response)));
+
+        // when
+        ResultActions result = mockMvc.perform(get("/api/challenges/me")
+                .header(HttpHeaders.AUTHORIZATION, AUTHORIZATION_HEADER_PREFIX + "ACCESS_TOKEN"));
+
+        // then
+        result.andExpect(status().isOk())
+                .andDo(document("challenge/get-my-challenge-list",
+                        requestHeaders(
+                                headerWithName(HttpHeaders.AUTHORIZATION).description("액세스 토큰")
+                        ),
+                        responseFields(
+                                fieldWithPath("message").description("메세지"),
+                                fieldWithPath("data[].title").description("챌린지 제목"),
+                                fieldWithPath("data[].description").description("챌린지 설명"),
+                                fieldWithPath("data[].startDate").description("챌린지 시작 일시"),
+                                fieldWithPath("data[].endDate").description("챌린지 종료 일시"),
+                                fieldWithPath("data[].stopDate").description("챌린지 중단 일시"),
+                                fieldWithPath("data[].numberOfParticipants").description("챌린지 참여 인"),
+                                fieldWithPath("data[].participatingDays").description("챌린지 참여 요일"),
+                                fieldWithPath("data[].totalFee").description("나의 벌금 합계"),
+                                fieldWithPath("data[].isPaidAll").description("최종 정산 여부"),
+                                fieldWithPath("data[].hostProfileImage").description("챌린지 주최자 프로필 이미지"),
+                                fieldWithPath("data[].isMemberGivenUp").description("현재 사용자의 챌린지 포기 여부"),
+                                fieldWithPath("data[].successCount").description("챌린지 인증 성공 횟수"),
+                                fieldWithPath("data[].isTodayParticipatingDay").description("오늘 요일 == 챌린지 참여 요일"),
+                                fieldWithPath("data[].isParticipatedToday").description("오늘 챌린지 참여 여부")
+                        )
+                ));
+    }
 
     @Test
     @WithMockOAuth2User
