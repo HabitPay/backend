@@ -33,9 +33,9 @@ public class ChallengePostUpdateService {
     private final ChallengePostRepository challengePostRepository;
 
     @Transactional
-    public SuccessResponse<List<String>> patchPost(ModifyPostRequest request, Long postId, String memberEmail) {
+    public SuccessResponse<List<String>> patchPost(ModifyPostRequest request, Long postId, Member member) {
         ChallengePost post = challengePostSearchService.getChallengePostById(postId);
-        challengePostUtilService.authorizePostWriter(post, memberEmail);
+        challengePostUtilService.authorizePostWriter(post, member);
 
         patchContent(post, request.getContent());
         patchIsAnnouncement(post, request.getIsAnnouncement());
