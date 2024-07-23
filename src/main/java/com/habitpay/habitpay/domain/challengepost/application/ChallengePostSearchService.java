@@ -31,9 +31,9 @@ public class ChallengePostSearchService {
 
     private final PostPhotoSearchService postPhotoSearchService;
     private final PostPhotoUtilService postPhotoUtilService;
-    private final MemberService memberService;
     private final ChallengeEnrollmentSearchService challengeEnrollmentSearchService;
     private final ChallengeSearchService challengeSearchService;
+    private final ChallengePostUtilService challengePostUtilService;
 
     private final ChallengePostRepository challengePostRepository;
     private final ChallengeEnrollmentRepository challengeEnrollmentRepository;
@@ -50,6 +50,8 @@ public class ChallengePostSearchService {
     }
 
     public SuccessResponse<List<PostViewResponse>> findPostViewResponseListByChallengeId(Long challengeId, Pageable pageable) {
+
+        pageable = challengePostUtilService.checkPageable(pageable);
 
         List<PostViewResponse> postViewResponseList = this.findAllByChallengeId(challengeId, pageable)
                 .stream()
@@ -74,6 +76,7 @@ public class ChallengePostSearchService {
 
         Long challengeEnrollmentId = enrollment.getId();
 
+        pageable = challengePostUtilService.checkPageable(pageable);
         List<PostViewResponse> postViewResponseList =  challengePostRepository.findAllByChallengeEnrollmentId(challengeEnrollmentId, pageable)
                 .stream()
                 // .filter(post -> !post.getIsAnnouncement()) // todo
