@@ -12,6 +12,7 @@ import com.habitpay.habitpay.domain.member.domain.Member;
 import com.habitpay.habitpay.domain.postphoto.application.PostPhotoCreationService;
 import com.habitpay.habitpay.domain.refreshtoken.exception.CustomJwtException;
 import com.habitpay.habitpay.global.error.CustomJwtErrorInfo;
+import com.habitpay.habitpay.global.response.SuccessResponse;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -35,11 +36,16 @@ public class ChallengePostCreationService {
     private final ChallengePostRepository challengePostRepository;
 
     @Transactional
-    public List<String> createPost(AddPostRequest request, Long challengeId, String email) {
+    public SuccessResponse<List<String>> createPost(AddPostRequest request, Long challengeId, String email) {
 
         ChallengePost challengePost = this.savePost(request, challengeId, email);
         challengePostUtilService.verifyChallengePostForRecord(challengePost);
-        return postPhotoCreationService.createPhotoUrlList(challengePost, request.getPhotos());
+        List<String> presignedUrlList = postPhotoCreationService.createPhotoUrlList(challengePost, request.getPhotos());
+
+        return SuccessResponse.of(
+                "포스트가 생성되었습니다.",
+                presignedUrlList
+        );
     }
 
     private ChallengePost savePost(AddPostRequest request, Long challengeId, String email) {

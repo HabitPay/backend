@@ -14,6 +14,7 @@ import com.habitpay.habitpay.domain.postphoto.application.PostPhotoSearchService
 import com.habitpay.habitpay.domain.postphoto.application.PostPhotoUtilService;
 import com.habitpay.habitpay.domain.postphoto.domain.PostPhoto;
 import com.habitpay.habitpay.domain.postphoto.dto.PostPhotoView;
+import com.habitpay.habitpay.global.response.SuccessResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -37,17 +38,20 @@ public class ChallengePostSearchService {
     private final ChallengePostRepository challengePostRepository;
     private final ChallengeEnrollmentRepository challengeEnrollmentRepository;
 
-    public PostViewResponse getPostViewResponseByPostId(Long postId) {
+    public SuccessResponse<PostViewResponse> getPostViewResponseByPostId(Long postId) {
         ChallengePost challengePost = this.getChallengePostById(postId);
         List<PostPhoto> photoList = postPhotoSearchService.findAllByPost(challengePost);
         List<PostPhotoView> photoViewList = postPhotoUtilService.makePhotoViewList(photoList);
 
-        return new PostViewResponse(challengePost, photoViewList);
+        return SuccessResponse.of(
+                "",
+                new PostViewResponse(challengePost, photoViewList)
+        );
     }
 
-    public List<PostViewResponse> findPostViewResponseListByChallengeId(Long challengeId, Pageable pageable) {
+    public SuccessResponse<List<PostViewResponse>> findPostViewResponseListByChallengeId(Long challengeId, Pageable pageable) {
 
-        return this.findAllByChallengeId(challengeId, pageable)
+        List<PostViewResponse> postViewResponseList = this.findAllByChallengeId(challengeId, pageable)
                 .stream()
                 // .filter(post -> !post.getIsAnnouncement()) // todo
                 // .sorted() // todo : 순서 설정하고 싶을 때
@@ -56,9 +60,14 @@ public class ChallengePostSearchService {
                     return new PostViewResponse(post, photoViewList);
                 })
                 .toList();
+
+        return SuccessResponse.of(
+                "",
+                postViewResponseList
+        );
     }
 
-    public List<PostViewResponse> findChallengePostsByMember(Long challengeId, String email, Pageable pageable) {
+    public SuccessResponse<List<PostViewResponse>> findChallengePostsByMember(Long challengeId, String email, Pageable pageable) {
         Member member = memberService.findByEmail(email);
         Challenge challenge = challengeSearchService.getChallengeById(challengeId);
         ChallengeEnrollment enrollment = challengeEnrollmentSearchService.findByMemberAndChallenge(member, challenge)
@@ -66,7 +75,7 @@ public class ChallengePostSearchService {
 
         Long challengeEnrollmentId = enrollment.getId();
 
-        return challengePostRepository.findAllByChallengeEnrollmentId(challengeEnrollmentId, pageable)
+        List<PostViewResponse> postViewResponseList =  challengePostRepository.findAllByChallengeEnrollmentId(challengeEnrollmentId, pageable)
                 .stream()
                 // .filter(post -> !post.getIsAnnouncement()) // todo
                 // .sorted() // todo : 순서 설정하고 싶을 때
@@ -75,6 +84,11 @@ public class ChallengePostSearchService {
                     return new PostViewResponse(post, photoViewList);
                 })
                 .toList();
+
+        return SuccessResponse.of(
+                "",
+                postViewResponseList
+        );
     }
 
     public ChallengePost getChallengePostById(Long id) {

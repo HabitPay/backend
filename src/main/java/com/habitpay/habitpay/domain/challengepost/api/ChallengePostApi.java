@@ -32,10 +32,7 @@ public class ChallengePostApi {
     @GetMapping("/api/posts/{id}")
     public SuccessResponse<PostViewResponse> getPost(@PathVariable Long id) {
 
-        return SuccessResponse.of(
-                "",
-                challengePostSearchService.getPostViewResponseByPostId(id)
-        );
+        return challengePostSearchService.getPostViewResponseByPostId(id);
     }
 
     @GetMapping("/api/challenges/{id}/posts")
@@ -47,10 +44,7 @@ public class ChallengePostApi {
 
         Pageable pageable = challengePostUtilService.makePageable(page, size, sort);
 
-        return SuccessResponse.of(
-                "",
-                challengePostSearchService.findPostViewResponseListByChallengeId(id, pageable)
-        );
+        return challengePostSearchService.findPostViewResponseListByChallengeId(id, pageable);
     }
 
     @GetMapping("/api/challenges/{id}/posts/me")
@@ -63,10 +57,7 @@ public class ChallengePostApi {
 
         Pageable pageable = challengePostUtilService.makePageable(page, size, sort);
 
-        return SuccessResponse.of(
-          "",
-          challengePostSearchService.findChallengePostsByMember(id, user.getEmail(), pageable)
-        );
+        return challengePostSearchService.findChallengePostsByMember(id, user.getEmail(), pageable);
     }
 
     // -----------------------------------------------------------------------------
@@ -81,10 +72,7 @@ public class ChallengePostApi {
         String memberEmail = "otherMember@email.address"; // todo : 임시
         Pageable pageable = challengePostUtilService.makePageable(page, size, sort);
 
-        return SuccessResponse.of(
-                "",
-                challengePostSearchService.findChallengePostsByMember(id, memberEmail, pageable)
-        );
+        return challengePostSearchService.findChallengePostsByMember(id, memberEmail, pageable);
     }
     // -------------------------------------------------------------------------------
 
@@ -94,20 +82,14 @@ public class ChallengePostApi {
             @PathVariable Long id,
             @AuthenticationPrincipal CustomUserDetails user) {
 
-        return SuccessResponse.of(
-                "포스트가 생성되었습니다.",
-                challengePostCreationService.createPost(request, id, user.getEmail())
-        );
+        return challengePostCreationService.createPost(request, id, user.getEmail());
     }
 
     @PatchMapping("/api/posts/{id}")
     public SuccessResponse<List<String>> patchPost(
             @RequestBody ModifyPostRequest request, @PathVariable Long id, @AuthenticationPrincipal CustomUserDetails user) {
 
-        return SuccessResponse.of(
-                "포스트가 수정되었습니다.",
-                challengePostUpdateService.patchPost(request, id, user.getEmail())
-        );
+        return challengePostUpdateService.patchPost(request, id, user.getEmail());
     }
 
     @DeleteMapping("/api/posts/{id}")
