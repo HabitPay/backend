@@ -32,10 +32,7 @@ public class ChallengePostApi {
     @GetMapping("/api/posts/{id}")
     public SuccessResponse<PostViewResponse> getPost(@PathVariable Long id) {
 
-        return SuccessResponse.of(
-                "",
-                challengePostSearchService.getPostViewResponseByPostId(id)
-        );
+        return challengePostSearchService.getPostViewResponseByPostId(id);
     }
 
     @GetMapping("/api/challenges/{id}/posts")
@@ -47,10 +44,7 @@ public class ChallengePostApi {
 
         Pageable pageable = challengePostUtilService.makePageable(page, size, sort);
 
-        return SuccessResponse.of(
-                "",
-                challengePostSearchService.findPostViewResponseListByChallengeId(id, pageable)
-        );
+        return challengePostSearchService.findPostViewResponseListByChallengeId(id, pageable);
     }
 
     @GetMapping("/api/challenges/{id}/posts/me")
@@ -63,29 +57,24 @@ public class ChallengePostApi {
 
         Pageable pageable = challengePostUtilService.makePageable(page, size, sort);
 
-        return SuccessResponse.of(
-          "",
-          challengePostSearchService.findChallengePostsByMember(id, user.getEmail(), pageable)
-        );
+        return challengePostSearchService.findChallengePostsByMember(id, user.getMember(), pageable);
     }
 
     // -----------------------------------------------------------------------------
     // todo : 'challengeEnrollmentId' or 'memberId' 등 멤버 식별할 수 있는 데이터를 받아야 함
-    @GetMapping("/api/challenges/{id}/posts/member")
-    public SuccessResponse<List<PostViewResponse>> getChallengePostsByMember(
-            @PathVariable Long id,
-            @RequestParam(defaultValue = DEFAULT_PAGE) int page,
-            @RequestParam(defaultValue = DEFAULT_SIZE) int size,
-            @RequestParam(defaultValue = DEFAULT_SORT) String[] sort) {
-
-        String memberEmail = "otherMember@email.address"; // todo : 임시
-        Pageable pageable = challengePostUtilService.makePageable(page, size, sort);
-
-        return SuccessResponse.of(
-                "",
-                challengePostSearchService.findChallengePostsByMember(id, memberEmail, pageable)
-        );
-    }
+//    @GetMapping("/api/challenges/{id}/posts/member")
+//    public SuccessResponse<List<PostViewResponse>> getChallengePostsByMember(
+//            @PathVariable Long id,
+//            @RequestParam(defaultValue = DEFAULT_PAGE) int page,
+//            @RequestParam(defaultValue = DEFAULT_SIZE) int size,
+//            @RequestParam(defaultValue = DEFAULT_SORT) String[] sort) {
+//
+//        String memberEmail = "otherMember@email.address"; // todo : 임시
+//        Pageable pageable = challengePostUtilService.makePageable(page, size, sort);
+//
+//        // todo: member 객체를 깔끔하게 받을 수 없으면, 추가로 메서드 만들자
+//        return challengePostSearchService.findChallengePostsByMember(id, memberEmail, pageable);
+//    }
     // -------------------------------------------------------------------------------
 
     @PostMapping("/api/challenges/{id}/post")
@@ -94,27 +83,21 @@ public class ChallengePostApi {
             @PathVariable Long id,
             @AuthenticationPrincipal CustomUserDetails user) {
 
-        return SuccessResponse.of(
-                "포스트가 생성되었습니다.",
-                challengePostCreationService.createPost(request, id, user.getEmail())
-        );
+        return challengePostCreationService.createPost(request, id, user.getMember());
     }
 
     @PatchMapping("/api/posts/{id}")
     public SuccessResponse<List<String>> patchPost(
             @RequestBody ModifyPostRequest request, @PathVariable Long id, @AuthenticationPrincipal CustomUserDetails user) {
 
-        return SuccessResponse.of(
-                "포스트가 수정되었습니다.",
-                challengePostUpdateService.patchPost(request, id, user.getEmail())
-        );
+        return challengePostUpdateService.patchPost(request, id, user.getMember());
     }
 
     @DeleteMapping("/api/posts/{id}")
     public SuccessResponse<Void> deletePost(
             @PathVariable Long id, @AuthenticationPrincipal CustomUserDetails user) {
 
-        challengePostDeleteService.deletePost(id, user.getEmail());
+        challengePostDeleteService.deletePost(id, user.getMember());
         return SuccessResponse.of(
                 "포스트가 정상적으로 삭제되었습니다.",
                 null

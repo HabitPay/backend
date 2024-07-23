@@ -23,9 +23,6 @@ public class TokenApi {
     public SuccessResponse<CreateAccessTokenResponse> createNewAccessTokenAndNewRefreshToken(
             @RequestBody CreateAccessTokenRequest requestBody) {
 
-        return SuccessResponse.of(
-                "새로운 액세스 토큰 및 리프레시 토큰이 성공적으로 발급되었습니다.",
-                refreshTokenCreationService.createNewAccessTokenAndNewRefreshToken(requestBody)
-        );
+        return refreshTokenCreationService.createNewAccessTokenAndNewRefreshToken(requestBody);
     }
 }

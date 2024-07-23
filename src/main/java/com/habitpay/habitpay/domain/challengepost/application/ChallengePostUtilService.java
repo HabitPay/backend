@@ -35,19 +35,14 @@ public class ChallengePostUtilService {
     private static final String DEFAULT_SORT = "asc";
 
 
-    public void authorizePostWriter(ChallengePost post, String memberEmail) {
-        if (!post.getWriter().getEmail().equals(memberEmail)) {
+    public void authorizePostWriter(ChallengePost post, Member member) {
+        if (!post.getWriter().equals(member)) {
             throw new CustomJwtException(HttpStatus.UNAUTHORIZED, CustomJwtErrorInfo.UNAUTHORIZED, "해당 포스트의 작성자가 아닙니다.");
         }
     }
 
     public boolean isChallengeHost(Challenge challenge, Member member) {
         return challenge.getHost().equals(member);
-    }
-
-    public boolean isChallengeHost(Challenge challenge, String email) {
-        String hostEmail = challenge.getHost().getEmail();
-        return hostEmail.equals(email);
     }
 
     public Pageable makePageable(int page, int size, String[] sort) {

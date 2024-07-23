@@ -12,6 +12,7 @@ import com.habitpay.habitpay.domain.member.domain.Member;
 import com.habitpay.habitpay.domain.postphoto.application.PostPhotoCreationService;
 import com.habitpay.habitpay.domain.refreshtoken.exception.CustomJwtException;
 import com.habitpay.habitpay.global.error.CustomJwtErrorInfo;
+import com.habitpay.habitpay.global.response.SuccessResponse;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -35,16 +36,20 @@ public class ChallengePostCreationService {
     private final ChallengePostRepository challengePostRepository;
 
     @Transactional
-    public List<String> createPost(AddPostRequest request, Long challengeId, String email) {
+    public SuccessResponse<List<String>> createPost(AddPostRequest request, Long challengeId, Member member) {
 
-        ChallengePost challengePost = this.savePost(request, challengeId, email);
+        ChallengePost challengePost = this.savePost(request, challengeId, member);
         challengePostUtilService.verifyChallengePostForRecord(challengePost);
-        return postPhotoCreationService.createPhotoUrlList(challengePost, request.getPhotos());
+        List<String> presignedUrlList = postPhotoCreationService.createPhotoUrlList(challengePost, request.getPhotos());
+
+        return SuccessResponse.of(
+                "포스트가 생성되었습니다.",
+                presignedUrlList
+        );
     }
 
-    private ChallengePost savePost(AddPostRequest request, Long challengeId, String email) {
+    private ChallengePost savePost(AddPostRequest request, Long challengeId, Member member) {
 
-        Member member = memberService.findByEmail(email);
         Challenge challenge = challengeSearchService.getChallengeById(challengeId);
         ChallengeEnrollment enrollment = challengeEnrollmentSearchService.findByMemberAndChallenge(member, challenge)
                 .orElseThrow(() -> new NoSuchElementException("챌린지에 등록된 멤버가 아니면 포스트를 작성할 수 없습니다."));

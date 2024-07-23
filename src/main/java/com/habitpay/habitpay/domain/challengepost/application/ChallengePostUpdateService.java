@@ -10,6 +10,7 @@ import com.habitpay.habitpay.domain.postphoto.application.PostPhotoDeleteService
 import com.habitpay.habitpay.domain.postphoto.application.PostPhotoUtilService;
 import com.habitpay.habitpay.domain.refreshtoken.exception.CustomJwtException;
 import com.habitpay.habitpay.global.error.CustomJwtErrorInfo;
+import com.habitpay.habitpay.global.response.SuccessResponse;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -32,9 +33,9 @@ public class ChallengePostUpdateService {
     private final ChallengePostRepository challengePostRepository;
 
     @Transactional
-    public List<String> patchPost(ModifyPostRequest request, Long postId, String memberEmail) {
+    public SuccessResponse<List<String>> patchPost(ModifyPostRequest request, Long postId, Member member) {
         ChallengePost post = challengePostSearchService.getChallengePostById(postId);
-        challengePostUtilService.authorizePostWriter(post, memberEmail);
+        challengePostUtilService.authorizePostWriter(post, member);
 
         patchContent(post, request.getContent());
         patchIsAnnouncement(post, request.getIsAnnouncement());
@@ -42,7 +43,14 @@ public class ChallengePostUpdateService {
         postPhotoDeleteService.deleteByIds(postId, request.getDeletedPhotoIds());
         request.getModifiedPhotos().forEach(photo -> postPhotoUtilService.changeViewOrder(photo.getPhotoId(), photo.getViewOrder()));
 
-        return postPhotoCreationService.createPhotoUrlList(challengePostSearchService.getChallengePostById(postId), request.getNewPhotos());
+        List<String> presignedUrlList = postPhotoCreationService.createPhotoUrlList(
+                challengePostSearchService.getChallengePostById(postId), request.getNewPhotos()
+        );
+
+        return SuccessResponse.of(
+                "포스트가 수정되었습니다.",
+                presignedUrlList
+        );
     }
 
     private void patchContent(ChallengePost post, String content) {
