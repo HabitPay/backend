@@ -23,13 +23,13 @@ public class ChallengeSearchService {
     private final ChallengeEnrollmentRepository challengeEnrollmentRepository;
     private final ChallengeParticipationRecordRepository challengeParticipationRecordRepository;
 
-    public SuccessResponse<ChallengeEnrolledListItemResponse[]> getEnrolledChallengeList(Member member) {
+    public SuccessResponse<List<ChallengeEnrolledListItemResponse>> getEnrolledChallengeList(Member member) {
         List<ChallengeEnrollment> challengeEnrollmentList = challengeEnrollmentRepository.findAllByMember(member);
-        ChallengeEnrolledListItemResponse[] responseArray = challengeEnrollmentList.stream()
+        List<ChallengeEnrolledListItemResponse> response = challengeEnrollmentList.stream()
                 .map(this::mapToResponse)
-                .toArray(ChallengeEnrolledListItemResponse[]::new);
+                .toList();
 
-        return SuccessResponse.of("", responseArray);
+        return SuccessResponse.of("", response);
     }
 
     @Transactional(readOnly = true)

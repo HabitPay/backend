@@ -12,6 +12,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api")
 @RequiredArgsConstructor
@@ -23,7 +25,7 @@ public class ChallengeApi {
     private final ChallengeSearchService challengeSearchService;
 
     @GetMapping("/challenges/me")
-    public SuccessResponse<ChallengeEnrolledListItemResponse[]> getEnrolledChallengeList(
+    public SuccessResponse<List<ChallengeEnrolledListItemResponse>> getEnrolledChallengeList(
             @AuthenticationPrincipal CustomUserDetails user) {
         return challengeSearchService.getEnrolledChallengeList(user.getMember());
     }
