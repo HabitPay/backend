@@ -229,7 +229,7 @@ public class ChallengePostApiTest extends AbstractRestDocsTests {
         AddPostRequest mockAddPostRequest = AddPostRequest.builder()
                 .content("I want to create this post.")
                 .isAnnouncement(false)
-                .photos(List.of(new AddPostPhotoData(1L, "jpg", anyLong())))
+                .photos(List.of(new AddPostPhotoData(1L, "jpg", 100L)))
                 .build();
 
         List<String> presignedUrlList = List.of("https://please.upload/your-photo/here");
