@@ -147,7 +147,7 @@ public class ChallengePostApiTest extends AbstractRestDocsTests {
         ResultActions result = mockMvc.perform(get("/api/challenges/{id}/posts", 1L)
                         .param("page", "0")
                         .param("size", "10")
-                        .param("sort", anyString())
+                        .param("sort", "")
                 .header(HttpHeaders.AUTHORIZATION, AUTHORIZATION_HEADER_PREFIX + "ACCESS_TOKEN"));
 
         //then
