@@ -13,11 +13,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class ChallengeEnrollmentSearchService {
     private final ChallengeEnrollmentRepository challengeEnrollmentRepository;
-
-    public Optional<ChallengeEnrollment> findByMember(Member member) {
-        return challengeEnrollmentRepository.findByMember(member);
-    }
-
+    
     public Optional<ChallengeEnrollment> findByMemberAndChallenge(Member member, Challenge challenge) {
         return challengeEnrollmentRepository.findByMemberAndChallenge(member, challenge);
     }

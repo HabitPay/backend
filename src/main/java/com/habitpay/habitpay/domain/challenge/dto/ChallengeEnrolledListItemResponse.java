@@ -1,7 +1,7 @@
 package com.habitpay.habitpay.domain.challenge.dto;
 
 import com.habitpay.habitpay.domain.challenge.domain.Challenge;
-import com.habitpay.habitpay.domain.member.domain.Member;
+import com.habitpay.habitpay.domain.challengeenrollment.domain.ChallengeEnrollment;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -9,7 +9,7 @@ import java.time.ZonedDateTime;
 
 @Getter
 @Builder
-public class ChallengeDetailsResponse {
+public class ChallengeEnrolledListItemResponse {
     private String title;
     private String description;
     private ZonedDateTime startDate;
@@ -17,15 +17,16 @@ public class ChallengeDetailsResponse {
     private ZonedDateTime stopDate;
     private int numberOfParticipants;
     private int participatingDays;
-    private int feePerAbsence;
+    private int totalFee;
     private Boolean isPaidAll;
-    private String hostNickname;
     private String hostProfileImage;
-    private Boolean isHost;
-    private Boolean isMemberEnrolledInChallenge;
+    private Boolean isMemberGivenUp;
+    private int successCount;
+    private Boolean isTodayParticipatingDay;
+    private Boolean isParticipatedToday;
 
-    public static ChallengeDetailsResponse of(Member member, Challenge challenge, Boolean isMemberEnrolledInChallenge) {
-        return ChallengeDetailsResponse.builder()
+    public static ChallengeEnrolledListItemResponse of(Challenge challenge, ChallengeEnrollment challengeEnrollment, boolean isParticipatedToday) {
+        return ChallengeEnrolledListItemResponse.builder()
                 .title(challenge.getTitle())
                 .description(challenge.getDescription())
                 .startDate(challenge.getStartDate())
@@ -34,11 +35,12 @@ public class ChallengeDetailsResponse {
                 .numberOfParticipants(challenge.getNumberOfParticipants())
                 .isPaidAll(challenge.isPaidAll())
                 .participatingDays(challenge.getParticipatingDays())
-                .feePerAbsence(challenge.getFeePerAbsence())
-                .hostNickname(challenge.getHost().getNickname())
+                .totalFee(challengeEnrollment.getTotalFee())
                 .hostProfileImage(challenge.getHost().getImageFileName())
-                .isHost(challenge.getHost().getId().equals(member.getId()))
-                .isMemberEnrolledInChallenge(isMemberEnrolledInChallenge)
+                .isMemberGivenUp(challengeEnrollment.isGivenUp())
+                .successCount(challengeEnrollment.getSuccessCount())
+                .isTodayParticipatingDay(challenge.isTodayParticipatingDay())
+                .isParticipatedToday(isParticipatedToday)
                 .build();
     }
 }

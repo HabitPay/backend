@@ -3,6 +3,7 @@ package com.habitpay.habitpay.domain.challenge.api;
 import com.habitpay.habitpay.domain.challenge.application.ChallengeCreationService;
 import com.habitpay.habitpay.domain.challenge.application.ChallengeDetailsService;
 import com.habitpay.habitpay.domain.challenge.application.ChallengePatchService;
+import com.habitpay.habitpay.domain.challenge.application.ChallengeSearchService;
 import com.habitpay.habitpay.domain.challenge.dto.*;
 import com.habitpay.habitpay.global.config.auth.CustomUserDetails;
 import com.habitpay.habitpay.global.response.SuccessResponse;
@@ -10,6 +11,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api")
@@ -19,6 +22,13 @@ public class ChallengeApi {
     private final ChallengeCreationService challengeCreationService;
     private final ChallengePatchService challengePatchService;
     private final ChallengeDetailsService challengeDetailsService;
+    private final ChallengeSearchService challengeSearchService;
+
+    @GetMapping("/challenges/me")
+    public SuccessResponse<List<ChallengeEnrolledListItemResponse>> getEnrolledChallengeList(
+            @AuthenticationPrincipal CustomUserDetails user) {
+        return challengeSearchService.getEnrolledChallengeList(user.getMember());
+    }
 
     @GetMapping("/challenges/{id}")
     public SuccessResponse<ChallengeDetailsResponse> getChallengeDetails(@PathVariable("id") Long id,
@@ -29,7 +39,7 @@ public class ChallengeApi {
     @PostMapping("/challenges")
     public SuccessResponse<ChallengeCreationResponse> createChallenge(@RequestBody ChallengeCreationRequest challengeCreationRequest,
                                                                       @AuthenticationPrincipal CustomUserDetails user) {
-        return challengeCreationService.createChallenge(challengeCreationRequest, user.getId());
+        return challengeCreationService.createChallenge(challengeCreationRequest, user.getMember());
     }
 
     @PatchMapping("/challenges/{id}")
