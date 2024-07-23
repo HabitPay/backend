@@ -69,6 +69,7 @@ public class ChallengePostApi {
 //    }
     // -------------------------------------------------------------------------------
 
+    // String 감싸는 응답 DTO 만들어서 적용하기 (아래 메서드도 같이!)
     @PostMapping("/api/challenges/{id}/post")
     public SuccessResponse<List<String>> createPost(
             @RequestBody AddPostRequest request,

@@ -11,20 +11,42 @@ Request Header 에는 ``Authorization: Bearer {access token}`` 와 같은 형식
 
 === 챌린지 포스트 조회
 
-경로 변수로 받은 challengePost의 id값을 이용해 특정 챌린지 포스트를 조회합니다.
+경로 변수로 받은 post의 id값을 이용해 특정 챌린지 포스트를 조회합니다.
 
-operation::challengePost/get-challengePost[snippets='http-request,http-response,response-fields']
+operation::challengePost/get-challenge-post[snippets='http-request,http-response,response-fields']
 
 === 챌린지 내 전체 포스트 조회
 
 경로 변수로 받은 challenge의 id값을 이용해 해당 챌린지 내의 모든 포스트를 조회합니다.
 해당 챌린지에 등록되어 있는 멤버만 포스트를 조회할 수 있습니다.
 
-operation::challengePost/get-challengePosts[snippets='http-request,http-response,response-fields']
+operation::challengePost/get-challenge-posts[snippets='http-request,http-response,response-fields']
 
-// === 챌린지 내 본인이 작성한 모든 포스트 조회
-//
-// 경로 변수로 받은 challenge의 id값을 이용해 해당 챌린지 내에서 본인이 작성한 모든 포스트를 조회합니다.
-// '본인'이란 요청을 보낸 멤버를 의미합니다.
-//
-// operation::challengePost/get-challengePosts-by-me[snippets='http-request,http-response,response-fields']
+=== 챌린지 내 본인이 작성한 모든 포스트 조회
+
+경로 변수로 받은 challenge의 id값을 이용해 해당 챌린지 내에서 본인이 작성한 모든 포스트를 조회합니다.
+'본인'이란 요청을 보낸 멤버를 의미합니다.
+
+operation::challengePost/get-challenge-posts-by-me[snippets='http-request,http-response,response-fields']
+
+=== 챌린지 포스트 생성
+
+경로 변수로 받은 challenge의 id값에 해당하는 챌린지에 포스트를 작성합니다.
+챌린지의 호스트라면 공지 포스트를 작성할 수 있습니다.
+
+operation::challengePost/create-challenge-post[snippets='http-request,http-response,response-fields']
+
+=== 챌린지 포스트 수정
+
+경로 변수로 받은 post의 id값에 해당하는 포스트를 수정합니다.
+수정은 포스트 내용 변경, 공지 포스트 여부 변경과 함께 포스트 내 이미지 파일의 추가, 삭제 및 정렬 순서 변경을 포함합니다.
+
+operation::challengePost/patch-challenge-post[snippets='http-request,http-response,response-fields']
+
+=== 챌린지 포스트 삭제
+
+경로 변수로 받은 post의 id값에 해당하는 포스트를 삭제합니다.
+사실 일반 포스트는 삭제 기능을 제공하지 않기 때문에, 요청을 보내더라도 예외 처리됩니다.
+공지 포스트만 챌린지 호스트가 삭제할 수 있습니다.
+
+operation::challengePost/delete-challenge-post[snippets='http-request,http-response,response-fields']
