@@ -71,15 +71,6 @@ public class ChallengePostApiTest extends AbstractRestDocsTests {
     @MockBean
     TokenService tokenService;
 
-//    private final Pageable pageable = PageRequest.of(0, 10);
-    private Member createMockMember() {
-        return Member.builder()
-                .nickname("test member")
-                .email("test_user@test.com")
-                .build();
-    }
-
-//    private final List<String> presignedUrlList = List.of("https://please.upload/your-photo/here");
 
     @Test
     @DisplayName("챌린지 포스트 조회")
@@ -93,7 +84,9 @@ public class ChallengePostApiTest extends AbstractRestDocsTests {
                 .writer("test user")
                 .isAnnouncement(false)
                 .createdAt(LocalDateTime.now())
-                .photoViewList(List.of(new PostPhotoView(1L, 1L, "https://picsum.photos/id/40/200/300")))
+                .photoViewList(List.of(
+                        new PostPhotoView(1L, 1L, "https://picsum.photos/id/40/200/300"),
+                        new PostPhotoView(2L, 2L, "https://picsum.photos/id/40/200/300")))
                 .build();
 
         given(challengePostSearchService.getPostViewResponseByPostId(anyLong()))
@@ -118,7 +111,7 @@ public class ChallengePostApiTest extends AbstractRestDocsTests {
                                 fieldWithPath("data.isAnnouncement").description("공지글 여부"),
                                 fieldWithPath("data.createdAt").description("생성 일시"),
                                 fieldWithPath("data.photoViewList").description("포스트 포토(URL 포함) 데이터를 담은 객체 배열"),
-                                fieldWithPath("data.photoViewList[].postPhotoId").description("포토 id(삭제 예정)"),
+                                fieldWithPath("data.photoViewList[].postPhotoId").description("포토 id"),
                                 fieldWithPath("data.photoViewList[].viewOrder").description("포스트 내 포토의 순서"),
                                 fieldWithPath("data.photoViewList[].imageUrl").description("포스트 포토 url")
                         )
@@ -130,15 +123,25 @@ public class ChallengePostApiTest extends AbstractRestDocsTests {
     void findChallengePosts() throws Exception {
 
         // given
-        List<PostViewResponse> mockPostViewResponseList = List.of(PostViewResponse.builder()
-                .id(1L)
-                .challengeEnrollmentId(1L)
-                .content("This is test post for getting challenge posts.")
-                .writer("test user")
-                .isAnnouncement(false)
-                .createdAt(LocalDateTime.now())
-                .photoViewList(List.of(new PostPhotoView(1L, 1L, "https://picsum.photos/id/40/200/300")))
-                .build());
+        List<PostViewResponse> mockPostViewResponseList = List.of(
+                PostViewResponse.builder()
+                        .id(1L)
+                        .challengeEnrollmentId(1L)
+                        .content("This is test post 1.")
+                        .writer("test user")
+                        .isAnnouncement(false)
+                        .createdAt(LocalDateTime.now())
+                        .photoViewList(List.of(new PostPhotoView(1L, 1L, "https://picsum.photos/id/40/200/300")))
+                        .build(),
+                PostViewResponse.builder()
+                        .id(2L)
+                        .challengeEnrollmentId(2L)
+                        .content("This is test post 2.")
+                        .writer("test user")
+                        .isAnnouncement(false)
+                        .createdAt(LocalDateTime.now())
+                        .photoViewList(List.of(new PostPhotoView(2L, 2L, "https://picsum.photos/id/40/200/300")))
+                        .build());
 
         given(challengePostSearchService.findPostViewResponseListByChallengeId(anyLong(), any(Pageable.class)))
                 .willReturn(SuccessResponse.of("", mockPostViewResponseList));
@@ -165,7 +168,7 @@ public class ChallengePostApiTest extends AbstractRestDocsTests {
                                 fieldWithPath("data.[].isAnnouncement").description("공지글 여부"),
                                 fieldWithPath("data.[].createdAt").description("생성 일시"),
                                 fieldWithPath("data.[].photoViewList").description("포스트 포토(URL 포함) 데이터를 담은 객체 배열"),
-                                fieldWithPath("data.[].photoViewList[].postPhotoId").description("포토 id(삭제 예정)"),
+                                fieldWithPath("data.[].photoViewList[].postPhotoId").description("포토 id"),
                                 fieldWithPath("data.[].photoViewList[].viewOrder").description("포스트 내 포토의 순서"),
                                 fieldWithPath("data.[].photoViewList[].imageUrl").description("포스트 포토 url")
                         )
@@ -178,15 +181,25 @@ public class ChallengePostApiTest extends AbstractRestDocsTests {
     void findChallengePostsByMe() throws Exception {
 
         // given
-        List<PostViewResponse> mockPostViewResponseList = List.of(PostViewResponse.builder()
-                .id(1L)
-                .challengeEnrollmentId(1L)
-                .content("This is test post for getting challenge posts by me.")
-                .writer("test user")
-                .isAnnouncement(false)
-                .createdAt(LocalDateTime.now())
-                .photoViewList(List.of(new PostPhotoView(1L, 1L, "https://picsum.photos/id/40/200/300")))
-                .build());
+        List<PostViewResponse> mockPostViewResponseList = List.of(
+                PostViewResponse.builder()
+                        .id(1L)
+                        .challengeEnrollmentId(1L)
+                        .content("This is test post 1 by me.")
+                        .writer("test user")
+                        .isAnnouncement(false)
+                        .createdAt(LocalDateTime.now())
+                        .photoViewList(List.of(new PostPhotoView(1L, 1L, "https://picsum.photos/id/40/200/300")))
+                        .build(),
+                PostViewResponse.builder()
+                        .id(2L)
+                        .challengeEnrollmentId(2L)
+                        .content("This is test post 2 by me.")
+                        .writer("test user")
+                        .isAnnouncement(false)
+                        .createdAt(LocalDateTime.now())
+                        .photoViewList(List.of(new PostPhotoView(2L, 2L, "https://picsum.photos/id/40/200/300")))
+                        .build());
 
         given(challengePostSearchService.findChallengePostsByMember(anyLong(), any(Member.class), any(Pageable.class)))
                 .willReturn(SuccessResponse.of("", mockPostViewResponseList));
@@ -213,7 +226,7 @@ public class ChallengePostApiTest extends AbstractRestDocsTests {
                                 fieldWithPath("data.[].isAnnouncement").description("공지글 여부"),
                                 fieldWithPath("data.[].createdAt").description("생성 일시"),
                                 fieldWithPath("data.[].photoViewList").description("포스트 포토(URL 포함) 데이터를 담은 객체 배열"),
-                                fieldWithPath("data.[].photoViewList[].postPhotoId").description("포토 id(삭제 예정)"),
+                                fieldWithPath("data.[].photoViewList[].postPhotoId").description("포토 id"),
                                 fieldWithPath("data.[].photoViewList[].viewOrder").description("포스트 내 포토의 순서"),
                                 fieldWithPath("data.[].photoViewList[].imageUrl").description("포스트 포토 url")
                         )
@@ -259,7 +272,7 @@ public class ChallengePostApiTest extends AbstractRestDocsTests {
                         ),
                         responseFields(
                                 fieldWithPath("message").description("메시지"),
-                                fieldWithPath("data").description("AWS S3 업로드를 위한 url List"),
+                                fieldWithPath("data").description("AWS S3 업로드를 위한 url List<String>"),
                                 fieldWithPath("data[]").description("AWS S3 업로드를 위한 preSignedUrl")
                         )
                 ));
@@ -311,7 +324,7 @@ public class ChallengePostApiTest extends AbstractRestDocsTests {
                                 ),
                         responseFields(
                                 fieldWithPath("message").description("메시지"),
-                                fieldWithPath("data").description("AWS S3 업로드를 위한 url List"),
+                                fieldWithPath("data").description("AWS S3 업로드를 위한 url List<String>"),
                                 fieldWithPath("data[]").description("AWS S3 업로드를 위한 preSignedUrl")
                         )
                 ));
