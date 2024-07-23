@@ -11,6 +11,7 @@ import com.habitpay.habitpay.domain.refreshtoken.exception.CustomJwtException;
 import com.habitpay.habitpay.global.config.jwt.TokenProvider;
 import com.habitpay.habitpay.global.config.jwt.TokenService;
 import com.habitpay.habitpay.global.error.CustomJwtErrorInfo;
+import com.habitpay.habitpay.global.response.SuccessResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -36,7 +37,7 @@ public class RefreshTokenCreationService {
     private final RefreshTokenRepository refreshTokenRepository;
 
 
-    public CreateAccessTokenResponse createNewAccessTokenAndNewRefreshToken(CreateAccessTokenRequest requestBody) {
+    public SuccessResponse<CreateAccessTokenResponse> createNewAccessTokenAndNewRefreshToken(CreateAccessTokenRequest requestBody) {
 
         Optional<String> optionalGrantType = Optional.ofNullable(requestBody.getGrantType());
         if (optionalGrantType.isEmpty() || !requestBody.getGrantType().equals("refresh_token")) {
@@ -46,11 +47,16 @@ public class RefreshTokenCreationService {
         String newAccessToken = this.createNewAccessToken(requestBody.getRefreshToken());
         String refreshToken = this.createRefreshToken(tokenService.getUserId(newAccessToken));
 
-        return new CreateAccessTokenResponse(
+        CreateAccessTokenResponse tokenResponse = new CreateAccessTokenResponse(
                 newAccessToken,
                 "Bearer",
                 tokenService.getAccessTokenExpiresInToMillis(),
                 refreshToken);
+
+        return SuccessResponse.of(
+                "새로운 액세스 토큰 및 리프레시 토큰이 성공적으로 발급되었습니다.",
+                tokenResponse
+        );
     }
 
     private String createNewAccessToken(String refreshToken) {
