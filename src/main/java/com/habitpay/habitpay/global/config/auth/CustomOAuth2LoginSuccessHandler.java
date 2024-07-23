@@ -21,7 +21,7 @@ import static com.habitpay.habitpay.global.config.jwt.TokenService.REFRESH_TOKEN
 @RequiredArgsConstructor
 public class CustomOAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
-    private final String redirectUrl = "http://localhost:3000";
+    private final String redirectUrl = "http://localhost:3000/auth";
 
     private final TokenService tokenService;
 
