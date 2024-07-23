@@ -9,6 +9,7 @@ import com.habitpay.habitpay.global.response.SuccessResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,9 +26,8 @@ public class ChallengePostApi {
     private final ChallengePostDeleteService challengePostDeleteService;
     private final ChallengePostUtilService challengePostUtilService;
 
-    private static final String DEFAULT_PAGE = "0";
-    private static final String DEFAULT_SIZE = "5";
-    private static final String DEFAULT_SORT = "asc";
+    private static final int DEFAULT_PAGE = 0;
+    private static final int DEFAULT_SIZE = 5;
 
     @GetMapping("/api/posts/{id}")
     public SuccessResponse<PostViewResponse> getPost(@PathVariable Long id) {
@@ -38,11 +38,7 @@ public class ChallengePostApi {
     @GetMapping("/api/challenges/{id}/posts")
     public SuccessResponse<List<PostViewResponse>> getChallengePosts(
             @PathVariable Long id,
-            @RequestParam(defaultValue = DEFAULT_PAGE) int page,
-            @RequestParam(defaultValue = DEFAULT_SIZE) int size,
-            @RequestParam(defaultValue = DEFAULT_SORT) String[] sort) {
-
-        Pageable pageable = challengePostUtilService.makePageable(page, size, sort);
+            @PageableDefault(page = DEFAULT_PAGE, size = DEFAULT_SIZE) Pageable pageable) {
 
         return challengePostSearchService.findPostViewResponseListByChallengeId(id, pageable);
     }
@@ -51,11 +47,7 @@ public class ChallengePostApi {
     public SuccessResponse<List<PostViewResponse>> getChallengePostsByMe(
             @PathVariable Long id,
             @AuthenticationPrincipal CustomUserDetails user,
-            @RequestParam(defaultValue = DEFAULT_PAGE) int page,
-            @RequestParam(defaultValue = DEFAULT_SIZE) int size,
-            @RequestParam(defaultValue = DEFAULT_SORT) String[] sort) {
-
-        Pageable pageable = challengePostUtilService.makePageable(page, size, sort);
+            @PageableDefault(page = DEFAULT_PAGE, size = DEFAULT_SIZE) Pageable pageable) {
 
         return challengePostSearchService.findChallengePostsByMember(id, user.getMember(), pageable);
     }
