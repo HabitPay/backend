@@ -4,6 +4,7 @@ import com.habitpay.habitpay.domain.challengeenrollment.domain.ChallengeEnrollme
 import com.habitpay.habitpay.domain.challengepost.domain.ChallengePost;
 import com.habitpay.habitpay.domain.postphoto.dto.AddPostPhotoData;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -12,6 +13,7 @@ import java.util.List;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class AddPostRequest {
     private String content;
     private Boolean isAnnouncement;
