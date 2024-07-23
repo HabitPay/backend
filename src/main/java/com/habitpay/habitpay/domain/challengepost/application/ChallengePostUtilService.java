@@ -45,23 +45,22 @@ public class ChallengePostUtilService {
         return challenge.getHost().equals(member);
     }
 
-    public Pageable makePageable(int page, int size, String[] sort) {
+    public Pageable checkPageable(Pageable pageable) {
 
-        if (page < 0) {
-            page = DEFAULT_PAGE;
+        if (pageable.getPageNumber() < 0) {
+            return PageRequest.of(DEFAULT_PAGE, DEFAULT_SIZE);
         }
 
-        if (size < 1) {
-            size = DEFAULT_SIZE;
-        } else if (size > MAX_SIZE) {
-            size = MAX_SIZE;
+        if (pageable.getPageSize() < 1) {
+            return PageRequest.of(DEFAULT_PAGE, DEFAULT_SIZE);
+        } else if (pageable.getPageSize() > MAX_SIZE) {
+            return PageRequest.of(0, MAX_SIZE);
         }
 
-        // todo : sort 제공할 것인지
-//        if (sort.length > 1) {
-//        }
+        // todo: Sort 예외 처리
+        // if (pageable.getSort())
 
-        return PageRequest.of(page, size);
+        return pageable;
     }
 
     public void verifyChallengePostForRecord(ChallengePost post) {
