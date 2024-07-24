@@ -76,13 +76,9 @@ public class ChallengePostApi {
     }
 
     @DeleteMapping("/api/posts/{id}")
-    public SuccessResponse<Void> deletePost(
+    public SuccessResponse<Long> deletePost(
             @PathVariable Long id, @AuthenticationPrincipal CustomUserDetails user) {
 
-        challengePostDeleteService.deletePost(id, user.getMember());
-        return SuccessResponse.of(
-                "포스트가 정상적으로 삭제되었습니다.",
-                null
-        );
+        return challengePostDeleteService.deletePost(id, user.getMember());
     }
 }

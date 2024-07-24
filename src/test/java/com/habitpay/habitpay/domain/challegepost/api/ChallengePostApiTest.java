@@ -336,7 +336,8 @@ public class ChallengePostApiTest extends AbstractRestDocsTests {
     void deletePost() throws Exception {
 
         //given
-        doNothing().when(challengePostDeleteService).deletePost(anyLong(), any(Member.class));
+        given(challengePostDeleteService.deletePost(anyLong(), any(Member.class)))
+                .willReturn(SuccessResponse.of("포스트가 정상적으로 삭제되었습니다.", 1L));
 
         //when
         ResultActions result = mockMvc.perform(delete("/api/posts/{id}", 1L)
@@ -350,7 +351,7 @@ public class ChallengePostApiTest extends AbstractRestDocsTests {
                         ),
                         responseFields(
                                 fieldWithPath("message").description("메시지"),
-                                fieldWithPath("data").description("빈 데이터(null)")
+                                fieldWithPath("data").description("삭제된 포스트 id")
                         )
                 ));
     }
