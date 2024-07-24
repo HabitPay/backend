@@ -7,6 +7,7 @@ import com.habitpay.habitpay.domain.member.domain.Member;
 import com.habitpay.habitpay.domain.postphoto.application.PostPhotoDeleteService;
 import com.habitpay.habitpay.domain.refreshtoken.exception.CustomJwtException;
 import com.habitpay.habitpay.global.error.CustomJwtErrorInfo;
+import com.habitpay.habitpay.global.response.SuccessResponse;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,7 +25,7 @@ public class ChallengePostDeleteService {
     private final ChallengePostUtilService challengePostUtilService;
 
     @Transactional
-    public void deletePost(Long postId, Member member) {
+    public SuccessResponse<Long> deletePost(Long postId, Member member) {
         ChallengePost post = challengePostSearchService.getChallengePostById(postId);
         Challenge challenge = challengePostSearchService.getChallengeByPostId(postId);
 
@@ -41,6 +42,11 @@ public class ChallengePostDeleteService {
 
         postPhotoDeleteService.deleteByPost(post);
         challengePostRepository.delete(post);
+
+        return SuccessResponse.of(
+                "포스트가 정상적으로 삭제되었습니다.",
+                postId
+        );
     }
 
 }
