@@ -19,6 +19,7 @@ import org.springframework.test.web.servlet.ResultActions;
 
 import java.time.Duration;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
@@ -55,17 +56,17 @@ public class RefreshTokenApiTest extends AbstractRestDocsTests {
 
         CreateAccessTokenRequest tokenRequest = CreateAccessTokenRequest.builder()
                 .grantType("refreshToken")
-                .refreshToken(tokenProvider.generateRefreshToken(mockMember, Duration.ofHours(2)))
+                .refreshToken("eyJhbGciOiJIUzI1NiJ9.eyJ1c2VyIjoiYWxpY2UifQ.DUMMY_SIGNATURE2")
                 .build();
 
         CreateAccessTokenResponse tokenResponse = CreateAccessTokenResponse.builder()
-                .accessToken(tokenProvider.generateToken(mockMember, Duration.ofMinutes(30)))
+                .accessToken("eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMjM0In0.DUMMY_SIGNATURE1")
                 .tokenType("Bearer")
                 .expiresIn(Duration.ofMinutes(30).toMillis())
-                .refreshToken(tokenProvider.generateRefreshToken(mockMember, Duration.ofHours(2)))
+                .refreshToken("eyJhbGciOiJIUzI1NiJ9.eyJ1c2VyIjoiYWxpY2UifQ.DUMMY_SIGNATURE3")
                 .build();
 
-        given(refreshTokenCreationService.createNewAccessTokenAndNewRefreshToken(tokenRequest))
+        given(refreshTokenCreationService.createNewAccessTokenAndNewRefreshToken(any(CreateAccessTokenRequest.class)))
                 .willReturn(SuccessResponse.of("새로운 액세스 토큰 및 리프레시 토큰이 성공적으로 발급되었습니다.", tokenResponse));
 
         //when
@@ -81,10 +82,11 @@ public class RefreshTokenApiTest extends AbstractRestDocsTests {
                                 fieldWithPath("refreshToken").description("클라이언트가 보관하던 리프레시 토큰")
                         ),
                         responseFields(
-                                fieldWithPath("accessToken").description("새로 발급한 액세스 토큰"),
-                                fieldWithPath("tokenType").description("발급한 토큰의 유형. \"Bearer\""),
-                                fieldWithPath("expiresIn").description("액세스 토큰의 유효 기간"),
-                                fieldWithPath("refreshToken").description("새로 발급한 리프레시 토큰. 추후 새 액세스 토큰 발급 시 이용된다.")
+                                fieldWithPath("message").description("메시지"),
+                                fieldWithPath("data.accessToken").description("새로 발급한 액세스 토큰"),
+                                fieldWithPath("data.tokenType").description("발급한 토큰의 유형. \"Bearer\""),
+                                fieldWithPath("data.expiresIn").description("액세스 토큰의 유효 기간"),
+                                fieldWithPath("data.refreshToken").description("새로 발급한 리프레시 토큰. 추후 새 액세스 토큰 발급 시 이용된다.")
                         )
                 ));
 
