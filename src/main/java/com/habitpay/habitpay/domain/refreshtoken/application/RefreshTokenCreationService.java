@@ -39,9 +39,15 @@ public class RefreshTokenCreationService {
 
     public SuccessResponse<CreateAccessTokenResponse> createNewAccessTokenAndNewRefreshToken(CreateAccessTokenRequest requestBody) {
 
-        Optional<String> optionalGrantType = Optional.ofNullable(requestBody.getGrantType());
-        if (optionalGrantType.isEmpty() || !requestBody.getGrantType().equals("refresh_token")) {
-            throw new CustomJwtException(HttpStatus.BAD_REQUEST, CustomJwtErrorInfo.BAD_REQUEST, "Request was missing the 'grantType' parameter.");
+        String grantType = requestBody.getGrantType();
+
+        if (grantType == null) {
+            throw new CustomJwtException(HttpStatus.BAD_REQUEST, CustomJwtErrorInfo.BAD_REQUEST, "인증 방법을 알 수 없습니다.");
+        }
+
+        if (!grantType.equalsIgnoreCase("refreshToken")
+                && !grantType.equalsIgnoreCase("refresh_token")) {
+            throw new CustomJwtException(HttpStatus.BAD_REQUEST, CustomJwtErrorInfo.BAD_REQUEST, "인증 방법을 알 수 없습니다.");
         }
 
         String newAccessToken = this.createNewAccessToken(requestBody.getRefreshToken());
