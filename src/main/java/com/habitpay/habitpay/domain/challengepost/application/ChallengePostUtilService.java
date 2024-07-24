@@ -29,11 +29,6 @@ public class ChallengePostUtilService {
     private final ChallengeParticipationRecordCreationService challengeParticipationRecordCreationService;
     private final ChallengeParticipationRecordSearchService challengeParticipationRecordSearchService;
 
-    private static final int DEFAULT_PAGE = 0;
-    private static final int DEFAULT_SIZE = 5;
-    private static final int MAX_SIZE = 100;
-    private static final String DEFAULT_SORT = "asc";
-
 
     public void authorizePostWriter(ChallengePost post, Member member) {
         if (!post.getWriter().equals(member)) {
@@ -43,24 +38,6 @@ public class ChallengePostUtilService {
 
     public boolean isChallengeHost(Challenge challenge, Member member) {
         return challenge.getHost().equals(member);
-    }
-
-    public Pageable checkPageable(Pageable pageable) {
-
-        if (pageable.getPageNumber() < 0) {
-            return PageRequest.of(DEFAULT_PAGE, DEFAULT_SIZE);
-        }
-
-        if (pageable.getPageSize() < 1) {
-            return PageRequest.of(DEFAULT_PAGE, DEFAULT_SIZE);
-        } else if (pageable.getPageSize() > MAX_SIZE) {
-            return PageRequest.of(0, MAX_SIZE);
-        }
-
-        // todo: Sort 예외 처리
-        // if (pageable.getSort())
-
-        return pageable;
     }
 
     public void verifyChallengePostForRecord(ChallengePost post) {
