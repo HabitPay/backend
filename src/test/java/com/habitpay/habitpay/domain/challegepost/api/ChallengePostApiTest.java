@@ -144,9 +144,6 @@ public class ChallengePostApiTest extends AbstractRestDocsTests {
 
         // when
         ResultActions result = mockMvc.perform(get("/api/challenges/{id}/posts", 1L)
-                        .param("page", "0")
-                        .param("size", "10")
-                        .param("sort", "")
                 .header(HttpHeaders.AUTHORIZATION, AUTHORIZATION_HEADER_PREFIX + "ACCESS_TOKEN"));
 
         //then
@@ -202,9 +199,6 @@ public class ChallengePostApiTest extends AbstractRestDocsTests {
 
         // when
         ResultActions result = mockMvc.perform(get("/api/challenges/{id}/posts/me", 1L)
-                .param("page", "0")
-                .param("size", "10")
-                .param("sort", "")
                 .header(HttpHeaders.AUTHORIZATION, AUTHORIZATION_HEADER_PREFIX + "ACCESS_TOKEN"));
 
         //then

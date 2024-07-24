@@ -14,10 +14,12 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.web.servlet.ResultActions;
 
 import java.time.Duration;
 
 import static org.mockito.BDDMockito.given;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 
 @WebMvcTest(TokenApi.class)
 public class RefreshTokenApiTest extends AbstractRestDocsTests {
@@ -59,6 +61,12 @@ public class RefreshTokenApiTest extends AbstractRestDocsTests {
                 .build();
 
         given(refreshTokenCreationService.createNewAccessTokenAndNewRefreshToken(tokenRequest))
-                .willReturn(SuccessResponse.of("새로운 액세스 토큰 및 리프레시 토큰이 성공적으로 발급되었습니다.", ));
+                .willReturn(SuccessResponse.of("새로운 액세스 토큰 및 리프레시 토큰이 성공적으로 발급되었습니다.", tokenResponse));
+
+        //when
+        ResultActions result = mockMvc.perform(post("/token"))
+                .content(objectMapper.writeValueAsString(tokenRequest))
+                .contentType();
+
     }
 }
