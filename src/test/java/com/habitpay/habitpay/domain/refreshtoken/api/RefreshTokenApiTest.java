@@ -14,12 +14,17 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
 
 import java.time.Duration;
 
 import static org.mockito.BDDMockito.given;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
+import static org.springframework.restdocs.payload.PayloadDocumentation.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
 
 @WebMvcTest(TokenApi.class)
 public class RefreshTokenApiTest extends AbstractRestDocsTests {
@@ -64,9 +69,24 @@ public class RefreshTokenApiTest extends AbstractRestDocsTests {
                 .willReturn(SuccessResponse.of("새로운 액세스 토큰 및 리프레시 토큰이 성공적으로 발급되었습니다.", tokenResponse));
 
         //when
-        ResultActions result = mockMvc.perform(post("/token"))
+        ResultActions result = mockMvc.perform(post("/token")
                 .content(objectMapper.writeValueAsString(tokenRequest))
-                .contentType();
+                .contentType(MediaType.APPLICATION_JSON));
+
+        //then
+        result.andExpect(status().isOk())
+                .andDo(document("refreshToken/create-new-access-token-and-new-refresh-token",
+                        requestFields(
+                                fieldWithPath("grantType").description("클라이언트가 액세스 토큰을 요청할 때 사용하는 인증 방법. \"refreshToken\""),
+                                fieldWithPath("refreshToken").description("클라이언트가 보관하던 리프레시 토큰")
+                        ),
+                        responseFields(
+                                fieldWithPath("accessToken").description("새로 발급한 액세스 토큰"),
+                                fieldWithPath("tokenType").description("발급한 토큰의 유형. \"Bearer\""),
+                                fieldWithPath("expiresIn").description("액세스 토큰의 유효 기간"),
+                                fieldWithPath("refreshToken").description("새로 발급한 리프레시 토큰. 추후 새 액세스 토큰 발급 시 이용된다.")
+                        )
+                ));
 
     }
 }
