@@ -40,7 +40,7 @@ public class RefreshTokenCreationService {
     public SuccessResponse<CreateAccessTokenResponse> createNewAccessTokenAndNewRefreshToken(CreateAccessTokenRequest requestBody) {
 
         Optional<String> optionalGrantType = Optional.ofNullable(requestBody.getGrantType());
-        if (optionalGrantType.isEmpty() || !requestBody.getGrantType().equals("refresh_token")) {
+        if (optionalGrantType.isEmpty() || !requestBody.getGrantType().equals("refreshToken")) {
             throw new CustomJwtException(HttpStatus.BAD_REQUEST, CustomJwtErrorInfo.BAD_REQUEST, "Request was missing the 'grantType' parameter.");
         }
 

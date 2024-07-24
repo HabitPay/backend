@@ -47,7 +47,7 @@ public class RefreshTokenApiTest extends AbstractRestDocsTests {
                 .build();
 
         CreateAccessTokenRequest tokenRequest = CreateAccessTokenRequest.builder()
-                .grantType("refresh_token")
+                .grantType("refreshToken")
                 .refreshToken(tokenProvider.generateRefreshToken(mockMember, Duration.ofHours(2)))
                 .build();
 
