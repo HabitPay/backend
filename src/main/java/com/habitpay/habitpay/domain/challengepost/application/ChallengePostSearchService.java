@@ -3,12 +3,10 @@ package com.habitpay.habitpay.domain.challengepost.application;
 import com.habitpay.habitpay.domain.challenge.application.ChallengeSearchService;
 import com.habitpay.habitpay.domain.challenge.domain.Challenge;
 import com.habitpay.habitpay.domain.challengeenrollment.application.ChallengeEnrollmentSearchService;
-import com.habitpay.habitpay.domain.challengeenrollment.dao.ChallengeEnrollmentRepository;
 import com.habitpay.habitpay.domain.challengeenrollment.domain.ChallengeEnrollment;
 import com.habitpay.habitpay.domain.challengepost.dao.ChallengePostRepository;
 import com.habitpay.habitpay.domain.challengepost.domain.ChallengePost;
 import com.habitpay.habitpay.domain.challengepost.dto.PostViewResponse;
-import com.habitpay.habitpay.domain.member.application.MemberService;
 import com.habitpay.habitpay.domain.member.domain.Member;
 import com.habitpay.habitpay.domain.postphoto.application.PostPhotoSearchService;
 import com.habitpay.habitpay.domain.postphoto.application.PostPhotoUtilService;
@@ -17,10 +15,7 @@ import com.habitpay.habitpay.domain.postphoto.dto.PostPhotoView;
 import com.habitpay.habitpay.global.response.SuccessResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -51,10 +46,8 @@ public class ChallengePostSearchService {
 
     public SuccessResponse<List<PostViewResponse>> findPostViewResponseListByChallengeId(Long challengeId, Pageable pageable) {
 
-        List<PostViewResponse> postViewResponseList = this.findAllByChallengeId(challengeId, pageable)
+        List<PostViewResponse> postViewResponseList = this.findAllChallengePostsByChallengeId(challengeId, pageable)
                 .stream()
-                // .filter(post -> !post.getIsAnnouncement()) // todo
-                // .sorted() // todo : 순서 설정하고 싶을 때
                 .map(post -> {
                     List<PostPhotoView> photoViewList = postPhotoUtilService.makePhotoViewList(postPhotoSearchService.findAllByPost(post));
                     return new PostViewResponse(post, photoViewList);
@@ -67,7 +60,7 @@ public class ChallengePostSearchService {
         );
     }
 
-    public SuccessResponse<List<PostViewResponse>> findChallengePostsByMember(Long challengeId, Member member, Pageable pageable) {
+    public SuccessResponse<List<PostViewResponse>> findAllChallengePostsByMember(Long challengeId, Member member, Pageable pageable) {
         Challenge challenge = challengeSearchService.getChallengeById(challengeId);
         ChallengeEnrollment enrollment = challengeEnrollmentSearchService.findByMemberAndChallenge(member, challenge)
                 .orElseThrow(() -> new NoSuchElementException("챌린지에 등록된 멤버가 아닙니다."));
@@ -76,8 +69,6 @@ public class ChallengePostSearchService {
 
         List<PostViewResponse> postViewResponseList =  challengePostRepository.findAllByChallengeEnrollmentId(challengeEnrollmentId, pageable)
                 .stream()
-                // .filter(post -> !post.getIsAnnouncement()) // todo
-                // .sorted() // todo : 순서 설정하고 싶을 때
                 .map(post -> {
                     List<PostPhotoView> photoViewList = postPhotoUtilService.makePhotoViewList(postPhotoSearchService.findAllByPost(post));
                     return new PostViewResponse(post, photoViewList);
@@ -95,7 +86,7 @@ public class ChallengePostSearchService {
                 .orElseThrow(() -> new NoSuchElementException("포스트를 찾을 수 없습니다."));
     }
 
-    public List<ChallengePost> findAllByChallengeId(Long challengeId, Pageable pageable) {
+    public List<ChallengePost> findAllChallengePostsByChallengeId(Long challengeId, Pageable pageable) {
         return challengePostRepository.findAllByChallengeId(challengeId, pageable);
     }
 

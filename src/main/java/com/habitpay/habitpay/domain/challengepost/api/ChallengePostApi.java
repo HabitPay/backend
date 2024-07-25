@@ -9,7 +9,6 @@ import com.habitpay.habitpay.global.response.SuccessResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -43,7 +42,7 @@ public class ChallengePostApi {
             @PathVariable Long id,
             @AuthenticationPrincipal CustomUserDetails user, Pageable pageable) {
 
-        return challengePostSearchService.findChallengePostsByMember(id, user.getMember(), pageable);
+        return challengePostSearchService.findAllChallengePostsByMember(id, user.getMember(), pageable);
     }
 
     // -----------------------------------------------------------------------------
