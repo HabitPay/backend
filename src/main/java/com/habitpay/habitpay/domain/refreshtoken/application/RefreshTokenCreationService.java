@@ -45,9 +45,8 @@ public class RefreshTokenCreationService {
             throw new CustomJwtException(HttpStatus.BAD_REQUEST, CustomJwtErrorInfo.BAD_REQUEST, "인증 방법을 알 수 없습니다.");
         }
 
-        if (!grantType.equalsIgnoreCase("refreshToken")
-                && !grantType.equalsIgnoreCase("refresh_token")) {
-            throw new CustomJwtException(HttpStatus.BAD_REQUEST, CustomJwtErrorInfo.BAD_REQUEST, "인증 방법을 알 수 없습니다.");
+        if (!grantType.equals("refreshToken")) {
+            throw new CustomJwtException(HttpStatus.BAD_REQUEST, CustomJwtErrorInfo.BAD_REQUEST, "취급할 수 없는 인증 방법입니다.");
         }
 
         String newAccessToken = this.createNewAccessToken(requestBody.getRefreshToken());
