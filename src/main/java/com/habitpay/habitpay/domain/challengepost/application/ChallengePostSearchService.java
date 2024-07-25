@@ -46,7 +46,7 @@ public class ChallengePostSearchService {
 
     public SuccessResponse<List<PostViewResponse>> findPostViewResponseListByChallengeId(Long challengeId, Pageable pageable) {
 
-        List<PostViewResponse> postViewResponseList = this.findAllChallengePostsByChallengeId(challengeId, pageable)
+        List<PostViewResponse> postViewResponseList = challengePostRepository.findAllByChallengeId(challengeId, pageable)
                 .stream()
                 .map(post -> {
                     List<PostPhotoView> photoViewList = postPhotoUtilService.makePhotoViewList(postPhotoSearchService.findAllByPost(post));
@@ -84,10 +84,6 @@ public class ChallengePostSearchService {
     public ChallengePost getChallengePostById(Long id) {
         return challengePostRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("포스트를 찾을 수 없습니다."));
-    }
-
-    public List<ChallengePost> findAllChallengePostsByChallengeId(Long challengeId, Pageable pageable) {
-        return challengePostRepository.findAllByChallengeId(challengeId, pageable);
     }
 
     public Challenge getChallengeByPostId(Long postId) {
