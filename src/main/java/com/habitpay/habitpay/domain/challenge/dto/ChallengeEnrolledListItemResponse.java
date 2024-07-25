@@ -15,6 +15,7 @@ public class ChallengeEnrolledListItemResponse {
     private ZonedDateTime startDate;
     private ZonedDateTime endDate;
     private ZonedDateTime stopDate;
+    private int totalParticipatingDays;
     private int numberOfParticipants;
     private int participatingDays;
     private int totalFee;
@@ -32,6 +33,7 @@ public class ChallengeEnrolledListItemResponse {
                 .startDate(challenge.getStartDate())
                 .endDate(challenge.getEndDate())
                 .stopDate(challenge.getStopDate())
+                .totalParticipatingDays(challenge.getTotalParticipatingDays())
                 .numberOfParticipants(challenge.getNumberOfParticipants())
                 .isPaidAll(challenge.isPaidAll())
                 .participatingDays(challenge.getParticipatingDays())
