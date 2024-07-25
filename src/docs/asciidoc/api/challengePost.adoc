@@ -22,6 +22,13 @@ operation::challengePost/get-challenge-post[snippets='http-request,http-response
 
 operation::challengePost/get-challenge-posts[snippets='http-request,http-response,response-fields']
 
+=== 챌린지 내 전체 포스트 중 공지 포스트 조회
+
+경로 변수로 받은 challenge의 id값을 이용해 해당 챌린지 내의 모든 공지 포스트를 조회합니다.
+해당 챌린지에 등록되어 있는 멤버만 조회할 수 있습니다.
+
+operation::challengePost/get-announcement-challenge-posts[snippets='http-request,http-response,response-fields']
+
 === 챌린지 내 본인이 작성한 모든 포스트 조회
 
 경로 변수로 받은 challenge의 id값을 이용해 해당 챌린지 내에서 본인이 작성한 모든 포스트를 조회합니다.

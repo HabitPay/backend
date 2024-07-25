@@ -85,7 +85,7 @@ public class ChallengePostApiTest extends AbstractRestDocsTests {
                         new PostPhotoView(2L, 2L, "https://picsum.photos/id/40/200/300")))
                 .build();
 
-        given(challengePostSearchService.getPostViewResponseByPostId(anyLong()))
+        given(challengePostSearchService.getPostViewByPostId(anyLong()))
                 .willReturn(SuccessResponse.of("", mockPostViewResponse));
 
         // when
@@ -139,7 +139,7 @@ public class ChallengePostApiTest extends AbstractRestDocsTests {
                         .photoViewList(List.of(new PostPhotoView(2L, 2L, "https://picsum.photos/id/40/200/300")))
                         .build());
 
-        given(challengePostSearchService.findPostViewResponseListByChallengeId(anyLong(), any(Pageable.class)))
+        given(challengePostSearchService.findPostViewListByChallengeId(anyLong(), any(Pageable.class)))
                 .willReturn(SuccessResponse.of("", mockPostViewResponseList));
 
         // when
@@ -149,6 +149,60 @@ public class ChallengePostApiTest extends AbstractRestDocsTests {
         //then
         result.andExpect(status().isOk())
                 .andDo(document("challengePost/get-challenge-posts",
+                        requestHeaders(
+                                headerWithName(HttpHeaders.AUTHORIZATION).description("액세스 토큰")
+                        ),
+                        responseFields(
+                                fieldWithPath("message").description("메시지"),
+                                fieldWithPath("data.[].id").description("포스트 id"),
+                                fieldWithPath("data.[].challengeEnrollmentId").description("포스트가 소속된 enrollment id"),
+                                fieldWithPath("data.[].content").description("포스트 내용"),
+                                fieldWithPath("data.[].writer").description("작성자"),
+                                fieldWithPath("data.[].isAnnouncement").description("공지글 여부"),
+                                fieldWithPath("data.[].createdAt").description("생성 일시"),
+                                fieldWithPath("data.[].photoViewList").description("포스트 포토(URL 포함) 데이터를 담은 객체 배열"),
+                                fieldWithPath("data.[].photoViewList[].postPhotoId").description("포토 id"),
+                                fieldWithPath("data.[].photoViewList[].viewOrder").description("포스트 내 포토의 순서"),
+                                fieldWithPath("data.[].photoViewList[].imageUrl").description("포스트 포토 url")
+                        )
+                ));
+    }
+
+    @Test
+    @DisplayName("챌린지 내 전체 포스트 중 공지 포스트 조회")
+    void findAnnouncementPosts() throws Exception {
+
+        // given
+        List<PostViewResponse> mockPostViewResponseList = List.of(
+                PostViewResponse.builder()
+                        .id(1L)
+                        .challengeEnrollmentId(1L)
+                        .content("This is announcement test post 1.")
+                        .writer("test user")
+                        .isAnnouncement(true)
+                        .createdAt(LocalDateTime.now())
+                        .photoViewList(List.of(new PostPhotoView(1L, 1L, "https://picsum.photos/id/40/200/300")))
+                        .build(),
+                PostViewResponse.builder()
+                        .id(2L)
+                        .challengeEnrollmentId(2L)
+                        .content("This is announcement test post 2.")
+                        .writer("test user")
+                        .isAnnouncement(true)
+                        .createdAt(LocalDateTime.now())
+                        .photoViewList(List.of(new PostPhotoView(2L, 2L, "https://picsum.photos/id/40/200/300")))
+                        .build());
+
+        given(challengePostSearchService.findAnnouncementPostViewListByChallengeId(anyLong(), any(Pageable.class)))
+                .willReturn(SuccessResponse.of("", mockPostViewResponseList));
+
+        // when
+        ResultActions result = mockMvc.perform(get("/api/challenges/{id}/posts/announcement", 1L)
+                .header(HttpHeaders.AUTHORIZATION, AUTHORIZATION_HEADER_PREFIX + "ACCESS_TOKEN"));
+
+        //then
+        result.andExpect(status().isOk())
+                .andDo(document("challengePost/get-announcement-challenge-posts",
                         requestHeaders(
                                 headerWithName(HttpHeaders.AUTHORIZATION).description("액세스 토큰")
                         ),
@@ -194,7 +248,7 @@ public class ChallengePostApiTest extends AbstractRestDocsTests {
                         .photoViewList(List.of(new PostPhotoView(2L, 2L, "https://picsum.photos/id/40/200/300")))
                         .build());
 
-        given(challengePostSearchService.findPostViewResponseListByMember(anyLong(), any(Member.class), any(Pageable.class)))
+        given(challengePostSearchService.findPostViewListByMember(anyLong(), any(Member.class), any(Pageable.class)))
                 .willReturn(SuccessResponse.of("", mockPostViewResponseList));
 
         // when
