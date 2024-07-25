@@ -60,7 +60,7 @@ public class ChallengePostSearchService {
         );
     }
 
-    public SuccessResponse<List<PostViewResponse>> findAllChallengePostsByMember(Long challengeId, Member member, Pageable pageable) {
+    public SuccessResponse<List<PostViewResponse>> findPostViewResponseListByMember(Long challengeId, Member member, Pageable pageable) {
         Challenge challenge = challengeSearchService.getChallengeById(challengeId);
         ChallengeEnrollment enrollment = challengeEnrollmentSearchService.findByMemberAndChallenge(member, challenge)
                 .orElseThrow(() -> new NoSuchElementException("챌린지에 등록된 멤버가 아닙니다."));

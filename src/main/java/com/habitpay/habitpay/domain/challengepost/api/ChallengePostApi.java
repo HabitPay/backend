@@ -46,7 +46,7 @@ public class ChallengePostApi {
             @AuthenticationPrincipal CustomUserDetails user,
             @PageableDefault(sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
 
-        return challengePostSearchService.findAllChallengePostsByMember(id, user.getMember(), pageable);
+        return challengePostSearchService.findPostViewResponseListByMember(id, user.getMember(), pageable);
     }
 
     // -----------------------------------------------------------------------------
