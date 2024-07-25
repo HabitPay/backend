@@ -12,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.time.DayOfWeek;
 import java.time.ZonedDateTime;
+import java.util.EnumSet;
 
 @Getter
 @NoArgsConstructor
@@ -49,6 +50,9 @@ public class Challenge extends BaseTime {
     private byte participatingDays;
 
     @Column(nullable = false)
+    private int totalParticipatingDays;
+
+    @Column(nullable = false)
     private int feePerAbsence;
 
     @Column(nullable = false)
@@ -59,13 +63,14 @@ public class Challenge extends BaseTime {
 
     @Builder
     public Challenge(Member member, String title, String description, ZonedDateTime startDate, ZonedDateTime endDate,
-                     byte participatingDays, int feePerAbsence) {
+                     byte participatingDays, int totalParticipatingDays, int feePerAbsence) {
         this.host = member;
         this.title = title;
         this.description = description;
         this.startDate = startDate;
         this.endDate = endDate;
         this.participatingDays = participatingDays;
+        this.totalParticipatingDays = totalParticipatingDays;
         this.feePerAbsence = feePerAbsence;
     }
 
@@ -77,6 +82,7 @@ public class Challenge extends BaseTime {
                 .startDate(challengeCreationRequest.getStartDate())
                 .endDate(challengeCreationRequest.getEndDate())
                 .participatingDays(challengeCreationRequest.getParticipatingDays())
+                .totalParticipatingDays(calculateTotalParticipatingDays(challengeCreationRequest))
                 .feePerAbsence(challengeCreationRequest.getFeePerAbsence())
                 .build();
     }
@@ -93,5 +99,30 @@ public class Challenge extends BaseTime {
         DayOfWeek today = ZonedDateTime.now().getDayOfWeek();
         int todayBitPosition = 6 - (today.getValue() - 1);
         return (this.participatingDays & (1 << todayBitPosition)) != 0;
+    }
+
+    private static int calculateTotalParticipatingDays(ChallengeCreationRequest challengeCreationRequest) {
+        int count = 0;
+        EnumSet<DayOfWeek> daysOfParticipatingDays = EnumSet.noneOf(DayOfWeek.class);
+
+        // 1. 챌린지 참여 요일 저장
+        for (int bit = 0; bit <= 6; bit += 1) {
+            int todayBitPosition = 6 - bit;
+            if ((challengeCreationRequest.getParticipatingDays() & (1 << todayBitPosition)) != 0) {
+                daysOfParticipatingDays.add(DayOfWeek.of(bit + 1));
+            }
+        }
+
+        // 2. 챌린지 총 참여 일수 계산
+        ZonedDateTime date = challengeCreationRequest.getStartDate();
+        ZonedDateTime endDate = challengeCreationRequest.getEndDate();
+        while (date.isBefore(endDate)) {
+            if (daysOfParticipatingDays.contains(date.getDayOfWeek())) {
+                count += 1;
+            }
+            date = date.plusDays(1);
+        }
+
+        return count;
     }
 }
