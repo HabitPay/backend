@@ -85,7 +85,7 @@ public class ChallengePostApiTest extends AbstractRestDocsTests {
                         new PostPhotoView(2L, 2L, "https://picsum.photos/id/40/200/300")))
                 .build();
 
-        given(challengePostSearchService.getPostViewResponseByPostId(anyLong()))
+        given(challengePostSearchService.getPostViewByPostId(anyLong()))
                 .willReturn(SuccessResponse.of("", mockPostViewResponse));
 
         // when
@@ -139,7 +139,7 @@ public class ChallengePostApiTest extends AbstractRestDocsTests {
                         .photoViewList(List.of(new PostPhotoView(2L, 2L, "https://picsum.photos/id/40/200/300")))
                         .build());
 
-        given(challengePostSearchService.findPostViewResponseListByChallengeId(anyLong(), any(Pageable.class)))
+        given(challengePostSearchService.findPostViewListByChallengeId(anyLong(), any(Pageable.class)))
                 .willReturn(SuccessResponse.of("", mockPostViewResponseList));
 
         // when
@@ -193,7 +193,7 @@ public class ChallengePostApiTest extends AbstractRestDocsTests {
                         .photoViewList(List.of(new PostPhotoView(2L, 2L, "https://picsum.photos/id/40/200/300")))
                         .build());
 
-        given(challengePostSearchService.findAnnouncementPostViewResponseListByChallengeId(anyLong(), any(Pageable.class)))
+        given(challengePostSearchService.findAnnouncementPostViewListByChallengeId(anyLong(), any(Pageable.class)))
                 .willReturn(SuccessResponse.of("", mockPostViewResponseList));
 
         // when
@@ -248,7 +248,7 @@ public class ChallengePostApiTest extends AbstractRestDocsTests {
                         .photoViewList(List.of(new PostPhotoView(2L, 2L, "https://picsum.photos/id/40/200/300")))
                         .build());
 
-        given(challengePostSearchService.findPostViewResponseListByMember(anyLong(), any(Member.class), any(Pageable.class)))
+        given(challengePostSearchService.findPostViewListByMember(anyLong(), any(Member.class), any(Pageable.class)))
                 .willReturn(SuccessResponse.of("", mockPostViewResponseList));
 
         // when

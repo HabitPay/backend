@@ -29,7 +29,7 @@ public class ChallengePostApi {
     @GetMapping("/api/posts/{id}")
     public SuccessResponse<PostViewResponse> getPost(@PathVariable Long id) {
 
-        return challengePostSearchService.getPostViewResponseByPostId(id);
+        return challengePostSearchService.getPostViewByPostId(id);
     }
 
     @GetMapping("/api/challenges/{id}/posts")
@@ -37,7 +37,7 @@ public class ChallengePostApi {
             @PathVariable Long id,
             @PageableDefault(sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
 
-        return challengePostSearchService.findPostViewResponseListByChallengeId(id, pageable);
+        return challengePostSearchService.findPostViewListByChallengeId(id, pageable);
     }
 
     @GetMapping("/api/challenges/{id}/posts/announcement")
@@ -45,7 +45,7 @@ public class ChallengePostApi {
             @PathVariable Long id,
             @PageableDefault(sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
 
-        return challengePostSearchService.findAnnouncementPostViewResponseListByChallengeId(id, pageable);
+        return challengePostSearchService.findAnnouncementPostViewListByChallengeId(id, pageable);
     }
 
     @GetMapping("/api/challenges/{id}/posts/me")
@@ -54,7 +54,7 @@ public class ChallengePostApi {
             @AuthenticationPrincipal CustomUserDetails user,
             @PageableDefault(sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
 
-        return challengePostSearchService.findPostViewResponseListByMember(id, user.getMember(), pageable);
+        return challengePostSearchService.findPostViewListByMember(id, user.getMember(), pageable);
     }
 
     // -----------------------------------------------------------------------------
