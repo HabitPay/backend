@@ -60,7 +60,7 @@ public class ChallengePostCreationService {
             }
         }
 
-        return challengePostRepository.save(request.toEntity(enrollment));
+        return challengePostRepository.save(request.toEntity(challenge, enrollment));
     }
 
 }

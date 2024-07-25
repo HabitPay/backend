@@ -194,7 +194,7 @@ public class ChallengePostApiTest extends AbstractRestDocsTests {
                         .photoViewList(List.of(new PostPhotoView(2L, 2L, "https://picsum.photos/id/40/200/300")))
                         .build());
 
-        given(challengePostSearchService.findChallengePostsByMember(anyLong(), any(Member.class), any(Pageable.class)))
+        given(challengePostSearchService.findPostViewResponseListByMember(anyLong(), any(Member.class), any(Pageable.class)))
                 .willReturn(SuccessResponse.of("", mockPostViewResponseList));
 
         // when

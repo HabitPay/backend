@@ -27,7 +27,7 @@ public class ChallengePostDeleteService {
     @Transactional
     public SuccessResponse<Long> deletePost(Long postId, Member member) {
         ChallengePost post = challengePostSearchService.getChallengePostById(postId);
-        Challenge challenge = challengePostSearchService.getChallengeByPostId(postId);
+        Challenge challenge = post.getChallenge();
 
         if (post.getIsAnnouncement()) {
             if (!challengePostUtilService.isChallengeHost(challenge, member)) {

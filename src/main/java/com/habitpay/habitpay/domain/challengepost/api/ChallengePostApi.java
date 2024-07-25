@@ -9,6 +9,7 @@ import com.habitpay.habitpay.global.response.SuccessResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -33,7 +34,8 @@ public class ChallengePostApi {
 
     @GetMapping("/api/challenges/{id}/posts")
     public SuccessResponse<List<PostViewResponse>> getChallengePosts(
-            @PathVariable Long id, Pageable pageable) {
+            @PathVariable Long id,
+            @PageableDefault(sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
 
         return challengePostSearchService.findPostViewResponseListByChallengeId(id, pageable);
     }
@@ -41,16 +43,18 @@ public class ChallengePostApi {
     @GetMapping("/api/challenges/{id}/posts/me")
     public SuccessResponse<List<PostViewResponse>> getChallengePostsByMe(
             @PathVariable Long id,
-            @AuthenticationPrincipal CustomUserDetails user, Pageable pageable) {
+            @AuthenticationPrincipal CustomUserDetails user,
+            @PageableDefault(sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
 
-        return challengePostSearchService.findChallengePostsByMember(id, user.getMember(), pageable);
+        return challengePostSearchService.findPostViewResponseListByMember(id, user.getMember(), pageable);
     }
 
     // -----------------------------------------------------------------------------
     // todo : 'challengeEnrollmentId' or 'memberId' 등 멤버 식별할 수 있는 데이터를 받아야 함
 //    @GetMapping("/api/challenges/{id}/posts/member")
 //    public SuccessResponse<List<PostViewResponse>> getChallengePostsByMember(
-//            @PathVariable Long id, Pageable pageable) {
+//            @PathVariable Long id,
+//            @PageableDefault(sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
 //
 //        String memberEmail = "otherMember@email.address"; // todo : 임시
 //

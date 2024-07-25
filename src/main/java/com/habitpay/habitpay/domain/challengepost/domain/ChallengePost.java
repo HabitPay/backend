@@ -1,5 +1,6 @@
 package com.habitpay.habitpay.domain.challengepost.domain;
 
+import com.habitpay.habitpay.domain.challenge.domain.Challenge;
 import com.habitpay.habitpay.domain.challengeenrollment.domain.ChallengeEnrollment;
 import com.habitpay.habitpay.domain.member.domain.Member;
 import com.habitpay.habitpay.domain.model.BaseTime;
@@ -11,14 +12,18 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @EntityListeners(AuditingEntityListener.class)
-@Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
+@Getter
 @Table(name = "challenge_post")
 public class ChallengePost extends BaseTime {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @ManyToOne
+    @JoinColumn(name = "challenge_id")
+    private Challenge challenge;
 
     @ManyToOne
     @JoinColumn(name = "challenge_enrollment_id")
@@ -31,7 +36,12 @@ public class ChallengePost extends BaseTime {
     private Boolean isAnnouncement;
 
     @Builder
-    public ChallengePost(ChallengeEnrollment enrollment, String content, boolean isAnnouncement) {
+    public ChallengePost(
+            Challenge challenge,
+            ChallengeEnrollment enrollment,
+            String content,
+            boolean isAnnouncement) {
+        this.challenge = challenge;
         this.challengeEnrollment = enrollment;
         this.content = content;
         this.isAnnouncement = isAnnouncement;
