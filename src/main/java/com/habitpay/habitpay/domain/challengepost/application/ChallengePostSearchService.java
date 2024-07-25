@@ -60,6 +60,22 @@ public class ChallengePostSearchService {
         );
     }
 
+    public SuccessResponse<List<PostViewResponse>> findAnnouncementPostViewResponseListByChallengeId(Long challengeId, Pageable pageable) {
+
+        List<PostViewResponse> postViewResponseList = challengePostRepository.findAllByChallengeIdAndIsAnnouncementTrue(challengeId, pageable)
+                .stream()
+                .map(post -> {
+                    List<PostPhotoView> photoViewList = postPhotoUtilService.makePhotoViewList(postPhotoSearchService.findAllByPost(post));
+                    return new PostViewResponse(post, photoViewList);
+                })
+                .toList();
+
+        return SuccessResponse.of(
+                "",
+                postViewResponseList
+        );
+    }
+
     public SuccessResponse<List<PostViewResponse>> findPostViewResponseListByMember(Long challengeId, Member member, Pageable pageable) {
         Challenge challenge = challengeSearchService.getChallengeById(challengeId);
         ChallengeEnrollment enrollment = challengeEnrollmentSearchService.findByMemberAndChallenge(member, challenge)
