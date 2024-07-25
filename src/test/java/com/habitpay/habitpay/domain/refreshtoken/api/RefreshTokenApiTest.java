@@ -48,12 +48,6 @@ public class RefreshTokenApiTest extends AbstractRestDocsTests {
     void createNewAccessTokenAndNewRefreshToken() throws Exception {
 
         //given
-        Member mockMember = Member.builder()
-                .id(1L)
-                .nickname("test user")
-                .email("test_user@test.com")
-                .build();
-
         CreateAccessTokenRequest tokenRequest = CreateAccessTokenRequest.builder()
                 .grantType("refreshToken")
                 .refreshToken("eyJhbGciOiJIUzI1NiJ9.eyJ1c2VyIjoiYWxpY2UifQ.DUMMY_SIGNATURE2")
