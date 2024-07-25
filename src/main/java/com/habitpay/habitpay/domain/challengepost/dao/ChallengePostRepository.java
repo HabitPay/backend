@@ -14,4 +14,5 @@ import java.util.Optional;
 public interface ChallengePostRepository extends JpaRepository<ChallengePost, Long> {
     // todo : Page, Slice, List 중에 선택하기
     List<ChallengePost> findAllByChallengeEnrollmentId(Long challengeEnrollmentId, Pageable pageable);
+    List<ChallengePost> findAllByChallengeId(Long challengeId, Pageable pageable);
 }

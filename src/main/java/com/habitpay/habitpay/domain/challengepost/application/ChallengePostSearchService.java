@@ -18,7 +18,9 @@ import com.habitpay.habitpay.global.response.SuccessResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -35,7 +37,6 @@ public class ChallengePostSearchService {
     private final ChallengeSearchService challengeSearchService;
 
     private final ChallengePostRepository challengePostRepository;
-    private final ChallengeEnrollmentRepository challengeEnrollmentRepository;
 
     public SuccessResponse<PostViewResponse> getPostViewResponseByPostId(Long postId) {
         ChallengePost challengePost = this.getChallengePostById(postId);
@@ -94,9 +95,8 @@ public class ChallengePostSearchService {
                 .orElseThrow(() -> new NoSuchElementException("포스트를 찾을 수 없습니다."));
     }
 
-    // todo : 각 챌린지 별로 findAll 해주는 메서드
     public List<ChallengePost> findAllByChallengeId(Long challengeId, Pageable pageable) {
-        return challengePostRepository.findAllByChallengeEnrollmentId(1L, pageable); // todo : 임시값
+        return challengePostRepository.findAllByChallengeId(challengeId, pageable);
     }
 
     public Challenge getChallengeByPostId(Long postId) {
