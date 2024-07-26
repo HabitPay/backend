@@ -40,8 +40,8 @@ public class ChallengePostApi {
         return challengePostSearchService.findPostViewListByChallengeId(id, pageable);
     }
 
-    @GetMapping("/api/challenges/{id}/posts/announcement")
-    public SuccessResponse<List<PostViewResponse>> getAnnouncementPosts(
+    @GetMapping("/api/challenges/{id}/posts/announcements")
+    public SuccessResponse<List<PostViewResponse>> getAnnouncements(
             @PathVariable Long id,
             @PageableDefault(sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
 
