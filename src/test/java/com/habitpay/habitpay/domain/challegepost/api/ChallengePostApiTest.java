@@ -197,7 +197,7 @@ public class ChallengePostApiTest extends AbstractRestDocsTests {
                 .willReturn(SuccessResponse.of("", mockPostViewResponseList));
 
         // when
-        ResultActions result = mockMvc.perform(get("/api/challenges/{id}/posts/announcement", 1L)
+        ResultActions result = mockMvc.perform(get("/api/challenges/{id}/posts/announcements", 1L)
                 .header(HttpHeaders.AUTHORIZATION, AUTHORIZATION_HEADER_PREFIX + "ACCESS_TOKEN"));
 
         //then
