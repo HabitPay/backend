@@ -95,6 +95,7 @@ public class RefreshTokenApiTest extends AbstractRestDocsTests {
 
         //given
         CreateAccessTokenRequest tokenRequest = CreateAccessTokenRequest.builder()
+                .refreshToken("eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMjM0In0.DUMMY_SIGNATURE1")
                 .build();
 
         given(refreshTokenCreationService.createNewAccessTokenAndNewRefreshToken(any(CreateAccessTokenRequest.class)))
@@ -108,6 +109,64 @@ public class RefreshTokenApiTest extends AbstractRestDocsTests {
         //then
         result.andExpect(status().isBadRequest())
                 .andDo(document("refreshToken/return-400-when-invalid-request",
+                        responseFields(
+                                fieldWithPath("error").description("에러 메시지"),
+                                fieldWithPath("errorDescription").description("에러 발생 이유")
+                        )
+                ));
+
+    }
+
+    @Test
+    @DisplayName("토큰 리프레시 실패 : 401 Unauthorized")
+    void return401WhenInvalidToken() throws Exception {
+
+        //given
+        CreateAccessTokenRequest tokenRequest = CreateAccessTokenRequest.builder()
+                .grantType("refreshToken")
+                .refreshToken("eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMjM0In0.EXPIRED_DUMMY_SIGNATURE1")
+                .build();
+
+        given(refreshTokenCreationService.createNewAccessTokenAndNewRefreshToken(any(CreateAccessTokenRequest.class)))
+                .willThrow(new CustomJwtException(HttpStatus.UNAUTHORIZED, CustomJwtErrorInfo.UNAUTHORIZED, "JWT expired at 2024-07-15T11:29:31Z."));
+
+        //when
+        ResultActions result = mockMvc.perform(post("/token")
+                .content(objectMapper.writeValueAsString(tokenRequest))
+                .contentType(MediaType.APPLICATION_JSON));
+
+        //then
+        result.andExpect(status().isUnauthorized())
+                .andDo(document("refreshToken/return-401-when-invalid-token",
+                        responseFields(
+                                fieldWithPath("error").description("에러 메시지"),
+                                fieldWithPath("errorDescription").description("에러 발생 이유")
+                        )
+                ));
+
+    }
+
+    @Test
+    @DisplayName("토큰 리프레시 실패 : 403 Forbidden")
+    void return404WhenInsufficientScope() throws Exception {
+
+        //given
+        CreateAccessTokenRequest tokenRequest = CreateAccessTokenRequest.builder()
+                .grantType("refreshToken")
+                .refreshToken("eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMjM0In0.GUEST_DUMMY_SIGNATURE1")
+                .build();
+
+        given(refreshTokenCreationService.createNewAccessTokenAndNewRefreshToken(any(CreateAccessTokenRequest.class)))
+                .willThrow(new CustomJwtException(HttpStatus.FORBIDDEN, CustomJwtErrorInfo.FORBIDDEN, "공지 포스트는 챌린지 호스트만 작성할 수 있습니다."));
+
+        //when
+        ResultActions result = mockMvc.perform(post("/token")
+                .content(objectMapper.writeValueAsString(tokenRequest))
+                .contentType(MediaType.APPLICATION_JSON));
+
+        //then
+        result.andExpect(status().isForbidden())
+                .andDo(document("refreshToken/return-403-when-insufficient-scope",
                         responseFields(
                                 fieldWithPath("error").description("에러 메시지"),
                                 fieldWithPath("errorDescription").description("에러 발생 이유")
