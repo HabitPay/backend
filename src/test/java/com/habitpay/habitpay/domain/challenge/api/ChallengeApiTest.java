@@ -72,7 +72,7 @@ public class ChallengeApiTest extends AbstractRestDocsTests {
                 .startDate(ZonedDateTime.now())
                 .endDate(ZonedDateTime.now().plusDays(5))
                 .stopDate(null)
-                .totalParticipatingDays(2)
+                .totalParticipatingDaysCount(2)
                 .numberOfParticipants(1)
                 .participatingDays(1 << 2)
                 .totalFee(1000)

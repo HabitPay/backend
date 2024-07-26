@@ -50,7 +50,7 @@ public class Challenge extends BaseTime {
     private byte participatingDays;
 
     @Column(nullable = false)
-    private int totalParticipatingDays;
+    private int totalParticipatingDaysCount;
 
     @Column(nullable = false)
     private int feePerAbsence;
@@ -63,14 +63,14 @@ public class Challenge extends BaseTime {
 
     @Builder
     public Challenge(Member member, String title, String description, ZonedDateTime startDate, ZonedDateTime endDate,
-                     byte participatingDays, int totalParticipatingDays, int feePerAbsence) {
+                     byte participatingDays, int totalParticipatingDaysCount, int feePerAbsence) {
         this.host = member;
         this.title = title;
         this.description = description;
         this.startDate = startDate;
         this.endDate = endDate;
         this.participatingDays = participatingDays;
-        this.totalParticipatingDays = totalParticipatingDays;
+        this.totalParticipatingDaysCount = totalParticipatingDaysCount;
         this.feePerAbsence = feePerAbsence;
     }
 
@@ -82,7 +82,7 @@ public class Challenge extends BaseTime {
                 .startDate(challengeCreationRequest.getStartDate())
                 .endDate(challengeCreationRequest.getEndDate())
                 .participatingDays(challengeCreationRequest.getParticipatingDays())
-                .totalParticipatingDays(calculateTotalParticipatingDays(challengeCreationRequest))
+                .totalParticipatingDaysCount(calculateTotalParticipatingDays(challengeCreationRequest))
                 .feePerAbsence(challengeCreationRequest.getFeePerAbsence())
                 .build();
     }
