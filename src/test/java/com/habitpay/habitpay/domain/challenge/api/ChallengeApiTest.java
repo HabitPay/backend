@@ -104,7 +104,7 @@ public class ChallengeApiTest extends AbstractRestDocsTests {
                                 fieldWithPath("data[].startDate").description("챌린지 시작 일시"),
                                 fieldWithPath("data[].endDate").description("챌린지 종료 일시"),
                                 fieldWithPath("data[].stopDate").description("챌린지 중단 일시"),
-                                fieldWithPath("data[].totalParticipatingDays").description("챌린지 총 참여 일수"),
+                                fieldWithPath("data[].totalParticipatingDaysCount").description("챌린지 총 참여 일수"),
                                 fieldWithPath("data[].numberOfParticipants").description("챌린지 참여 인원"),
                                 fieldWithPath("data[].participatingDays").description("챌린지 참여 요일"),
                                 fieldWithPath("data[].totalFee").description("나의 벌금 합계"),
