@@ -41,6 +41,6 @@ operation::refreshToken/return-401-when-invalid-token[snippets='http-request,htt
 === 토큰 리프레시 실패 : 403 Forbidden
 
 액세스 토큰이 제공하는 권한보다 더 높은 권한을 요구할 때 발생합니다.
-예를 들면 일반 사용자가 관리자 페이지에 접근하는 경우르 들 수 있습니다.
+예를 들면 일반 사용자가 관리자 페이지에 접근하는 경우를 들 수 있습니다.
 
 operation::refreshToken/return-403-when-insufficient-scope[snippets='http-request,http-response,response-fields']
