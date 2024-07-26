@@ -19,3 +19,9 @@ Request Body에 클라이언트가 가지고 있던 리프레시 토큰을 담�
 (대소문자를 구분하지 않고, "refresh_token" 스네이크 케이싱도 정상 인자로 받습니다.)
 
 operation::refreshToken/create-new-access-token-and-new-refresh-token[snippets='http-request,http-response,response-fields']
+
+=== 토큰 리프레시 실패 : 400 Bad Request
+
+토큰 리프레시 요청 시 파라미터 값이 비어있거나 지원하는 않는 값 등 잘못된 요청일 경우 발생합니다.
+
+operation::refreshToken/return-400-when-invalid-request[snippets='http-request,http-response,response-fields']
