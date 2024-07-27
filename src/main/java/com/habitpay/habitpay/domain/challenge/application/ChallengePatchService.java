@@ -6,6 +6,9 @@ import com.habitpay.habitpay.domain.challenge.dto.ChallengePatchRequest;
 import com.habitpay.habitpay.domain.challenge.dto.ChallengePatchResponse;
 import com.habitpay.habitpay.domain.member.application.MemberSearchService;
 import com.habitpay.habitpay.domain.member.domain.Member;
+import com.habitpay.habitpay.global.error.exception.ErrorCode;
+import com.habitpay.habitpay.global.error.exception.ForbiddenException;
+import com.habitpay.habitpay.global.error.exception.InvalidValueException;
 import com.habitpay.habitpay.global.response.SuccessResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -23,17 +26,14 @@ public class ChallengePatchService {
         Challenge challenge = challengeSearchService.getChallengeById(challengeId);
 
         if (isChallengeHost(member, challenge) == false) {
-            // TODO: 공통 예외 처리 응답 적용하기
-            throw new IllegalArgumentException("챌린지 주최자만 수정 가능합니다.");
+            throw new ForbiddenException(ErrorCode.ONLY_HOST_CAN_MODIFY);
         }
 
         if (isChallengeDescriptionUnchanged(challenge, challengePatchRequest)) {
-            // TODO: 공통 예외 처리 응답 적용하기
-            throw new IllegalArgumentException("변경 사항이 없습니다.");
+            throw new InvalidValueException(ErrorCode.DUPLICATED_CHALLENGE_DESCRIPTION);
         }
 
-        challenge.patch(challengePatchRequest);
-        challengeRepository.save(challenge);
+        challenge.setDescription(challengePatchRequest.getDescription());
 
         return SuccessResponse.of(
                 "챌린지 정보 수정이 반영되었습니다.",
@@ -42,7 +42,7 @@ public class ChallengePatchService {
     }
 
     private boolean isChallengeHost(Member member, Challenge challenge) {
-        return member.getEmail().equals(challenge.getHost().getEmail());
+        return member.getId().equals(challenge.getHost().getId());
     }
 
     private boolean isChallengeDescriptionUnchanged(Challenge challenge, ChallengePatchRequest challengePatchRequest) {
