@@ -30,15 +30,13 @@ public class MemberUpdateService {
     private final String IMAGE_CONTENT_TOO_LARGE = "이미지 파일의 크기가 제한을 초과했습니다.";
     private final String UNSUPPORTED_IMAGE_EXTENSION = "지원하지 않는 이미지 확장자입니다.";
 
-    public SuccessResponse<NicknameDto> updateNickname(NicknameDto nicknameDto, Long id) {
+    public SuccessResponse<NicknameDto> updateNickname(NicknameDto nicknameDto, Member member) {
         String nickname = nicknameDto.getNickname();
         if (isNicknameValidFormat(nickname) == false) {
             // TODO: 422(UNPROCESSABLE_ENTITY) 반환하기
             throw new IllegalArgumentException(INVALID_NICKNAME_RULE);
         }
 
-        Member member = memberRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자 입니다."));
         member.setNickname(nickname);
         memberRepository.save(member);
         String message = Response.PROFILE_UPDATE_SUCCESS.getMessage();

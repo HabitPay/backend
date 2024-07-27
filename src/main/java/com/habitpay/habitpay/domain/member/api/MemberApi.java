@@ -27,7 +27,7 @@ public class MemberApi {
     @PatchMapping("/member/nickname")
     public SuccessResponse<NicknameDto> patchNickname(@RequestBody NicknameDto nicknameDto,
                                                       @AuthenticationPrincipal CustomUserDetails user) {
-        return memberUpdateService.updateNickname(nicknameDto, user.getId());
+        return memberUpdateService.updateNickname(nicknameDto, user.getMember());
     }
 
     @PatchMapping("/member/image")
