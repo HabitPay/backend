@@ -17,6 +17,7 @@ import com.habitpay.habitpay.global.config.aws.S3FileService;
 import com.habitpay.habitpay.global.config.jwt.TokenProvider;
 import com.habitpay.habitpay.global.config.jwt.TokenService;
 import com.habitpay.habitpay.global.error.exception.ErrorCode;
+import com.habitpay.habitpay.global.error.exception.InvalidValueException;
 import com.habitpay.habitpay.global.response.SuccessCode;
 import com.habitpay.habitpay.global.response.SuccessResponse;
 import com.habitpay.habitpay.global.security.WithMockOAuth2User;
@@ -136,7 +137,7 @@ public class MemberApiTest extends AbstractRestDocsTests {
 
     @Test
     @WithMockOAuth2User
-    @DisplayName("사용자 닉네임 변경 예외처리 - 닉네임 규칙 불일치")
+    @DisplayName("사용자 닉네임 변경 예외처리 - 닉네임 규칙 불일치 (400 Bad Request)")
     void patchNicknameInvalidRuleException() throws Exception {
 
         // given
@@ -171,7 +172,7 @@ public class MemberApiTest extends AbstractRestDocsTests {
 
     @Test
     @WithMockOAuth2User
-    @DisplayName("사용자 닉네임 변경 예외처리 - 이전 닉네임과 동일")
+    @DisplayName("사용자 닉네임 변경 예외처리 - 이전 닉네임과 동일 (400 Bad Request)")
     void patchNicknameDuplicatedNicknameException() throws Exception {
 
         // given
@@ -244,6 +245,84 @@ public class MemberApiTest extends AbstractRestDocsTests {
                         )
                 ));
     }
+
+    @Test
+    @WithMockOAuth2User
+    @DisplayName("사용자 프로필 이미지 변경 예외처리 - 파일 크기 초과 (400 Bad Request)")
+    void patchImageSizeExceededException() throws Exception {
+
+        // given
+        Long exceededFileSize = 1024L * 1024L * 1024L;
+        ImageUpdateRequest imageUpdateRequest = ImageUpdateRequest.builder()
+                .extension("jpg")
+                .contentLength(exceededFileSize)
+                .build();
+
+        given(memberUpdateService.updateImage(any(ImageUpdateRequest.class), any(Member.class)))
+                .willThrow(new InvalidValueException(String.format("size: %dMB", exceededFileSize / 1024 / 1024), ErrorCode.PROFILE_IMAGE_SIZE_TOO_LARGE));
+
+        // when
+        ResultActions result = mockMvc.perform(patch("/api/member/image")
+                .header(HttpHeaders.AUTHORIZATION, AUTHORIZATION_HEADER_PREFIX + "ACCESS_TOKEN")
+                .content(objectMapper.writeValueAsString(imageUpdateRequest))
+                .contentType(MediaType.APPLICATION_JSON));
+
+        // then
+        result.andExpect(status().isBadRequest())
+                .andDo(document("member/patch-member-image-size-exceeded-exception",
+                        requestHeaders(
+                                headerWithName(HttpHeaders.AUTHORIZATION).description("액세스 토큰")
+                        ),
+                        requestFields(
+                                fieldWithPath("extension").description("이미지 확장자"),
+                                fieldWithPath("contentLength").description("이미지 크기")
+                        ),
+                        responseFields(
+                                fieldWithPath("code").description("오류 응답 코드"),
+                                fieldWithPath("message").description("오류 메세지")
+                        )
+                ));
+    }
+
+
+    @Test
+    @WithMockOAuth2User
+    @DisplayName("사용자 프로필 이미지 변경 예외처리 - 허용하지 않는 이미지 확장자 (400 Bad Request)")
+    void patchImageUnsupportedExtensionException() throws Exception {
+
+        // given
+        String invalidExtension = "invalidExtension";
+        ImageUpdateRequest imageUpdateRequest = ImageUpdateRequest.builder()
+                .extension(invalidExtension)
+                .contentLength(1024L * 1024L)
+                .build();
+
+        given(memberUpdateService.updateImage(any(ImageUpdateRequest.class), any(Member.class)))
+                .willThrow(new InvalidValueException(String.format("extension: %s", invalidExtension), ErrorCode.UNSUPPORTED_IMAGE_EXTENSION));
+
+        // when
+        ResultActions result = mockMvc.perform(patch("/api/member/image")
+                .header(HttpHeaders.AUTHORIZATION, AUTHORIZATION_HEADER_PREFIX + "ACCESS_TOKEN")
+                .content(objectMapper.writeValueAsString(imageUpdateRequest))
+                .contentType(MediaType.APPLICATION_JSON));
+
+        // then
+        result.andExpect(status().isBadRequest())
+                .andDo(document("member/patch-member-image-unsupported-extension-exception",
+                        requestHeaders(
+                                headerWithName(HttpHeaders.AUTHORIZATION).description("액세스 토큰")
+                        ),
+                        requestFields(
+                                fieldWithPath("extension").description("이미지 확장자"),
+                                fieldWithPath("contentLength").description("이미지 크기")
+                        ),
+                        responseFields(
+                                fieldWithPath("code").description("오류 응답 코드"),
+                                fieldWithPath("message").description("오류 메세지")
+                        )
+                ));
+    }
+
 
     @Test
     @WithMockOAuth2User
