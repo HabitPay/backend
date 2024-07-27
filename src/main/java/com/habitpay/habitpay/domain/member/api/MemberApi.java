@@ -39,6 +39,6 @@ public class MemberApi {
     @DeleteMapping("/member")
     @ResponseStatus(HttpStatus.OK)
     public SuccessResponse<Long> deleteMember(@AuthenticationPrincipal CustomUserDetails user) {
-        return memberDeleteService.delete(user.getId());
+        return memberDeleteService.delete(user.getMember());
     }
 }

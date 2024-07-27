@@ -11,7 +11,6 @@ import com.habitpay.habitpay.domain.member.dto.ImageUpdateResponse;
 import com.habitpay.habitpay.domain.member.dto.MemberProfileResponse;
 import com.habitpay.habitpay.domain.member.dto.NicknameDto;
 import com.habitpay.habitpay.domain.member.exception.InvalidNicknameException;
-import com.habitpay.habitpay.domain.member.exception.MemberNotFoundException;
 import com.habitpay.habitpay.domain.refreshtoken.application.RefreshTokenCreationService;
 import com.habitpay.habitpay.global.config.aws.S3FileService;
 import com.habitpay.habitpay.global.config.jwt.TokenProvider;
@@ -30,7 +29,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
 
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
@@ -332,7 +331,7 @@ public class MemberApiTest extends AbstractRestDocsTests {
         // given
         // TODO: 응답 메세지 enum 으로 관리하기
         SuccessResponse<Long> successResponse = SuccessResponse.of("정상적으로 탈퇴되었습니다.", 1L);
-        given(memberDeleteService.delete(anyLong()))
+        given(memberDeleteService.delete(any(Member.class)))
                 .willReturn(successResponse);
 
         // when
@@ -349,33 +348,6 @@ public class MemberApiTest extends AbstractRestDocsTests {
                         responseFields(
                                 fieldWithPath("message").description("메세지"),
                                 fieldWithPath("data").description("Member ID")
-                        )
-                ));
-    }
-
-    @Test
-    @WithMockOAuth2User
-    @DisplayName("회원 탈퇴 예외처리 - 404 Not Found")
-    void deleteMemberException() throws Exception {
-
-        // given
-        given(memberDeleteService.delete(anyLong()))
-                .willThrow(new MemberNotFoundException(anyLong()));
-
-        // when
-        ResultActions result = mockMvc.perform(delete("/api/member")
-                .header(HttpHeaders.AUTHORIZATION, AUTHORIZATION_HEADER_PREFIX + "ACCESS_TOKEN")
-                .contentType(MediaType.APPLICATION_JSON));
-
-        // then
-        result.andExpect(status().isNotFound())
-                .andDo(document("member/delete-member-exception",
-                        requestHeaders(
-                                headerWithName(HttpHeaders.AUTHORIZATION).description("액세스 토큰")
-                        ),
-                        responseFields(
-                                fieldWithPath("code").description("오류 응답 코드"),
-                                fieldWithPath("message").description("오류 메세지")
                         )
                 ));
     }
