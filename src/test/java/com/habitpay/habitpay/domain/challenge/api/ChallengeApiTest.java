@@ -12,6 +12,9 @@ import com.habitpay.habitpay.domain.challenge.exception.ChallengeStartTimeInvali
 import com.habitpay.habitpay.domain.member.domain.Member;
 import com.habitpay.habitpay.global.config.jwt.TokenProvider;
 import com.habitpay.habitpay.global.config.jwt.TokenService;
+import com.habitpay.habitpay.global.error.exception.ErrorCode;
+import com.habitpay.habitpay.global.error.exception.ForbiddenException;
+import com.habitpay.habitpay.global.error.exception.InvalidValueException;
 import com.habitpay.habitpay.global.response.SuccessResponse;
 import com.habitpay.habitpay.global.security.WithMockOAuth2User;
 import org.junit.jupiter.api.DisplayName;
@@ -357,5 +360,77 @@ public class ChallengeApiTest extends AbstractRestDocsTests {
                         )
                 ));
     }
+
+
+    @Test
+    @WithMockOAuth2User
+    @DisplayName("챌린지 정보 수정 예외처리 - 챌린지 설명이 이전과 동일한 경우 (400 Bad Request)")
+    void patchChallengeDuplicatedDescriptionException() throws Exception {
+
+        // given
+        ChallengePatchRequest challengePatchRequest = ChallengePatchRequest.builder()
+                .description("챌린지 설명")
+                .build();
+
+        given(challengePatchService.patch(anyLong(), any(ChallengePatchRequest.class), any(Member.class)))
+                .willThrow(new InvalidValueException(ErrorCode.DUPLICATED_CHALLENGE_DESCRIPTION));
+
+        // when
+        ResultActions result = mockMvc.perform(patch("/api/challenges/{id}", 1L)
+                .header(HttpHeaders.AUTHORIZATION, AUTHORIZATION_HEADER_PREFIX + "ACCESS_TOKEN")
+                .content(objectMapper.writeValueAsString(challengePatchRequest))
+                .contentType(MediaType.APPLICATION_JSON));
+
+        // then
+        result.andExpect(status().isBadRequest())
+                .andDo(document("challenge/patch-challenge-duplicated-description-exception",
+                        requestHeaders(
+                                headerWithName(HttpHeaders.AUTHORIZATION).description("액세스 토큰")
+                        ),
+                        requestFields(
+                                fieldWithPath("description").description("챌린지 설명")
+                        ),
+                        responseFields(
+                                fieldWithPath("code").description("오류 응답 코드"),
+                                fieldWithPath("message").description("오류 메세지")
+                        )
+                ));
+    }
+
+    @Test
+    @WithMockOAuth2User
+    @DisplayName("챌린지 정보 수정 예외처리 - 챌린지 주최자가 아닌 경우 (403 Forbidden)")
+    void patchChallengeForbiddenException() throws Exception {
+
+        // given
+        ChallengePatchRequest challengePatchRequest = ChallengePatchRequest.builder()
+                .description("챌린지 설명")
+                .build();
+
+        given(challengePatchService.patch(anyLong(), any(ChallengePatchRequest.class), any(Member.class)))
+                .willThrow(new ForbiddenException(ErrorCode.ONLY_HOST_CAN_MODIFY));
+
+        // when
+        ResultActions result = mockMvc.perform(patch("/api/challenges/{id}", 1L)
+                .header(HttpHeaders.AUTHORIZATION, AUTHORIZATION_HEADER_PREFIX + "ACCESS_TOKEN")
+                .content(objectMapper.writeValueAsString(challengePatchRequest))
+                .contentType(MediaType.APPLICATION_JSON));
+
+        // then
+        result.andExpect(status().isForbidden())
+                .andDo(document("challenge/patch-challenge-forbidden-exception",
+                        requestHeaders(
+                                headerWithName(HttpHeaders.AUTHORIZATION).description("액세스 토큰")
+                        ),
+                        requestFields(
+                                fieldWithPath("description").description("챌린지 설명")
+                        ),
+                        responseFields(
+                                fieldWithPath("code").description("오류 응답 코드"),
+                                fieldWithPath("message").description("오류 메세지")
+                        )
+                ));
+    }
+
 
 }

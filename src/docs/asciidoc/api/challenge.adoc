@@ -29,7 +29,7 @@ operation::challenge/get-challenge-details[snippets='http-request,http-response,
 
 ==== 에러 응답
 
-====== 챌린지가 존재하지 않는 경우 (404 Not Found)
+===== 챌린지가 존재하지 않는 경우 (404 Not Found)
 
 존재하지 않는 챌린지를 조회한 경우입니다.
 
@@ -43,7 +43,7 @@ operation::challenge/create-challenge[snippets='http-request,http-response,respo
 
 ==== 에러 응답
 
-====== 챌린지 시작 시간이 현재 시간보다 이전인 경우 (400 Bad Request)
+===== 챌린지 시작 시간이 현재 시간보다 이전인 경우 (400 Bad Request)
 
 챌린지 시작 시간이 현재 시간보다 이전인 경우입니다.
 
@@ -54,6 +54,20 @@ operation::challenge/create-challenge-invalid-start-time[snippets='http-request,
 챌린지 정보를 수정합니다.
 
 operation::challenge/patch-challenge[snippets='http-request,http-response,response-fields']
+
+==== 에러 응답
+
+===== 챌린지 설명이 이전과 동일한 경우 (400 Bad Request)
+
+챌린지 설명이 이전과 동일한 경우입니다.
+
+operation::challenge/patch-challenge-duplicated-description-exception[snippets='http-request,http-response,response-fields']
+
+===== 챌린지 주최자가 아닌 경우 (403 Forbidden)
+
+챌린지 주최자가 아닌 경우입니다.
+
+operation::challenge/patch-challenge-forbidden-exception[snippets='http-request,http-response,response-fields']
 
 === 챌린지 참여자 등록
 
