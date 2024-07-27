@@ -21,24 +21,24 @@ public class MemberApi {
 
     @GetMapping("/member")
     public SuccessResponse<MemberProfileResponse> getMember(@AuthenticationPrincipal CustomUserDetails user) {
-        return memberSearchService.getMemberProfile(user.getId());
+        return memberSearchService.getMemberProfile(user.getMember());
     }
 
     @PatchMapping("/member/nickname")
     public SuccessResponse<NicknameDto> patchNickname(@RequestBody NicknameDto nicknameDto,
                                                       @AuthenticationPrincipal CustomUserDetails user) {
-        return memberUpdateService.updateNickname(nicknameDto, user.getId());
+        return memberUpdateService.updateNickname(nicknameDto, user.getMember());
     }
 
     @PatchMapping("/member/image")
     public SuccessResponse<ImageUpdateResponse> patchImage(@RequestBody ImageUpdateRequest imageUpdateRequest,
                                                            @AuthenticationPrincipal CustomUserDetails user) {
-        return memberUpdateService.updateImage(imageUpdateRequest, user.getId());
+        return memberUpdateService.updateImage(imageUpdateRequest, user.getMember());
     }
 
     @DeleteMapping("/member")
     @ResponseStatus(HttpStatus.OK)
     public SuccessResponse<Long> deleteMember(@AuthenticationPrincipal CustomUserDetails user) {
-        return memberDeleteService.delete(user.getId());
+        return memberDeleteService.delete(user.getMember());
     }
 }

@@ -26,6 +26,20 @@ operation::member/get-member[snippets='http-request,http-response,response-field
 
 operation::member/patch-member-nickname[snippets='http-request,http-response,response-fields']
 
+==== 에러 응답
+
+====== 1. 닉네임 규칙에 맞지 않는 경우 (400 Bad Request)
+
+닉네임 규칙에 맞지 않는 경우입니다.
+
+operation::member/patch-member-nickname-invalid-rule-exception[snippets='http-request,http-response,response-fields']
+
+====== 2. 이전과 동일한 닉네임인 경우 (400 Bad Request)
+
+이전에 사용했던 닉네임과 동일한 닉네임을 사용한 경우입니다.
+
+operation::member/patch-member-nickname-duplicated-nickname-exception[snippets='http-request,http-response,response-fields']
+
 === 사용자 이미지 변경
 
 사용자의 이미지를 변경합니다.
@@ -39,6 +53,20 @@ operation::member/patch-member-nickname[snippets='http-request,http-response,res
 
 operation::member/patch-member-image[snippets='http-request,http-response,response-fields']
 
+==== 에러 응답
+
+====== 1. 이미지 크기가 초과한 경우 (400 Bad Request)
+
+이미지 크기가 1MB 초과한 경우입니다.
+
+operation::member/patch-member-image-size-exceeded-exception[snippets='http-request,http-response,response-fields']
+
+====== 2. 허용하지 않는 이미지 확장자인 경우 (400 Bad Request)
+
+허용하는 이미지 확장자가 아닌 경우입니다.
+
+operation::member/patch-member-image-unsupported-extension-exception[snippets='http-request,http-response,response-fields']
+
 === 회원 탈퇴
 
 회원 탈퇴를 진행합니다.
@@ -46,12 +74,3 @@ operation::member/patch-member-image[snippets='http-request,http-response,respon
 반환되는 값은 DB 테이블의 Primary Key 에 해당하는 사용자의 ID 입니다.
 
 operation::member/delete-member[snippets='http-request,http-response,response-fields']
-
-==== 에러 응답
-
-====== 404 Not Found
-
-이미 탈퇴한 회원이 만료되지 않은 액세스 토큰으로 회원 탈퇴를 시도한 경우에 에러를 반환합니다.
-
-operation::member/delete-member-exception[snippets='http-request,http-response,response-fields']
-

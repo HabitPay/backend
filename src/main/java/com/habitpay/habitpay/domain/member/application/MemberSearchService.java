@@ -17,15 +17,10 @@ public class MemberSearchService {
     private final MemberRepository memberRepository;
     private final S3FileService s3FileService;
 
-    public SuccessResponse<MemberProfileResponse> getMemberProfile(Long id) {
-        Member member = getMemberById(id);
+    public SuccessResponse<MemberProfileResponse> getMemberProfile(Member member) {
         String imageFileName = Optional.ofNullable(member.getImageFileName()).orElse("");
-
-        // TODO: 꼭 이미지를 presigned url 로 받아와야 할 필요가 있을까?
-        String imageUrl = "";
-        if (imageFileName.isEmpty() == false) {
-            imageUrl = s3FileService.getGetPreSignedUrl("profiles", imageFileName);
-        }
+        String imageUrl = imageFileName.isEmpty() ? "" : s3FileService.getGetPreSignedUrl("profiles", imageFileName);
+        
         return SuccessResponse.of("", MemberProfileResponse.of(member, imageUrl));
     }
 

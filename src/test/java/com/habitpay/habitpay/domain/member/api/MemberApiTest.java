@@ -5,15 +5,19 @@ import com.habitpay.habitpay.docs.springrestdocs.AbstractRestDocsTests;
 import com.habitpay.habitpay.domain.member.application.MemberDeleteService;
 import com.habitpay.habitpay.domain.member.application.MemberSearchService;
 import com.habitpay.habitpay.domain.member.application.MemberUpdateService;
+import com.habitpay.habitpay.domain.member.domain.Member;
 import com.habitpay.habitpay.domain.member.dto.ImageUpdateRequest;
 import com.habitpay.habitpay.domain.member.dto.ImageUpdateResponse;
 import com.habitpay.habitpay.domain.member.dto.MemberProfileResponse;
 import com.habitpay.habitpay.domain.member.dto.NicknameDto;
-import com.habitpay.habitpay.domain.member.exception.MemberNotFoundException;
+import com.habitpay.habitpay.domain.member.exception.InvalidNicknameException;
 import com.habitpay.habitpay.domain.refreshtoken.application.RefreshTokenCreationService;
 import com.habitpay.habitpay.global.config.aws.S3FileService;
 import com.habitpay.habitpay.global.config.jwt.TokenProvider;
 import com.habitpay.habitpay.global.config.jwt.TokenService;
+import com.habitpay.habitpay.global.error.exception.ErrorCode;
+import com.habitpay.habitpay.global.error.exception.InvalidValueException;
+import com.habitpay.habitpay.global.response.SuccessCode;
 import com.habitpay.habitpay.global.response.SuccessResponse;
 import com.habitpay.habitpay.global.security.WithMockOAuth2User;
 import org.junit.jupiter.api.DisplayName;
@@ -26,7 +30,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
@@ -75,7 +78,7 @@ public class MemberApiTest extends AbstractRestDocsTests {
                 .imageUrl("https://picsum.photos/id/40/200/300")
                 .build();
 
-        given(memberSearchService.getMemberProfile(anyLong()))
+        given(memberSearchService.getMemberProfile(any(Member.class)))
                 .willReturn(SuccessResponse.of("", memberProfileResponse));
 
         // when
@@ -105,9 +108,8 @@ public class MemberApiTest extends AbstractRestDocsTests {
         NicknameDto nicknameDto = NicknameDto.builder()
                 .nickname("testNickname")
                 .build();
-        // TODO: 응답 메세지 enum 으로 관리하기
-        SuccessResponse<NicknameDto> successResponse = SuccessResponse.of("프로필 업데이트에 성공했습니다.", nicknameDto);
-        given(memberUpdateService.updateNickname(any(NicknameDto.class), anyLong()))
+        SuccessResponse<NicknameDto> successResponse = SuccessResponse.of(SuccessCode.NICKNAME_UPDATE_SUCCESS.getMessage(), nicknameDto);
+        given(memberUpdateService.updateNickname(any(NicknameDto.class), any(Member.class)))
                 .willReturn(successResponse);
 
         // when
@@ -134,6 +136,76 @@ public class MemberApiTest extends AbstractRestDocsTests {
 
     @Test
     @WithMockOAuth2User
+    @DisplayName("사용자 닉네임 변경 예외처리 - 닉네임 규칙 불일치 (400 Bad Request)")
+    void patchNicknameInvalidRuleException() throws Exception {
+
+        // given
+        String invalidNickname = "invalid.#_!nickname";
+        NicknameDto nicknameDto = NicknameDto.builder()
+                .nickname(invalidNickname)
+                .build();
+        given(memberUpdateService.updateNickname(any(NicknameDto.class), any(Member.class)))
+                .willThrow(new InvalidNicknameException(invalidNickname, ErrorCode.INVALID_NICKNAME_RULE));
+
+        // when
+        ResultActions result = mockMvc.perform(patch("/api/member/nickname")
+                .header(HttpHeaders.AUTHORIZATION, AUTHORIZATION_HEADER_PREFIX + "ACCESS_TOKEN")
+                .content(objectMapper.writeValueAsString(nicknameDto))
+                .contentType(MediaType.APPLICATION_JSON));
+
+        // then
+        result.andExpect(status().isBadRequest())
+                .andDo(document("member/patch-member-nickname-invalid-rule-exception",
+                        requestHeaders(
+                                headerWithName(HttpHeaders.AUTHORIZATION).description("액세스 토큰")
+                        ),
+                        requestFields(
+                                fieldWithPath("nickname").description("닉네임")
+                        ),
+                        responseFields(
+                                fieldWithPath("code").description("오류 응답 코드"),
+                                fieldWithPath("message").description("오류 메세지")
+                        )
+                ));
+    }
+
+    @Test
+    @WithMockOAuth2User
+    @DisplayName("사용자 닉네임 변경 예외처리 - 이전 닉네임과 동일 (400 Bad Request)")
+    void patchNicknameDuplicatedNicknameException() throws Exception {
+
+        // given
+        String duplicatedNickname = "duplicatedNickname";
+        NicknameDto nicknameDto = NicknameDto.builder()
+                .nickname(duplicatedNickname)
+                .build();
+        given(memberUpdateService.updateNickname(any(NicknameDto.class), any(Member.class)))
+                .willThrow(new InvalidNicknameException(duplicatedNickname, ErrorCode.DUPLICATED_NICKNAME));
+
+        // when
+        ResultActions result = mockMvc.perform(patch("/api/member/nickname")
+                .header(HttpHeaders.AUTHORIZATION, AUTHORIZATION_HEADER_PREFIX + "ACCESS_TOKEN")
+                .content(objectMapper.writeValueAsString(nicknameDto))
+                .contentType(MediaType.APPLICATION_JSON));
+
+        // then
+        result.andExpect(status().isBadRequest())
+                .andDo(document("member/patch-member-nickname-duplicated-nickname-exception",
+                        requestHeaders(
+                                headerWithName(HttpHeaders.AUTHORIZATION).description("액세스 토큰")
+                        ),
+                        requestFields(
+                                fieldWithPath("nickname").description("닉네임")
+                        ),
+                        responseFields(
+                                fieldWithPath("code").description("오류 응답 코드"),
+                                fieldWithPath("message").description("오류 메세지")
+                        )
+                ));
+    }
+
+    @Test
+    @WithMockOAuth2User
     @DisplayName("사용자 이미지 변경")
     void patchImage() throws Exception {
 
@@ -147,7 +219,7 @@ public class MemberApiTest extends AbstractRestDocsTests {
                 .build();
         // TODO: 응답 메세지 enum 으로 관리하기
         SuccessResponse<ImageUpdateResponse> successResponse = SuccessResponse.of("프로필 업데이트에 성공했습니다.", imageUpdateResponse);
-        given(memberUpdateService.updateImage(any(ImageUpdateRequest.class), anyLong()))
+        given(memberUpdateService.updateImage(any(ImageUpdateRequest.class), any(Member.class)))
                 .willReturn(successResponse);
 
         // when
@@ -175,13 +247,91 @@ public class MemberApiTest extends AbstractRestDocsTests {
 
     @Test
     @WithMockOAuth2User
+    @DisplayName("사용자 프로필 이미지 변경 예외처리 - 파일 크기 초과 (400 Bad Request)")
+    void patchImageSizeExceededException() throws Exception {
+
+        // given
+        Long exceededFileSize = 1024L * 1024L * 1024L;
+        ImageUpdateRequest imageUpdateRequest = ImageUpdateRequest.builder()
+                .extension("jpg")
+                .contentLength(exceededFileSize)
+                .build();
+
+        given(memberUpdateService.updateImage(any(ImageUpdateRequest.class), any(Member.class)))
+                .willThrow(new InvalidValueException(String.format("size: %dMB", exceededFileSize / 1024 / 1024), ErrorCode.PROFILE_IMAGE_SIZE_TOO_LARGE));
+
+        // when
+        ResultActions result = mockMvc.perform(patch("/api/member/image")
+                .header(HttpHeaders.AUTHORIZATION, AUTHORIZATION_HEADER_PREFIX + "ACCESS_TOKEN")
+                .content(objectMapper.writeValueAsString(imageUpdateRequest))
+                .contentType(MediaType.APPLICATION_JSON));
+
+        // then
+        result.andExpect(status().isBadRequest())
+                .andDo(document("member/patch-member-image-size-exceeded-exception",
+                        requestHeaders(
+                                headerWithName(HttpHeaders.AUTHORIZATION).description("액세스 토큰")
+                        ),
+                        requestFields(
+                                fieldWithPath("extension").description("이미지 확장자"),
+                                fieldWithPath("contentLength").description("이미지 크기")
+                        ),
+                        responseFields(
+                                fieldWithPath("code").description("오류 응답 코드"),
+                                fieldWithPath("message").description("오류 메세지")
+                        )
+                ));
+    }
+
+
+    @Test
+    @WithMockOAuth2User
+    @DisplayName("사용자 프로필 이미지 변경 예외처리 - 허용하지 않는 이미지 확장자 (400 Bad Request)")
+    void patchImageUnsupportedExtensionException() throws Exception {
+
+        // given
+        String invalidExtension = "invalidExtension";
+        ImageUpdateRequest imageUpdateRequest = ImageUpdateRequest.builder()
+                .extension(invalidExtension)
+                .contentLength(1024L * 1024L)
+                .build();
+
+        given(memberUpdateService.updateImage(any(ImageUpdateRequest.class), any(Member.class)))
+                .willThrow(new InvalidValueException(String.format("extension: %s", invalidExtension), ErrorCode.UNSUPPORTED_IMAGE_EXTENSION));
+
+        // when
+        ResultActions result = mockMvc.perform(patch("/api/member/image")
+                .header(HttpHeaders.AUTHORIZATION, AUTHORIZATION_HEADER_PREFIX + "ACCESS_TOKEN")
+                .content(objectMapper.writeValueAsString(imageUpdateRequest))
+                .contentType(MediaType.APPLICATION_JSON));
+
+        // then
+        result.andExpect(status().isBadRequest())
+                .andDo(document("member/patch-member-image-unsupported-extension-exception",
+                        requestHeaders(
+                                headerWithName(HttpHeaders.AUTHORIZATION).description("액세스 토큰")
+                        ),
+                        requestFields(
+                                fieldWithPath("extension").description("이미지 확장자"),
+                                fieldWithPath("contentLength").description("이미지 크기")
+                        ),
+                        responseFields(
+                                fieldWithPath("code").description("오류 응답 코드"),
+                                fieldWithPath("message").description("오류 메세지")
+                        )
+                ));
+    }
+
+
+    @Test
+    @WithMockOAuth2User
     @DisplayName("회원 탈퇴")
     void deleteMember() throws Exception {
 
         // given
         // TODO: 응답 메세지 enum 으로 관리하기
         SuccessResponse<Long> successResponse = SuccessResponse.of("정상적으로 탈퇴되었습니다.", 1L);
-        given(memberDeleteService.delete(anyLong()))
+        given(memberDeleteService.delete(any(Member.class)))
                 .willReturn(successResponse);
 
         // when
@@ -198,33 +348,6 @@ public class MemberApiTest extends AbstractRestDocsTests {
                         responseFields(
                                 fieldWithPath("message").description("메세지"),
                                 fieldWithPath("data").description("Member ID")
-                        )
-                ));
-    }
-
-    @Test
-    @WithMockOAuth2User
-    @DisplayName("회원 탈퇴 예외처리 - 404 Not Found")
-    void deleteMemberException() throws Exception {
-
-        // given
-        given(memberDeleteService.delete(anyLong()))
-                .willThrow(new MemberNotFoundException(anyLong()));
-
-        // when
-        ResultActions result = mockMvc.perform(delete("/api/member")
-                .header(HttpHeaders.AUTHORIZATION, AUTHORIZATION_HEADER_PREFIX + "ACCESS_TOKEN")
-                .contentType(MediaType.APPLICATION_JSON));
-
-        // then
-        result.andExpect(status().isNotFound())
-                .andDo(document("member/delete-member-exception",
-                        requestHeaders(
-                                headerWithName(HttpHeaders.AUTHORIZATION).description("액세스 토큰")
-                        ),
-                        responseFields(
-                                fieldWithPath("code").description("오류 응답 코드"),
-                                fieldWithPath("message").description("오류 메세지")
                         )
                 ));
     }
