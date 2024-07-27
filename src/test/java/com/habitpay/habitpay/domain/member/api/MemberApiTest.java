@@ -219,7 +219,7 @@ public class MemberApiTest extends AbstractRestDocsTests {
                 .build();
         // TODO: 응답 메세지 enum 으로 관리하기
         SuccessResponse<ImageUpdateResponse> successResponse = SuccessResponse.of("프로필 업데이트에 성공했습니다.", imageUpdateResponse);
-        given(memberUpdateService.updateImage(any(ImageUpdateRequest.class), anyLong()))
+        given(memberUpdateService.updateImage(any(ImageUpdateRequest.class), any(Member.class)))
                 .willReturn(successResponse);
 
         // when

@@ -33,7 +33,7 @@ public class MemberApi {
     @PatchMapping("/member/image")
     public SuccessResponse<ImageUpdateResponse> patchImage(@RequestBody ImageUpdateRequest imageUpdateRequest,
                                                            @AuthenticationPrincipal CustomUserDetails user) {
-        return memberUpdateService.updateImage(imageUpdateRequest, user.getId());
+        return memberUpdateService.updateImage(imageUpdateRequest, user.getMember());
     }
 
     @DeleteMapping("/member")
