@@ -20,7 +20,8 @@ public enum ErrorCode {
     UNSUPPORTED_IMAGE_EXTENSION(HttpStatus.BAD_REQUEST, "지원하지 않는 이미지 확장자입니다. (png, jpg, jpeg 만 가능)"),
 
     // Challenge
-    CHALLENGE_NOT_FOUND(HttpStatus.NOT_FOUND, "챌린지가 존재하지 않습니다.");
+    CHALLENGE_NOT_FOUND(HttpStatus.NOT_FOUND, "챌린지가 존재하지 않습니다."),
+    CHALLENGE_START_TIME_INVALID(HttpStatus.BAD_REQUEST, "챌린지 시작 시간은 현재 시간 이후만 가능합니다.");
     private HttpStatus status;
     private final String message;
 
