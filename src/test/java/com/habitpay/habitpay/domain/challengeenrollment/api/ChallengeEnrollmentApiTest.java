@@ -11,6 +11,7 @@ import com.habitpay.habitpay.global.config.jwt.TokenProvider;
 import com.habitpay.habitpay.global.config.jwt.TokenService;
 import com.habitpay.habitpay.global.error.exception.BadRequestException;
 import com.habitpay.habitpay.global.error.exception.ErrorCode;
+import com.habitpay.habitpay.global.response.SuccessCode;
 import com.habitpay.habitpay.global.response.SuccessResponse;
 import com.habitpay.habitpay.global.security.WithMockOAuth2User;
 import org.junit.jupiter.api.DisplayName;
@@ -67,7 +68,7 @@ public class ChallengeEnrollmentApiTest extends AbstractRestDocsTests {
                 .build();
 
         given(challengeEnrollmentService.enroll(anyLong(), any(Member.class)))
-                .willReturn(SuccessResponse.of("챌린지에 정상적으로 등록했습니다.", challengeEnrollmentResponse));
+                .willReturn(SuccessResponse.of(SuccessCode.ENROLL_CHALLENGE_SUCCESS, challengeEnrollmentResponse));
 
         // when
         ResultActions result = mockMvc.perform(post("/api/challenges/{id}/enroll", 1L)
@@ -136,6 +137,32 @@ public class ChallengeEnrollmentApiTest extends AbstractRestDocsTests {
                         responseFields(
                                 fieldWithPath("code").description("오류 응답 코드"),
                                 fieldWithPath("message").description("오류 메세지")
+                        )
+                ));
+    }
+
+    @Test
+    @WithMockOAuth2User
+    @DisplayName("챌린지 등록 취소")
+    void cancelChallenge() throws Exception {
+
+        // given
+        given(challengeEnrollmentCancellationService.cancel(anyLong(), any(Member.class)))
+                .willReturn(SuccessResponse.<Void>of(SuccessCode.CANCEL_CHALLENGE_ENROLLMENT_SUCCESS));
+
+        // when
+        ResultActions result = mockMvc.perform(post("/api/challenges/{id}/cancel", 1L)
+                .header(HttpHeaders.AUTHORIZATION, AUTHORIZATION_HEADER_PREFIX + "ACCESS_TOKEN"));
+
+        // then
+        result.andExpect(status().isOk())
+                .andDo(document("challenge/cancel-challenge-enrollment",
+                        requestHeaders(
+                                headerWithName(HttpHeaders.AUTHORIZATION).description("액세스 토큰")
+                        ),
+                        responseFields(
+                                fieldWithPath("message").description("메세지"),
+                                fieldWithPath("data").description("null")
                         )
                 ));
     }
