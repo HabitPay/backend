@@ -1,6 +1,5 @@
 package com.habitpay.habitpay.domain.postphoto.exception;
 
-import com.habitpay.habitpay.global.error.ErrorResponse;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
@@ -8,11 +7,11 @@ import org.springframework.http.HttpStatus;
 public class CustomPhotoException extends RuntimeException {
 
     private final HttpStatus statusCode;
-    private final ErrorResponse errorResponse;
+    private final String errorResponse;
     private final String message;
 
-    public CustomPhotoException(HttpStatus statusCode, ErrorResponse errorResponse, String message) {
-        super(errorResponse.getMessage());
+    public CustomPhotoException(HttpStatus statusCode, String errorResponse, String message) {
+        super(errorResponse);
         this.statusCode = statusCode;
         this.errorResponse = errorResponse;
         this.message = message;
