@@ -26,7 +26,7 @@ public class ChallengeEnrolledListItemResponse {
     private Boolean isTodayParticipatingDay;
     private Boolean isParticipatedToday;
 
-    public static ChallengeEnrolledListItemResponse of(Challenge challenge, ChallengeEnrollment challengeEnrollment, boolean isParticipatedToday) {
+    public static ChallengeEnrolledListItemResponse of(Challenge challenge, ChallengeEnrollment challengeEnrollment, String hostProfileImage, boolean isParticipatedToday) {
         return ChallengeEnrolledListItemResponse.builder()
                 .title(challenge.getTitle())
                 .description(challenge.getDescription())
@@ -38,7 +38,7 @@ public class ChallengeEnrolledListItemResponse {
                 .isPaidAll(challenge.isPaidAll())
                 .participatingDays(challenge.getParticipatingDays())
                 .totalFee(challengeEnrollment.getTotalFee())
-                .hostProfileImage(challenge.getHost().getImageFileName())
+                .hostProfileImage(hostProfileImage)
                 .isMemberGivenUp(challengeEnrollment.isGivenUp())
                 .successCount(challengeEnrollment.getSuccessCount())
                 .isTodayParticipatingDay(challenge.isTodayParticipatingDay())

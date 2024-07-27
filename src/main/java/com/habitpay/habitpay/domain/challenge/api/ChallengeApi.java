@@ -19,6 +19,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Slf4j
 public class ChallengeApi {
+
     private final ChallengeCreationService challengeCreationService;
     private final ChallengePatchService challengePatchService;
     private final ChallengeDetailsService challengeDetailsService;
