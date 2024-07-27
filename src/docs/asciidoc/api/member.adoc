@@ -74,12 +74,3 @@ operation::member/patch-member-image-unsupported-extension-exception[snippets='h
 반환되는 값은 DB 테이블의 Primary Key 에 해당하는 사용자의 ID 입니다.
 
 operation::member/delete-member[snippets='http-request,http-response,response-fields']
-
-==== 에러 응답
-
-====== 404 Not Found
-
-이미 탈퇴한 회원이 만료되지 않은 액세스 토큰으로 회원 탈퇴를 시도한 경우에 에러를 반환합니다.
-
-operation::member/delete-member-exception[snippets='http-request,http-response,response-fields']
-
