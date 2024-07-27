@@ -1,5 +1,6 @@
 package com.habitpay.habitpay.global.config.auth;
 
+import com.habitpay.habitpay.domain.refreshtoken.application.RefreshTokenCreationService;
 import com.habitpay.habitpay.global.config.jwt.TokenService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -24,6 +25,7 @@ public class CustomOAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSucc
     private final String redirectUrl = "http://localhost:3000/auth";
 
     private final TokenService tokenService;
+    private final RefreshTokenCreationService refreshTokenCreationService;
 
     @Override
     public void onAuthenticationSuccess(
@@ -37,7 +39,7 @@ public class CustomOAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSucc
             CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
             Long memberId = customUserDetails.getId();
             String accessToken = tokenService.createAccessToken(memberId);
-            String refreshToken = tokenService.createRefreshToken(memberId);
+            String refreshToken = refreshTokenCreationService.createRefreshToken(memberId);
 
             super.clearAuthenticationAttributes(request);
 
