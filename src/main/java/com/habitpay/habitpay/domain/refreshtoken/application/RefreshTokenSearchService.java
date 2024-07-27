@@ -1,10 +1,7 @@
 package com.habitpay.habitpay.domain.refreshtoken.application;
 
-import com.habitpay.habitpay.domain.member.application.MemberService;
 import com.habitpay.habitpay.domain.refreshtoken.dao.RefreshTokenRepository;
 import com.habitpay.habitpay.domain.refreshtoken.domain.RefreshToken;
-import com.habitpay.habitpay.global.config.jwt.TokenProvider;
-import com.habitpay.habitpay.global.config.jwt.TokenService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
