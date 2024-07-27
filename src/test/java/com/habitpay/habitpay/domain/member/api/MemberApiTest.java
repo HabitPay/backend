@@ -10,11 +10,14 @@ import com.habitpay.habitpay.domain.member.dto.ImageUpdateRequest;
 import com.habitpay.habitpay.domain.member.dto.ImageUpdateResponse;
 import com.habitpay.habitpay.domain.member.dto.MemberProfileResponse;
 import com.habitpay.habitpay.domain.member.dto.NicknameDto;
+import com.habitpay.habitpay.domain.member.exception.InvalidNicknameException;
 import com.habitpay.habitpay.domain.member.exception.MemberNotFoundException;
 import com.habitpay.habitpay.domain.refreshtoken.application.RefreshTokenCreationService;
 import com.habitpay.habitpay.global.config.aws.S3FileService;
 import com.habitpay.habitpay.global.config.jwt.TokenProvider;
 import com.habitpay.habitpay.global.config.jwt.TokenService;
+import com.habitpay.habitpay.global.error.exception.ErrorCode;
+import com.habitpay.habitpay.global.response.SuccessCode;
 import com.habitpay.habitpay.global.response.SuccessResponse;
 import com.habitpay.habitpay.global.security.WithMockOAuth2User;
 import org.junit.jupiter.api.DisplayName;
@@ -26,8 +29,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
@@ -106,8 +108,7 @@ public class MemberApiTest extends AbstractRestDocsTests {
         NicknameDto nicknameDto = NicknameDto.builder()
                 .nickname("testNickname")
                 .build();
-        // TODO: 응답 메세지 enum 으로 관리하기
-        SuccessResponse<NicknameDto> successResponse = SuccessResponse.of("프로필 업데이트에 성공했습니다.", nicknameDto);
+        SuccessResponse<NicknameDto> successResponse = SuccessResponse.of(SuccessCode.NICKNAME_UPDATE_SUCCESS.getMessage(), nicknameDto);
         given(memberUpdateService.updateNickname(any(NicknameDto.class), any(Member.class)))
                 .willReturn(successResponse);
 
@@ -129,6 +130,76 @@ public class MemberApiTest extends AbstractRestDocsTests {
                         responseFields(
                                 fieldWithPath("message").description("메세지"),
                                 fieldWithPath("data.nickname").description("닉네임")
+                        )
+                ));
+    }
+
+    @Test
+    @WithMockOAuth2User
+    @DisplayName("사용자 닉네임 변경 예외처리 - 닉네임 규칙 불일치")
+    void patchNicknameInvalidRuleException() throws Exception {
+
+        // given
+        String invalidNickname = "invalid.#_!nickname";
+        NicknameDto nicknameDto = NicknameDto.builder()
+                .nickname(invalidNickname)
+                .build();
+        given(memberUpdateService.updateNickname(any(NicknameDto.class), any(Member.class)))
+                .willThrow(new InvalidNicknameException(invalidNickname, ErrorCode.INVALID_NICKNAME_RULE));
+
+        // when
+        ResultActions result = mockMvc.perform(patch("/api/member/nickname")
+                .header(HttpHeaders.AUTHORIZATION, AUTHORIZATION_HEADER_PREFIX + "ACCESS_TOKEN")
+                .content(objectMapper.writeValueAsString(nicknameDto))
+                .contentType(MediaType.APPLICATION_JSON));
+
+        // then
+        result.andExpect(status().isBadRequest())
+                .andDo(document("member/patch-member-nickname-invalid-rule-exception",
+                        requestHeaders(
+                                headerWithName(HttpHeaders.AUTHORIZATION).description("액세스 토큰")
+                        ),
+                        requestFields(
+                                fieldWithPath("nickname").description("닉네임")
+                        ),
+                        responseFields(
+                                fieldWithPath("code").description("오류 응답 코드"),
+                                fieldWithPath("message").description("오류 메세지")
+                        )
+                ));
+    }
+
+    @Test
+    @WithMockOAuth2User
+    @DisplayName("사용자 닉네임 변경 예외처리 - 이전 닉네임과 동일")
+    void patchNicknameDuplicatedNicknameException() throws Exception {
+
+        // given
+        String duplicatedNickname = "duplicatedNickname";
+        NicknameDto nicknameDto = NicknameDto.builder()
+                .nickname(duplicatedNickname)
+                .build();
+        given(memberUpdateService.updateNickname(any(NicknameDto.class), any(Member.class)))
+                .willThrow(new InvalidNicknameException(duplicatedNickname, ErrorCode.DUPLICATED_NICKNAME));
+
+        // when
+        ResultActions result = mockMvc.perform(patch("/api/member/nickname")
+                .header(HttpHeaders.AUTHORIZATION, AUTHORIZATION_HEADER_PREFIX + "ACCESS_TOKEN")
+                .content(objectMapper.writeValueAsString(nicknameDto))
+                .contentType(MediaType.APPLICATION_JSON));
+
+        // then
+        result.andExpect(status().isBadRequest())
+                .andDo(document("member/patch-member-nickname-duplicated-nickname-exception",
+                        requestHeaders(
+                                headerWithName(HttpHeaders.AUTHORIZATION).description("액세스 토큰")
+                        ),
+                        requestFields(
+                                fieldWithPath("nickname").description("닉네임")
+                        ),
+                        responseFields(
+                                fieldWithPath("code").description("오류 응답 코드"),
+                                fieldWithPath("message").description("오류 메세지")
                         )
                 ));
     }
