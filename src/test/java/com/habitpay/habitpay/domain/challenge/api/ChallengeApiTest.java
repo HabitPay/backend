@@ -7,6 +7,7 @@ import com.habitpay.habitpay.domain.challenge.application.ChallengeDetailsServic
 import com.habitpay.habitpay.domain.challenge.application.ChallengePatchService;
 import com.habitpay.habitpay.domain.challenge.application.ChallengeSearchService;
 import com.habitpay.habitpay.domain.challenge.dto.*;
+import com.habitpay.habitpay.domain.challenge.exception.ChallengeNotFoundException;
 import com.habitpay.habitpay.domain.member.domain.Member;
 import com.habitpay.habitpay.global.config.jwt.TokenProvider;
 import com.habitpay.habitpay.global.config.jwt.TokenService;
@@ -168,6 +169,33 @@ public class ChallengeApiTest extends AbstractRestDocsTests {
                                 fieldWithPath("data.hostProfileImage").description("챌린지 주최자 프로필 이미지"),
                                 fieldWithPath("data.isHost").description("현재 접속한 사용자 == 챌린지 주최자"),
                                 fieldWithPath("data.isMemberEnrolledInChallenge").description("현재 접속한 사용자의 챌린지 참여 여부")
+                        )
+                ));
+    }
+
+
+    @Test
+    @WithMockOAuth2User
+    @DisplayName("챌린지 상세 정보 조회 예외처리 - 존재하지 않는 챌린지 (404 Not Found)")
+    void getChallengeDetailsNotFoundException() throws Exception {
+
+        // given
+        given(challengeDetailsService.getChallengeDetails(anyLong(), any(Member.class)))
+                .willThrow(new ChallengeNotFoundException(0L));
+
+        // when
+        ResultActions result = mockMvc.perform(get("/api/challenges/{id}", 0L)
+                .header(HttpHeaders.AUTHORIZATION, AUTHORIZATION_HEADER_PREFIX + "ACCESS_TOKEN"));
+
+        // then
+        result.andExpect(status().isNotFound())
+                .andDo(document("challenge/get-challenge-details-not-found-exception",
+                        requestHeaders(
+                                headerWithName(HttpHeaders.AUTHORIZATION).description("액세스 토큰")
+                        ),
+                        responseFields(
+                                fieldWithPath("code").description("오류 응답 코드"),
+                                fieldWithPath("message").description("오류 메세지")
                         )
                 ));
     }
