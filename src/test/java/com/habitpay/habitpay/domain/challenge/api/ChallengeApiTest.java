@@ -8,6 +8,7 @@ import com.habitpay.habitpay.domain.challenge.application.ChallengePatchService;
 import com.habitpay.habitpay.domain.challenge.application.ChallengeSearchService;
 import com.habitpay.habitpay.domain.challenge.dto.*;
 import com.habitpay.habitpay.domain.challenge.exception.ChallengeNotFoundException;
+import com.habitpay.habitpay.domain.challenge.exception.ChallengeStartTimeInvalidException;
 import com.habitpay.habitpay.domain.member.domain.Member;
 import com.habitpay.habitpay.global.config.jwt.TokenProvider;
 import com.habitpay.habitpay.global.config.jwt.TokenService;
@@ -258,6 +259,53 @@ public class ChallengeApiTest extends AbstractRestDocsTests {
                                 fieldWithPath("data.endDate").description("챌린지 종료 일시"),
                                 fieldWithPath("data.participatingDays").description("챌린지 참여 요일"),
                                 fieldWithPath("data.feePerAbsence").description("1회당 미참여 벌금")
+                        )
+                ));
+    }
+
+
+    @Test
+    @WithMockOAuth2User
+    @DisplayName("챌린지 생성 예외처리 - 챌린지 시작 시간 유효성 검증 (400 Bad Request)")
+    void createChallengeInvalidStartTime() throws Exception {
+
+        // given
+        ZonedDateTime yesterday = ZonedDateTime.now().minusDays(1);
+        ChallengeCreationRequest challengeCreationRequest = ChallengeCreationRequest.builder()
+                .title("챌린지 제목")
+                .description("챌린지 설명")
+                .startDate(yesterday)
+                .endDate(ZonedDateTime.now().plusDays(5))
+                .participatingDays((byte) (1 << 2))
+                .feePerAbsence(1000)
+                .build();
+
+        given(challengeCreationService.createChallenge(any(ChallengeCreationRequest.class), any(Member.class)))
+                .willThrow(new ChallengeStartTimeInvalidException(yesterday));
+
+        // when
+        ResultActions result = mockMvc.perform(post("/api/challenges")
+                .header(HttpHeaders.AUTHORIZATION, AUTHORIZATION_HEADER_PREFIX + "ACCESS_TOKEN")
+                .content(objectMapper.writeValueAsString(challengeCreationRequest))
+                .contentType(MediaType.APPLICATION_JSON));
+
+        // then
+        result.andExpect(status().isBadRequest())
+                .andDo(document("challenge/create-challenge-invalid-start-time",
+                        requestHeaders(
+                                headerWithName(HttpHeaders.AUTHORIZATION).description("액세스 토큰")
+                        ),
+                        requestFields(
+                                fieldWithPath("title").description("챌린지 제목"),
+                                fieldWithPath("description").description("챌린지 설명"),
+                                fieldWithPath("startDate").description("챌린지 시작 일시"),
+                                fieldWithPath("endDate").description("챌린지 종료 일시"),
+                                fieldWithPath("participatingDays").description("챌린지 참여 요일"),
+                                fieldWithPath("feePerAbsence").description("미참여 1회당 벌금")
+                        ),
+                        responseFields(
+                                fieldWithPath("code").description("오류 응답 코드"),
+                                fieldWithPath("message").description("오류 메세지")
                         )
                 ));
     }

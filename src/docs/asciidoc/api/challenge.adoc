@@ -41,6 +41,14 @@ operation::challenge/get-challenge-details-not-found-exception[snippets='http-re
 
 operation::challenge/create-challenge[snippets='http-request,http-response,response-fields']
 
+==== 에러 응답
+
+====== 챌린지 시작 시간이 현재 시간보다 이전인 경우 (400 Bad Request)
+
+챌린지 시작 시간이 현재 시간보다 이전인 경우입니다.
+
+operation::challenge/create-challenge-invalid-start-time[snippets='http-request,http-response,response-fields']
+
 === 챌린지 정보 수정
 
 챌린지 정보를 수정합니다.
