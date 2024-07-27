@@ -9,6 +9,7 @@ import com.habitpay.habitpay.domain.challengeenrollment.exception.AlreadyEnrolle
 import com.habitpay.habitpay.domain.member.domain.Member;
 import com.habitpay.habitpay.global.error.exception.BadRequestException;
 import com.habitpay.habitpay.global.error.exception.ErrorCode;
+import com.habitpay.habitpay.global.response.SuccessCode;
 import com.habitpay.habitpay.global.response.SuccessResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -38,7 +39,7 @@ public class ChallengeEnrollmentService {
         challengeEnrollmentRepository.save(challengeEnrollment);
 
         return SuccessResponse.of(
-                "챌린지에 정상적으로 등록했습니다.",
+                SuccessCode.ENROLL_CHALLENGE_SUCCESS,
                 ChallengeEnrollmentResponse.of(
                         challenge, challengeEnrollment, member
                 )
