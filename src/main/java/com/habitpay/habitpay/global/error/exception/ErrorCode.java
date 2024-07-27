@@ -31,7 +31,7 @@ public enum ErrorCode {
     INVALID_CHALLENGE_CANCELLATION_TIME(HttpStatus.BAD_REQUEST, "챌린지 취소 가능한 시간이 지났습니다."),
     ALREADY_ENROLLED_IN_CHALLENGE(HttpStatus.CONFLICT, "이미 참여한 챌린지 입니다."),
     NOT_ENROLLED_IN_CHALLENGE(HttpStatus.BAD_REQUEST, "참여하지 않은 챌린지 입니다."),
-    ;
+    NOT_ALLOWED_TO_CANCEL_ENROLLMENT_OF_HOST(HttpStatus.BAD_REQUEST, "챌린지 주최자는 참여 취소가 불가능 합니다.");
     private HttpStatus status;
     private final String message;
 
