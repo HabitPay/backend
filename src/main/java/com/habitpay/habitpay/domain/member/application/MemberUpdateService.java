@@ -5,8 +5,11 @@ import com.habitpay.habitpay.domain.member.domain.Member;
 import com.habitpay.habitpay.domain.member.dto.ImageUpdateRequest;
 import com.habitpay.habitpay.domain.member.dto.ImageUpdateResponse;
 import com.habitpay.habitpay.domain.member.dto.NicknameDto;
+import com.habitpay.habitpay.domain.member.exception.InvalidNicknameException;
 import com.habitpay.habitpay.domain.model.Response;
 import com.habitpay.habitpay.global.config.aws.S3FileService;
+import com.habitpay.habitpay.global.error.exception.ErrorCode;
+import com.habitpay.habitpay.global.response.SuccessCode;
 import com.habitpay.habitpay.global.response.SuccessResponse;
 import com.habitpay.habitpay.global.util.ImageUtil;
 import lombok.AllArgsConstructor;
@@ -26,21 +29,22 @@ public class MemberUpdateService {
     private final MemberRepository memberRepository;
     private final S3FileService s3FileService;
 
-    private final String INVALID_NICKNAME_RULE = "닉네임 규칙에 맞지 않습니다.";
     private final String IMAGE_CONTENT_TOO_LARGE = "이미지 파일의 크기가 제한을 초과했습니다.";
     private final String UNSUPPORTED_IMAGE_EXTENSION = "지원하지 않는 이미지 확장자입니다.";
 
     public SuccessResponse<NicknameDto> updateNickname(NicknameDto nicknameDto, Member member) {
         String nickname = nicknameDto.getNickname();
         if (isNicknameValidFormat(nickname) == false) {
-            // TODO: 422(UNPROCESSABLE_ENTITY) 반환하기
-            throw new IllegalArgumentException(INVALID_NICKNAME_RULE);
+            throw new InvalidNicknameException(nickname, ErrorCode.INVALID_NICKNAME_RULE);
+        }
+
+        if (nickname.equals(member.getNickname())) {
+            throw new InvalidNicknameException(nickname, ErrorCode.DUPLICATED_NICKNAME);
         }
 
         member.setNickname(nickname);
         memberRepository.save(member);
-        String message = Response.PROFILE_UPDATE_SUCCESS.getMessage();
-        return SuccessResponse.of(message, nicknameDto);
+        return SuccessResponse.of(SuccessCode.NICKNAME_UPDATE_SUCCESS.getMessage(), nicknameDto);
     }
 
     public SuccessResponse<ImageUpdateResponse> updateImage(ImageUpdateRequest imageUpdateRequest, Long id) {
@@ -84,7 +88,7 @@ public class MemberUpdateService {
         );
     }
 
-    public boolean isNicknameValidFormat(String nickname) {
+    private boolean isNicknameValidFormat(String nickname) {
         String regex = "^[a-zA-Z0-9가-힣]{2,15}$";
         Pattern pattern = Pattern.compile(regex);
         Matcher matcher = pattern.matcher(nickname);
