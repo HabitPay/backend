@@ -7,7 +7,7 @@ public class NotEnrolledChallengeException extends EntityNotFoundException {
 
     public NotEnrolledChallengeException(Long memberId, Long challengeId) {
         super(
-                String.format("[Member: %d] is already enrolled in [Challenge: %d]", memberId, challengeId),
+                String.format("[Member: %d] is not enrolled in [Challenge: %d]", memberId, challengeId),
                 ErrorCode.NOT_ENROLLED_IN_CHALLENGE
         );
     }
