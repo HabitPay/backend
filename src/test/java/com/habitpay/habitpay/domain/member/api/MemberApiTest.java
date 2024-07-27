@@ -5,6 +5,7 @@ import com.habitpay.habitpay.docs.springrestdocs.AbstractRestDocsTests;
 import com.habitpay.habitpay.domain.member.application.MemberDeleteService;
 import com.habitpay.habitpay.domain.member.application.MemberSearchService;
 import com.habitpay.habitpay.domain.member.application.MemberUpdateService;
+import com.habitpay.habitpay.domain.member.domain.Member;
 import com.habitpay.habitpay.domain.member.dto.ImageUpdateRequest;
 import com.habitpay.habitpay.domain.member.dto.ImageUpdateResponse;
 import com.habitpay.habitpay.domain.member.dto.MemberProfileResponse;
@@ -75,7 +76,7 @@ public class MemberApiTest extends AbstractRestDocsTests {
                 .imageUrl("https://picsum.photos/id/40/200/300")
                 .build();
 
-        given(memberSearchService.getMemberProfile(anyLong()))
+        given(memberSearchService.getMemberProfile(any(Member.class)))
                 .willReturn(SuccessResponse.of("", memberProfileResponse));
 
         // when

@@ -21,7 +21,7 @@ public class MemberApi {
 
     @GetMapping("/member")
     public SuccessResponse<MemberProfileResponse> getMember(@AuthenticationPrincipal CustomUserDetails user) {
-        return memberSearchService.getMemberProfile(user.getId());
+        return memberSearchService.getMemberProfile(user.getMember());
     }
 
     @PatchMapping("/member/nickname")
