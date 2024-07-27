@@ -28,17 +28,27 @@ public class ChallengeEnrollmentCancellationService {
         ChallengeEnrollment challengeEnrollment = challengeEnrollmentRepository.findByMember(member)
                 .orElseThrow(() -> new NotEnrolledChallengeException(challengeId, member.getId()));
 
-        validateCancellationTime(challengeId);
+        Challenge challenge = challengeSearchService.getChallengeById(challengeId);
+
+        validateChallengeHost(member, challenge);
+        validateCancellationTime(challenge);
 
         challengeEnrollmentRepository.delete(challengeEnrollment);
         return SuccessResponse.<Void>of(SuccessCode.CANCEL_CHALLENGE_ENROLLMENT_SUCCESS);
     }
 
-    private void validateCancellationTime(Long challengeId) {
-        Challenge challenge = challengeSearchService.getChallengeById(challengeId);
+    private void validateCancellationTime(Challenge challenge) {
         ZonedDateTime now = ZonedDateTime.now();
         if (now.isAfter(challenge.getStartDate())) {
             throw new BadRequestException(ErrorCode.INVALID_CHALLENGE_CANCELLATION_TIME);
         }
     }
+
+    private void validateChallengeHost(Member member, Challenge challenge) {
+        Member host = challenge.getHost();
+        if (host.getId().equals(member.getId())) {
+            throw new BadRequestException(ErrorCode.NOT_ALLOWED_TO_CANCEL_ENROLLMENT_OF_HOST);
+        }
+    }
+
 }
