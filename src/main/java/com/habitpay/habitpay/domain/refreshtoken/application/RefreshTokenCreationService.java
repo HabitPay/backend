@@ -26,9 +26,7 @@ import java.util.Objects;
 public class RefreshTokenCreationService {
 
     private final TokenProvider tokenProvider;
-
     private final MemberSearchService memberSearchService;
-    private final MemberRepository memberRepository;
     private final TokenService tokenService;
     private final RefreshTokenUtilService refreshTokenUtilService;
     private final RefreshTokenSearchService refreshTokenSearchService;
@@ -78,8 +76,7 @@ public class RefreshTokenCreationService {
         Long memberId = refreshTokenSearchService.findByRefreshToken(refreshToken).getMember().getId();
         Member member = memberSearchService.getMemberById(memberId);
 
-        // todo : 토큰 유효 기간
-        return tokenProvider.generateToken(member, Duration.ofHours(2));
+        return tokenProvider.generateToken(member, TokenService.ACCESS_TOKEN_EXPIRED_AT);
     }
 
     public String createRefreshToken(Long id) {
