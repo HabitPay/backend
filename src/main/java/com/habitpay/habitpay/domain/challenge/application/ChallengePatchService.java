@@ -19,8 +19,7 @@ public class ChallengePatchService {
     private final ChallengeSearchService challengeSearchService;
 
     @Transactional
-    public SuccessResponse<ChallengePatchResponse> patch(Long challengeId, ChallengePatchRequest challengePatchRequest, Long userId) {
-        Member member = memberSearchService.getMemberById(userId);
+    public SuccessResponse<ChallengePatchResponse> patch(Long challengeId, ChallengePatchRequest challengePatchRequest, Member member) {
         Challenge challenge = challengeSearchService.getChallengeById(challengeId);
 
         if (isChallengeHost(member, challenge) == false) {

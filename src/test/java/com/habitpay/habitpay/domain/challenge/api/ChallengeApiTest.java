@@ -140,7 +140,7 @@ public class ChallengeApiTest extends AbstractRestDocsTests {
                 .isMemberEnrolledInChallenge(true)
                 .build();
 
-        given(challengeDetailsService.getChallengeDetails(anyLong(), anyLong()))
+        given(challengeDetailsService.getChallengeDetails(anyLong(), any(Member.class)))
                 .willReturn(SuccessResponse.of("", challengeDetailsResponse));
 
         // when
@@ -252,7 +252,7 @@ public class ChallengeApiTest extends AbstractRestDocsTests {
                 .feePerAbsence(1000)
                 .build();
 
-        given(challengePatchService.patch(anyLong(), any(ChallengePatchRequest.class), anyLong()))
+        given(challengePatchService.patch(anyLong(), any(ChallengePatchRequest.class), any(Member.class)))
                 .willReturn(SuccessResponse.of("챌린지 정보 수정이 반영되었습니다.", challengePatchResponse));
 
         // when

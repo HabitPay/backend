@@ -18,8 +18,7 @@ public class ChallengeDetailsService {
     private final ChallengeSearchService challengeSearchService;
     private final ChallengeEnrollmentRepository challengeEnrollmentRepository;
 
-    public SuccessResponse<ChallengeDetailsResponse> getChallengeDetails(Long challengeId, Long memberId) {
-        Member member = memberSearchService.getMemberById(memberId);
+    public SuccessResponse<ChallengeDetailsResponse> getChallengeDetails(Long challengeId, Member member) {
         Challenge challenge = challengeSearchService.getChallengeById(challengeId);
         Boolean isMemberEnrolledInChallenge = challengeEnrollmentRepository.findByMemberAndChallenge(member, challenge)
                 .isPresent();
