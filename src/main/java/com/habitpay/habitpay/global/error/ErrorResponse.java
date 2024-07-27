@@ -1,15 +1,24 @@
 package com.habitpay.habitpay.global.error;
 
-import lombok.AllArgsConstructor;
+import com.habitpay.habitpay.global.error.exception.ErrorCode;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
-@AllArgsConstructor
-public enum ErrorResponse {
-    UNSUPPORTED_IMAGE_EXTENSION("지원하지 않는 이미지 확장자입니다."),
-    INVALID_NICKNAME_RULE("닉네임 규칙에 맞지 않습니다."),
-    IMAGE_CONTENT_TOO_LARGE("이미지 파일의 크기가 제한을 초과했습니다."),
-    UNAUTHORIZED("유효한 토큰이 아닙니다. 다시 로그인 해주세요.");
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+public class ErrorResponse {
 
-    private final String message;
+    private String code;
+    private String message;
+//    private List<FieldError> errors;
+
+    private ErrorResponse(final ErrorCode code) {
+        this.code = code.name();
+        this.message = code.getMessage();
+    }
+
+    public static ErrorResponse of(final ErrorCode code) {
+        return new ErrorResponse(code);
+    }
 }
