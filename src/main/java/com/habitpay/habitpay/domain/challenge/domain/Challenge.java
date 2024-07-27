@@ -1,7 +1,6 @@
 package com.habitpay.habitpay.domain.challenge.domain;
 
 import com.habitpay.habitpay.domain.challenge.dto.ChallengeCreationRequest;
-import com.habitpay.habitpay.domain.challenge.dto.ChallengePatchRequest;
 import com.habitpay.habitpay.domain.member.domain.Member;
 import com.habitpay.habitpay.domain.model.BaseTime;
 import jakarta.persistence.*;
@@ -87,8 +86,8 @@ public class Challenge extends BaseTime {
                 .build();
     }
 
-    public void patch(ChallengePatchRequest challengePatchRequest) {
-        this.description = challengePatchRequest.getDescription();
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public void setNumberOfParticipants(int numberOfParticipants) {
