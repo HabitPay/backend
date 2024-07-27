@@ -19,7 +19,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.Duration;
 import java.util.Objects;
-import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
@@ -85,7 +84,7 @@ public class RefreshTokenCreationService {
 
     public String createRefreshToken(Long id) {
         Member member = memberSearchService.getMemberById(id);
-        String refreshToken = tokenService.createRefreshToken(id);
+        String refreshToken = tokenService.createRefreshTokenContent(id);
         saveRefreshToken(member, refreshToken);
 
         return refreshToken;

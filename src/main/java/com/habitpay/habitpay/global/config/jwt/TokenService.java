@@ -37,7 +37,7 @@ public class TokenService {
         return tokenProvider.generateToken(member, ACCESS_TOKEN_EXPIRED_AT);
     }
 
-    public String createRefreshToken(Long id) {
+    public String createRefreshTokenContent(Long id) {
         Member member = memberSearchService.getMemberById(id);
 
         return tokenProvider.generateRefreshToken(member, REFRESH_TOKEN_EXPIRED_AT);
