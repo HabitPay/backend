@@ -5,8 +5,10 @@ import com.habitpay.habitpay.domain.challenge.domain.Challenge;
 import com.habitpay.habitpay.domain.challengeenrollment.dao.ChallengeEnrollmentRepository;
 import com.habitpay.habitpay.domain.challengeenrollment.domain.ChallengeEnrollment;
 import com.habitpay.habitpay.domain.challengeenrollment.dto.ChallengeEnrollmentResponse;
-import com.habitpay.habitpay.domain.member.application.MemberSearchService;
+import com.habitpay.habitpay.domain.challengeenrollment.exception.AlreadyEnrolledChallengeException;
 import com.habitpay.habitpay.domain.member.domain.Member;
+import com.habitpay.habitpay.global.error.exception.BadRequestException;
+import com.habitpay.habitpay.global.error.exception.ErrorCode;
 import com.habitpay.habitpay.global.response.SuccessResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,7 +20,6 @@ import java.time.ZonedDateTime;
 @Service
 @RequiredArgsConstructor
 public class ChallengeEnrollmentService {
-    private final MemberSearchService memberSearchService;
     private final ChallengeEnrollmentRepository challengeEnrollmentRepository;
     private final ChallengeSearchService challengeSearchService;
 
@@ -28,15 +29,14 @@ public class ChallengeEnrollmentService {
 
         challengeEnrollmentRepository.findByMemberAndChallenge(member, challenge)
                 .ifPresent(entity -> {
-                    // TODO: 공통 예외 처리 추가하기
-                    throw new IllegalStateException("이미 참여한 챌린지입니다.");
+                    throw new AlreadyEnrolledChallengeException(member.getId(), challengeId);
                 });
 
         challenge.setNumberOfParticipants(challenge.getNumberOfParticipants() + 1);
 
         ChallengeEnrollment challengeEnrollment = ChallengeEnrollment.of(member, challenge);
         challengeEnrollmentRepository.save(challengeEnrollment);
-        log.info("챌린지 등록 완료");
+
         return SuccessResponse.of(
                 "챌린지에 정상적으로 등록했습니다.",
                 ChallengeEnrollmentResponse.of(
@@ -48,8 +48,7 @@ public class ChallengeEnrollmentService {
     private void validateChallengeEnrollmentTime(Challenge challenge) {
         ZonedDateTime now = ZonedDateTime.now();
         if (now.isAfter(challenge.getStartDate())) {
-            // TODO: 공통 예외 처리 추가하기
-            throw new IllegalStateException("챌린지 등록 가능 시간이 아닙니다.");
+            throw new BadRequestException(ErrorCode.INVALID_CHALLENGE_REGISTRATION_TIME);
         }
     }
 }
