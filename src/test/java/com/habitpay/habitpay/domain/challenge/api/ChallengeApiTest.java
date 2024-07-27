@@ -7,9 +7,14 @@ import com.habitpay.habitpay.domain.challenge.application.ChallengeDetailsServic
 import com.habitpay.habitpay.domain.challenge.application.ChallengePatchService;
 import com.habitpay.habitpay.domain.challenge.application.ChallengeSearchService;
 import com.habitpay.habitpay.domain.challenge.dto.*;
+import com.habitpay.habitpay.domain.challenge.exception.ChallengeNotFoundException;
+import com.habitpay.habitpay.domain.challenge.exception.ChallengeStartTimeInvalidException;
 import com.habitpay.habitpay.domain.member.domain.Member;
 import com.habitpay.habitpay.global.config.jwt.TokenProvider;
 import com.habitpay.habitpay.global.config.jwt.TokenService;
+import com.habitpay.habitpay.global.error.exception.ErrorCode;
+import com.habitpay.habitpay.global.error.exception.ForbiddenException;
+import com.habitpay.habitpay.global.error.exception.InvalidValueException;
 import com.habitpay.habitpay.global.response.SuccessResponse;
 import com.habitpay.habitpay.global.security.WithMockOAuth2User;
 import org.junit.jupiter.api.DisplayName;
@@ -140,7 +145,7 @@ public class ChallengeApiTest extends AbstractRestDocsTests {
                 .isMemberEnrolledInChallenge(true)
                 .build();
 
-        given(challengeDetailsService.getChallengeDetails(anyLong(), anyLong()))
+        given(challengeDetailsService.getChallengeDetails(anyLong(), any(Member.class)))
                 .willReturn(SuccessResponse.of("", challengeDetailsResponse));
 
         // when
@@ -168,6 +173,33 @@ public class ChallengeApiTest extends AbstractRestDocsTests {
                                 fieldWithPath("data.hostProfileImage").description("챌린지 주최자 프로필 이미지"),
                                 fieldWithPath("data.isHost").description("현재 접속한 사용자 == 챌린지 주최자"),
                                 fieldWithPath("data.isMemberEnrolledInChallenge").description("현재 접속한 사용자의 챌린지 참여 여부")
+                        )
+                ));
+    }
+
+
+    @Test
+    @WithMockOAuth2User
+    @DisplayName("챌린지 상세 정보 조회 예외처리 - 존재하지 않는 챌린지 (404 Not Found)")
+    void getChallengeDetailsNotFoundException() throws Exception {
+
+        // given
+        given(challengeDetailsService.getChallengeDetails(anyLong(), any(Member.class)))
+                .willThrow(new ChallengeNotFoundException(0L));
+
+        // when
+        ResultActions result = mockMvc.perform(get("/api/challenges/{id}", 0L)
+                .header(HttpHeaders.AUTHORIZATION, AUTHORIZATION_HEADER_PREFIX + "ACCESS_TOKEN"));
+
+        // then
+        result.andExpect(status().isNotFound())
+                .andDo(document("challenge/get-challenge-details-not-found-exception",
+                        requestHeaders(
+                                headerWithName(HttpHeaders.AUTHORIZATION).description("액세스 토큰")
+                        ),
+                        responseFields(
+                                fieldWithPath("code").description("오류 응답 코드"),
+                                fieldWithPath("message").description("오류 메세지")
                         )
                 ));
     }
@@ -234,6 +266,53 @@ public class ChallengeApiTest extends AbstractRestDocsTests {
                 ));
     }
 
+
+    @Test
+    @WithMockOAuth2User
+    @DisplayName("챌린지 생성 예외처리 - 챌린지 시작 시간 유효성 검증 (400 Bad Request)")
+    void createChallengeInvalidStartTime() throws Exception {
+
+        // given
+        ZonedDateTime yesterday = ZonedDateTime.now().minusDays(1);
+        ChallengeCreationRequest challengeCreationRequest = ChallengeCreationRequest.builder()
+                .title("챌린지 제목")
+                .description("챌린지 설명")
+                .startDate(yesterday)
+                .endDate(ZonedDateTime.now().plusDays(5))
+                .participatingDays((byte) (1 << 2))
+                .feePerAbsence(1000)
+                .build();
+
+        given(challengeCreationService.createChallenge(any(ChallengeCreationRequest.class), any(Member.class)))
+                .willThrow(new ChallengeStartTimeInvalidException(yesterday));
+
+        // when
+        ResultActions result = mockMvc.perform(post("/api/challenges")
+                .header(HttpHeaders.AUTHORIZATION, AUTHORIZATION_HEADER_PREFIX + "ACCESS_TOKEN")
+                .content(objectMapper.writeValueAsString(challengeCreationRequest))
+                .contentType(MediaType.APPLICATION_JSON));
+
+        // then
+        result.andExpect(status().isBadRequest())
+                .andDo(document("challenge/create-challenge-invalid-start-time",
+                        requestHeaders(
+                                headerWithName(HttpHeaders.AUTHORIZATION).description("액세스 토큰")
+                        ),
+                        requestFields(
+                                fieldWithPath("title").description("챌린지 제목"),
+                                fieldWithPath("description").description("챌린지 설명"),
+                                fieldWithPath("startDate").description("챌린지 시작 일시"),
+                                fieldWithPath("endDate").description("챌린지 종료 일시"),
+                                fieldWithPath("participatingDays").description("챌린지 참여 요일"),
+                                fieldWithPath("feePerAbsence").description("미참여 1회당 벌금")
+                        ),
+                        responseFields(
+                                fieldWithPath("code").description("오류 응답 코드"),
+                                fieldWithPath("message").description("오류 메세지")
+                        )
+                ));
+    }
+
     @Test
     @WithMockOAuth2User
     @DisplayName("챌린지 정보 수정")
@@ -252,7 +331,7 @@ public class ChallengeApiTest extends AbstractRestDocsTests {
                 .feePerAbsence(1000)
                 .build();
 
-        given(challengePatchService.patch(anyLong(), any(ChallengePatchRequest.class), anyLong()))
+        given(challengePatchService.patch(anyLong(), any(ChallengePatchRequest.class), any(Member.class)))
                 .willReturn(SuccessResponse.of("챌린지 정보 수정이 반영되었습니다.", challengePatchResponse));
 
         // when
@@ -281,5 +360,77 @@ public class ChallengeApiTest extends AbstractRestDocsTests {
                         )
                 ));
     }
+
+
+    @Test
+    @WithMockOAuth2User
+    @DisplayName("챌린지 정보 수정 예외처리 - 챌린지 설명이 이전과 동일한 경우 (400 Bad Request)")
+    void patchChallengeDuplicatedDescriptionException() throws Exception {
+
+        // given
+        ChallengePatchRequest challengePatchRequest = ChallengePatchRequest.builder()
+                .description("챌린지 설명")
+                .build();
+
+        given(challengePatchService.patch(anyLong(), any(ChallengePatchRequest.class), any(Member.class)))
+                .willThrow(new InvalidValueException(ErrorCode.DUPLICATED_CHALLENGE_DESCRIPTION));
+
+        // when
+        ResultActions result = mockMvc.perform(patch("/api/challenges/{id}", 1L)
+                .header(HttpHeaders.AUTHORIZATION, AUTHORIZATION_HEADER_PREFIX + "ACCESS_TOKEN")
+                .content(objectMapper.writeValueAsString(challengePatchRequest))
+                .contentType(MediaType.APPLICATION_JSON));
+
+        // then
+        result.andExpect(status().isBadRequest())
+                .andDo(document("challenge/patch-challenge-duplicated-description-exception",
+                        requestHeaders(
+                                headerWithName(HttpHeaders.AUTHORIZATION).description("액세스 토큰")
+                        ),
+                        requestFields(
+                                fieldWithPath("description").description("챌린지 설명")
+                        ),
+                        responseFields(
+                                fieldWithPath("code").description("오류 응답 코드"),
+                                fieldWithPath("message").description("오류 메세지")
+                        )
+                ));
+    }
+
+    @Test
+    @WithMockOAuth2User
+    @DisplayName("챌린지 정보 수정 예외처리 - 챌린지 주최자가 아닌 경우 (403 Forbidden)")
+    void patchChallengeForbiddenException() throws Exception {
+
+        // given
+        ChallengePatchRequest challengePatchRequest = ChallengePatchRequest.builder()
+                .description("챌린지 설명")
+                .build();
+
+        given(challengePatchService.patch(anyLong(), any(ChallengePatchRequest.class), any(Member.class)))
+                .willThrow(new ForbiddenException(ErrorCode.ONLY_HOST_CAN_MODIFY));
+
+        // when
+        ResultActions result = mockMvc.perform(patch("/api/challenges/{id}", 1L)
+                .header(HttpHeaders.AUTHORIZATION, AUTHORIZATION_HEADER_PREFIX + "ACCESS_TOKEN")
+                .content(objectMapper.writeValueAsString(challengePatchRequest))
+                .contentType(MediaType.APPLICATION_JSON));
+
+        // then
+        result.andExpect(status().isForbidden())
+                .andDo(document("challenge/patch-challenge-forbidden-exception",
+                        requestHeaders(
+                                headerWithName(HttpHeaders.AUTHORIZATION).description("액세스 토큰")
+                        ),
+                        requestFields(
+                                fieldWithPath("description").description("챌린지 설명")
+                        ),
+                        responseFields(
+                                fieldWithPath("code").description("오류 응답 코드"),
+                                fieldWithPath("message").description("오류 메세지")
+                        )
+                ));
+    }
+
 
 }

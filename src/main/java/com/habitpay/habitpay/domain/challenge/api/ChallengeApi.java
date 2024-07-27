@@ -19,6 +19,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Slf4j
 public class ChallengeApi {
+
     private final ChallengeCreationService challengeCreationService;
     private final ChallengePatchService challengePatchService;
     private final ChallengeDetailsService challengeDetailsService;
@@ -33,7 +34,7 @@ public class ChallengeApi {
     @GetMapping("/challenges/{id}")
     public SuccessResponse<ChallengeDetailsResponse> getChallengeDetails(@PathVariable("id") Long id,
                                                                          @AuthenticationPrincipal CustomUserDetails user) {
-        return challengeDetailsService.getChallengeDetails(id, user.getId());
+        return challengeDetailsService.getChallengeDetails(id, user.getMember());
     }
 
     @PostMapping("/challenges")
@@ -45,6 +46,6 @@ public class ChallengeApi {
     @PatchMapping("/challenges/{id}")
     public SuccessResponse<ChallengePatchResponse> patchChallengeDetails(@PathVariable("id") Long id, @RequestBody ChallengePatchRequest challengePatchRequest,
                                                                          @AuthenticationPrincipal CustomUserDetails user) {
-        return challengePatchService.patch(id, challengePatchRequest, user.getId());
+        return challengePatchService.patch(id, challengePatchRequest, user.getMember());
     }
 }
