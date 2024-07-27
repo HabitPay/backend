@@ -22,11 +22,10 @@ public class ChallengeEnrollmentService {
     private final ChallengeEnrollmentRepository challengeEnrollmentRepository;
     private final ChallengeSearchService challengeSearchService;
 
-    public SuccessResponse<ChallengeEnrollmentResponse> enroll(Long challengeId, Long userId) {
+    public SuccessResponse<ChallengeEnrollmentResponse> enroll(Long challengeId, Member member) {
         Challenge challenge = challengeSearchService.getChallengeById(challengeId);
         validateChallengeEnrollmentTime(challenge);
 
-        Member member = memberSearchService.getMemberById(userId);
         challengeEnrollmentRepository.findByMemberAndChallenge(member, challenge)
                 .ifPresent(entity -> {
                     // TODO: 공통 예외 처리 추가하기

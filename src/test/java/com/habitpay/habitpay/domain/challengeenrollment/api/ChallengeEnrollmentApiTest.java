@@ -5,6 +5,7 @@ import com.habitpay.habitpay.docs.springrestdocs.AbstractRestDocsTests;
 import com.habitpay.habitpay.domain.challengeenrollment.application.ChallengeEnrollmentCancellationService;
 import com.habitpay.habitpay.domain.challengeenrollment.application.ChallengeEnrollmentService;
 import com.habitpay.habitpay.domain.challengeenrollment.dto.ChallengeEnrollmentResponse;
+import com.habitpay.habitpay.domain.member.domain.Member;
 import com.habitpay.habitpay.global.config.jwt.TokenProvider;
 import com.habitpay.habitpay.global.config.jwt.TokenService;
 import com.habitpay.habitpay.global.response.SuccessResponse;
@@ -19,6 +20,7 @@ import org.springframework.test.web.servlet.ResultActions;
 
 import java.time.ZonedDateTime;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
@@ -61,7 +63,7 @@ public class ChallengeEnrollmentApiTest extends AbstractRestDocsTests {
                 .enrolledDate(ZonedDateTime.now())
                 .build();
 
-        given(challengeEnrollmentService.enroll(anyLong(), anyLong()))
+        given(challengeEnrollmentService.enroll(anyLong(), any(Member.class)))
                 .willReturn(SuccessResponse.of("챌린지에 정상적으로 등록했습니다.", challengeEnrollmentResponse));
 
         // when

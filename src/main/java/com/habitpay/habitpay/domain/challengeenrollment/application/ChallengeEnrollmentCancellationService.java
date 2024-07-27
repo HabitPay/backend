@@ -26,9 +26,8 @@ public class ChallengeEnrollmentCancellationService {
     private final MemberSearchService memberSearchService;
 
     @Transactional
-    public ResponseEntity<ApiResponse> cancel(Long challengeId, Long userId) {
+    public ResponseEntity<ApiResponse> cancel(Long challengeId, Member member) {
         ApiResponse response;
-        Member member = memberSearchService.getMemberById(userId);
         Optional<ChallengeEnrollment> optionalChallengeEnrollment = challengeEnrollmentRepository.findByMember(member);
         if (optionalChallengeEnrollment.isEmpty()) {
             log.error("참여하지 않은 챌린지");

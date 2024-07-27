@@ -25,12 +25,12 @@ public class ChallengeEnrollmentApi {
 
     @PostMapping("/challenges/{id}/enroll")
     public SuccessResponse<ChallengeEnrollmentResponse> enrollChallenge(@PathVariable("id") Long id, @AuthenticationPrincipal CustomUserDetails user) {
-        return challengeEnrollmentService.enroll(id, user.getId());
+        return challengeEnrollmentService.enroll(id, user.getMember());
     }
 
     @PostMapping("/challenges/{id}/cancel")
     public ResponseEntity<ApiResponse> cancelChallenge(@PathVariable("id") Long id, @AuthenticationPrincipal CustomUserDetails user) {
-        return challengeEnrollmentCancellationService.cancel(id, user.getId());
+        return challengeEnrollmentCancellationService.cancel(id, user.getMember());
     }
 
 }
