@@ -4,11 +4,9 @@ import com.habitpay.habitpay.domain.challengeenrollment.application.ChallengeEnr
 import com.habitpay.habitpay.domain.challengeenrollment.application.ChallengeEnrollmentService;
 import com.habitpay.habitpay.domain.challengeenrollment.dto.ChallengeEnrollmentResponse;
 import com.habitpay.habitpay.global.config.auth.CustomUserDetails;
-import com.habitpay.habitpay.global.response.ApiResponse;
 import com.habitpay.habitpay.global.response.SuccessResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -29,7 +27,7 @@ public class ChallengeEnrollmentApi {
     }
 
     @PostMapping("/challenges/{id}/cancel")
-    public ResponseEntity<ApiResponse> cancelChallenge(@PathVariable("id") Long id, @AuthenticationPrincipal CustomUserDetails user) {
+    public SuccessResponse<Void> cancelChallenge(@PathVariable("id") Long id, @AuthenticationPrincipal CustomUserDetails user) {
         return challengeEnrollmentCancellationService.cancel(id, user.getMember());
     }
 
