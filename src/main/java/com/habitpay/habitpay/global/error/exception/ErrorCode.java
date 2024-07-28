@@ -16,7 +16,8 @@ public enum ErrorCode {
     CONFLICT(HttpStatus.CONFLICT, "Conflict"),
 
     // JWT
-    JWT_UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "유효한 토큰이 아닙니다."),
+    JWT_UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "토큰 검증에 실패했습니다."),
+    JWT_FORBIDDEN(HttpStatus.FORBIDDEN, "권한이 부족합니다."),
 
     // Member
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "사용자를 찾을 수 없습니다."),
@@ -38,6 +39,9 @@ public enum ErrorCode {
 
     // Challenge Participation Record
     RECORD_NOT_FOUND(HttpStatus.NOT_FOUND, "챌린지 참여 기록이 존재하지 않습니다."),
+
+    // Challenge Post
+    ONLY_HOST_UPLOAD_ANNOUNCEMENT(HttpStatus.FORBIDDEN, "공지 포스트는 챌린지 주최자만 작성할 수 있습니다."),
 
     // todo : 마지막 error code 뒤에 붙이기
     ;
