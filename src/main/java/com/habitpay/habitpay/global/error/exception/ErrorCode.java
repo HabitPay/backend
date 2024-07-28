@@ -15,6 +15,9 @@ public enum ErrorCode {
     FORBIDDEN(HttpStatus.FORBIDDEN, "Not Allowed to Access or Modify"),
     CONFLICT(HttpStatus.CONFLICT, "Conflict"),
 
+    // JWT
+    JWT_UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "유효한 토큰이 아닙니다."),
+
     // Member
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "사용자를 찾을 수 없습니다."),
     INVALID_NICKNAME_RULE(HttpStatus.BAD_REQUEST, "닉네임 규칙에 맞지 않습니다. (규칙: 길이 2~15자, 특수문자 제외)"),
@@ -32,6 +35,7 @@ public enum ErrorCode {
     ALREADY_ENROLLED_IN_CHALLENGE(HttpStatus.CONFLICT, "이미 참여한 챌린지 입니다."),
     NOT_ENROLLED_IN_CHALLENGE(HttpStatus.BAD_REQUEST, "참여하지 않은 챌린지 입니다."),
     NOT_ALLOWED_TO_CANCEL_ENROLLMENT_OF_HOST(HttpStatus.BAD_REQUEST, "챌린지 주최자는 참여 취소가 불가능 합니다.");
+
     private HttpStatus status;
     private final String message;
 
