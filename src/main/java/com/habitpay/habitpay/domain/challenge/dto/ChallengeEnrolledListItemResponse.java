@@ -10,6 +10,7 @@ import java.time.ZonedDateTime;
 @Getter
 @Builder
 public class ChallengeEnrolledListItemResponse {
+    private Long challengeId;
     private String title;
     private String description;
     private ZonedDateTime startDate;
@@ -28,6 +29,7 @@ public class ChallengeEnrolledListItemResponse {
 
     public static ChallengeEnrolledListItemResponse of(Challenge challenge, ChallengeEnrollment challengeEnrollment, String hostProfileImage, boolean isParticipatedToday) {
         return ChallengeEnrolledListItemResponse.builder()
+                .challengeId(challenge.getId())
                 .title(challenge.getTitle())
                 .description(challenge.getDescription())
                 .startDate(challenge.getStartDate())
