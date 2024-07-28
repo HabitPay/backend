@@ -11,6 +11,7 @@ import com.habitpay.habitpay.global.error.exception.BadRequestException;
 import com.habitpay.habitpay.global.error.exception.ErrorCode;
 import com.habitpay.habitpay.global.response.SuccessCode;
 import com.habitpay.habitpay.global.response.SuccessResponse;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -24,6 +25,7 @@ public class ChallengeEnrollmentService {
     private final ChallengeEnrollmentRepository challengeEnrollmentRepository;
     private final ChallengeSearchService challengeSearchService;
 
+    @Transactional
     public SuccessResponse<ChallengeEnrollmentResponse> enroll(Long challengeId, Member member) {
         Challenge challenge = challengeSearchService.getChallengeById(challengeId);
         validateChallengeEnrollmentTime(challenge);
