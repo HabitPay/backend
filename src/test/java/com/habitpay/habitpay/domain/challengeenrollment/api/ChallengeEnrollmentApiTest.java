@@ -196,7 +196,33 @@ public class ChallengeEnrollmentApiTest extends AbstractRestDocsTests {
 
     @Test
     @WithMockOAuth2User
-    @DisplayName("챌린지 등록 취소 예외처리 - 참여한 챌린지가 없는 경우 (400 Bad Request)")
+    @DisplayName("챌린지 등록 취소 예외처리 - 챌린지 주최자가 등록 취소 하는 경우 (400 Bad Request)")
+    void cancelChallengeHostNotAllowedException() throws Exception {
+
+        // given
+        given(challengeEnrollmentCancellationService.cancel(anyLong(), any(Member.class)))
+                .willThrow(new BadRequestException(ErrorCode.NOT_ALLOWED_TO_CANCEL_ENROLLMENT_OF_HOST));
+
+        // when
+        ResultActions result = mockMvc.perform(post("/api/challenges/{id}/cancel", 1L)
+                .header(HttpHeaders.AUTHORIZATION, AUTHORIZATION_HEADER_PREFIX + "ACCESS_TOKEN"));
+
+        // then
+        result.andExpect(status().isBadRequest())
+                .andDo(document("challenge/cancel-challenge-enrollment-not-enrolled-exception",
+                        requestHeaders(
+                                headerWithName(HttpHeaders.AUTHORIZATION).description("액세스 토큰")
+                        ),
+                        responseFields(
+                                fieldWithPath("code").description("오류 응답 코드"),
+                                fieldWithPath("message").description("오류 메세지")
+                        )
+                ));
+    }
+
+    @Test
+    @WithMockOAuth2User
+    @DisplayName("챌린지 등록 취소 예외처리 - 챌린지 등록 취소 시간이 지난 경우 (400 Bad Request)")
     void cancelChallengeInvalidCancellationTimeException() throws Exception {
 
         // given
