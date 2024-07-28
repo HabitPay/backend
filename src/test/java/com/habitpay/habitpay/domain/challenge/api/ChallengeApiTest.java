@@ -71,6 +71,7 @@ public class ChallengeApiTest extends AbstractRestDocsTests {
 
         // given
         ChallengeEnrolledListItemResponse response = ChallengeEnrolledListItemResponse.builder()
+                .challengeId(1L)
                 .title("챌린지 제목")
                 .description("챌린지 설명")
                 .startDate(ZonedDateTime.now())
@@ -103,6 +104,7 @@ public class ChallengeApiTest extends AbstractRestDocsTests {
                         ),
                         responseFields(
                                 fieldWithPath("message").description("메세지"),
+                                fieldWithPath("data[].challengeId").description("챌린지 ID"),
                                 fieldWithPath("data[].title").description("챌린지 제목"),
                                 fieldWithPath("data[].description").description("챌린지 설명"),
                                 fieldWithPath("data[].startDate").description("챌린지 시작 일시"),
