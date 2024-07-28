@@ -10,19 +10,15 @@ import com.habitpay.habitpay.domain.challengepost.domain.ChallengePost;
 import com.habitpay.habitpay.domain.challengepost.dto.AddPostRequest;
 import com.habitpay.habitpay.domain.member.domain.Member;
 import com.habitpay.habitpay.domain.postphoto.application.PostPhotoCreationService;
-import com.habitpay.habitpay.domain.refreshtoken.exception.CustomJwtException;
-import com.habitpay.habitpay.global.error.CustomJwtErrorInfo;
 import com.habitpay.habitpay.global.error.exception.ErrorCode;
 import com.habitpay.habitpay.global.error.exception.ForbiddenException;
 import com.habitpay.habitpay.global.response.SuccessResponse;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.NoSuchElementException;
 
 @Service
 @RequiredArgsConstructor
@@ -57,7 +53,7 @@ public class ChallengePostCreationService {
 
         if (request.getIsAnnouncement()) {
             if (!challengePostUtilService.isChallengeHost(challenge, member)) {
-                throw new ForbiddenException(ErrorCode.ONLY_HOST_UPLOAD_ANNOUNCEMENT);
+                throw new ForbiddenException(ErrorCode.ONLY_HOST_CAN_UPLOAD_ANNOUNCEMENT);
             }
         }
 

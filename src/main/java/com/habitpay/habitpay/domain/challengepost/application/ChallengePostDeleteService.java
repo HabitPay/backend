@@ -7,6 +7,8 @@ import com.habitpay.habitpay.domain.member.domain.Member;
 import com.habitpay.habitpay.domain.postphoto.application.PostPhotoDeleteService;
 import com.habitpay.habitpay.domain.refreshtoken.exception.CustomJwtException;
 import com.habitpay.habitpay.global.error.CustomJwtErrorInfo;
+import com.habitpay.habitpay.global.error.exception.ErrorCode;
+import com.habitpay.habitpay.global.error.exception.ForbiddenException;
 import com.habitpay.habitpay.global.response.SuccessResponse;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -31,11 +33,11 @@ public class ChallengePostDeleteService {
 
         if (post.getIsAnnouncement()) {
             if (!challengePostUtilService.isChallengeHost(challenge, member)) {
-                throw new CustomJwtException(HttpStatus.FORBIDDEN, CustomJwtErrorInfo.FORBIDDEN, "공지 포스트는 챌린지 호스트만 삭제할 수 있습니다.");
+                throw new ForbiddenException(ErrorCode.ONLY_HOST_CAN_DELETE_ANNOUNCEMENT);
             }
         }
         else {
-            throw new CustomJwtException(HttpStatus.FORBIDDEN, CustomJwtErrorInfo.FORBIDDEN, "일반 포스트 삭제는 제공되지 않는 기능입니다.");
+            throw new ForbiddenException(ErrorCode.POST_CANNOT_BE_DELETED);
         }
 
         challengePostUtilService.authorizePostWriter(post, member);
