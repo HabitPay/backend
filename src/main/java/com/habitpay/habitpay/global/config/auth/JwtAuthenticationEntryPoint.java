@@ -1,31 +1,32 @@
 package com.habitpay.habitpay.global.config.auth;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.habitpay.habitpay.global.error.ErrorResponse;
+import com.habitpay.habitpay.global.error.exception.ErrorCode;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
-import org.springframework.web.servlet.HandlerExceptionResolver;
+
+import java.io.IOException;
 
 @Component
-@Slf4j
 public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
-
-    private final HandlerExceptionResolver resolver;
-
-    public JwtAuthenticationEntryPoint(@Qualifier("handlerExceptionResolver") HandlerExceptionResolver resolver) {
-        this.resolver = resolver;
-    }
 
     @Override
     public void commence(
             HttpServletRequest request,
             HttpServletResponse response,
-            AuthenticationException exception) {
-        log.error("JwtAuthenticationEntryPoint.commence() {}", exception.getLocalizedMessage());
-        resolver.resolveException(request, response, null, (Exception) request.getAttribute("exception"));
+            AuthenticationException exception) throws IOException {
+        // todo : ErrorCode 메시지를 JWT 커스텀으로 변경하기
+        ErrorResponse errorResponse = ErrorResponse.of(ErrorCode.BAD_REQUEST);
+        response.setContentType("application/json");
+        response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+        ObjectMapper objectMapper  = new ObjectMapper();
+        String jsonResponse = objectMapper.writeValueAsString(errorResponse);
+        response.getWriter().write(jsonResponse);
     }
 
 }

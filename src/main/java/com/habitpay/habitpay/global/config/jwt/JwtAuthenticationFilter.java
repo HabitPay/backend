@@ -32,33 +32,21 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final TokenProvider tokenProvider;
     private final TokenService tokenService;
 
-    private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
-
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String accessToken = RequestHeaderUtil.getAccessToken(request);
 
         log.info("request: [{} {}]", request.getMethod(), request.getRequestURI());
 
-        try {
-            // TODO: 예외처리 추가하기
-            if (accessToken == null) {
-                log.error("액세스 토큰이 존재하지 않습니다.");
-                throw new CustomJwtException(HttpStatus.BAD_REQUEST, CustomJwtErrorInfo.BAD_REQUEST, "액세스 토큰이 존재하지 않습니다.");
-            }
+        // TODO: 예외처리 추가하기
 
-            tokenProvider.validateToken(accessToken);
-
+        if (accessToken != null && tokenProvider.validateToken(accessToken)) {
             Authentication authentication = tokenService.getAuthentication(accessToken);
             SecurityContext context = SecurityContextHolder.getContext();
             context.setAuthentication(authentication);
             log.info("authentication.getName(): {}", authentication.getName());
-
-            filterChain.doFilter(request, response);
-        } catch (Exception e) {
-            request.setAttribute("exception", e);
-            jwtAuthenticationEntryPoint.commence(request, response, new AuthenticationException("AuthenticationException" ,e) {});
         }
 
+        filterChain.doFilter(request, response);
     }
 }

@@ -63,14 +63,16 @@ public class RefreshTokenCreationService {
 
     private String createNewAccessToken(String refreshToken) {
 
-        tokenProvider.validateToken(refreshToken);
+        if (!tokenProvider.validateToken(refreshToken)) {
+            throw new CustomJwtException(HttpStatus.UNAUTHORIZED, CustomJwtErrorInfo.UNAUTHORIZED, "JWT 토큰 검증에 실패했습니다.");
+        }
 
         String requestIp = refreshTokenUtilService.getClientIpAddress();
         String loginIp = refreshTokenSearchService.findByRefreshToken(refreshToken).getLoginIp();
         log.info("[Client new request IP] {}", requestIp);
         log.info("[Client old login IP] {}", loginIp);
         if (!Objects.equals(requestIp, loginIp)) {
-            throw new CustomJwtException(HttpStatus.BAD_REQUEST, CustomJwtErrorInfo.BAD_REQUEST, "request IP address is different from login IP address.");
+            throw new CustomJwtException(HttpStatus.BAD_REQUEST, CustomJwtErrorInfo.BAD_REQUEST, "로그인한 IP 주소와 요청 IP 주소가 일치하지 않습니다.");
         }
 
         Long memberId = refreshTokenSearchService.findByRefreshToken(refreshToken).getMember().getId();

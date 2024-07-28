@@ -53,7 +53,8 @@ public class SecurityConfig {
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests((authorizeRequests ->
                         authorizeRequests
-                                .requestMatchers("/**").permitAll() // todo: 보안 상 취약할 수 있으니 범위 제한하기
+                                .requestMatchers("/oauth2/**").permitAll()
+                                .requestMatchers("/token").permitAll() // todo: url 수정 후 /api 추가하기
 //                            .requestMatchers("/api/v1/**").hasRole(Role.USER.name()) // todo: 로그인 후 사용하는 api 에서만 적용하기
                                 .anyRequest().authenticated()
                 ))

@@ -60,27 +60,28 @@ public class TokenProvider {
                 .compact();
     }
 
-    public void validateToken(String token) {
+    public boolean validateToken(String token) {
         try {
             Jwts.parser()
                     .setSigningKey(jwtProperties.getSecret())
                     .parseClaimsJws(token);
+            return true;
         } catch (ExpiredJwtException e) {
             // todo : ErrorResponse 적용하면 바뀔 예정
             log.error("토큰이 만료되었습니다.");
-            throw new CustomJwtException(HttpStatus.UNAUTHORIZED, CustomJwtErrorInfo.UNAUTHORIZED, e.getMessage());
+            return false;
         } catch (MalformedJwtException e) {
             log.error("잘못된 토큰 형식입니다..");
-            throw new CustomJwtException(HttpStatus.UNAUTHORIZED, CustomJwtErrorInfo.UNAUTHORIZED, e.getMessage());
+            return false;
         } catch (SignatureException e) {
             log.error("서명 검증에 실패했습니다.");
-            throw new CustomJwtException(HttpStatus.UNAUTHORIZED, CustomJwtErrorInfo.UNAUTHORIZED, e.getMessage());
+            return false;
         } catch (JwtException e) {
             log.error("JWT 처리 중 예외 발생 : {}", e.getLocalizedMessage());
-            throw new CustomJwtException(HttpStatus.UNAUTHORIZED, CustomJwtErrorInfo.UNAUTHORIZED, e.getMessage());
+            return false;
         } catch (Exception e) {
             log.error("JWT 처리 중 JWT 이외 예외 발생 : {}", e.getLocalizedMessage());
-            throw new CustomJwtException(HttpStatus.UNAUTHORIZED, CustomJwtErrorInfo.UNAUTHORIZED, e.getMessage());
+            return false;
         }
     }
 }
