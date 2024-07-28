@@ -2,10 +2,7 @@ package com.habitpay.habitpay.domain.challenge.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.habitpay.habitpay.docs.springrestdocs.AbstractRestDocsTests;
-import com.habitpay.habitpay.domain.challenge.application.ChallengeCreationService;
-import com.habitpay.habitpay.domain.challenge.application.ChallengeDetailsService;
-import com.habitpay.habitpay.domain.challenge.application.ChallengePatchService;
-import com.habitpay.habitpay.domain.challenge.application.ChallengeSearchService;
+import com.habitpay.habitpay.domain.challenge.application.*;
 import com.habitpay.habitpay.domain.challenge.dto.*;
 import com.habitpay.habitpay.domain.challenge.exception.ChallengeNotFoundException;
 import com.habitpay.habitpay.domain.challenge.exception.ChallengeStartTimeInvalidException;
@@ -15,6 +12,7 @@ import com.habitpay.habitpay.global.config.jwt.TokenService;
 import com.habitpay.habitpay.global.error.exception.ErrorCode;
 import com.habitpay.habitpay.global.error.exception.ForbiddenException;
 import com.habitpay.habitpay.global.error.exception.InvalidValueException;
+import com.habitpay.habitpay.global.response.SuccessCode;
 import com.habitpay.habitpay.global.response.SuccessResponse;
 import com.habitpay.habitpay.global.security.WithMockOAuth2User;
 import org.junit.jupiter.api.DisplayName;
@@ -29,7 +27,8 @@ import org.springframework.test.web.servlet.ResultActions;
 import java.time.ZonedDateTime;
 import java.util.List;
 
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
@@ -57,6 +56,9 @@ public class ChallengeApiTest extends AbstractRestDocsTests {
 
     @MockBean
     ChallengeSearchService challengeSearchService;
+
+    @MockBean
+    ChallengeDeleteService challengeDeleteService;
 
     @MockBean
     TokenService tokenService;
@@ -425,6 +427,85 @@ public class ChallengeApiTest extends AbstractRestDocsTests {
                         ),
                         requestFields(
                                 fieldWithPath("description").description("챌린지 설명")
+                        ),
+                        responseFields(
+                                fieldWithPath("code").description("오류 응답 코드"),
+                                fieldWithPath("message").description("오류 메세지")
+                        )
+                ));
+    }
+
+    @Test
+    @WithMockOAuth2User
+    @DisplayName("챌린지 삭제")
+    void deleteChallenge() throws Exception {
+
+        // given
+        given(challengeDeleteService.delete(anyLong(), anyLong()))
+                .willReturn(SuccessResponse.of(SuccessCode.DELETE_CHALLENGE_SUCCESS));
+
+        // when
+        ResultActions result = mockMvc.perform(delete("/api/challenges/{id}", 1L)
+                .header(HttpHeaders.AUTHORIZATION, AUTHORIZATION_HEADER_PREFIX + "ACCESS_TOKEN"));
+
+        // then
+        result.andExpect(status().isOk())
+                .andDo(document("challenge/delete",
+                        requestHeaders(
+                                headerWithName(HttpHeaders.AUTHORIZATION).description("액세스 토큰")
+                        ),
+                        responseFields(
+                                fieldWithPath("message").description("메세지"),
+                                fieldWithPath("data").description("null")
+                        )
+                ));
+    }
+
+
+    @Test
+    @WithMockOAuth2User
+    @DisplayName("챌린지 삭제 - 챌린지 주최자가 아닌 경우 (403 Forbidden)")
+    void deleteChallengeForbiddenException() throws Exception {
+
+        // given
+        given(challengeDeleteService.delete(anyLong(), anyLong()))
+                .willThrow(new ForbiddenException(ErrorCode.NOT_ALLOWED_TO_DELETE_CHALLENGE));
+
+        // when
+        ResultActions result = mockMvc.perform(delete("/api/challenges/{id}", 1L)
+                .header(HttpHeaders.AUTHORIZATION, AUTHORIZATION_HEADER_PREFIX + "ACCESS_TOKEN"));
+
+        // then
+        result.andExpect(status().isForbidden())
+                .andDo(document("challenge/delete-forbidden-exception",
+                        requestHeaders(
+                                headerWithName(HttpHeaders.AUTHORIZATION).description("액세스 토큰")
+                        ),
+                        responseFields(
+                                fieldWithPath("code").description("오류 응답 코드"),
+                                fieldWithPath("message").description("오류 메세지")
+                        )
+                ));
+    }
+
+    @Test
+    @WithMockOAuth2User
+    @DisplayName("챌린지 삭제 - 존재하지 않는 챌린지 (404 Not Found)")
+    void deleteChallengeNotFoundException() throws Exception {
+
+        // given
+        given(challengeDeleteService.delete(anyLong(), anyLong()))
+                .willThrow(new ChallengeNotFoundException(0L));
+
+        // when
+        ResultActions result = mockMvc.perform(delete("/api/challenges/{id}", 0L)
+                .header(HttpHeaders.AUTHORIZATION, AUTHORIZATION_HEADER_PREFIX + "ACCESS_TOKEN"));
+
+        // then
+        result.andExpect(status().isNotFound())
+                .andDo(document("challenge/delete-not-found-exception",
+                        requestHeaders(
+                                headerWithName(HttpHeaders.AUTHORIZATION).description("액세스 토큰")
                         ),
                         responseFields(
                                 fieldWithPath("code").description("오류 응답 코드"),
