@@ -1,9 +1,6 @@
 package com.habitpay.habitpay.domain.challenge.api;
 
-import com.habitpay.habitpay.domain.challenge.application.ChallengeCreationService;
-import com.habitpay.habitpay.domain.challenge.application.ChallengeDetailsService;
-import com.habitpay.habitpay.domain.challenge.application.ChallengePatchService;
-import com.habitpay.habitpay.domain.challenge.application.ChallengeSearchService;
+import com.habitpay.habitpay.domain.challenge.application.*;
 import com.habitpay.habitpay.domain.challenge.dto.*;
 import com.habitpay.habitpay.global.config.auth.CustomUserDetails;
 import com.habitpay.habitpay.global.response.SuccessResponse;
@@ -24,6 +21,7 @@ public class ChallengeApi {
     private final ChallengePatchService challengePatchService;
     private final ChallengeDetailsService challengeDetailsService;
     private final ChallengeSearchService challengeSearchService;
+    private final ChallengeDeleteService challengeDeleteService;
 
     @GetMapping("/challenges/me")
     public SuccessResponse<List<ChallengeEnrolledListItemResponse>> getEnrolledChallengeList(
@@ -48,4 +46,11 @@ public class ChallengeApi {
                                                                          @AuthenticationPrincipal CustomUserDetails user) {
         return challengePatchService.patch(id, challengePatchRequest, user.getMember());
     }
+
+    @DeleteMapping("/challenges/{id}")
+    public SuccessResponse<Void> deleteChallenge(@PathVariable("id") Long id,
+                                                 @AuthenticationPrincipal CustomUserDetails user) {
+        return challengeDeleteService.delete(id, user.getId());
+    }
+
 }
