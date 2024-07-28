@@ -22,8 +22,6 @@ import java.util.List;
 @Slf4j
 @Table(name = "challenge")
 public class Challenge extends BaseTime {
-    @OneToMany(mappedBy = "challenge", cascade = CascadeType.REMOVE)
-    List<ChallengeEnrollment> challengeEnrollmentList = new ArrayList<>();
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,6 +31,9 @@ public class Challenge extends BaseTime {
     @JoinColumn(name = "member_id")
     private Member host;
 
+    @OneToMany(mappedBy = "challenge", cascade = CascadeType.REMOVE)
+    List<ChallengeEnrollment> challengeEnrollmentList = new ArrayList<>();
+    
     @Column(nullable = false)
     private String title;
 
