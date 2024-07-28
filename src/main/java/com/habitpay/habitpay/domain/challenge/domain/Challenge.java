@@ -91,7 +91,7 @@ public class Challenge extends BaseTime {
     }
 
     public void setNumberOfParticipants(int numberOfParticipants) {
-        this.numberOfParticipants += numberOfParticipants;
+        this.numberOfParticipants = numberOfParticipants;
     }
 
     public boolean isTodayParticipatingDay() {

@@ -10,6 +10,7 @@ import com.habitpay.habitpay.global.error.exception.BadRequestException;
 import com.habitpay.habitpay.global.error.exception.ErrorCode;
 import com.habitpay.habitpay.global.response.SuccessCode;
 import com.habitpay.habitpay.global.response.SuccessResponse;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -23,6 +24,7 @@ public class ChallengeEnrollmentCancellationService {
     private final ChallengeEnrollmentRepository challengeEnrollmentRepository;
     private final ChallengeSearchService challengeSearchService;
 
+    @Transactional
     public SuccessResponse<Void> cancel(Long challengeId, Member member) {
 
         ChallengeEnrollment challengeEnrollment = challengeEnrollmentRepository.findByMember(member)
@@ -33,6 +35,7 @@ public class ChallengeEnrollmentCancellationService {
         validateChallengeHost(member, challenge);
         validateCancellationTime(challenge);
 
+        challenge.setNumberOfParticipants(challenge.getNumberOfParticipants() - 1);
         challengeEnrollmentRepository.delete(challengeEnrollment);
         return SuccessResponse.<Void>of(SuccessCode.CANCEL_CHALLENGE_ENROLLMENT_SUCCESS);
     }
