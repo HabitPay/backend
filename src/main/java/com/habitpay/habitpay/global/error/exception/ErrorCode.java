@@ -18,6 +18,7 @@ public enum ErrorCode {
     // JWT
     JWT_UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "토큰 검증에 실패했습니다."),
     JWT_FORBIDDEN(HttpStatus.FORBIDDEN, "권한이 부족합니다."),
+    JWT_FORBIDDEN_TO_MODIFY_OTHERS_POST(HttpStatus.FORBIDDEN, "본인의 포스트만 수정할 수 있습니다."),
 
     // Member
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "사용자를 찾을 수 없습니다."),
