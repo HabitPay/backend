@@ -40,7 +40,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         // TODO: 예외처리 추가하기
 
-        if (accessToken != null && tokenProvider.validateToken(accessToken)) {
+        if (accessToken == null) {
+            log.error("액세스 토큰이 존재하지 않습니다.");
+        } else if (tokenProvider.validateToken(accessToken)) {
             Authentication authentication = tokenService.getAuthentication(accessToken);
             SecurityContext context = SecurityContextHolder.getContext();
             context.setAuthentication(authentication);
