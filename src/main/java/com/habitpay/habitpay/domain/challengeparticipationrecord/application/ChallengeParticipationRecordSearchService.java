@@ -3,6 +3,7 @@ package com.habitpay.habitpay.domain.challengeparticipationrecord.application;
 import com.habitpay.habitpay.domain.challengeenrollment.domain.ChallengeEnrollment;
 import com.habitpay.habitpay.domain.challengeparticipationrecord.dao.ChallengeParticipationRecordRepository;
 import com.habitpay.habitpay.domain.challengeparticipationrecord.domain.ChallengeParticipationRecord;
+import com.habitpay.habitpay.domain.challengeparticipationrecord.exception.RecordNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -21,7 +22,7 @@ public class ChallengeParticipationRecordSearchService {
 
     public ChallengeParticipationRecord findById(Long id) {
         return challengeParticipationRecordRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("No Such Record " + id));
+                .orElseThrow(() -> new RecordNotFoundException(id));
     }
 
     public Optional<List<ChallengeParticipationRecord>> findAllByChallengeEnrollment(ChallengeEnrollment enrollment) {
