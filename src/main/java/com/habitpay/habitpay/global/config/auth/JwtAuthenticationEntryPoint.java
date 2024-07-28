@@ -20,7 +20,7 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
             HttpServletRequest request,
             HttpServletResponse response,
             AuthenticationException exception) throws IOException {
-        // todo : ErrorCode 메시지를 JWT 커스텀으로 변경하기
+        // todo : ErrorCode 메시지를 JWT 커스텀으로 변경하기 & UNATHORIZED로 변경
         ErrorResponse errorResponse = ErrorResponse.of(ErrorCode.BAD_REQUEST);
         response.setContentType("application/json");
         response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
