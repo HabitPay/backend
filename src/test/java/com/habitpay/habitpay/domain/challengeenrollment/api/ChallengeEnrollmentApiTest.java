@@ -209,7 +209,7 @@ public class ChallengeEnrollmentApiTest extends AbstractRestDocsTests {
 
         // then
         result.andExpect(status().isBadRequest())
-                .andDo(document("challenge/cancel-challenge-enrollment-not-enrolled-exception",
+                .andDo(document("challenge/cancel-challenge-enrollment-host-not-allowed-exception",
                         requestHeaders(
                                 headerWithName(HttpHeaders.AUTHORIZATION).description("액세스 토큰")
                         ),
