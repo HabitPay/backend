@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Getter;
 
 import java.time.ZonedDateTime;
+import java.util.List;
 
 @Getter
 @Builder
@@ -20,11 +21,11 @@ public class ChallengeDetailsResponse {
     private int feePerAbsence;
     private Boolean isPaidAll;
     private String hostNickname;
-    private String hostProfileImage;
+    private List<String> enrolledMembersProfileImageList;
     private Boolean isHost;
     private Boolean isMemberEnrolledInChallenge;
 
-    public static ChallengeDetailsResponse of(Member member, Challenge challenge, Boolean isMemberEnrolledInChallenge) {
+    public static ChallengeDetailsResponse of(Member member, Challenge challenge, List<String> enrolledMembersProfileImageList, Boolean isMemberEnrolledInChallenge) {
         return ChallengeDetailsResponse.builder()
                 .title(challenge.getTitle())
                 .description(challenge.getDescription())
@@ -36,7 +37,7 @@ public class ChallengeDetailsResponse {
                 .participatingDays(challenge.getParticipatingDays())
                 .feePerAbsence(challenge.getFeePerAbsence())
                 .hostNickname(challenge.getHost().getNickname())
-                .hostProfileImage(challenge.getHost().getImageFileName())
+                .enrolledMembersProfileImageList(enrolledMembersProfileImageList)
                 .isHost(challenge.getHost().getId().equals(member.getId()))
                 .isMemberEnrolledInChallenge(isMemberEnrolledInChallenge)
                 .build();

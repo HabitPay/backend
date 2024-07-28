@@ -14,4 +14,5 @@ public interface ChallengeEnrollmentRepository extends JpaRepository<ChallengeEn
     Optional<ChallengeEnrollment> findByMemberAndChallenge(Member member, Challenge challenge);
 
     List<ChallengeEnrollment> findAllByMember(Member member);
+    List<ChallengeEnrollment> findTop3ByChallenge(Challenge challenge);
 }

@@ -29,8 +29,7 @@ import org.springframework.test.web.servlet.ResultActions;
 import java.time.ZonedDateTime;
 import java.util.List;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
@@ -72,6 +71,7 @@ public class ChallengeApiTest extends AbstractRestDocsTests {
 
         // given
         ChallengeEnrolledListItemResponse response = ChallengeEnrolledListItemResponse.builder()
+                .challengeId(1L)
                 .title("챌린지 제목")
                 .description("챌린지 설명")
                 .startDate(ZonedDateTime.now())
@@ -104,6 +104,7 @@ public class ChallengeApiTest extends AbstractRestDocsTests {
                         ),
                         responseFields(
                                 fieldWithPath("message").description("메세지"),
+                                fieldWithPath("data[].challengeId").description("챌린지 ID"),
                                 fieldWithPath("data[].title").description("챌린지 제목"),
                                 fieldWithPath("data[].description").description("챌린지 설명"),
                                 fieldWithPath("data[].startDate").description("챌린지 시작 일시"),
@@ -140,7 +141,7 @@ public class ChallengeApiTest extends AbstractRestDocsTests {
                 .feePerAbsence(1000)
                 .isPaidAll(false)
                 .hostNickname("챌린지 주최자 닉네임")
-                .hostProfileImage("챌린지 주최자 프로필 이미지")
+                .enrolledMembersProfileImageList(List.of("imageLink1", "imageLink2", "imageLink3"))
                 .isHost(true)
                 .isMemberEnrolledInChallenge(true)
                 .build();
@@ -170,7 +171,7 @@ public class ChallengeApiTest extends AbstractRestDocsTests {
                                 fieldWithPath("data.feePerAbsence").description("미참여 1회당 벌금"),
                                 fieldWithPath("data.isPaidAll").description("최종 정산 여부"),
                                 fieldWithPath("data.hostNickname").description("챌린지 주최자 닉네임"),
-                                fieldWithPath("data.hostProfileImage").description("챌린지 주최자 프로필 이미지"),
+                                fieldWithPath("data.enrolledMembersProfileImageList").description("챌린지 참여자 프로필 이미지 (최대 3명)"),
                                 fieldWithPath("data.isHost").description("현재 접속한 사용자 == 챌린지 주최자"),
                                 fieldWithPath("data.isMemberEnrolledInChallenge").description("현재 접속한 사용자의 챌린지 참여 여부")
                         )
