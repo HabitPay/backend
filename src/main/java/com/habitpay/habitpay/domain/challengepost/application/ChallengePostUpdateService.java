@@ -10,6 +10,8 @@ import com.habitpay.habitpay.domain.postphoto.application.PostPhotoDeleteService
 import com.habitpay.habitpay.domain.postphoto.application.PostPhotoUtilService;
 import com.habitpay.habitpay.domain.refreshtoken.exception.CustomJwtException;
 import com.habitpay.habitpay.global.error.CustomJwtErrorInfo;
+import com.habitpay.habitpay.global.error.exception.ErrorCode;
+import com.habitpay.habitpay.global.error.exception.ForbiddenException;
 import com.habitpay.habitpay.global.response.SuccessResponse;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -66,7 +68,7 @@ public class ChallengePostUpdateService {
 
         if (isAnnouncement != null) {
             if (isAnnouncement && !challengePostUtilService.isChallengeHost(challenge, member)) {
-                throw new CustomJwtException(HttpStatus.FORBIDDEN, CustomJwtErrorInfo.FORBIDDEN, "공지 포스트는 챌린지 호스트만 작성할 수 있습니다.");
+                throw new ForbiddenException(ErrorCode.ONLY_HOST_CAN_UPLOAD_ANNOUNCEMENT);
             }
             post.modifyPostIsAnnouncement(isAnnouncement);
             challengePostRepository.save(post);
