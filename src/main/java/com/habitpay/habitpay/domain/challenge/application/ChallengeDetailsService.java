@@ -14,7 +14,6 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class ChallengeDetailsService {
-    private final MemberSearchService memberSearchService;
     private final ChallengeSearchService challengeSearchService;
     private final ChallengeEnrollmentRepository challengeEnrollmentRepository;
 
