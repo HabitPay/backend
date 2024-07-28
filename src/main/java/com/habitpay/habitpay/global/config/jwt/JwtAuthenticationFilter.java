@@ -1,6 +1,11 @@
 package com.habitpay.habitpay.global.config.jwt;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.habitpay.habitpay.domain.refreshtoken.exception.CustomJwtException;
 import com.habitpay.habitpay.global.config.auth.JwtAuthenticationEntryPoint;
+import com.habitpay.habitpay.global.error.CustomJwtErrorInfo;
+import com.habitpay.habitpay.global.error.ErrorResponse;
+import com.habitpay.habitpay.global.error.exception.ErrorCode;
 import com.habitpay.habitpay.global.util.RequestHeaderUtil;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
@@ -9,6 +14,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContext;
@@ -37,13 +43,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         try {
             // TODO: 예외처리 추가하기
             if (accessToken == null) {
-                log.error("No access token");
+                log.error("액세스 토큰이 존재하지 않습니다.");
+                throw new CustomJwtException(HttpStatus.BAD_REQUEST, CustomJwtErrorInfo.BAD_REQUEST, "액세스 토큰이 존재하지 않습니다.");
             }
 
-            // TODO: 예외처리 밖으로 꺼내오기
-            if (tokenProvider.validateToken(accessToken) == false) {
-                log.error("Invalid access token");
-            }
+            tokenProvider.validateToken(accessToken);
 
             Authentication authentication = tokenService.getAuthentication(accessToken);
             SecurityContext context = SecurityContextHolder.getContext();
@@ -51,22 +55,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             log.info("authentication.getName(): {}", authentication.getName());
 
             filterChain.doFilter(request, response);
-        } catch (ExpiredJwtException e) {
-            System.out.println("만료되었다네요");
-            jwtAuthenticationEntryPoint.commence(request, response, new AuthenticationException("만료 토큰!" ,e) {
-            });
-        } catch (JwtException e) {
-            System.out.println("뭔가 JWT 문제");
-            jwtAuthenticationEntryPoint.commence(request, response, new AuthenticationException("만료 토큰!" ,e) {
-            });
         } catch (Exception e) {
-            System.out.println("여기로는 안 오나요,,,,?");
-            System.out.println(e.getMessage());
-
-            jwtAuthenticationEntryPoint.commence(request, response, new AuthenticationException("만료 토큰!" ,e) {});
-//            request.setAttribute("exception", e);
+            request.setAttribute("exception", e);
+            jwtAuthenticationEntryPoint.commence(request, response, new AuthenticationException("AuthenticationException" ,e) {});
         }
 
-//        filterChain.doFilter(request, response);
     }
 }
