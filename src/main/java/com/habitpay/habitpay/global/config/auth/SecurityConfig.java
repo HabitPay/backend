@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
@@ -25,6 +26,7 @@ public class SecurityConfig {
     private final CustomOAuth2UserService customOAuth2UserService;
     private final CustomOAuth2LoginSuccessHandler customOAuth2LoginSuccessHandler;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
 
     // TODO: CorsConfig.java 파일에 옮길 수 있도록 하기 
     @Bean
@@ -51,7 +53,8 @@ public class SecurityConfig {
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests((authorizeRequests ->
                         authorizeRequests
-                                .requestMatchers("/**").permitAll() // todo: 보안 상 취약할 수 있으니 범위 제한하기
+                                .requestMatchers("/oauth2/**").permitAll()
+                                .requestMatchers("/token").permitAll() // todo: url 수정 후 /api 추가하기
 //                            .requestMatchers("/api/v1/**").hasRole(Role.USER.name()) // todo: 로그인 후 사용하는 api 에서만 적용하기
                                 .anyRequest().authenticated()
                 ))
@@ -65,6 +68,9 @@ public class SecurityConfig {
                                         userInfoEndpoint.userService(customOAuth2UserService)));
 
         http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+
+        http.exceptionHandling((handler) ->
+                handler.authenticationEntryPoint(jwtAuthenticationEntryPoint));
 
         return http.build();
     }
