@@ -4,6 +4,7 @@ import com.habitpay.habitpay.domain.challenge.application.ChallengeSearchService
 import com.habitpay.habitpay.domain.challenge.domain.Challenge;
 import com.habitpay.habitpay.domain.challengeenrollment.application.ChallengeEnrollmentSearchService;
 import com.habitpay.habitpay.domain.challengeenrollment.domain.ChallengeEnrollment;
+import com.habitpay.habitpay.domain.challengeenrollment.exception.NotEnrolledChallengeException;
 import com.habitpay.habitpay.domain.member.domain.Member;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,7 +23,7 @@ public class ChallengeAbsenceFeeSearchService {
     public int findPersonalTotalFeeOfChallenge(Member member, Challenge challenge) {
         Optional<ChallengeEnrollment> optionalEnrollment = challengeEnrollmentSearchService.findByMemberAndChallenge(member, challenge);
         return optionalEnrollment.map(ChallengeEnrollment::getTotalFee)
-                .orElseThrow(() -> new NoSuchElementException("This member is not in this challenge."));
+                .orElseThrow(() -> new NotEnrolledChallengeException(member.getId(), challenge.getId()));
     }
 
     public int findPersonalTotalFeeOfChallenge(ChallengeEnrollment enrollment) {
