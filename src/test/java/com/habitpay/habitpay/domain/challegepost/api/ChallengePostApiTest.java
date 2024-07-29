@@ -317,8 +317,7 @@ public class ChallengePostApiTest extends AbstractRestDocsTests {
                         ),
                         responseFields(
                                 fieldWithPath("message").description("메시지"),
-                                fieldWithPath("data").description("AWS S3 업로드를 위한 url List<String>"),
-                                fieldWithPath("data[]").description("AWS S3 업로드를 위한 preSignedUrl")
+                                fieldWithPath("data").description("AWS S3 업로드를 위한 preSignedUrl List<String>")
                         )
                 ));
     }
@@ -364,13 +363,11 @@ public class ChallengePostApiTest extends AbstractRestDocsTests {
                                 fieldWithPath("modifiedPhotos").description("포스트 내 정렬 순서가 변경된 이미지 파일 목록"),
                                 fieldWithPath("modifiedPhotos[].photoId").description("정렬 순서를 변경하려는 이미지 파일의 PostPhotoId"),
                                 fieldWithPath("modifiedPhotos[].viewOrder").description("변경하려는 정렬 순서"),
-                                fieldWithPath("deletedPhotoIds").description("삭제한 이미지 파일 목록"),
-                                fieldWithPath("deletedPhotoIds[]").description("삭제할 이미지 파일의 PostPhotoId")
+                                fieldWithPath("deletedPhotoIds").description("삭제할 이미지 파일 PostPhotoId List<Long>")
                                 ),
                         responseFields(
                                 fieldWithPath("message").description("메시지"),
-                                fieldWithPath("data").description("AWS S3 업로드를 위한 url List<String>"),
-                                fieldWithPath("data[]").description("AWS S3 업로드를 위한 preSignedUrl")
+                                fieldWithPath("data").description("AWS S3 업로드를 위한 preSignedUrl List<String>")
                         )
                 ));
     }
