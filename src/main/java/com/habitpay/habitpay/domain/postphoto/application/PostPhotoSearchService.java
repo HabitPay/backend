@@ -3,6 +3,7 @@ package com.habitpay.habitpay.domain.postphoto.application;
 import com.habitpay.habitpay.domain.challengepost.domain.ChallengePost;
 import com.habitpay.habitpay.domain.postphoto.dao.PostPhotoRepository;
 import com.habitpay.habitpay.domain.postphoto.domain.PostPhoto;
+import com.habitpay.habitpay.domain.postphoto.exception.PhotoNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -19,7 +20,7 @@ public class PostPhotoSearchService {
 
     public PostPhoto getPostPhotoById(Long id) {
         return postPhotoRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("이미지 정보를 찾을 수 없습니다."));
+                .orElseThrow(() -> new PhotoNotFoundException(id));
     }
 
     public List<PostPhoto> findAllByPost(ChallengePost post) {
