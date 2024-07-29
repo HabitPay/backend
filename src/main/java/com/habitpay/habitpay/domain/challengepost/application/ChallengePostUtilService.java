@@ -46,18 +46,9 @@ public class ChallengePostUtilService {
             return;
         }
 
-        // todo : ParticipationDay 비트 방식 확인하기
-        //  (우선 8비트 기준 앞자리부터 월요일이라고 상정함 ex.0b10101000(월수금))
         DayOfWeek nowDayOfWeek = now.getDayOfWeek();
         int nowDayOfWeekValue = nowDayOfWeek.getValue();
-//        int nowDayOfWeekValue = now.getDayOfWeek().getValue();
-        boolean todayIsParticipationDay = (challenge.getParticipatingDays() & (1 << (nowDayOfWeekValue - 1))) != 0;
-
-        // todo : 디버깅 용도
-        log.info("오늘은 " + nowDayOfWeek);
-        log.info("비트로 표현하자면 " + nowDayOfWeekValue);
-        log.info("챌린지 인증해야 하는 날은? " + challenge.getParticipatingDays());
-        log.info("오늘은 챌린지 참여날: " + todayIsParticipationDay);
+        boolean todayIsParticipationDay = (challenge.getParticipatingDays() & (1 << (7 - nowDayOfWeekValue))) != 0;
 
         if (!todayIsParticipationDay) {
             return;
@@ -67,7 +58,6 @@ public class ChallengePostUtilService {
             return;
         }
 
-        //todo: challengeEnrollment.successCount +1 하는 메서드 만들기 (challenge 도메인이나 서비스 내 위치?)
         challengeParticipationRecordCreationService.save(enrollment, post);
     }
 

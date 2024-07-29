@@ -37,7 +37,9 @@ public class ChallengePostCreationService {
     public SuccessResponse<List<String>> createPost(AddPostRequest request, Long challengeId, Member member) {
 
         ChallengePost challengePost = this.savePost(request, challengeId, member);
-        challengePostUtilService.verifyChallengePostForRecord(challengePost);
+        if (!challengePost.getIsAnnouncement()) {
+            challengePostUtilService.verifyChallengePostForRecord(challengePost);
+        }
         List<String> presignedUrlList = postPhotoCreationService.createPhotoUrlList(challengePost, request.getPhotos());
 
         return SuccessResponse.of(
