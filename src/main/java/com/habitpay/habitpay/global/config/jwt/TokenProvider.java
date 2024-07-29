@@ -1,12 +1,9 @@
 package com.habitpay.habitpay.global.config.jwt;
 
 import com.habitpay.habitpay.domain.member.domain.Member;
-import com.habitpay.habitpay.global.error.CustomJwtErrorInfo;
-import com.habitpay.habitpay.domain.refreshtoken.exception.CustomJwtException;
 import io.jsonwebtoken.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;

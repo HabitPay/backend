@@ -15,10 +15,9 @@
 Request Body에 클라이언트가 가지고 있던 리프레시 토큰을 담아 형식에 맞게 요청합니다.
 리프레시 토큰이 유효하고 적절하다면, 새로운 액세스 토큰과 함께 새로운 리프레시 토큰을 세트로 발급합니다.
 
-이때 "grantType" 속성은 "refreshToken"으로 보내면 됩니다.
-(대소문자를 구분하지 않고, "refresh_token" 스네이크 케이싱도 정상 인자로 받습니다.)
+이때 "grantType" 속성의 값은 "refreshToken"으로 정확히 보내야 합니다.
 
-operation::refreshToken/create-new-access-token-and-new-refresh-token[snippets='http-request,http-response,response-fields']
+operation::refreshToken/create-new-access-token-and-new-refresh-token[snippets='http-request,http-response,request-fields,response-fields']
 
 === 토큰 리프레시 실패 : 400 Bad Request
 

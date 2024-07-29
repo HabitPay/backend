@@ -1,23 +1,21 @@
 package com.habitpay.habitpay.domain.refreshtoken.application;
 
 import com.habitpay.habitpay.domain.member.application.MemberSearchService;
-import com.habitpay.habitpay.domain.member.dao.MemberRepository;
 import com.habitpay.habitpay.domain.member.domain.Member;
 import com.habitpay.habitpay.domain.refreshtoken.dao.RefreshTokenRepository;
 import com.habitpay.habitpay.domain.refreshtoken.domain.RefreshToken;
 import com.habitpay.habitpay.domain.refreshtoken.dto.CreateAccessTokenRequest;
 import com.habitpay.habitpay.domain.refreshtoken.dto.CreateAccessTokenResponse;
-import com.habitpay.habitpay.domain.refreshtoken.exception.CustomJwtException;
 import com.habitpay.habitpay.global.config.jwt.TokenProvider;
 import com.habitpay.habitpay.global.config.jwt.TokenService;
-import com.habitpay.habitpay.global.error.CustomJwtErrorInfo;
+import com.habitpay.habitpay.global.error.exception.BadRequestException;
+import com.habitpay.habitpay.global.error.exception.ErrorCode;
+import com.habitpay.habitpay.global.error.exception.UnauthorizedException;
 import com.habitpay.habitpay.global.response.SuccessResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import java.time.Duration;
 import java.util.Objects;
 
 @RequiredArgsConstructor
@@ -39,11 +37,13 @@ public class RefreshTokenCreationService {
         String grantType = requestBody.getGrantType();
 
         if (grantType == null) {
-            throw new CustomJwtException(HttpStatus.BAD_REQUEST, CustomJwtErrorInfo.BAD_REQUEST, "인증 방법을 알 수 없습니다.");
+            log.error("요청 헤더 grantType의 값이 null입니다.");
+            throw new BadRequestException(ErrorCode.BAD_REQUEST);
         }
 
         if (!grantType.equals("refreshToken")) {
-            throw new CustomJwtException(HttpStatus.BAD_REQUEST, CustomJwtErrorInfo.BAD_REQUEST, "취급할 수 없는 인증 방법입니다.");
+            log.error("요청 헤더 grantType의 값이 refreshToken이 아닙니다.");
+            throw new BadRequestException(ErrorCode.BAD_REQUEST);
         }
 
         String newAccessToken = this.createNewAccessToken(requestBody.getRefreshToken());
@@ -64,15 +64,15 @@ public class RefreshTokenCreationService {
     private String createNewAccessToken(String refreshToken) {
 
         if (!tokenProvider.validateToken(refreshToken)) {
-            throw new CustomJwtException(HttpStatus.UNAUTHORIZED, CustomJwtErrorInfo.UNAUTHORIZED, "JWT 토큰 검증에 실패했습니다.");
+            log.error("리프레시 토큰 인증에 실패했습니다.");
+            throw new UnauthorizedException(ErrorCode.UNAUTHORIZED);
         }
 
         String requestIp = refreshTokenUtilService.getClientIpAddress();
         String loginIp = refreshTokenSearchService.findByRefreshToken(refreshToken).getLoginIp();
-        log.info("[Client new request IP] {}", requestIp);
-        log.info("[Client old login IP] {}", loginIp);
+        log.info("[Client request IP] {}, [Client login IP] {}", requestIp, loginIp);
         if (!Objects.equals(requestIp, loginIp)) {
-            throw new CustomJwtException(HttpStatus.BAD_REQUEST, CustomJwtErrorInfo.BAD_REQUEST, "로그인한 IP 주소와 요청 IP 주소가 일치하지 않습니다.");
+            throw new BadRequestException(ErrorCode.JWT_REQUEST_IP_AND_LOGIN_IP_NOT_SAME_FOR_REFRESH);
         }
 
         Long memberId = refreshTokenSearchService.findByRefreshToken(refreshToken).getMember().getId();

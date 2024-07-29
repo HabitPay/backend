@@ -12,8 +12,14 @@ public enum ErrorCode {
     ENTITY_NOT_FOUND(HttpStatus.NOT_FOUND, "Entity Not Found"),
     INVALID_VALUE(HttpStatus.BAD_REQUEST, "Invalid Input Value"),
     BAD_REQUEST(HttpStatus.BAD_REQUEST, "Bad Request"),
+    UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "Invalid token"),
     FORBIDDEN(HttpStatus.FORBIDDEN, "Not Allowed to Access or Modify"),
     CONFLICT(HttpStatus.CONFLICT, "Conflict"),
+
+    // JWT
+    JWT_REQUEST_IP_AND_LOGIN_IP_NOT_SAME_FOR_REFRESH(HttpStatus.BAD_REQUEST, "로그인한 IP 주소와 요청 IP 주소가 일치하지 않습니다."),
+    JWT_REFRESH_TOKEN_NOT_FOUND(HttpStatus.NOT_FOUND, "리프레시 토큰이 존재하지 않습니다."),
+    JWT_FORBIDDEN_TO_MODIFY_OTHERS_POST(HttpStatus.FORBIDDEN, "본인의 포스트만 수정할 수 있습니다."),
 
     // Member
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "사용자를 찾을 수 없습니다."),
@@ -33,6 +39,20 @@ public enum ErrorCode {
     NOT_ENROLLED_IN_CHALLENGE(HttpStatus.BAD_REQUEST, "참여하지 않은 챌린지 입니다."),
     NOT_ALLOWED_TO_CANCEL_ENROLLMENT_OF_HOST(HttpStatus.BAD_REQUEST, "챌린지 주최자는 참여 취소가 불가능 합니다."),
     NOT_ALLOWED_TO_DELETE_CHALLENGE(HttpStatus.FORBIDDEN, "챌린지 삭제는 챌린지 주최자만 가능합니다.");
+  
+      // Challenge Participation Record
+    RECORD_NOT_FOUND(HttpStatus.NOT_FOUND, "챌린지 참여 기록이 존재하지 않습니다."),
+
+    // Challenge Post
+    POST_NOT_FOUND(HttpStatus.NOT_FOUND, "포스트가 존재하지 않습니다."),
+    ONLY_HOST_CAN_UPLOAD_ANNOUNCEMENT(HttpStatus.FORBIDDEN, "공지 포스트는 챌린지 주최자만 작성할 수 있습니다."),
+    ONLY_HOST_CAN_DELETE_ANNOUNCEMENT(HttpStatus.FORBIDDEN, "공지 포스트는 챌린지 호스트만 삭제할 수 있습니다."),
+    POST_CANNOT_BE_DELETED(HttpStatus.FORBIDDEN, "일반 포스트 삭제는 제공되지 않는 기능입니다."),
+    POST_PHOTO_IMAGE_SIZE_TOO_LARGE(HttpStatus.BAD_REQUEST, "이미지 파일의 크기가 제한을 초과했습니다. (최대 1MB)"),
+    PHOTO_NOT_FOUND(HttpStatus.NOT_FOUND, "포스트 포토가 존재하지 않습니다."),
+
+    // todo : 마지막 error code 뒤에 붙이기
+    ;
 
     private HttpStatus status;
     private final String message;

@@ -4,9 +4,11 @@ import com.habitpay.habitpay.domain.challenge.application.ChallengeSearchService
 import com.habitpay.habitpay.domain.challenge.domain.Challenge;
 import com.habitpay.habitpay.domain.challengeenrollment.application.ChallengeEnrollmentSearchService;
 import com.habitpay.habitpay.domain.challengeenrollment.domain.ChallengeEnrollment;
+import com.habitpay.habitpay.domain.challengeenrollment.exception.NotEnrolledChallengeException;
 import com.habitpay.habitpay.domain.challengepost.dao.ChallengePostRepository;
 import com.habitpay.habitpay.domain.challengepost.domain.ChallengePost;
 import com.habitpay.habitpay.domain.challengepost.dto.PostViewResponse;
+import com.habitpay.habitpay.domain.challengepost.exception.PostNotFoundException;
 import com.habitpay.habitpay.domain.member.domain.Member;
 import com.habitpay.habitpay.domain.postphoto.application.PostPhotoSearchService;
 import com.habitpay.habitpay.domain.postphoto.application.PostPhotoUtilService;
@@ -79,7 +81,7 @@ public class ChallengePostSearchService {
     public SuccessResponse<List<PostViewResponse>> findPostViewListByMember(Long challengeId, Member member, Pageable pageable) {
         Challenge challenge = challengeSearchService.getChallengeById(challengeId);
         ChallengeEnrollment enrollment = challengeEnrollmentSearchService.findByMemberAndChallenge(member, challenge)
-                .orElseThrow(() -> new NoSuchElementException("챌린지에 등록된 멤버가 아닙니다."));
+                .orElseThrow(() -> new NotEnrolledChallengeException(member.getId(), challengeId));
 
         Long challengeEnrollmentId = enrollment.getId();
 
@@ -99,7 +101,7 @@ public class ChallengePostSearchService {
 
     public ChallengePost getChallengePostById(Long id) {
         return challengePostRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("포스트를 찾을 수 없습니다."));
+                .orElseThrow(() -> new PostNotFoundException(id));
     }
 
     public Challenge getChallengeByPostId(Long postId) {

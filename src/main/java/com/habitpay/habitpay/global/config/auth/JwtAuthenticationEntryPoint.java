@@ -20,10 +20,9 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
             HttpServletRequest request,
             HttpServletResponse response,
             AuthenticationException exception) throws IOException {
-        // todo : ErrorCode 메시지를 JWT 커스텀으로 변경하기 & UNATHORIZED로 변경
-        ErrorResponse errorResponse = ErrorResponse.of(ErrorCode.BAD_REQUEST);
+        ErrorResponse errorResponse = ErrorResponse.of(ErrorCode.UNAUTHORIZED);
         response.setContentType("application/json");
-        response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         ObjectMapper objectMapper  = new ObjectMapper();
         String jsonResponse = objectMapper.writeValueAsString(errorResponse);
         response.getWriter().write(jsonResponse);

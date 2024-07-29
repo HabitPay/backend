@@ -2,14 +2,16 @@ package com.habitpay.habitpay.domain.refreshtoken.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.habitpay.habitpay.docs.springrestdocs.AbstractRestDocsTests;
-import com.habitpay.habitpay.domain.member.domain.Member;
 import com.habitpay.habitpay.domain.refreshtoken.application.RefreshTokenCreationService;
 import com.habitpay.habitpay.domain.refreshtoken.dto.CreateAccessTokenRequest;
 import com.habitpay.habitpay.domain.refreshtoken.dto.CreateAccessTokenResponse;
-import com.habitpay.habitpay.domain.refreshtoken.exception.CustomJwtException;
 import com.habitpay.habitpay.global.config.jwt.TokenProvider;
 import com.habitpay.habitpay.global.config.jwt.TokenService;
 import com.habitpay.habitpay.global.error.CustomJwtErrorInfo;
+import com.habitpay.habitpay.global.error.exception.BadRequestException;
+import com.habitpay.habitpay.global.error.exception.ErrorCode;
+import com.habitpay.habitpay.global.error.exception.ForbiddenException;
+import com.habitpay.habitpay.global.error.exception.UnauthorizedException;
 import com.habitpay.habitpay.global.response.SuccessResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -99,7 +101,7 @@ public class RefreshTokenApiTest extends AbstractRestDocsTests {
                 .build();
 
         given(refreshTokenCreationService.createNewAccessTokenAndNewRefreshToken(any(CreateAccessTokenRequest.class)))
-                .willThrow(new CustomJwtException(HttpStatus.BAD_REQUEST, CustomJwtErrorInfo.BAD_REQUEST, "인증 방법을 알 수 없습니다."));
+                .willThrow(new BadRequestException(ErrorCode.BAD_REQUEST));
 
         //when
         ResultActions result = mockMvc.perform(post("/token")
@@ -110,8 +112,8 @@ public class RefreshTokenApiTest extends AbstractRestDocsTests {
         result.andExpect(status().isBadRequest())
                 .andDo(document("refreshToken/return-400-when-invalid-request",
                         responseFields(
-                                fieldWithPath("error").description("에러 메시지"),
-                                fieldWithPath("errorDescription").description("에러 발생 이유")
+                                fieldWithPath("code").description("에러 코드"),
+                                fieldWithPath("message").description("에러 메시지")
                         )
                 ));
 
@@ -128,7 +130,7 @@ public class RefreshTokenApiTest extends AbstractRestDocsTests {
                 .build();
 
         given(refreshTokenCreationService.createNewAccessTokenAndNewRefreshToken(any(CreateAccessTokenRequest.class)))
-                .willThrow(new CustomJwtException(HttpStatus.UNAUTHORIZED, CustomJwtErrorInfo.UNAUTHORIZED, "JWT expired at 2024-07-15T11:29:31Z."));
+                .willThrow(new UnauthorizedException(ErrorCode.UNAUTHORIZED));
 
         //when
         ResultActions result = mockMvc.perform(post("/token")
@@ -139,8 +141,8 @@ public class RefreshTokenApiTest extends AbstractRestDocsTests {
         result.andExpect(status().isUnauthorized())
                 .andDo(document("refreshToken/return-401-when-invalid-token",
                         responseFields(
-                                fieldWithPath("error").description("에러 메시지"),
-                                fieldWithPath("errorDescription").description("에러 발생 이유")
+                                fieldWithPath("code").description("에러 코드"),
+                                fieldWithPath("message").description("에러 메시지")
                         )
                 ));
 
@@ -157,7 +159,7 @@ public class RefreshTokenApiTest extends AbstractRestDocsTests {
                 .build();
 
         given(refreshTokenCreationService.createNewAccessTokenAndNewRefreshToken(any(CreateAccessTokenRequest.class)))
-                .willThrow(new CustomJwtException(HttpStatus.FORBIDDEN, CustomJwtErrorInfo.FORBIDDEN, "공지 포스트는 챌린지 호스트만 작성할 수 있습니다."));
+                .willThrow(new ForbiddenException(ErrorCode.FORBIDDEN));
 
         //when
         ResultActions result = mockMvc.perform(post("/token")
@@ -168,8 +170,8 @@ public class RefreshTokenApiTest extends AbstractRestDocsTests {
         result.andExpect(status().isForbidden())
                 .andDo(document("refreshToken/return-403-when-insufficient-scope",
                         responseFields(
-                                fieldWithPath("error").description("에러 메시지"),
-                                fieldWithPath("errorDescription").description("에러 발생 이유")
+                                fieldWithPath("code").description("에러 코드"),
+                                fieldWithPath("message").description("에러 메시지")
                         )
                 ));
 
