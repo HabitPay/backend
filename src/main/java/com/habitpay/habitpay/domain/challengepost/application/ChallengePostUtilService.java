@@ -46,16 +46,9 @@ public class ChallengePostUtilService {
             return;
         }
 
-        // todo : ParticipationDay 비트 방식 확인하기
         DayOfWeek nowDayOfWeek = now.getDayOfWeek();
         int nowDayOfWeekValue = nowDayOfWeek.getValue();
-        boolean todayIsParticipationDay = (challenge.getParticipatingDays() & (1 << (nowDayOfWeekValue - 1))) != 0;
-
-        // todo : 디버깅 용도
-        log.info("오늘은 " + nowDayOfWeek);
-        log.info("비트로 표현하자면 " + nowDayOfWeekValue);
-        log.info("챌린지 인증해야 하는 날은? " + challenge.getParticipatingDays());
-        log.info("오늘은 챌린지 참여날: " + todayIsParticipationDay);
+        boolean todayIsParticipationDay = (challenge.getParticipatingDays() & (1 << (7 - nowDayOfWeekValue))) != 0;
 
         if (!todayIsParticipationDay) {
             return;
