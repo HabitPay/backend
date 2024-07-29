@@ -16,6 +16,8 @@ public enum SuccessCode {
     DELETE_MEMBER_ACCOUNT_SUCCESS("정상적으로 탈퇴되었습니다."),
 
     // Challenge
+    CREATE_CHALLENGE_SUCCESS("정상적으로 챌린지가 생성되었습니다."),
+    PATCH_CHALLENGE_SUCCESS("정상적으로 챌린지 정보 수정이 반영되었습니다."),
     ENROLL_CHALLENGE_SUCCESS("정상적으로 챌린지에 등록했습니다."),
     CANCEL_CHALLENGE_ENROLLMENT_SUCCESS("정상적으로 챌린지 등록을 취소했습니다."),
     DELETE_CHALLENGE_SUCCESS("정상적으로 챌린지를 삭제했습니다."),

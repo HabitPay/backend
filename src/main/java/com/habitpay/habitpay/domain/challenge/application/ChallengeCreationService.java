@@ -9,6 +9,7 @@ import com.habitpay.habitpay.domain.challengeenrollment.dao.ChallengeEnrollmentR
 import com.habitpay.habitpay.domain.challengeenrollment.domain.ChallengeEnrollment;
 import com.habitpay.habitpay.domain.member.application.MemberSearchService;
 import com.habitpay.habitpay.domain.member.domain.Member;
+import com.habitpay.habitpay.global.response.SuccessCode;
 import com.habitpay.habitpay.global.response.SuccessResponse;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -37,7 +38,7 @@ public class ChallengeCreationService {
         challengeEnrollmentRepository.save(challengeEnrollment);
 
         return SuccessResponse.of(
-                "챌린지가 생성되었습니다.",
+                SuccessCode.CREATE_CHALLENGE_SUCCESS,
                 ChallengeCreationResponse.of(member, challenge)
         );
     }
