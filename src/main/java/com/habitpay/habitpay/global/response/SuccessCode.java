@@ -14,7 +14,11 @@ public enum SuccessCode {
     // Challenge
     ENROLL_CHALLENGE_SUCCESS("정상적으로 챌린지에 등록했습니다."),
     CANCEL_CHALLENGE_ENROLLMENT_SUCCESS("정상적으로 챌린지 등록을 취소했습니다."),
-    DELETE_CHALLENGE_SUCCESS("정상적으로 챌린지를 삭제했습니다.");
+    DELETE_CHALLENGE_SUCCESS("정상적으로 챌린지를 삭제했습니다."),
+
+    // Post
+    DELETE_POST_SUCCESS("정상적으로 포스트를 삭제했습니다.");
+
     private final String message;
 
 }

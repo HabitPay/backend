@@ -13,6 +13,7 @@ import com.habitpay.habitpay.domain.postphoto.dto.ModifyPostPhotoData;
 import com.habitpay.habitpay.domain.postphoto.dto.PostPhotoView;
 import com.habitpay.habitpay.global.config.jwt.TokenProvider;
 import com.habitpay.habitpay.global.config.jwt.TokenService;
+import com.habitpay.habitpay.global.response.SuccessCode;
 import com.habitpay.habitpay.global.response.SuccessResponse;
 import com.habitpay.habitpay.global.security.WithMockOAuth2User;
 import org.junit.jupiter.api.DisplayName;
@@ -379,7 +380,7 @@ public class ChallengePostApiTest extends AbstractRestDocsTests {
 
         //given
         given(challengePostDeleteService.deletePost(anyLong(), any(Member.class)))
-                .willReturn(SuccessResponse.of("포스트가 정상적으로 삭제되었습니다.", 1L));
+                .willReturn(SuccessResponse.of(SuccessCode.DELETE_POST_SUCCESS));
 
         //when
         ResultActions result = mockMvc.perform(delete("/api/posts/{id}", 1L)
