@@ -23,7 +23,10 @@ public enum SuccessCode {
     // Post
     CREATE_POST_SUCCESS("정상적으로 포스트를 생성했습니다."),
     PATCH_POST_SUCCESS("정상적으로 포스트를 수정했습니다."),
-    DELETE_POST_SUCCESS("정상적으로 포스트를 삭제했습니다.");
+    DELETE_POST_SUCCESS("정상적으로 포스트를 삭제했습니다."),
+
+    // Token
+    REFRESH_TOKEN_SUCCESS("새로운 액세스 토큰 및 리프레시 토큰이 성공적으로 발급되었습니다.");
 
     private final String message;
 
