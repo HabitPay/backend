@@ -46,6 +46,7 @@ public enum ErrorCode {
     ONLY_HOST_CAN_UPLOAD_ANNOUNCEMENT(HttpStatus.FORBIDDEN, "공지 포스트는 챌린지 주최자만 작성할 수 있습니다."),
     ONLY_HOST_CAN_DELETE_ANNOUNCEMENT(HttpStatus.FORBIDDEN, "공지 포스트는 챌린지 호스트만 삭제할 수 있습니다."),
     POST_CANNOT_BE_DELETED(HttpStatus.FORBIDDEN, "일반 포스트 삭제는 제공되지 않는 기능입니다."),
+    POST_PHOTO_IMAGE_SIZE_TOO_LARGE(HttpStatus.BAD_REQUEST, "이미지 파일의 크기가 제한을 초과했습니다. (최대 1MB)"),
 
     // todo : 마지막 error code 뒤에 붙이기
     ;
