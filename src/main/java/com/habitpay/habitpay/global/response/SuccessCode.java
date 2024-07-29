@@ -13,6 +13,7 @@ public enum SuccessCode {
     // Member
     NICKNAME_UPDATE_SUCCESS("닉네임 변경에 성공했습니다."),
     PROFILE_IMAGE_UPDATE_SUCCESS("프로필 이미지 변경에 성공했습니다."),
+    DELETE_MEMBER_ACCOUNT_SUCCESS("정상적으로 탈퇴되었습니다."),
 
     // Challenge
     ENROLL_CHALLENGE_SUCCESS("정상적으로 챌린지에 등록했습니다."),
