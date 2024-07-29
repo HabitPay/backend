@@ -12,15 +12,13 @@ public enum ErrorCode {
     ENTITY_NOT_FOUND(HttpStatus.NOT_FOUND, "Entity Not Found"),
     INVALID_VALUE(HttpStatus.BAD_REQUEST, "Invalid Input Value"),
     BAD_REQUEST(HttpStatus.BAD_REQUEST, "Bad Request"),
+    UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "Invalid token"),
     FORBIDDEN(HttpStatus.FORBIDDEN, "Not Allowed to Access or Modify"),
     CONFLICT(HttpStatus.CONFLICT, "Conflict"),
 
     // JWT
-    JWT_GRANT_TYPE_IS_BAD(HttpStatus.BAD_REQUEST, "인증 방법을 알 수 없습니다."),
     JWT_REQUEST_IP_AND_LOGIN_IP_NOT_SAME_FOR_REFRESH(HttpStatus.BAD_REQUEST, "로그인한 IP 주소와 요청 IP 주소가 일치하지 않습니다."),
-    JWT_UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "토큰 검증에 실패했습니다."),
     JWT_REFRESH_TOKEN_NOT_FOUND(HttpStatus.NOT_FOUND, "리프레시 토큰이 존재하지 않습니다."),
-    JWT_FORBIDDEN(HttpStatus.FORBIDDEN, "권한이 부족합니다."),
     JWT_FORBIDDEN_TO_MODIFY_OTHERS_POST(HttpStatus.FORBIDDEN, "본인의 포스트만 수정할 수 있습니다."),
 
     // Member

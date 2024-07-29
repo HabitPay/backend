@@ -41,14 +41,14 @@ operation::challengePost/get-challenge-posts-by-me[snippets='http-request,http-r
 경로 변수로 받은 challenge의 id값에 해당하는 챌린지에 포스트를 작성합니다.
 챌린지의 호스트라면 공지 포스트를 작성할 수 있습니다.
 
-operation::challengePost/create-challenge-post[snippets='http-request,http-response,response-fields']
+operation::challengePost/create-challenge-post[snippets='http-request,http-response,request-fields,response-fields']
 
 === 챌린지 포스트 수정
 
 경로 변수로 받은 post의 id값에 해당하는 포스트를 수정합니다.
 수정은 포스트 내용 변경, 공지 포스트 여부 변경과 함께 포스트 내 이미지 파일의 추가, 삭제 및 정렬 순서 변경을 포함합니다.
 
-operation::challengePost/patch-challenge-post[snippets='http-request,http-response,response-fields']
+operation::challengePost/patch-challenge-post[snippets='http-request,http-response,request-fields,response-fields']
 
 === 챌린지 포스트 삭제
 

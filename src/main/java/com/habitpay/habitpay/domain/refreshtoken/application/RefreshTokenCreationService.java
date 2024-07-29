@@ -38,12 +38,12 @@ public class RefreshTokenCreationService {
 
         if (grantType == null) {
             log.error("요청 헤더 grantType의 값이 null입니다.");
-            throw new BadRequestException(ErrorCode.JWT_GRANT_TYPE_IS_BAD);
+            throw new BadRequestException(ErrorCode.BAD_REQUEST);
         }
 
         if (!grantType.equals("refreshToken")) {
             log.error("요청 헤더 grantType의 값이 refreshToken이 아닙니다.");
-            throw new BadRequestException(ErrorCode.JWT_GRANT_TYPE_IS_BAD);
+            throw new BadRequestException(ErrorCode.BAD_REQUEST);
         }
 
         String newAccessToken = this.createNewAccessToken(requestBody.getRefreshToken());
@@ -65,7 +65,7 @@ public class RefreshTokenCreationService {
 
         if (!tokenProvider.validateToken(refreshToken)) {
             log.error("리프레시 토큰 인증에 실패했습니다.");
-            throw new UnauthorizedException(ErrorCode.JWT_UNAUTHORIZED);
+            throw new UnauthorizedException(ErrorCode.UNAUTHORIZED);
         }
 
         String requestIp = refreshTokenUtilService.getClientIpAddress();

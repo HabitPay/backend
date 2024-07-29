@@ -101,7 +101,7 @@ public class RefreshTokenApiTest extends AbstractRestDocsTests {
                 .build();
 
         given(refreshTokenCreationService.createNewAccessTokenAndNewRefreshToken(any(CreateAccessTokenRequest.class)))
-                .willThrow(new BadRequestException(ErrorCode.JWT_GRANT_TYPE_IS_BAD));
+                .willThrow(new BadRequestException(ErrorCode.BAD_REQUEST));
 
         //when
         ResultActions result = mockMvc.perform(post("/token")
@@ -112,8 +112,8 @@ public class RefreshTokenApiTest extends AbstractRestDocsTests {
         result.andExpect(status().isBadRequest())
                 .andDo(document("refreshToken/return-400-when-invalid-request",
                         responseFields(
-                                fieldWithPath("error").description("에러 메시지"),
-                                fieldWithPath("errorDescription").description("에러 발생 이유")
+                                fieldWithPath("code").description("에러 코드"),
+                                fieldWithPath("message").description("에러 메시지")
                         )
                 ));
 
@@ -130,7 +130,7 @@ public class RefreshTokenApiTest extends AbstractRestDocsTests {
                 .build();
 
         given(refreshTokenCreationService.createNewAccessTokenAndNewRefreshToken(any(CreateAccessTokenRequest.class)))
-                .willThrow(new UnauthorizedException(ErrorCode.JWT_UNAUTHORIZED));
+                .willThrow(new UnauthorizedException(ErrorCode.UNAUTHORIZED));
 
         //when
         ResultActions result = mockMvc.perform(post("/token")
@@ -141,8 +141,8 @@ public class RefreshTokenApiTest extends AbstractRestDocsTests {
         result.andExpect(status().isUnauthorized())
                 .andDo(document("refreshToken/return-401-when-invalid-token",
                         responseFields(
-                                fieldWithPath("error").description("에러 메시지"),
-                                fieldWithPath("errorDescription").description("에러 발생 이유")
+                                fieldWithPath("code").description("에러 코드"),
+                                fieldWithPath("message").description("에러 메시지")
                         )
                 ));
 
@@ -159,7 +159,7 @@ public class RefreshTokenApiTest extends AbstractRestDocsTests {
                 .build();
 
         given(refreshTokenCreationService.createNewAccessTokenAndNewRefreshToken(any(CreateAccessTokenRequest.class)))
-                .willThrow(new ForbiddenException(ErrorCode.JWT_FORBIDDEN));
+                .willThrow(new ForbiddenException(ErrorCode.FORBIDDEN));
 
         //when
         ResultActions result = mockMvc.perform(post("/token")
@@ -170,8 +170,8 @@ public class RefreshTokenApiTest extends AbstractRestDocsTests {
         result.andExpect(status().isForbidden())
                 .andDo(document("refreshToken/return-403-when-insufficient-scope",
                         responseFields(
-                                fieldWithPath("error").description("에러 메시지"),
-                                fieldWithPath("errorDescription").description("에러 발생 이유")
+                                fieldWithPath("code").description("에러 코드"),
+                                fieldWithPath("message").description("에러 메시지")
                         )
                 ));
 
