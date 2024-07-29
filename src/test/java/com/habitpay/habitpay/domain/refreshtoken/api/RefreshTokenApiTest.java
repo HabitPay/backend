@@ -8,6 +8,10 @@ import com.habitpay.habitpay.domain.refreshtoken.dto.CreateAccessTokenResponse;
 import com.habitpay.habitpay.global.config.jwt.TokenProvider;
 import com.habitpay.habitpay.global.config.jwt.TokenService;
 import com.habitpay.habitpay.global.error.CustomJwtErrorInfo;
+import com.habitpay.habitpay.global.error.exception.BadRequestException;
+import com.habitpay.habitpay.global.error.exception.ErrorCode;
+import com.habitpay.habitpay.global.error.exception.ForbiddenException;
+import com.habitpay.habitpay.global.error.exception.UnauthorizedException;
 import com.habitpay.habitpay.global.response.SuccessResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -97,7 +101,7 @@ public class RefreshTokenApiTest extends AbstractRestDocsTests {
                 .build();
 
         given(refreshTokenCreationService.createNewAccessTokenAndNewRefreshToken(any(CreateAccessTokenRequest.class)))
-                .willThrow(new CustomJwtException(HttpStatus.BAD_REQUEST, CustomJwtErrorInfo.BAD_REQUEST, "인증 방법을 알 수 없습니다."));
+                .willThrow(new BadRequestException(ErrorCode.JWT_GRANT_TYPE_IS_BAD));
 
         //when
         ResultActions result = mockMvc.perform(post("/token")
@@ -126,7 +130,7 @@ public class RefreshTokenApiTest extends AbstractRestDocsTests {
                 .build();
 
         given(refreshTokenCreationService.createNewAccessTokenAndNewRefreshToken(any(CreateAccessTokenRequest.class)))
-                .willThrow(new CustomJwtException(HttpStatus.UNAUTHORIZED, CustomJwtErrorInfo.UNAUTHORIZED, "JWT expired at 2024-07-15T11:29:31Z."));
+                .willThrow(new UnauthorizedException(ErrorCode.JWT_UNAUTHORIZED));
 
         //when
         ResultActions result = mockMvc.perform(post("/token")
@@ -155,7 +159,7 @@ public class RefreshTokenApiTest extends AbstractRestDocsTests {
                 .build();
 
         given(refreshTokenCreationService.createNewAccessTokenAndNewRefreshToken(any(CreateAccessTokenRequest.class)))
-                .willThrow(new CustomJwtException(HttpStatus.FORBIDDEN, CustomJwtErrorInfo.FORBIDDEN, "공지 포스트는 챌린지 호스트만 작성할 수 있습니다."));
+                .willThrow(new ForbiddenException(ErrorCode.JWT_FORBIDDEN));
 
         //when
         ResultActions result = mockMvc.perform(post("/token")

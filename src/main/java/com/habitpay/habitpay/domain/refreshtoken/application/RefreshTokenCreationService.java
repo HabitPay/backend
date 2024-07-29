@@ -64,7 +64,8 @@ public class RefreshTokenCreationService {
     private String createNewAccessToken(String refreshToken) {
 
         if (!tokenProvider.validateToken(refreshToken)) {
-            throw new UnauthorizedException("리프레시 토큰 검증에 실패했습니다.", ErrorCode.JWT_UNAUTHORIZED);
+            log.error("리프레시 토큰 인증에 실패했습니다.");
+            throw new UnauthorizedException(ErrorCode.JWT_UNAUTHORIZED);
         }
 
         String requestIp = refreshTokenUtilService.getClientIpAddress();
