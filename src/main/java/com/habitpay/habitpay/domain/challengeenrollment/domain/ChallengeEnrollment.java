@@ -1,6 +1,7 @@
 package com.habitpay.habitpay.domain.challengeenrollment.domain;
 
 import com.habitpay.habitpay.domain.challenge.domain.Challenge;
+import com.habitpay.habitpay.domain.challengeparticipationrecord.domain.ChallengeParticipationRecord;
 import com.habitpay.habitpay.domain.member.domain.Member;
 import jakarta.persistence.*;
 import lombok.Builder;
@@ -60,5 +61,11 @@ public class ChallengeEnrollment {
                 .challenge(challenge)
                 .member(member)
                 .build();
+    }
+
+    public void plusSuccessCountWithParticipationRecord(ChallengeParticipationRecord record) {
+        if (this.equals(record.getChallengeEnrollment())) {
+            ++this.successCount;
+        }
     }
 }
