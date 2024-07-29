@@ -88,7 +88,7 @@ public class ChallengePostApiTest extends AbstractRestDocsTests {
                 .build();
 
         given(challengePostSearchService.getPostViewByPostId(anyLong()))
-                .willReturn(SuccessResponse.of("", mockPostViewResponse));
+                .willReturn(SuccessResponse.of(SuccessCode.NO_MESSAGE, mockPostViewResponse));
 
         // when
         ResultActions result = mockMvc.perform(get("/api/posts/{id}", 1L)
@@ -142,7 +142,7 @@ public class ChallengePostApiTest extends AbstractRestDocsTests {
                         .build());
 
         given(challengePostSearchService.findPostViewListByChallengeId(anyLong(), any(Pageable.class)))
-                .willReturn(SuccessResponse.of("", mockPostViewResponseList));
+                .willReturn(SuccessResponse.of(SuccessCode.NO_MESSAGE, mockPostViewResponseList));
 
         // when
         ResultActions result = mockMvc.perform(get("/api/challenges/{id}/posts", 1L)
@@ -196,7 +196,7 @@ public class ChallengePostApiTest extends AbstractRestDocsTests {
                         .build());
 
         given(challengePostSearchService.findAnnouncementPostViewListByChallengeId(anyLong(), any(Pageable.class)))
-                .willReturn(SuccessResponse.of("", mockPostViewResponseList));
+                .willReturn(SuccessResponse.of(SuccessCode.NO_MESSAGE, mockPostViewResponseList));
 
         // when
         ResultActions result = mockMvc.perform(get("/api/challenges/{id}/posts/announcements", 1L)
@@ -251,7 +251,7 @@ public class ChallengePostApiTest extends AbstractRestDocsTests {
                         .build());
 
         given(challengePostSearchService.findPostViewListByMember(anyLong(), any(Member.class), any(Pageable.class)))
-                .willReturn(SuccessResponse.of("", mockPostViewResponseList));
+                .willReturn(SuccessResponse.of(SuccessCode.NO_MESSAGE, mockPostViewResponseList));
 
         // when
         ResultActions result = mockMvc.perform(get("/api/challenges/{id}/posts/me", 1L)
@@ -294,7 +294,7 @@ public class ChallengePostApiTest extends AbstractRestDocsTests {
         List<String> presignedUrlList = List.of("https://please.upload/your-photo/here");
 
         given(challengePostCreationService.createPost(any(AddPostRequest.class), anyLong(), any(Member.class)))
-                .willReturn(SuccessResponse.of("포스트가 생성되었습니다.", presignedUrlList));
+                .willReturn(SuccessResponse.of(SuccessCode.CREATE_POST_SUCCESS, presignedUrlList));
 
         //when
         ResultActions result = mockMvc.perform(post("/api/challenges/{id}/post", 1L)
@@ -340,7 +340,7 @@ public class ChallengePostApiTest extends AbstractRestDocsTests {
         List<String> presignedUrlList = List.of("https://please.upload/your-photo/here");
 
         given(challengePostUpdateService.patchPost(any(ModifyPostRequest.class), anyLong(), any(Member.class)))
-                .willReturn(SuccessResponse.of("포스트가 수정되었습니다.", presignedUrlList));
+                .willReturn(SuccessResponse.of(SuccessCode.PATCH_POST_SUCCESS, presignedUrlList));
 
         //when
         ResultActions result = mockMvc.perform(patch("/api/posts/{id}", 1L)
