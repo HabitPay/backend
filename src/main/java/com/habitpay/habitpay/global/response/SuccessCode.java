@@ -20,6 +20,8 @@ public enum SuccessCode {
     DELETE_CHALLENGE_SUCCESS("정상적으로 챌린지를 삭제했습니다."),
 
     // Post
+    CREATE_POST_SUCCESS("정상적으로 포스트를 생성했습니다."),
+    PATCH_POST_SUCCESS("정상적으로 포스트를 수정했습니다."),
     DELETE_POST_SUCCESS("정상적으로 포스트를 삭제했습니다.");
 
     private final String message;

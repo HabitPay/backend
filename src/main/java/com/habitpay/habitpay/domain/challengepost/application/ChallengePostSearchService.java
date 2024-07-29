@@ -14,6 +14,7 @@ import com.habitpay.habitpay.domain.postphoto.application.PostPhotoSearchService
 import com.habitpay.habitpay.domain.postphoto.application.PostPhotoUtilService;
 import com.habitpay.habitpay.domain.postphoto.domain.PostPhoto;
 import com.habitpay.habitpay.domain.postphoto.dto.PostPhotoView;
+import com.habitpay.habitpay.global.response.SuccessCode;
 import com.habitpay.habitpay.global.response.SuccessResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -41,7 +42,7 @@ public class ChallengePostSearchService {
         List<PostPhotoView> photoViewList = postPhotoUtilService.makePhotoViewList(photoList);
 
         return SuccessResponse.of(
-                "",
+                SuccessCode.NO_MESSAGE,
                 new PostViewResponse(challengePost, photoViewList)
         );
     }
@@ -57,7 +58,7 @@ public class ChallengePostSearchService {
                 .toList();
 
         return SuccessResponse.of(
-                "",
+                SuccessCode.NO_MESSAGE,
                 postViewResponseList
         );
     }
@@ -73,7 +74,7 @@ public class ChallengePostSearchService {
                 .toList();
 
         return SuccessResponse.of(
-                "",
+                SuccessCode.NO_MESSAGE,
                 postViewResponseList
         );
     }
@@ -94,7 +95,7 @@ public class ChallengePostSearchService {
                 .toList();
 
         return SuccessResponse.of(
-                "",
+                SuccessCode.NO_MESSAGE,
                 postViewResponseList
         );
     }
