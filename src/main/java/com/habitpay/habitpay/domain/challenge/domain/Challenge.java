@@ -1,6 +1,7 @@
 package com.habitpay.habitpay.domain.challenge.domain;
 
 import com.habitpay.habitpay.domain.challenge.dto.ChallengeCreationRequest;
+import com.habitpay.habitpay.domain.challengeenrollment.domain.ChallengeEnrollment;
 import com.habitpay.habitpay.domain.member.domain.Member;
 import com.habitpay.habitpay.domain.model.BaseTime;
 import jakarta.persistence.*;
@@ -11,7 +12,9 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.time.DayOfWeek;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.EnumSet;
+import java.util.List;
 
 @Getter
 @NoArgsConstructor
@@ -19,6 +22,7 @@ import java.util.EnumSet;
 @Slf4j
 @Table(name = "challenge")
 public class Challenge extends BaseTime {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -27,6 +31,9 @@ public class Challenge extends BaseTime {
     @JoinColumn(name = "member_id")
     private Member host;
 
+    @OneToMany(mappedBy = "challenge", cascade = CascadeType.REMOVE)
+    List<ChallengeEnrollment> challengeEnrollmentList = new ArrayList<>();
+    
     @Column(nullable = false)
     private String title;
 
@@ -86,20 +93,6 @@ public class Challenge extends BaseTime {
                 .build();
     }
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public void setNumberOfParticipants(int numberOfParticipants) {
-        this.numberOfParticipants = numberOfParticipants;
-    }
-
-    public boolean isTodayParticipatingDay() {
-        DayOfWeek today = ZonedDateTime.now().getDayOfWeek();
-        int todayBitPosition = 6 - (today.getValue() - 1);
-        return (this.participatingDays & (1 << todayBitPosition)) != 0;
-    }
-
     private static int calculateTotalParticipatingDays(ChallengeCreationRequest challengeCreationRequest) {
         int count = 0;
         EnumSet<DayOfWeek> daysOfParticipatingDays = EnumSet.noneOf(DayOfWeek.class);
@@ -123,5 +116,19 @@ public class Challenge extends BaseTime {
         }
 
         return count;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public void setNumberOfParticipants(int numberOfParticipants) {
+        this.numberOfParticipants = numberOfParticipants;
+    }
+
+    public boolean isTodayParticipatingDay() {
+        DayOfWeek today = ZonedDateTime.now().getDayOfWeek();
+        int todayBitPosition = 6 - (today.getValue() - 1);
+        return (this.participatingDays & (1 << todayBitPosition)) != 0;
     }
 }
