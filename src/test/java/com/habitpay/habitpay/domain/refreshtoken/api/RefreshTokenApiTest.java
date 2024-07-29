@@ -2,11 +2,9 @@ package com.habitpay.habitpay.domain.refreshtoken.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.habitpay.habitpay.docs.springrestdocs.AbstractRestDocsTests;
-import com.habitpay.habitpay.domain.member.domain.Member;
 import com.habitpay.habitpay.domain.refreshtoken.application.RefreshTokenCreationService;
 import com.habitpay.habitpay.domain.refreshtoken.dto.CreateAccessTokenRequest;
 import com.habitpay.habitpay.domain.refreshtoken.dto.CreateAccessTokenResponse;
-import com.habitpay.habitpay.domain.refreshtoken.exception.CustomJwtException;
 import com.habitpay.habitpay.global.config.jwt.TokenProvider;
 import com.habitpay.habitpay.global.config.jwt.TokenService;
 import com.habitpay.habitpay.global.error.CustomJwtErrorInfo;

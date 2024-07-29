@@ -7,15 +7,10 @@ import com.habitpay.habitpay.domain.challengeparticipationrecord.application.Cha
 import com.habitpay.habitpay.domain.challengeparticipationrecord.domain.ChallengeParticipationRecord;
 import com.habitpay.habitpay.domain.challengepost.domain.ChallengePost;
 import com.habitpay.habitpay.domain.member.domain.Member;
-import com.habitpay.habitpay.domain.refreshtoken.exception.CustomJwtException;
-import com.habitpay.habitpay.global.error.CustomJwtErrorInfo;
 import com.habitpay.habitpay.global.error.exception.ErrorCode;
 import com.habitpay.habitpay.global.error.exception.ForbiddenException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.time.DayOfWeek;

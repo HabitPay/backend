@@ -1,26 +1,21 @@
 package com.habitpay.habitpay.domain.refreshtoken.application;
 
 import com.habitpay.habitpay.domain.member.application.MemberSearchService;
-import com.habitpay.habitpay.domain.member.dao.MemberRepository;
 import com.habitpay.habitpay.domain.member.domain.Member;
 import com.habitpay.habitpay.domain.refreshtoken.dao.RefreshTokenRepository;
 import com.habitpay.habitpay.domain.refreshtoken.domain.RefreshToken;
 import com.habitpay.habitpay.domain.refreshtoken.dto.CreateAccessTokenRequest;
 import com.habitpay.habitpay.domain.refreshtoken.dto.CreateAccessTokenResponse;
-import com.habitpay.habitpay.domain.refreshtoken.exception.CustomJwtException;
 import com.habitpay.habitpay.global.config.jwt.TokenProvider;
 import com.habitpay.habitpay.global.config.jwt.TokenService;
-import com.habitpay.habitpay.global.error.CustomJwtErrorInfo;
 import com.habitpay.habitpay.global.error.exception.BadRequestException;
 import com.habitpay.habitpay.global.error.exception.ErrorCode;
 import com.habitpay.habitpay.global.error.exception.UnauthorizedException;
 import com.habitpay.habitpay.global.response.SuccessResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import java.time.Duration;
 import java.util.Objects;
 
 @RequiredArgsConstructor

@@ -3,8 +3,6 @@ package com.habitpay.habitpay.global.handler;
 import com.habitpay.habitpay.global.error.ErrorResponse;
 import com.habitpay.habitpay.global.error.exception.BusinessException;
 import com.habitpay.habitpay.global.error.exception.ErrorCode;
-import com.habitpay.habitpay.global.handler.dto.ExceptionResponse;
-import com.habitpay.habitpay.domain.refreshtoken.exception.CustomJwtException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
