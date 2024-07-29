@@ -13,6 +13,7 @@ import com.habitpay.habitpay.domain.postphoto.dto.ModifyPostPhotoData;
 import com.habitpay.habitpay.domain.postphoto.dto.PostPhotoView;
 import com.habitpay.habitpay.global.config.jwt.TokenProvider;
 import com.habitpay.habitpay.global.config.jwt.TokenService;
+import com.habitpay.habitpay.global.response.SuccessCode;
 import com.habitpay.habitpay.global.response.SuccessResponse;
 import com.habitpay.habitpay.global.security.WithMockOAuth2User;
 import org.junit.jupiter.api.DisplayName;
@@ -87,7 +88,7 @@ public class ChallengePostApiTest extends AbstractRestDocsTests {
                 .build();
 
         given(challengePostSearchService.getPostViewByPostId(anyLong()))
-                .willReturn(SuccessResponse.of("", mockPostViewResponse));
+                .willReturn(SuccessResponse.of(SuccessCode.NO_MESSAGE, mockPostViewResponse));
 
         // when
         ResultActions result = mockMvc.perform(get("/api/posts/{id}", 1L)
@@ -141,7 +142,7 @@ public class ChallengePostApiTest extends AbstractRestDocsTests {
                         .build());
 
         given(challengePostSearchService.findPostViewListByChallengeId(anyLong(), any(Pageable.class)))
-                .willReturn(SuccessResponse.of("", mockPostViewResponseList));
+                .willReturn(SuccessResponse.of(SuccessCode.NO_MESSAGE, mockPostViewResponseList));
 
         // when
         ResultActions result = mockMvc.perform(get("/api/challenges/{id}/posts", 1L)
@@ -195,7 +196,7 @@ public class ChallengePostApiTest extends AbstractRestDocsTests {
                         .build());
 
         given(challengePostSearchService.findAnnouncementPostViewListByChallengeId(anyLong(), any(Pageable.class)))
-                .willReturn(SuccessResponse.of("", mockPostViewResponseList));
+                .willReturn(SuccessResponse.of(SuccessCode.NO_MESSAGE, mockPostViewResponseList));
 
         // when
         ResultActions result = mockMvc.perform(get("/api/challenges/{id}/posts/announcements", 1L)
@@ -250,7 +251,7 @@ public class ChallengePostApiTest extends AbstractRestDocsTests {
                         .build());
 
         given(challengePostSearchService.findPostViewListByMember(anyLong(), any(Member.class), any(Pageable.class)))
-                .willReturn(SuccessResponse.of("", mockPostViewResponseList));
+                .willReturn(SuccessResponse.of(SuccessCode.NO_MESSAGE, mockPostViewResponseList));
 
         // when
         ResultActions result = mockMvc.perform(get("/api/challenges/{id}/posts/me", 1L)
@@ -293,7 +294,7 @@ public class ChallengePostApiTest extends AbstractRestDocsTests {
         List<String> presignedUrlList = List.of("https://please.upload/your-photo/here");
 
         given(challengePostCreationService.createPost(any(AddPostRequest.class), anyLong(), any(Member.class)))
-                .willReturn(SuccessResponse.of("포스트가 생성되었습니다.", presignedUrlList));
+                .willReturn(SuccessResponse.of(SuccessCode.CREATE_POST_SUCCESS, presignedUrlList));
 
         //when
         ResultActions result = mockMvc.perform(post("/api/challenges/{id}/post", 1L)
@@ -339,7 +340,7 @@ public class ChallengePostApiTest extends AbstractRestDocsTests {
         List<String> presignedUrlList = List.of("https://please.upload/your-photo/here");
 
         given(challengePostUpdateService.patchPost(any(ModifyPostRequest.class), anyLong(), any(Member.class)))
-                .willReturn(SuccessResponse.of("포스트가 수정되었습니다.", presignedUrlList));
+                .willReturn(SuccessResponse.of(SuccessCode.PATCH_POST_SUCCESS, presignedUrlList));
 
         //when
         ResultActions result = mockMvc.perform(patch("/api/posts/{id}", 1L)
@@ -379,7 +380,7 @@ public class ChallengePostApiTest extends AbstractRestDocsTests {
 
         //given
         given(challengePostDeleteService.deletePost(anyLong(), any(Member.class)))
-                .willReturn(SuccessResponse.of("포스트가 정상적으로 삭제되었습니다.", 1L));
+                .willReturn(SuccessResponse.of(SuccessCode.DELETE_POST_SUCCESS));
 
         //when
         ResultActions result = mockMvc.perform(delete("/api/posts/{id}", 1L)

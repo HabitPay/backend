@@ -12,6 +12,7 @@ import com.habitpay.habitpay.domain.member.domain.Member;
 import com.habitpay.habitpay.domain.postphoto.application.PostPhotoCreationService;
 import com.habitpay.habitpay.global.error.exception.ErrorCode;
 import com.habitpay.habitpay.global.error.exception.ForbiddenException;
+import com.habitpay.habitpay.global.response.SuccessCode;
 import com.habitpay.habitpay.global.response.SuccessResponse;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -40,7 +41,7 @@ public class ChallengePostCreationService {
         List<String> presignedUrlList = postPhotoCreationService.createPhotoUrlList(challengePost, request.getPhotos());
 
         return SuccessResponse.of(
-                "포스트가 생성되었습니다.",
+                SuccessCode.CREATE_POST_SUCCESS,
                 presignedUrlList
         );
     }

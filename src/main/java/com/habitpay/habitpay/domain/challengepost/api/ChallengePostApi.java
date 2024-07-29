@@ -88,7 +88,7 @@ public class ChallengePostApi {
     }
 
     @DeleteMapping("/api/posts/{id}")
-    public SuccessResponse<Long> deletePost(
+    public SuccessResponse<Void> deletePost(
             @PathVariable Long id, @AuthenticationPrincipal CustomUserDetails user) {
 
         return challengePostDeleteService.deletePost(id, user.getMember());

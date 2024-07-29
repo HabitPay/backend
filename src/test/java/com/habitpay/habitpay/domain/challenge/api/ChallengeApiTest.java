@@ -92,7 +92,7 @@ public class ChallengeApiTest extends AbstractRestDocsTests {
                 .build();
 
         given(challengeSearchService.getEnrolledChallengeList(any(Member.class)))
-                .willReturn(SuccessResponse.of("", List.of(response)));
+                .willReturn(SuccessResponse.of(SuccessCode.NO_MESSAGE, List.of(response)));
 
         // when
         ResultActions result = mockMvc.perform(get("/api/challenges/me")
@@ -149,7 +149,7 @@ public class ChallengeApiTest extends AbstractRestDocsTests {
                 .build();
 
         given(challengeDetailsService.getChallengeDetails(anyLong(), any(Member.class)))
-                .willReturn(SuccessResponse.of("", challengeDetailsResponse));
+                .willReturn(SuccessResponse.of(SuccessCode.NO_MESSAGE, challengeDetailsResponse));
 
         // when
         ResultActions result = mockMvc.perform(get("/api/challenges/{id}", 1L)
@@ -233,7 +233,7 @@ public class ChallengeApiTest extends AbstractRestDocsTests {
                 .build();
 
         given(challengeCreationService.createChallenge(any(ChallengeCreationRequest.class), any(Member.class)))
-                .willReturn(SuccessResponse.of("챌린지가 생성되었습니다.", challengeCreationResponse));
+                .willReturn(SuccessResponse.of(SuccessCode.CREATE_CHALLENGE_SUCCESS, challengeCreationResponse));
 
         // when
         ResultActions result = mockMvc.perform(post("/api/challenges")
@@ -335,7 +335,7 @@ public class ChallengeApiTest extends AbstractRestDocsTests {
                 .build();
 
         given(challengePatchService.patch(anyLong(), any(ChallengePatchRequest.class), any(Member.class)))
-                .willReturn(SuccessResponse.of("챌린지 정보 수정이 반영되었습니다.", challengePatchResponse));
+                .willReturn(SuccessResponse.of(SuccessCode.PATCH_CHALLENGE_SUCCESS, challengePatchResponse));
 
         // when
         ResultActions result = mockMvc.perform(patch("/api/challenges/{id}", 1L)
