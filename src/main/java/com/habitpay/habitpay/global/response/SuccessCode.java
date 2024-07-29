@@ -7,6 +7,9 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum SuccessCode {
 
+    // common
+    NO_MESSAGE(""),
+
     // Member
     NICKNAME_UPDATE_SUCCESS("닉네임 변경에 성공했습니다."),
     PROFILE_IMAGE_UPDATE_SUCCESS("프로필 이미지 변경에 성공했습니다."),
