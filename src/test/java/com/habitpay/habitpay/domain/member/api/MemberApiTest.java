@@ -79,7 +79,7 @@ public class MemberApiTest extends AbstractRestDocsTests {
                 .build();
 
         given(memberSearchService.getMemberProfile(any(Member.class)))
-                .willReturn(SuccessResponse.of("", memberProfileResponse));
+                .willReturn(SuccessResponse.of(SuccessCode.NO_MESSAGE, memberProfileResponse));
 
         // when
         ResultActions result = mockMvc.perform(get("/api/member")
@@ -217,8 +217,7 @@ public class MemberApiTest extends AbstractRestDocsTests {
         ImageUpdateResponse imageUpdateResponse = ImageUpdateResponse.builder()
                 .preSignedUrl("https://{AWS S3 preSignedUrl to upload image file}")
                 .build();
-        // TODO: 응답 메세지 enum 으로 관리하기
-        SuccessResponse<ImageUpdateResponse> successResponse = SuccessResponse.of("프로필 업데이트에 성공했습니다.", imageUpdateResponse);
+        SuccessResponse<ImageUpdateResponse> successResponse = SuccessResponse.of(SuccessCode.PROFILE_IMAGE_UPDATE_SUCCESS, imageUpdateResponse);
         given(memberUpdateService.updateImage(any(ImageUpdateRequest.class), any(Member.class)))
                 .willReturn(successResponse);
 
@@ -329,8 +328,7 @@ public class MemberApiTest extends AbstractRestDocsTests {
     void deleteMember() throws Exception {
 
         // given
-        // TODO: 응답 메세지 enum 으로 관리하기
-        SuccessResponse<Long> successResponse = SuccessResponse.of("정상적으로 탈퇴되었습니다.", 1L);
+        SuccessResponse<Long> successResponse = SuccessResponse.of(SuccessCode.DELETE_MEMBER_ACCOUNT_SUCCESS, 1L);
         given(memberDeleteService.delete(any(Member.class)))
                 .willReturn(successResponse);
 
