@@ -104,7 +104,9 @@ public class ChallengePostApiTest extends AbstractRestDocsTests {
                                 headerWithName(HttpHeaders.AUTHORIZATION).description("액세스 토큰")
                         ),
                         responseFields(
-                                fieldWithPath("message").description("메시지"),
+                                fieldWithPath("message").description("응답 메시지"),
+                                fieldWithPath("data").description("응답 데이터"),
+
                                 fieldWithPath("data.id").description("포스트 id"),
                                 fieldWithPath("data.challengeEnrollmentId").description("포스트가 소속된 enrollment id"),
                                 fieldWithPath("data.content").description("포스트 내용"),
@@ -162,7 +164,8 @@ public class ChallengePostApiTest extends AbstractRestDocsTests {
                                 headerWithName(HttpHeaders.AUTHORIZATION).description("액세스 토큰")
                         ),
                         responseFields(
-                                fieldWithPath("message").description("메시지"),
+                                fieldWithPath("message").description("응답 메시지"),
+                                fieldWithPath("data").description("응답 데이터"),
 
                                 fieldWithPath("data.content").description("포스트 뷰 목록"),
                                 fieldWithPath("data.content[].id").description("포스트 id"),
@@ -244,7 +247,8 @@ public class ChallengePostApiTest extends AbstractRestDocsTests {
                                 headerWithName(HttpHeaders.AUTHORIZATION).description("액세스 토큰")
                         ),
                         responseFields(
-                                fieldWithPath("message").description("메시지"),
+                                fieldWithPath("message").description("응답 메시지"),
+                                fieldWithPath("data").description("응답 데이터"),
 
                                 fieldWithPath("data.content").description("포스트 뷰 목록"),
                                 fieldWithPath("data.content[].id").description("포스트 id"),
@@ -327,7 +331,8 @@ public class ChallengePostApiTest extends AbstractRestDocsTests {
                                 headerWithName(HttpHeaders.AUTHORIZATION).description("액세스 토큰")
                         ),
                         responseFields(
-                                fieldWithPath("message").description("메시지"),
+                                fieldWithPath("message").description("응답 메시지"),
+                                fieldWithPath("data").description("응답 데이터"),
 
                                 fieldWithPath("data.content").description("포스트 뷰 목록"),
                                 fieldWithPath("data.content[].id").description("포스트 id"),
