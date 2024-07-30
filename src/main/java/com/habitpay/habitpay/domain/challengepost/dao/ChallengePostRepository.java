@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ChallengePostRepository extends JpaRepository<ChallengePost, Long> {
-    Slice<ChallengePost> findAllByChallengeEnrollmentId(Long challengeEnrollmentId, Pageable pageable);
+    Slice<ChallengePost> findAllByChallengeEnrollment(ChallengeEnrollment enrollment, Pageable pageable);
     Slice<ChallengePost> findAllByChallengeId(Long challengeId, Pageable pageable);
     Slice<ChallengePost> findAllByChallengeIdAndIsAnnouncementTrue(Long challengeId, Pageable pageable);
 }

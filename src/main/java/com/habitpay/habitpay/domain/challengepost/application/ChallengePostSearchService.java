@@ -81,9 +81,8 @@ public class ChallengePostSearchService {
         Challenge challenge = challengeSearchService.getChallengeById(challengeId);
         ChallengeEnrollment enrollment = challengeEnrollmentSearchService.findByMemberAndChallenge(member, challenge)
                 .orElseThrow(() -> new NotEnrolledChallengeException(member.getId(), challengeId));
-        Long challengeEnrollmentId = enrollment.getId();
 
-        Slice<ChallengePost> postSlice = challengePostRepository.findAllByChallengeEnrollmentId(challengeEnrollmentId, pageable);
+        Slice<ChallengePost> postSlice = challengePostRepository.findAllByChallengeEnrollment(enrollment, pageable);
         List<PostViewResponse> postViewResponseList =  makePostViewResponseList(postSlice);
         Slice<PostViewResponse> postViewResponseSlice = new SliceImpl<>(
                 postViewResponseList, postSlice.getPageable(), postSlice.hasNext()
