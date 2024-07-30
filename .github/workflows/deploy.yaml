@@ -113,4 +113,4 @@ jobs:
           cache: "gradle"
 
       - name: Generate and submit dependency graph
-        uses: gradle/actions/dependency-submission@v1
+        uses: gradle/actions/dependency-submission@v3
