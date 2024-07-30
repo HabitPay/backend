@@ -38,7 +38,7 @@ public class ChallengePostUpdateService {
         ChallengePost post = challengePostSearchService.getChallengePostById(postId);
 
         if (!challengePostUtilService.isChallengePeriodForPost(post.getChallenge())) {
-            throw new ForbiddenException(ErrorCode.POST_ACCESSIBLE_ONLY_WITHIN_CHALLENGE_PERIOD);
+            throw new ForbiddenException(ErrorCode.POST_EDITABLE_ONLY_WITHIN_CHALLENGE_PERIOD);
         }
 
         challengePostUtilService.authorizePostWriter(post, member);
