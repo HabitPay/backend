@@ -3,6 +3,7 @@ package com.habitpay.habitpay.domain.member.application;
 import com.habitpay.habitpay.domain.member.dao.MemberRepository;
 import com.habitpay.habitpay.domain.member.domain.Member;
 import com.habitpay.habitpay.global.config.aws.S3FileService;
+import com.habitpay.habitpay.global.response.SuccessCode;
 import com.habitpay.habitpay.global.response.SuccessResponse;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,7 +27,7 @@ public class MemberDeleteService {
         member.clear();
         memberRepository.save(member);
 
-        return SuccessResponse.of("정상적으로 탈퇴되었습니다.", member.getId());
+        return SuccessResponse.of(SuccessCode.DELETE_MEMBER_ACCOUNT_SUCCESS, member.getId());
     }
 
 }

@@ -10,6 +10,7 @@ import com.habitpay.habitpay.domain.postphoto.application.PostPhotoDeleteService
 import com.habitpay.habitpay.domain.postphoto.application.PostPhotoUtilService;
 import com.habitpay.habitpay.global.error.exception.ErrorCode;
 import com.habitpay.habitpay.global.error.exception.ForbiddenException;
+import com.habitpay.habitpay.global.response.SuccessCode;
 import com.habitpay.habitpay.global.response.SuccessResponse;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -47,7 +48,7 @@ public class ChallengePostUpdateService {
         );
 
         return SuccessResponse.of(
-                "포스트가 수정되었습니다.",
+                SuccessCode.PATCH_POST_SUCCESS,
                 presignedUrlList
         );
     }

@@ -9,6 +9,7 @@ import com.habitpay.habitpay.domain.member.domain.Member;
 import com.habitpay.habitpay.global.error.exception.ErrorCode;
 import com.habitpay.habitpay.global.error.exception.ForbiddenException;
 import com.habitpay.habitpay.global.error.exception.InvalidValueException;
+import com.habitpay.habitpay.global.response.SuccessCode;
 import com.habitpay.habitpay.global.response.SuccessResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -36,7 +37,7 @@ public class ChallengePatchService {
         challenge.setDescription(challengePatchRequest.getDescription());
 
         return SuccessResponse.of(
-                "챌린지 정보 수정이 반영되었습니다.",
+                SuccessCode.PATCH_CHALLENGE_SUCCESS,
                 ChallengePatchResponse.of(challenge)
         );
     }

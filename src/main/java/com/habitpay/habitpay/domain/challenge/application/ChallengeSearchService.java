@@ -9,6 +9,7 @@ import com.habitpay.habitpay.domain.challengeenrollment.domain.ChallengeEnrollme
 import com.habitpay.habitpay.domain.challengeparticipationrecord.dao.ChallengeParticipationRecordRepository;
 import com.habitpay.habitpay.domain.member.domain.Member;
 import com.habitpay.habitpay.global.config.aws.S3FileService;
+import com.habitpay.habitpay.global.response.SuccessCode;
 import com.habitpay.habitpay.global.response.SuccessResponse;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -34,7 +35,7 @@ public class ChallengeSearchService {
                 .map(this::mapToResponse)
                 .toList();
 
-        return SuccessResponse.of("", response);
+        return SuccessResponse.of(SuccessCode.NO_MESSAGE, response);
     }
 
     @Transactional(readOnly = true)

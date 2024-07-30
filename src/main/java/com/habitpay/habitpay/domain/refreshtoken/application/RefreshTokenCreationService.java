@@ -11,6 +11,7 @@ import com.habitpay.habitpay.global.config.jwt.TokenService;
 import com.habitpay.habitpay.global.error.exception.BadRequestException;
 import com.habitpay.habitpay.global.error.exception.ErrorCode;
 import com.habitpay.habitpay.global.error.exception.UnauthorizedException;
+import com.habitpay.habitpay.global.response.SuccessCode;
 import com.habitpay.habitpay.global.response.SuccessResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -56,7 +57,7 @@ public class RefreshTokenCreationService {
                 refreshToken);
 
         return SuccessResponse.of(
-                "새로운 액세스 토큰 및 리프레시 토큰이 성공적으로 발급되었습니다.",
+                SuccessCode.REFRESH_TOKEN_SUCCESS,
                 tokenResponse
         );
     }

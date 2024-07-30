@@ -12,6 +12,7 @@ import com.habitpay.habitpay.global.error.exception.BadRequestException;
 import com.habitpay.habitpay.global.error.exception.ErrorCode;
 import com.habitpay.habitpay.global.error.exception.ForbiddenException;
 import com.habitpay.habitpay.global.error.exception.UnauthorizedException;
+import com.habitpay.habitpay.global.response.SuccessCode;
 import com.habitpay.habitpay.global.response.SuccessResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -66,10 +67,10 @@ public class RefreshTokenApiTest extends AbstractRestDocsTests {
                 .build();
 
         given(refreshTokenCreationService.createNewAccessTokenAndNewRefreshToken(any(CreateAccessTokenRequest.class)))
-                .willReturn(SuccessResponse.of("새로운 액세스 토큰 및 리프레시 토큰이 성공적으로 발급되었습니다.", tokenResponse));
+                .willReturn(SuccessResponse.of(SuccessCode.REFRESH_TOKEN_SUCCESS, tokenResponse));
 
         //when
-        ResultActions result = mockMvc.perform(post("/token")
+        ResultActions result = mockMvc.perform(post("/api/token")
                 .content(objectMapper.writeValueAsString(tokenRequest))
                 .contentType(MediaType.APPLICATION_JSON));
 
@@ -104,7 +105,7 @@ public class RefreshTokenApiTest extends AbstractRestDocsTests {
                 .willThrow(new BadRequestException(ErrorCode.BAD_REQUEST));
 
         //when
-        ResultActions result = mockMvc.perform(post("/token")
+        ResultActions result = mockMvc.perform(post("/api/token")
                 .content(objectMapper.writeValueAsString(tokenRequest))
                 .contentType(MediaType.APPLICATION_JSON));
 
@@ -133,7 +134,7 @@ public class RefreshTokenApiTest extends AbstractRestDocsTests {
                 .willThrow(new UnauthorizedException(ErrorCode.UNAUTHORIZED));
 
         //when
-        ResultActions result = mockMvc.perform(post("/token")
+        ResultActions result = mockMvc.perform(post("/api/token")
                 .content(objectMapper.writeValueAsString(tokenRequest))
                 .contentType(MediaType.APPLICATION_JSON));
 
@@ -162,7 +163,7 @@ public class RefreshTokenApiTest extends AbstractRestDocsTests {
                 .willThrow(new ForbiddenException(ErrorCode.FORBIDDEN));
 
         //when
-        ResultActions result = mockMvc.perform(post("/token")
+        ResultActions result = mockMvc.perform(post("/api/token")
                 .content(objectMapper.writeValueAsString(tokenRequest))
                 .contentType(MediaType.APPLICATION_JSON));
 
