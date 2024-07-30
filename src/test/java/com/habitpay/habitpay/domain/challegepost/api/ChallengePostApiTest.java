@@ -21,7 +21,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.SliceImpl;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.JsonFieldType;
@@ -141,8 +144,12 @@ public class ChallengePostApiTest extends AbstractRestDocsTests {
                         .photoViewList(List.of(new PostPhotoView(2L, 2L, "https://picsum.photos/id/40/200/300")))
                         .build());
 
+        Slice<PostViewResponse> mockPostViewResponseSlice = new SliceImpl<>(
+                mockPostViewResponseList, PageRequest.of(0 ,10), true
+        );
+
         given(challengePostSearchService.findPostViewListByChallengeId(anyLong(), any(Pageable.class)))
-                .willReturn(SuccessResponse.of(SuccessCode.NO_MESSAGE, mockPostViewResponseList));
+                .willReturn(SuccessResponse.of(SuccessCode.NO_MESSAGE, mockPostViewResponseSlice));
 
         // when
         ResultActions result = mockMvc.perform(get("/api/challenges/{id}/posts", 1L)
@@ -195,8 +202,12 @@ public class ChallengePostApiTest extends AbstractRestDocsTests {
                         .photoViewList(List.of(new PostPhotoView(2L, 2L, "https://picsum.photos/id/40/200/300")))
                         .build());
 
+        Slice<PostViewResponse> mockPostViewResponseSlice = new SliceImpl<>(
+                mockPostViewResponseList, PageRequest.of(0, 10), true
+        );
+
         given(challengePostSearchService.findAnnouncementPostViewListByChallengeId(anyLong(), any(Pageable.class)))
-                .willReturn(SuccessResponse.of(SuccessCode.NO_MESSAGE, mockPostViewResponseList));
+                .willReturn(SuccessResponse.of(SuccessCode.NO_MESSAGE, mockPostViewResponseSlice));
 
         // when
         ResultActions result = mockMvc.perform(get("/api/challenges/{id}/posts/announcements", 1L)
@@ -250,8 +261,12 @@ public class ChallengePostApiTest extends AbstractRestDocsTests {
                         .photoViewList(List.of(new PostPhotoView(2L, 2L, "https://picsum.photos/id/40/200/300")))
                         .build());
 
+        Slice<PostViewResponse> mockPostViewResponseSlice = new SliceImpl<>(
+                mockPostViewResponseList, PageRequest.of(0, 10), true
+        );
+
         given(challengePostSearchService.findPostViewListByMember(anyLong(), any(Member.class), any(Pageable.class)))
-                .willReturn(SuccessResponse.of(SuccessCode.NO_MESSAGE, mockPostViewResponseList));
+                .willReturn(SuccessResponse.of(SuccessCode.NO_MESSAGE, mockPostViewResponseSlice));
 
         // when
         ResultActions result = mockMvc.perform(get("/api/challenges/{id}/posts/me", 1L)
