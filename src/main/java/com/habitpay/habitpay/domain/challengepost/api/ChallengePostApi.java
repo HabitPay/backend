@@ -19,6 +19,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/api")
 @Slf4j
 public class ChallengePostApi {
 
@@ -27,13 +28,13 @@ public class ChallengePostApi {
     private final ChallengePostUpdateService challengePostUpdateService;
     private final ChallengePostDeleteService challengePostDeleteService;
 
-    @GetMapping("/api/posts/{id}")
+    @GetMapping("/posts/{id}")
     public SuccessResponse<PostViewResponse> getPost(@PathVariable Long id) {
 
         return challengePostSearchService.getPostViewByPostId(id);
     }
 
-    @GetMapping("/api/challenges/{id}/posts")
+    @GetMapping("/challenges/{id}/posts")
     public SuccessResponse<Slice<PostViewResponse>> getChallengePosts(
             @PathVariable Long id,
             @PageableDefault(sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
@@ -41,7 +42,7 @@ public class ChallengePostApi {
         return challengePostSearchService.findPostViewListByChallengeId(id, pageable);
     }
 
-    @GetMapping("/api/challenges/{id}/posts/announcements")
+    @GetMapping("/challenges/{id}/posts/announcements")
     public SuccessResponse<Slice<PostViewResponse>> getAnnouncements(
             @PathVariable Long id,
             @PageableDefault(sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
@@ -49,7 +50,7 @@ public class ChallengePostApi {
         return challengePostSearchService.findAnnouncementPostViewListByChallengeId(id, pageable);
     }
 
-    @GetMapping("/api/challenges/{id}/posts/me")
+    @GetMapping("/challenges/{id}/posts/me")
     public SuccessResponse<Slice<PostViewResponse>> getChallengePostsByMe(
             @PathVariable Long id,
             @AuthenticationPrincipal CustomUserDetails user,
@@ -60,7 +61,7 @@ public class ChallengePostApi {
 
     // -----------------------------------------------------------------------------
     // todo : 'challengeEnrollmentId' or 'memberId' 등 멤버 식별할 수 있는 데이터를 받아야 함
-//    @GetMapping("/api/challenges/{id}/posts/member")
+//    @GetMapping("/challenges/{id}/posts/member")
 //    public SuccessResponse<Slice<PostViewResponse>> getChallengePostsByMember(
 //            @PathVariable Long id,
 //            @PageableDefault(sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
@@ -71,7 +72,7 @@ public class ChallengePostApi {
 //    }
     // -------------------------------------------------------------------------------
 
-    @PostMapping("/api/challenges/{id}/post")
+    @PostMapping("/challenges/{id}/post")
     public SuccessResponse<List<String>> createPost(
             @RequestBody AddPostRequest request,
             @PathVariable Long id,
@@ -80,14 +81,14 @@ public class ChallengePostApi {
         return challengePostCreationService.createPost(request, id, user.getMember());
     }
 
-    @PatchMapping("/api/posts/{id}")
+    @PatchMapping("/posts/{id}")
     public SuccessResponse<List<String>> patchPost(
             @RequestBody ModifyPostRequest request, @PathVariable Long id, @AuthenticationPrincipal CustomUserDetails user) {
 
         return challengePostUpdateService.patchPost(request, id, user.getMember());
     }
 
-    @DeleteMapping("/api/posts/{id}")
+    @DeleteMapping("/posts/{id}")
     public SuccessResponse<Void> deletePost(
             @PathVariable Long id, @AuthenticationPrincipal CustomUserDetails user) {
 
