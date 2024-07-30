@@ -19,6 +19,8 @@ import com.habitpay.habitpay.global.response.SuccessResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.SliceImpl;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -47,56 +49,48 @@ public class ChallengePostSearchService {
         );
     }
 
-    public SuccessResponse<List<PostViewResponse>> findPostViewListByChallengeId(Long challengeId, Pageable pageable) {
+    public SuccessResponse<Slice<PostViewResponse>> findPostViewListByChallengeId(Long challengeId, Pageable pageable) {
 
-        List<PostViewResponse> postViewResponseList = challengePostRepository.findAllByChallengeId(challengeId, pageable)
-                .stream()
-                .map(post -> {
-                    List<PostPhotoView> photoViewList = postPhotoUtilService.makePhotoViewList(postPhotoSearchService.findAllByPost(post));
-                    return new PostViewResponse(post, photoViewList);
-                })
-                .toList();
+        Slice<ChallengePost> postSlice = challengePostRepository.findAllByChallengeId(challengeId, pageable);
+        List<PostViewResponse> postViewResponseList = makePostViewResponseList(postSlice);
+        Slice<PostViewResponse> postViewResponseSlice = new SliceImpl<>(
+                postViewResponseList, postSlice.getPageable(), postSlice.hasNext()
+        );
 
         return SuccessResponse.of(
                 SuccessCode.NO_MESSAGE,
-                postViewResponseList
+                postViewResponseSlice
         );
     }
 
-    public SuccessResponse<List<PostViewResponse>> findAnnouncementPostViewListByChallengeId(Long challengeId, Pageable pageable) {
+    public SuccessResponse<Slice<PostViewResponse>> findAnnouncementPostViewListByChallengeId(Long challengeId, Pageable pageable) {
 
-        List<PostViewResponse> postViewResponseList = challengePostRepository.findAllByChallengeIdAndIsAnnouncementTrue(challengeId, pageable)
-                .stream()
-                .map(post -> {
-                    List<PostPhotoView> photoViewList = postPhotoUtilService.makePhotoViewList(postPhotoSearchService.findAllByPost(post));
-                    return new PostViewResponse(post, photoViewList);
-                })
-                .toList();
+        Slice<ChallengePost> postSlice = challengePostRepository.findAllByChallengeIdAndIsAnnouncementTrue(challengeId, pageable);
+        List<PostViewResponse> postViewResponseList = makePostViewResponseList(postSlice);
+        Slice<PostViewResponse> postViewResponseSlice = new SliceImpl<>(
+                postViewResponseList, postSlice.getPageable(), postSlice.hasNext()
+        );
 
         return SuccessResponse.of(
                 SuccessCode.NO_MESSAGE,
-                postViewResponseList
+                postViewResponseSlice
         );
     }
 
-    public SuccessResponse<List<PostViewResponse>> findPostViewListByMember(Long challengeId, Member member, Pageable pageable) {
+    public SuccessResponse<Slice<PostViewResponse>> findPostViewListByMember(Long challengeId, Member member, Pageable pageable) {
         Challenge challenge = challengeSearchService.getChallengeById(challengeId);
         ChallengeEnrollment enrollment = challengeEnrollmentSearchService.findByMemberAndChallenge(member, challenge)
                 .orElseThrow(() -> new NotEnrolledChallengeException(member.getId(), challengeId));
 
-        Long challengeEnrollmentId = enrollment.getId();
-
-        List<PostViewResponse> postViewResponseList =  challengePostRepository.findAllByChallengeEnrollmentId(challengeEnrollmentId, pageable)
-                .stream()
-                .map(post -> {
-                    List<PostPhotoView> photoViewList = postPhotoUtilService.makePhotoViewList(postPhotoSearchService.findAllByPost(post));
-                    return new PostViewResponse(post, photoViewList);
-                })
-                .toList();
+        Slice<ChallengePost> postSlice = challengePostRepository.findAllByChallengeEnrollment(enrollment, pageable);
+        List<PostViewResponse> postViewResponseList =  makePostViewResponseList(postSlice);
+        Slice<PostViewResponse> postViewResponseSlice = new SliceImpl<>(
+                postViewResponseList, postSlice.getPageable(), postSlice.hasNext()
+        );
 
         return SuccessResponse.of(
                 SuccessCode.NO_MESSAGE,
-                postViewResponseList
+                postViewResponseSlice
         );
     }
 
@@ -108,6 +102,15 @@ public class ChallengePostSearchService {
     public Challenge getChallengeByPostId(Long postId) {
         ChallengePost post = getChallengePostById(postId);
         return post.getChallenge();
+    }
+
+    private List<PostViewResponse> makePostViewResponseList(Slice<ChallengePost> postList) {
+        return postList.stream()
+                .map(post -> {
+                    List<PostPhotoView> photoViewList = postPhotoUtilService.makePhotoViewList(postPhotoSearchService.findAllByPost(post));
+                    return new PostViewResponse(post, photoViewList);
+                })
+                .toList();
     }
 
 }

@@ -21,7 +21,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.SliceImpl;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.JsonFieldType;
@@ -101,7 +104,9 @@ public class ChallengePostApiTest extends AbstractRestDocsTests {
                                 headerWithName(HttpHeaders.AUTHORIZATION).description("액세스 토큰")
                         ),
                         responseFields(
-                                fieldWithPath("message").description("메시지"),
+                                fieldWithPath("message").description("응답 메시지"),
+                                fieldWithPath("data").description("응답 데이터"),
+
                                 fieldWithPath("data.id").description("포스트 id"),
                                 fieldWithPath("data.challengeEnrollmentId").description("포스트가 소속된 enrollment id"),
                                 fieldWithPath("data.content").description("포스트 내용"),
@@ -141,8 +146,12 @@ public class ChallengePostApiTest extends AbstractRestDocsTests {
                         .photoViewList(List.of(new PostPhotoView(2L, 2L, "https://picsum.photos/id/40/200/300")))
                         .build());
 
+        Slice<PostViewResponse> mockPostViewResponseSlice = new SliceImpl<>(
+                mockPostViewResponseList, PageRequest.of(0 ,10), true
+        );
+
         given(challengePostSearchService.findPostViewListByChallengeId(anyLong(), any(Pageable.class)))
-                .willReturn(SuccessResponse.of(SuccessCode.NO_MESSAGE, mockPostViewResponseList));
+                .willReturn(SuccessResponse.of(SuccessCode.NO_MESSAGE, mockPostViewResponseSlice));
 
         // when
         ResultActions result = mockMvc.perform(get("/api/challenges/{id}/posts", 1L)
@@ -155,17 +164,42 @@ public class ChallengePostApiTest extends AbstractRestDocsTests {
                                 headerWithName(HttpHeaders.AUTHORIZATION).description("액세스 토큰")
                         ),
                         responseFields(
-                                fieldWithPath("message").description("메시지"),
-                                fieldWithPath("data.[].id").description("포스트 id"),
-                                fieldWithPath("data.[].challengeEnrollmentId").description("포스트가 소속된 enrollment id"),
-                                fieldWithPath("data.[].content").description("포스트 내용"),
-                                fieldWithPath("data.[].writer").description("작성자"),
-                                fieldWithPath("data.[].isAnnouncement").description("공지글 여부"),
-                                fieldWithPath("data.[].createdAt").description("생성 일시"),
-                                fieldWithPath("data.[].photoViewList").description("포스트 포토(URL 포함) 데이터를 담은 객체 배열"),
-                                fieldWithPath("data.[].photoViewList[].postPhotoId").description("포토 id"),
-                                fieldWithPath("data.[].photoViewList[].viewOrder").description("포스트 내 포토의 순서"),
-                                fieldWithPath("data.[].photoViewList[].imageUrl").description("포스트 포토 url")
+                                fieldWithPath("message").description("응답 메시지"),
+                                fieldWithPath("data").description("응답 데이터"),
+
+                                fieldWithPath("data.content").description("포스트 뷰 목록"),
+                                fieldWithPath("data.content[].id").description("포스트 id"),
+                                fieldWithPath("data.content[].challengeEnrollmentId").description("포스트가 소속된 enrollment id"),
+                                fieldWithPath("data.content[].content").description("포스트 내용"),
+                                fieldWithPath("data.content[].writer").description("작성자"),
+                                fieldWithPath("data.content[].isAnnouncement").description("공지글 여부"),
+                                fieldWithPath("data.content[].createdAt").description("생성 일시"),
+                                fieldWithPath("data.content[].photoViewList").description("포스트 포토(URL 포함) 데이터를 담은 객체 배열"),
+                                fieldWithPath("data.content[].photoViewList[].postPhotoId").description("포토 id"),
+                                fieldWithPath("data.content[].photoViewList[].viewOrder").description("포스트 내 포토의 순서"),
+                                fieldWithPath("data.content[].photoViewList[].imageUrl").description("포스트 포토 url"),
+
+                                fieldWithPath("data.pageable").description("포스트 뷰 페이지네이션 정보를 담은 Pageable 객체"),
+                                fieldWithPath("data.pageable.pageNumber").description("현재 페이지 번호"),
+                                fieldWithPath("data.pageable.pageSize").description("한 페이지에 포함되는 항목의 수"),
+                                fieldWithPath("data.pageable.sort").description("정렬 정보"),
+                                fieldWithPath("data.pageable.sort.empty").description("정렬 조건이 없는지 여부"),
+                                fieldWithPath("data.pageable.sort.unsorted").description("정렬되지 않았는지 여부"),
+                                fieldWithPath("data.pageable.sort.sorted").description("정렬되었는지 여부"),
+                                fieldWithPath("data.pageable.offset").description("페이징된 항목의 시작 위치"),
+                                fieldWithPath("data.pageable.paged").description("페이징된 요청인지 여부"),
+                                fieldWithPath("data.pageable.unpaged").description("페이징되지 않은 요청인지 여부"),
+
+                                fieldWithPath("data.size").description("한 페이지에 포함되는 항목의 수"),
+                                fieldWithPath("data.number").description("현재 페이지 번호"),
+                                fieldWithPath("data.sort").description("정렬 정보"),
+                                fieldWithPath("data.sort.empty").description("정렬 조건이 없는지 여부"),
+                                fieldWithPath("data.sort.unsorted").description("정렬되지 않았는지 여부"),
+                                fieldWithPath("data.sort.sorted").description("정렬되었는지 여부"),
+                                fieldWithPath("data.numberOfElements").description("현재 페이지에 있는 요소의 수"),
+                                fieldWithPath("data.first").description("이 페이지가 첫 번째 페이지인지 여부"),
+                                fieldWithPath("data.last").description("이 페이지가 마지막 페이지인지 여부"),
+                                fieldWithPath("data.empty").description("페이지가 비어있는지 여부")
                         )
                 ));
     }
@@ -195,8 +229,12 @@ public class ChallengePostApiTest extends AbstractRestDocsTests {
                         .photoViewList(List.of(new PostPhotoView(2L, 2L, "https://picsum.photos/id/40/200/300")))
                         .build());
 
+        Slice<PostViewResponse> mockPostViewResponseSlice = new SliceImpl<>(
+                mockPostViewResponseList, PageRequest.of(0, 10), true
+        );
+
         given(challengePostSearchService.findAnnouncementPostViewListByChallengeId(anyLong(), any(Pageable.class)))
-                .willReturn(SuccessResponse.of(SuccessCode.NO_MESSAGE, mockPostViewResponseList));
+                .willReturn(SuccessResponse.of(SuccessCode.NO_MESSAGE, mockPostViewResponseSlice));
 
         // when
         ResultActions result = mockMvc.perform(get("/api/challenges/{id}/posts/announcements", 1L)
@@ -209,17 +247,42 @@ public class ChallengePostApiTest extends AbstractRestDocsTests {
                                 headerWithName(HttpHeaders.AUTHORIZATION).description("액세스 토큰")
                         ),
                         responseFields(
-                                fieldWithPath("message").description("메시지"),
-                                fieldWithPath("data.[].id").description("포스트 id"),
-                                fieldWithPath("data.[].challengeEnrollmentId").description("포스트가 소속된 enrollment id"),
-                                fieldWithPath("data.[].content").description("포스트 내용"),
-                                fieldWithPath("data.[].writer").description("작성자"),
-                                fieldWithPath("data.[].isAnnouncement").description("공지글 여부"),
-                                fieldWithPath("data.[].createdAt").description("생성 일시"),
-                                fieldWithPath("data.[].photoViewList").description("포스트 포토(URL 포함) 데이터를 담은 객체 배열"),
-                                fieldWithPath("data.[].photoViewList[].postPhotoId").description("포토 id"),
-                                fieldWithPath("data.[].photoViewList[].viewOrder").description("포스트 내 포토의 순서"),
-                                fieldWithPath("data.[].photoViewList[].imageUrl").description("포스트 포토 url")
+                                fieldWithPath("message").description("응답 메시지"),
+                                fieldWithPath("data").description("응답 데이터"),
+
+                                fieldWithPath("data.content").description("포스트 뷰 목록"),
+                                fieldWithPath("data.content[].id").description("포스트 id"),
+                                fieldWithPath("data.content[].challengeEnrollmentId").description("포스트가 소속된 enrollment id"),
+                                fieldWithPath("data.content[].content").description("포스트 내용"),
+                                fieldWithPath("data.content[].writer").description("작성자"),
+                                fieldWithPath("data.content[].isAnnouncement").description("공지글 여부"),
+                                fieldWithPath("data.content[].createdAt").description("생성 일시"),
+                                fieldWithPath("data.content[].photoViewList").description("포스트 포토(URL 포함) 데이터를 담은 객체 배열"),
+                                fieldWithPath("data.content[].photoViewList[].postPhotoId").description("포토 id"),
+                                fieldWithPath("data.content[].photoViewList[].viewOrder").description("포스트 내 포토의 순서"),
+                                fieldWithPath("data.content[].photoViewList[].imageUrl").description("포스트 포토 url"),
+
+                                fieldWithPath("data.pageable").description("포스트 뷰 페이지네이션 정보를 담은 Pageable 객체"),
+                                fieldWithPath("data.pageable.pageNumber").description("현재 페이지 번호"),
+                                fieldWithPath("data.pageable.pageSize").description("한 페이지에 포함되는 항목의 수"),
+                                fieldWithPath("data.pageable.sort").description("정렬 정보"),
+                                fieldWithPath("data.pageable.sort.empty").description("정렬 조건이 없는지 여부"),
+                                fieldWithPath("data.pageable.sort.unsorted").description("정렬되지 않았는지 여부"),
+                                fieldWithPath("data.pageable.sort.sorted").description("정렬되었는지 여부"),
+                                fieldWithPath("data.pageable.offset").description("페이징된 항목의 시작 위치"),
+                                fieldWithPath("data.pageable.paged").description("페이징된 요청인지 여부"),
+                                fieldWithPath("data.pageable.unpaged").description("페이징되지 않은 요청인지 여부"),
+
+                                fieldWithPath("data.size").description("한 페이지에 포함되는 항목의 수"),
+                                fieldWithPath("data.number").description("현재 페이지 번호"),
+                                fieldWithPath("data.sort").description("정렬 정보"),
+                                fieldWithPath("data.sort.empty").description("정렬 조건이 없는지 여부"),
+                                fieldWithPath("data.sort.unsorted").description("정렬되지 않았는지 여부"),
+                                fieldWithPath("data.sort.sorted").description("정렬되었는지 여부"),
+                                fieldWithPath("data.numberOfElements").description("현재 페이지에 있는 요소의 수"),
+                                fieldWithPath("data.first").description("이 페이지가 첫 번째 페이지인지 여부"),
+                                fieldWithPath("data.last").description("이 페이지가 마지막 페이지인지 여부"),
+                                fieldWithPath("data.empty").description("페이지가 비어있는지 여부")
                         )
                 ));
     }
@@ -250,8 +313,12 @@ public class ChallengePostApiTest extends AbstractRestDocsTests {
                         .photoViewList(List.of(new PostPhotoView(2L, 2L, "https://picsum.photos/id/40/200/300")))
                         .build());
 
+        Slice<PostViewResponse> mockPostViewResponseSlice = new SliceImpl<>(
+                mockPostViewResponseList, PageRequest.of(0, 10), true
+        );
+
         given(challengePostSearchService.findPostViewListByMember(anyLong(), any(Member.class), any(Pageable.class)))
-                .willReturn(SuccessResponse.of(SuccessCode.NO_MESSAGE, mockPostViewResponseList));
+                .willReturn(SuccessResponse.of(SuccessCode.NO_MESSAGE, mockPostViewResponseSlice));
 
         // when
         ResultActions result = mockMvc.perform(get("/api/challenges/{id}/posts/me", 1L)
@@ -264,17 +331,42 @@ public class ChallengePostApiTest extends AbstractRestDocsTests {
                                 headerWithName(HttpHeaders.AUTHORIZATION).description("액세스 토큰")
                         ),
                         responseFields(
-                                fieldWithPath("message").description("메시지"),
-                                fieldWithPath("data.[].id").description("포스트 id"),
-                                fieldWithPath("data.[].challengeEnrollmentId").description("포스트가 소속된 enrollment id"),
-                                fieldWithPath("data.[].content").description("포스트 내용"),
-                                fieldWithPath("data.[].writer").description("작성자"),
-                                fieldWithPath("data.[].isAnnouncement").description("공지글 여부"),
-                                fieldWithPath("data.[].createdAt").description("생성 일시"),
-                                fieldWithPath("data.[].photoViewList").description("포스트 포토(URL 포함) 데이터를 담은 객체 배열"),
-                                fieldWithPath("data.[].photoViewList[].postPhotoId").description("포토 id"),
-                                fieldWithPath("data.[].photoViewList[].viewOrder").description("포스트 내 포토의 순서"),
-                                fieldWithPath("data.[].photoViewList[].imageUrl").description("포스트 포토 url")
+                                fieldWithPath("message").description("응답 메시지"),
+                                fieldWithPath("data").description("응답 데이터"),
+
+                                fieldWithPath("data.content").description("포스트 뷰 목록"),
+                                fieldWithPath("data.content[].id").description("포스트 id"),
+                                fieldWithPath("data.content[].challengeEnrollmentId").description("포스트가 소속된 enrollment id"),
+                                fieldWithPath("data.content[].content").description("포스트 내용"),
+                                fieldWithPath("data.content[].writer").description("작성자"),
+                                fieldWithPath("data.content[].isAnnouncement").description("공지글 여부"),
+                                fieldWithPath("data.content[].createdAt").description("생성 일시"),
+                                fieldWithPath("data.content[].photoViewList").description("포스트 포토(URL 포함) 데이터를 담은 객체 배열"),
+                                fieldWithPath("data.content[].photoViewList[].postPhotoId").description("포토 id"),
+                                fieldWithPath("data.content[].photoViewList[].viewOrder").description("포스트 내 포토의 순서"),
+                                fieldWithPath("data.content[].photoViewList[].imageUrl").description("포스트 포토 url"),
+
+                                fieldWithPath("data.pageable").description("포스트 뷰 페이지네이션 정보를 담은 Pageable 객체"),
+                                fieldWithPath("data.pageable.pageNumber").description("현재 페이지 번호"),
+                                fieldWithPath("data.pageable.pageSize").description("한 페이지에 포함되는 항목의 수"),
+                                fieldWithPath("data.pageable.sort").description("정렬 정보"),
+                                fieldWithPath("data.pageable.sort.empty").description("정렬 조건이 없는지 여부"),
+                                fieldWithPath("data.pageable.sort.unsorted").description("정렬되지 않았는지 여부"),
+                                fieldWithPath("data.pageable.sort.sorted").description("정렬되었는지 여부"),
+                                fieldWithPath("data.pageable.offset").description("페이징된 항목의 시작 위치"),
+                                fieldWithPath("data.pageable.paged").description("페이징된 요청인지 여부"),
+                                fieldWithPath("data.pageable.unpaged").description("페이징되지 않은 요청인지 여부"),
+
+                                fieldWithPath("data.size").description("한 페이지에 포함되는 항목의 수"),
+                                fieldWithPath("data.number").description("현재 페이지 번호"),
+                                fieldWithPath("data.sort").description("정렬 정보"),
+                                fieldWithPath("data.sort.empty").description("정렬 조건이 없는지 여부"),
+                                fieldWithPath("data.sort.unsorted").description("정렬되지 않았는지 여부"),
+                                fieldWithPath("data.sort.sorted").description("정렬되었는지 여부"),
+                                fieldWithPath("data.numberOfElements").description("현재 페이지에 있는 요소의 수"),
+                                fieldWithPath("data.first").description("이 페이지가 첫 번째 페이지인지 여부"),
+                                fieldWithPath("data.last").description("이 페이지가 마지막 페이지인지 여부"),
+                                fieldWithPath("data.empty").description("페이지가 비어있는지 여부")
                         )
                 ));
     }
