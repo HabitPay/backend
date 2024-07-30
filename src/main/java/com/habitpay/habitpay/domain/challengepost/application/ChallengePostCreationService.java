@@ -36,7 +36,12 @@ public class ChallengePostCreationService {
     @Transactional
     public SuccessResponse<List<String>> createPost(AddPostRequest request, Long challengeId, Member member) {
 
-        ChallengePost challengePost = this.savePost(request, challengeId, member);
+        Challenge challenge = challengeSearchService.getChallengeById(challengeId);
+        if (!challengePostUtilService.isChallengePeriodForPost(challenge)) {
+            throw new ForbiddenException(ErrorCode.POST_ACCESSIBLE_ONLY_WITHIN_CHALLENGE_PERIOD);
+        }
+
+        ChallengePost challengePost = this.savePost(request, challenge, member);
         if (!challengePost.getIsAnnouncement()) {
             challengePostUtilService.verifyChallengePostForRecord(challengePost);
         }
@@ -48,11 +53,10 @@ public class ChallengePostCreationService {
         );
     }
 
-    private ChallengePost savePost(AddPostRequest request, Long challengeId, Member member) {
+    private ChallengePost savePost(AddPostRequest request, Challenge challenge, Member member) {
 
-        Challenge challenge = challengeSearchService.getChallengeById(challengeId);
         ChallengeEnrollment enrollment = challengeEnrollmentSearchService.findByMemberAndChallenge(member, challenge)
-                .orElseThrow(() -> new NotEnrolledChallengeException(member.getId(), challengeId));
+                .orElseThrow(() -> new NotEnrolledChallengeException(member.getId(), challenge.getId()));
 
         if (request.getIsAnnouncement()) {
             if (!challengePostUtilService.isChallengeHost(challenge, member)) {
