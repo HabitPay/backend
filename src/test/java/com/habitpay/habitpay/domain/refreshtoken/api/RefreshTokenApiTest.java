@@ -70,7 +70,7 @@ public class RefreshTokenApiTest extends AbstractRestDocsTests {
                 .willReturn(SuccessResponse.of(SuccessCode.REFRESH_TOKEN_SUCCESS, tokenResponse));
 
         //when
-        ResultActions result = mockMvc.perform(post("/token")
+        ResultActions result = mockMvc.perform(post("/api/token")
                 .content(objectMapper.writeValueAsString(tokenRequest))
                 .contentType(MediaType.APPLICATION_JSON));
 
@@ -105,7 +105,7 @@ public class RefreshTokenApiTest extends AbstractRestDocsTests {
                 .willThrow(new BadRequestException(ErrorCode.BAD_REQUEST));
 
         //when
-        ResultActions result = mockMvc.perform(post("/token")
+        ResultActions result = mockMvc.perform(post("/api/token")
                 .content(objectMapper.writeValueAsString(tokenRequest))
                 .contentType(MediaType.APPLICATION_JSON));
 
@@ -134,7 +134,7 @@ public class RefreshTokenApiTest extends AbstractRestDocsTests {
                 .willThrow(new UnauthorizedException(ErrorCode.UNAUTHORIZED));
 
         //when
-        ResultActions result = mockMvc.perform(post("/token")
+        ResultActions result = mockMvc.perform(post("/api/token")
                 .content(objectMapper.writeValueAsString(tokenRequest))
                 .contentType(MediaType.APPLICATION_JSON));
 
@@ -163,7 +163,7 @@ public class RefreshTokenApiTest extends AbstractRestDocsTests {
                 .willThrow(new ForbiddenException(ErrorCode.FORBIDDEN));
 
         //when
-        ResultActions result = mockMvc.perform(post("/token")
+        ResultActions result = mockMvc.perform(post("/api/token")
                 .content(objectMapper.writeValueAsString(tokenRequest))
                 .contentType(MediaType.APPLICATION_JSON));
 
