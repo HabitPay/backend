@@ -16,6 +16,6 @@ public class RefreshTokenDeleteService {
 
     public void delete(Member member) {
         Optional<RefreshToken> optionalRefreshToken = refreshTokenRepository.findByMember(member);
-//        refreshTokenRepository.delete();
+        optionalRefreshToken.ifPresent(refreshTokenRepository::delete);
     }
 }
