@@ -16,7 +16,6 @@ import java.util.List;
 @Getter
 @Builder
 public class PostViewResponse {
-    // todo : id, challengeEnrollmentId 필요 없으면 지우기
     private Long id;
     private Long challengeEnrollmentId;
     private String content;

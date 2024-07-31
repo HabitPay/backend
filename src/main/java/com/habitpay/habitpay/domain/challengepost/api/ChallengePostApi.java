@@ -60,13 +60,13 @@ public class ChallengePostApi {
     }
 
     // -----------------------------------------------------------------------------
-    // todo : 'challengeEnrollmentId' or 'memberId' 등 멤버 식별할 수 있는 데이터를 받아야 함
+    // todo : 'memberId' 등 멤버 식별할 수 있는 데이터를 받은 후 수정
 //    @GetMapping("/challenges/{id}/posts/member")
 //    public SuccessResponse<Slice<PostViewResponse>> getChallengePostsByMember(
 //            @PathVariable Long id,
 //            @PageableDefault(sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
 //
-//        String memberEmail = "otherMember@email.address"; // todo : 임시
+//        String memberEmail = "otherMember@email.address"; // 임시
 //
 //        return challengePostSearchService.findChallengePostsByMember(id, memberEmail, pageable);
 //    }
