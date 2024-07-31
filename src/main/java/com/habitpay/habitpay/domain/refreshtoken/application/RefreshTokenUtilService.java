@@ -17,7 +17,6 @@ public class RefreshTokenUtilService {
     public String getClientIpAddress() {
 
         if (Objects.isNull(RequestContextHolder.getRequestAttributes())) {
-            log.info("[IP address] 0.0.0.0");
             return "0.0.0.0";
         }
 

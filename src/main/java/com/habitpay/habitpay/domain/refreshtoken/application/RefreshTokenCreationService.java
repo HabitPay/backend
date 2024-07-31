@@ -47,44 +47,15 @@ public class RefreshTokenCreationService {
             HttpServletRequest request,
             HttpServletResponse response) {
 
-//        String grantType = requestBody.getGrantType();
-//
-//        if (grantType == null) {
-//            log.error("요청 헤더 grantType의 값이 null입니다.");
-//            throw new BadRequestException(ErrorCode.BAD_REQUEST);
-//        }
-//
-//        if (!grantType.equals("refreshToken")) {
-//            log.error("요청 헤더 grantType의 값이 refreshToken이 아닙니다.");
-//            throw new BadRequestException(ErrorCode.BAD_REQUEST);
-//        }
-//
-//        String newAccessToken = this.createNewAccessToken(requestBody.getRefreshToken());
-
-        String refreshTokenFromCookie = cookieUtil.getRefreshToken(request);
-        if (refreshTokenFromCookie == null) {
-            throw new UnauthorizedException(ErrorCode.JWT_REFRESH_TOKEN_NOT_FOUND);
-        }
-
-        String newAccessToken = this.createNewAccessToken(refreshTokenFromCookie);
-        String refreshToken = this.createRefreshToken(tokenService.getUserId(newAccessToken));
+        String oldRefreshToken = cookieUtil.getRefreshToken(request);
+        String newAccessToken = this.createNewAccessToken(oldRefreshToken);
+        String newRefreshToken = this.createRefreshToken(tokenService.getUserId(newAccessToken));
+        cookieUtil.setRefreshToken(response, newRefreshToken);
 
         CreateAccessTokenResponse tokenResponse = new CreateAccessTokenResponse(
                 newAccessToken,
                 "Bearer",
-                tokenService.getAccessTokenExpiresInToMillis(),
-                refreshToken);
-
-        // todo
-        ResponseCookie responseCookie = ResponseCookie.from("refresh", refreshToken)
-                .httpOnly(true)
-                .maxAge(REFRESH_TOKEN_EXPIRED_AT)
-                .domain("localhost")
-                .path("/")
-                .build();
-
-        response.addHeader("Set-Cookie", responseCookie.toString());
-
+                tokenService.getAccessTokenExpiresInToMillis());
 
         return SuccessResponse.of(
                 SuccessCode.REFRESH_TOKEN_SUCCESS,
