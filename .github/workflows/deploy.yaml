@@ -94,6 +94,10 @@ jobs:
         with:
           repository: habitpay/habitpay
           ref: main
+          submodules: true
+          token: ${{ secrets.GITHUB_TOKEN }}
+          persist-credentials: false
+
 
       - name: Execute Deployment Script
         run: bash deploy.sh ${{ secrets.DOCKERHUB_ACCOUNT }}/backend:${{ needs.create-release.outputs.new_tag }}
