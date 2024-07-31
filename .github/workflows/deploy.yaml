@@ -95,7 +95,7 @@ jobs:
           repository: habitpay/habitpay
           ref: main
           submodules: true
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.GH_PAT }}
           persist-credentials: false
 
 
