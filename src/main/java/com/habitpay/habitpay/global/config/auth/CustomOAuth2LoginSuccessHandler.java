@@ -22,7 +22,7 @@ import static com.habitpay.habitpay.global.config.jwt.TokenService.REFRESH_TOKEN
 @RequiredArgsConstructor
 public class CustomOAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
-    private final String redirectUrl = "http://localhost:3000/auth";
+    private final String redirectUrl = "https://habitpay.link/auth";
 
     private final TokenService tokenService;
     private final RefreshTokenCreationService refreshTokenCreationService;
@@ -46,7 +46,7 @@ public class CustomOAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSucc
             ResponseCookie responseCookie = ResponseCookie.from("refresh", refreshToken)
                     .httpOnly(true)
                     .maxAge(REFRESH_TOKEN_EXPIRED_AT)
-                    .domain("localhost")
+                    .domain("habitpay.link")
                     .path("/")
                     .build();
 

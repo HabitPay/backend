@@ -21,7 +21,7 @@ import java.util.Collections;
 @RequiredArgsConstructor
 @Slf4j
 public class SecurityConfig {
-    private final String originUrl = "http://localhost:3000";
+    private final String originUrl = "https://habitpay.link";
 
     private final CustomOAuth2UserService customOAuth2UserService;
     private final CustomOAuth2LoginSuccessHandler customOAuth2LoginSuccessHandler;
@@ -64,7 +64,7 @@ public class SecurityConfig {
                 .oauth2Login((oauth2) ->
                         oauth2.loginPage("/oauth2/authorization/google")
                                 .successHandler(customOAuth2LoginSuccessHandler)
-                                .failureUrl("http://localhost:3000/fail")
+                                .failureUrl("https://habitpay.link/fail")
                                 .userInfoEndpoint(userInfoEndpoint ->
                                         userInfoEndpoint.userService(customOAuth2UserService)));
 
