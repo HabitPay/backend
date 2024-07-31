@@ -92,7 +92,7 @@ public class RefreshTokenCreationService {
 
     private void saveRefreshToken(Member member, String newRefreshToken) {
         String loginId = refreshTokenUtilService.getClientIpAddress();
-        RefreshToken refreshToken = refreshTokenRepository.findByMemberId(member.getId())
+        RefreshToken refreshToken = refreshTokenRepository.findByMember(member)
                 .map(entity -> entity.update(newRefreshToken, loginId))
                 .orElse(new RefreshToken(member, newRefreshToken, loginId));
 

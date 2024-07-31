@@ -28,7 +28,7 @@ public class SecurityConfig {
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
 
-    // TODO: CorsConfig.java 파일에 옮길 수 있도록 하기 
+    // TODO: CorsConfig.java 파일에 옮길 수 있도록 하기
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         return request -> {
@@ -54,7 +54,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests((authorizeRequests ->
                         authorizeRequests
                                 .requestMatchers("/oauth2/**").permitAll()
-                                .requestMatchers(HttpMethod.POST, "/api/token").permitAll() // todo: url 수정 후 /api 추가하기
+                                .requestMatchers("/api/token").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/actuator/health").permitAll()
 //                            .requestMatchers("/api/v1/**").hasRole(Role.USER.name()) // todo: 로그인 후 사용하는 api 에서만 적용하기
                                 .anyRequest().authenticated()

@@ -37,6 +37,12 @@ public class ChallengePostUtilService {
         return challenge.getHost().equals(member);
     }
 
+    public boolean isChallengePeriodForPost(Challenge challenge) {
+        ZonedDateTime now = ZonedDateTime.now();
+
+        return now.isAfter(challenge.getStartDate()) && !challenge.isPaidAll();
+    }
+
     public void verifyChallengePostForRecord(ChallengePost post) {
         ChallengeEnrollment enrollment = post.getChallengeEnrollment();
         Challenge challenge = enrollment.getChallenge();

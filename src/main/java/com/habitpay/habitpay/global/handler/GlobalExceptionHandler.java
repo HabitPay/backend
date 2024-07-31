@@ -13,16 +13,16 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @Slf4j
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(Exception.class)
-    protected ResponseEntity<String> error(Exception exception) {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(exception.getMessage());
-    }
-
     @ExceptionHandler(BusinessException.class)
     protected ResponseEntity<ErrorResponse> handleBusinessException(final BusinessException ex) {
         log.error("handleBusinessException: ", ex);
         final ErrorCode errorCode = ex.getErrorCode();
         final ErrorResponse response = ErrorResponse.of(errorCode);
         return ResponseEntity.status(errorCode.getStatus()).body(response);
+    }
+
+    @ExceptionHandler(Exception.class)
+    protected ResponseEntity<String> error(Exception exception) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(exception.getMessage());
     }
 }
