@@ -90,6 +90,13 @@ jobs:
     runs-on: self-hosted
 
     steps:
+
+      - name: Backup .env file
+        run: |
+          if [ -f .env ]; then
+            mv .env ../.env
+          fi
+
       - name: Checkout Code
         uses: actions/checkout@v4
         with:
@@ -99,6 +106,11 @@ jobs:
           token: ${{ secrets.GH_PAT }}
           persist-credentials: false
 
+      - name: Restore .env file
+        run: |
+          if [ -f ../.env ]; then
+            mv ../.env .env
+          fi
 
       - name: Execute Deployment Script
         run: bash deploy.sh ${{ secrets.DOCKERHUB_ACCOUNT }}/backend:${{ needs.create-release.outputs.new_tag }}
