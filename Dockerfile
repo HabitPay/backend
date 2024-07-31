@@ -1,4 +1,4 @@
-FROM openjdk:17-jdk-alpine
+FROM amazoncorretto:17-al2023-jdk
 
 RUN apt-get update && apt-get install -y dumb-init
 
