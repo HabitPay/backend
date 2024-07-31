@@ -96,7 +96,7 @@ jobs:
           ref: main
 
       - name: Execute Deployment Script
-        run: bash deploy.sh
+        run: bash deploy.sh ${{ secrets.DOCKERHUB_ACCOUNT }}/backend:${{ needs.create-release.outputs.new_tag }}
 
   dependency-submission:
     runs-on: ubuntu-latest
