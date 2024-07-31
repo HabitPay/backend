@@ -5,10 +5,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
@@ -28,7 +28,7 @@ public class SecurityConfig {
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
 
-    // TODO: CorsConfig.java 파일에 옮길 수 있도록 하기 
+    // TODO: CorsConfig.java 파일에 옮길 수 있도록 하기
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         return request -> {
@@ -55,6 +55,7 @@ public class SecurityConfig {
                         authorizeRequests
                                 .requestMatchers("/oauth2/**").permitAll()
                                 .requestMatchers("/api/token").permitAll()
+                                .requestMatchers(HttpMethod.GET, "/actuator/health").permitAll()
 //                            .requestMatchers("/api/v1/**").hasRole(Role.USER.name()) // todo: 로그인 후 사용하는 api 에서만 적용하기
                                 .anyRequest().authenticated()
                 ))
