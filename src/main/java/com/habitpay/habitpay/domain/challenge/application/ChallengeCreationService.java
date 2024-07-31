@@ -20,7 +20,6 @@ import java.time.ZonedDateTime;
 @Service
 @AllArgsConstructor
 public class ChallengeCreationService {
-    private final MemberSearchService memberSearchService;
     private final ChallengeRepository challengeRepository;
     private final ChallengeEnrollmentRepository challengeEnrollmentRepository;
 
