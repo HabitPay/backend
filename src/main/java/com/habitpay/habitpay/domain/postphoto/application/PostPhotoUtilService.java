@@ -46,7 +46,6 @@ public class PostPhotoUtilService {
                 post.getId();
     }
 
-    // todo : 사진 순서 데이터 어떻게 오는지 확인하고 작성하기
     @Transactional
     public void changeViewOrder(Long photoId, Long newViewOrder) {
         PostPhoto photo = postPhotoSearchService.getPostPhotoById(photoId);
