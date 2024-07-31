@@ -2,7 +2,7 @@ name: Java CI with Gradle and CD with Docker
 
 on:
   push:
-    branches: ["chore/*"]
+    branches: ["chore/*", "main"]
     tags: "v*"
   pull_request:
     branches: ["main"]
