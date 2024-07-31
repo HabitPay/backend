@@ -35,88 +35,88 @@ jobs:
           release_name: Release ${{ steps.tag_version.outputs.new_tag }}
           body: ${{ steps.tag_version.outputs.changelog }}
 
-  # build:
-  #   needs: ["create-release"]
-  #   runs-on: ubuntu-latest
-  #   permissions:
-  #     contents: read
-
-  #   steps:
-  #     - uses: actions/checkout@v4
-  #     - name: Set up JDK 17
-  #       uses: actions/setup-java@v4
-  #       with:
-  #         java-version: "17"
-  #         distribution: "temurin"
-  #         cache: "gradle"
-
-  #     - name: Setup Gradle
-  #       uses: gradle/actions/setup-gradle@v3
-
-  #     - name: Build with Gradle Wrapper
-  #       run: ./gradlew build
-
-  #     - name: Login to Docker Hub
-  #       uses: docker/login-action@v3
-  #       with:
-  #         username: ${{ secrets.DOCKERHUB_ACCOUNT }}
-  #         password: ${{ secrets.DOCKERHUB_TOKEN }}
-
-  #     - name: Set up QEMU
-  #       uses: docker/setup-qemu-action@v3
-  #       with:
-  #         platforms: linux/amd64,linux/arm64
-
-  #     - name: Set up Docker Buildx
-  #       uses: docker/setup-buildx-action@v3
-  #       with:
-  #         platforms: |
-  #           linux/amd64
-  #           linux/arm64
-
-  #     - name: Build and Push Docker Image
-  #       uses: docker/build-push-action@v6
-  #       with:
-  #         context: .
-  #         push: true
-  #         tags: ${{ secrets.DOCKERHUB_ACCOUNT }}/backend:${{ needs.create-release.outputs.new_tag }}
-  #         platforms: |
-  #           linux/amd64
-  #           linux/arm64
-
-  deploy-on-ec2:
-    # needs: ["create-release", "build"]
+  build:
     needs: ["create-release"]
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
 
     steps:
-
-      - name: Backup .env file
-        run: |
-          if [ -f .env ]; then
-            mv .env ../.env
-          fi
-
-      - name: Checkout Code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
         with:
-          repository: habitpay/habitpay
-          ref: main
-          submodules: true
-          token: ${{ secrets.GH_PAT }}
-          persist-credentials: false
+          java-version: "17"
+          distribution: "temurin"
+          cache: "gradle"
 
-      - name: Restore .env file
-        run: |
-          if [ -f ../.env ]; then
-            mv ../.env .env
-          fi
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v3
+
+      - name: Build with Gradle Wrapper
+        run: ./gradlew build
 
       - name: Login to Docker Hub
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_ACCOUNT }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+        with:
+          platforms: linux/amd64,linux/arm64
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+        with:
+          platforms: |
+            linux/amd64
+            linux/arm64
+
+      - name: Build and Push Docker Image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: ${{ secrets.DOCKERHUB_ACCOUNT }}/backend:${{ needs.create-release.outputs.new_tag }}
+          platforms: |
+            linux/amd64
+            linux/arm64
+
+  deploy-on-ec2:
+    needs: ["create-release", "build"]
+    # needs: ["create-release"]
+    runs-on: self-hosted
+
+    steps:
+
+      # - name: Backup .env file
+      #   run: |
+      #     if [ -f .env ]; then
+      #       mv .env ../.env
+      #     fi
+
+      # - name: Checkout Code
+      #   uses: actions/checkout@v4
+      #   with:
+      #     repository: habitpay/habitpay
+      #     ref: main
+      #     submodules: true
+      #     token: ${{ secrets.GH_PAT }}
+      #     persist-credentials: false
+
+      # - name: Restore .env file
+      #   run: |
+      #     if [ -f ../.env ]; then
+      #       mv ../.env .env
+      #     fi
+
+      # - name: Login to Docker Hub
+      #   uses: docker/login-action@v3
+      #   with:
+      #     username: ${{ secrets.DOCKERHUB_ACCOUNT }}
+      #     password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Execute Deployment Script
         run: bash deploy.sh ${{ secrets.DOCKERHUB_ACCOUNT }}/backend:${{ needs.create-release.outputs.new_tag }}
