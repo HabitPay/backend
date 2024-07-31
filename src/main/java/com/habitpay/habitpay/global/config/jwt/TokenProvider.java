@@ -64,7 +64,6 @@ public class TokenProvider {
                     .parseClaimsJws(token);
             return true;
         } catch (ExpiredJwtException e) {
-            // todo : ErrorResponse 적용하면 바뀔 예정
             log.error("토큰이 만료되었습니다.");
             return false;
         } catch (MalformedJwtException e) {

@@ -54,7 +54,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests((authorizeRequests ->
                         authorizeRequests
                                 .requestMatchers("/oauth2/**").permitAll()
-                                .requestMatchers("/api/token").permitAll() // todo: url 수정 후 /api 추가하기
+                                .requestMatchers("/api/token").permitAll()
 //                            .requestMatchers("/api/v1/**").hasRole(Role.USER.name()) // todo: 로그인 후 사용하는 api 에서만 적용하기
                                 .anyRequest().authenticated()
                 ))
