@@ -4,11 +4,13 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
 import org.springframework.util.SerializationUtils;
 
 import java.util.Base64;
 
 // todo : refresh token 목적으로 만든 util. 추후 필요 없으면 삭제하기
+@Service
 @Slf4j
 public class CookieUtil {
 
@@ -62,6 +64,24 @@ public class CookieUtil {
         for (Cookie cookie : cookies) {
             if (cookie.getName().equals("accessToken")) {
                 log.info("accessToken: {}", cookie.getValue());
+                return cookie.getValue();
+            }
+        }
+
+        return null;
+    }
+
+    public String getRefreshToken(HttpServletRequest request) {
+        Cookie[] cookies = request.getCookies();
+
+        if (cookies == null) {
+            log.info("cookies is null");
+            return null;
+        }
+
+        for (Cookie cookie : cookies) {
+            if (cookie.getName().equals("refresh")) {
+                log.info("refreshToken: {}", cookie.getValue());
                 return cookie.getValue();
             }
         }

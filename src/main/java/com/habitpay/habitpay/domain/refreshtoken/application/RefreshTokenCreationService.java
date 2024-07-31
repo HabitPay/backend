@@ -13,11 +13,18 @@ import com.habitpay.habitpay.global.error.exception.ErrorCode;
 import com.habitpay.habitpay.global.error.exception.UnauthorizedException;
 import com.habitpay.habitpay.global.response.SuccessCode;
 import com.habitpay.habitpay.global.response.SuccessResponse;
+import com.habitpay.habitpay.global.util.CookieUtil;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Service;
 
 import java.util.Objects;
+
+import static com.habitpay.habitpay.global.config.jwt.TokenService.REFRESH_TOKEN_EXPIRED_AT;
 
 @RequiredArgsConstructor
 @Service
@@ -32,22 +39,34 @@ public class RefreshTokenCreationService {
 
     private final RefreshTokenRepository refreshTokenRepository;
 
+    // todo
+    private final CookieUtil cookieUtil;
 
-    public SuccessResponse<CreateAccessTokenResponse> createNewAccessTokenAndNewRefreshToken(CreateAccessTokenRequest requestBody) {
 
-        String grantType = requestBody.getGrantType();
+    public SuccessResponse<CreateAccessTokenResponse> createNewAccessTokenAndNewRefreshToken(
+            HttpServletRequest request,
+            HttpServletResponse response) {
 
-        if (grantType == null) {
-            log.error("요청 헤더 grantType의 값이 null입니다.");
-            throw new BadRequestException(ErrorCode.BAD_REQUEST);
+//        String grantType = requestBody.getGrantType();
+//
+//        if (grantType == null) {
+//            log.error("요청 헤더 grantType의 값이 null입니다.");
+//            throw new BadRequestException(ErrorCode.BAD_REQUEST);
+//        }
+//
+//        if (!grantType.equals("refreshToken")) {
+//            log.error("요청 헤더 grantType의 값이 refreshToken이 아닙니다.");
+//            throw new BadRequestException(ErrorCode.BAD_REQUEST);
+//        }
+//
+//        String newAccessToken = this.createNewAccessToken(requestBody.getRefreshToken());
+
+        String refreshTokenFromCookie = cookieUtil.getRefreshToken(request);
+        if (refreshTokenFromCookie == null) {
+            throw new UnauthorizedException(ErrorCode.JWT_REFRESH_TOKEN_NOT_FOUND);
         }
 
-        if (!grantType.equals("refreshToken")) {
-            log.error("요청 헤더 grantType의 값이 refreshToken이 아닙니다.");
-            throw new BadRequestException(ErrorCode.BAD_REQUEST);
-        }
-
-        String newAccessToken = this.createNewAccessToken(requestBody.getRefreshToken());
+        String newAccessToken = this.createNewAccessToken(refreshTokenFromCookie);
         String refreshToken = this.createRefreshToken(tokenService.getUserId(newAccessToken));
 
         CreateAccessTokenResponse tokenResponse = new CreateAccessTokenResponse(
@@ -55,6 +74,17 @@ public class RefreshTokenCreationService {
                 "Bearer",
                 tokenService.getAccessTokenExpiresInToMillis(),
                 refreshToken);
+
+        // todo
+        ResponseCookie responseCookie = ResponseCookie.from("refresh", refreshToken)
+                .httpOnly(true)
+                .maxAge(REFRESH_TOKEN_EXPIRED_AT)
+                .domain("localhost")
+                .path("/")
+                .build();
+
+        response.addHeader("Set-Cookie", responseCookie.toString());
+
 
         return SuccessResponse.of(
                 SuccessCode.REFRESH_TOKEN_SUCCESS,

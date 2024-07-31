@@ -21,12 +21,12 @@ import java.util.Set;
 @Service
 @Slf4j
 public class TokenService {
-    public final static Duration ACCESS_TOKEN_EXPIRED_AT = Duration.ofHours(2);
-    public final static Duration REFRESH_TOKEN_EXPIRED_AT = Duration.ofDays(14);
+//    public final static Duration ACCESS_TOKEN_EXPIRED_AT = Duration.ofHours(2);
+//    public final static Duration REFRESH_TOKEN_EXPIRED_AT = Duration.ofDays(14);
 
     // todo : test 용도 (token 테스트 완료되면 삭제하기)
-//    public final static Duration ACCESS_TOKEN_EXPIRED_AT = Duration.ofSeconds(30);
-//    public final static Duration REFRESH_TOKEN_EXPIRED_AT = Duration.ofMinutes(1);
+    public final static Duration ACCESS_TOKEN_EXPIRED_AT = Duration.ofSeconds(30);
+    public final static Duration REFRESH_TOKEN_EXPIRED_AT = Duration.ofMinutes(1);
 
     private final JwtProperties jwtProperties;
 
