@@ -1,6 +1,7 @@
 FROM amazoncorretto:17-al2023-jdk
 
-RUN wget -O /usr/local/bin/dumb-init https://github.com/Yelp/dumb-init/releases/download/v1.2.5/dumb-init_1.2.5_arm64
+RUN yum -y install wget
+RUN wget -O /usr/local/bin/dumb-init https://github.com/Yelp/dumb-init/releases/download/v1.2.5/dumb-init_1.2.5_arm64.deb
 RUN chmod +x /usr/local/bin/dumb-init
 
 WORKDIR /usr/app
