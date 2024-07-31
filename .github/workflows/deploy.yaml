@@ -14,7 +14,7 @@ jobs:
       contents: write
 
     outputs:
-      new_tag: $ {{ steps.tag_version.outputs.new_tag }}
+      new_tag: ${{ steps.tag_version.outputs.new_tag }}
 
     steps:
       - name: Checkout Code
