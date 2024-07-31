@@ -18,8 +18,6 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 public class ChallengePatchService {
-    private final MemberSearchService memberSearchService;
-    private final ChallengeRepository challengeRepository;
     private final ChallengeSearchService challengeSearchService;
 
     @Transactional

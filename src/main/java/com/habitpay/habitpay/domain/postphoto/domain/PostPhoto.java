@@ -37,7 +37,6 @@ public class PostPhoto extends BaseTime {
     }
 
     public void changeViewOrder(Long newOrder) {
-        // todo : 두 사진 객체의 순서가 바뀌는 게 보장되어야 함. -> 혹시 겹치면 순서 앞선 것부터 나열한다거나,,
         this.viewOrder = newOrder;
     }
 

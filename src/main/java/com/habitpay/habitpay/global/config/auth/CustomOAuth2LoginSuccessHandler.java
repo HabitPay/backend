@@ -54,9 +54,6 @@ public class CustomOAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSucc
             response.sendRedirect(UriComponentsBuilder.fromUriString(redirectUrl)
                     .queryParam("accessToken", accessToken)
                     .build().toUriString());
-
-            // todo : for test
-            System.out.println(accessToken);
         }
     }
 

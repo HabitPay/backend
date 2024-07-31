@@ -7,7 +7,6 @@ import com.habitpay.habitpay.domain.refreshtoken.dto.CreateAccessTokenRequest;
 import com.habitpay.habitpay.domain.refreshtoken.dto.CreateAccessTokenResponse;
 import com.habitpay.habitpay.global.config.jwt.TokenProvider;
 import com.habitpay.habitpay.global.config.jwt.TokenService;
-import com.habitpay.habitpay.global.error.CustomJwtErrorInfo;
 import com.habitpay.habitpay.global.error.exception.BadRequestException;
 import com.habitpay.habitpay.global.error.exception.ErrorCode;
 import com.habitpay.habitpay.global.error.exception.ForbiddenException;
@@ -19,7 +18,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
 
