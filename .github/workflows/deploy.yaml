@@ -65,13 +65,13 @@ jobs:
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
         with:
-          platforms: linux/amd64,linux/arm64
+          # platforms: linux/amd64,linux/arm64
+          platforms: linux/arm64
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
         with:
           platforms: |
-            linux/amd64
             linux/arm64
 
       - name: Build and Push Docker Image
@@ -81,15 +81,14 @@ jobs:
           push: true
           tags: ${{ secrets.DOCKERHUB_ACCOUNT }}/backend:${{ needs.create-release.outputs.new_tag }}
           platforms: |
-            linux/amd64
             linux/arm64
 
-  deploy-on-ec2:
-    needs: ["create-release", "build"]
+  # deploy-on-ec2:
+  #   needs: ["create-release", "build"]
     # needs: ["create-release"]
-    runs-on: self-hosted
+    # runs-on: self-hosted
 
-    steps:
+    # steps:
 
       # - name: Backup .env file
       #   run: |
@@ -118,8 +117,8 @@ jobs:
       #     username: ${{ secrets.DOCKERHUB_ACCOUNT }}
       #     password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Execute Deployment Script
-        run: bash deploy.sh ${{ secrets.DOCKERHUB_ACCOUNT }}/backend:${{ needs.create-release.outputs.new_tag }}
+      # - name: Execute Deployment Script
+      #   run: bash deploy.sh ${{ secrets.DOCKERHUB_ACCOUNT }}/backend:${{ needs.create-release.outputs.new_tag }}
 
   # dependency-submission:
   #   runs-on: ubuntu-latest
