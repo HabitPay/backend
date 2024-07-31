@@ -24,7 +24,6 @@ public class RefreshToken {
     @Column(nullable = false)
     private String refreshToken;
 
-    // todo: 과정 좀 복잡하면 즉시 삭제
     @Column(nullable = false)
     private String loginIp;
 
