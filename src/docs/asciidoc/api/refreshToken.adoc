@@ -16,16 +16,18 @@
 액세스 토큰이 만료되는 등 더 이상 사용할 수 없다는 의미입니다.
 
 그 경우 "/api/token" 경로를 통해 토큰 재발급을 요청해야 합니다.
+(401 이외의 상태 코드로는 토큰 재발급을 요청할 수 없습니다.)
+
 리프레시 토큰은 이미 쿠키에 세팅되어 요청에 담기기 때문에, 추가로 보내야 할 값은 없습니다.
 
 다만 표준 CORS 요청은 기본적으로 쿠키를 포함한 인증 정보를 설정할 수 없습니다.
-그렇기 때문에 인증 정보(쿠키 등)를 요청에 추가하도록 수동으로 "withCredentials: true" 설정을 해줘야 합니다.
+그렇기 때문에 인증 정보(쿠키 등)를 요청에 추가하도록 수동으로 "withCredentials: true" 설정을 추가해야 합니다.
 
-(이는 백엔드에서 쿠키를 포함한 응답을 보낼 때 "Access-Control-Allow-Credentials" 설정을 "true"로 맞춰야 하는 이유와 동일합니다.)
+(이는 백엔드에서 쿠키를 포함한 응답을 보낼 때 "Access-Control-Allow-Credentials" 설정을 "true"로 하는 이유와 동일합니다.)
 
 리프레시 토큰이 유효하고 적절하다면 새로운 액세스 토큰은 응답 본문에, 새로운 리프레시 토큰은 쿠키에 담아 재발급합니다.
 
-operation::refreshToken/create-new-access-token-and-new-refresh-token[snippets='http-request,http-response,request-fields,response-fields']
+operation::refreshToken/create-new-access-token-and-new-refresh-token[snippets='http-request,http-response,response-fields']
 
 === 토큰 리프레시 실패 : 400 Bad Request
 
@@ -39,10 +41,6 @@ operation::refreshToken/return-400-when-invalid-request[snippets='http-request,h
 
 토큰 리프레시 요청 시 이 응답을 받았다면 리프레시 토큰이 만료되었을 가능성이 큽니다. 이 경우 재로그인이 필요합니다.
 
-그러나 일반 "/api" 요청 중 위와 같은 401 상태 코드를 받았다면, 액세스 토큰이 만료된 것으로 보고 클라이언트는 토큰 재발급, 즉 토큰 리프레시("/token")를 요청해야 합니다.
-
-(중요한 점은, 401 이외의 상태 코드로는 클라이언트가 토큰 재발급을 요청할 수 없다는 것입니다.)
-
 operation::refreshToken/return-401-when-invalid-token[snippets='http-request,http-response,response-fields']
 
 === 토큰 리프레시 실패 : 403 Forbidden
@@ -50,6 +48,6 @@ operation::refreshToken/return-401-when-invalid-token[snippets='http-request,htt
 토큰이 제공하는 권한보다 더 높은 권한을 요구할 때 발생합니다.
 예를 들면 일반 사용자가 관리자 페이지에 접근하는 경우를 들 수 있습니다.
 
-해빗페이에서 권한 문제가 발생하는 대상은 액세스 토큰이기 때문에, (토큰 리프레시 API 문서이지만) 액세스 토큰의 권한이 부족할 때 발생하는 상태 코드로 이해하면 되겠습니다.
+해빗페이에서 권한 문제가 발생하는 대상은 액세스 토큰이기 때문에, 액세스 토큰의 권한이 부족할 때 발생하는 상태 코드로 이해하면 되겠습니다.
 
 operation::refreshToken/return-403-when-insufficient-scope[snippets='http-request,http-response,response-fields']

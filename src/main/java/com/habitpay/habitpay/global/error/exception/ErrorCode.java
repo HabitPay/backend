@@ -17,6 +17,7 @@ public enum ErrorCode {
     CONFLICT(HttpStatus.CONFLICT, "Conflict"),
 
     // JWT
+    JWT_CLIENT_HAS_NO_IDEA_ABOUT_GRANT_TYPE(HttpStatus.BAD_REQUEST, "인증 방법을 알 수 없습니다."),
     JWT_REQUEST_IP_AND_LOGIN_IP_NOT_SAME_FOR_REFRESH(HttpStatus.BAD_REQUEST, "로그인한 IP 주소와 요청 IP 주소가 일치하지 않습니다."),
     JWT_REFRESH_TOKEN_NOT_FOUND(HttpStatus.NOT_FOUND, "리프레시 토큰이 존재하지 않습니다."),
     JWT_FORBIDDEN_TO_MODIFY_OTHERS_POST(HttpStatus.FORBIDDEN, "본인의 포스트만 수정할 수 있습니다."),

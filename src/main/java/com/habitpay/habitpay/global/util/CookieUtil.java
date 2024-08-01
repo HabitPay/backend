@@ -1,5 +1,6 @@
 package com.habitpay.habitpay.global.util;
 
+import com.habitpay.habitpay.global.error.exception.BadRequestException;
 import com.habitpay.habitpay.global.error.exception.ErrorCode;
 import com.habitpay.habitpay.global.error.exception.UnauthorizedException;
 import jakarta.servlet.http.Cookie;
@@ -48,7 +49,7 @@ public class CookieUtil {
 
         if (cookies == null) {
             log.info("cookies is null");
-            throw new UnauthorizedException(ErrorCode.JWT_REFRESH_TOKEN_NOT_FOUND);
+            throw new BadRequestException(ErrorCode.JWT_CLIENT_HAS_NO_IDEA_ABOUT_GRANT_TYPE);
         }
 
         for (Cookie cookie : cookies) {
@@ -58,7 +59,7 @@ public class CookieUtil {
             }
         }
 
-        throw new UnauthorizedException(ErrorCode.JWT_REFRESH_TOKEN_NOT_FOUND);
+        throw new BadRequestException(ErrorCode.JWT_CLIENT_HAS_NO_IDEA_ABOUT_GRANT_TYPE);
     }
 
     public void setRefreshToken(HttpServletResponse response, String refreshToken) {

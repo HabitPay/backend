@@ -13,6 +13,7 @@ import com.habitpay.habitpay.global.error.exception.ForbiddenException;
 import com.habitpay.habitpay.global.error.exception.UnauthorizedException;
 import com.habitpay.habitpay.global.response.SuccessCode;
 import com.habitpay.habitpay.global.response.SuccessResponse;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.junit.jupiter.api.DisplayName;
@@ -54,11 +55,6 @@ public class RefreshTokenApiTest extends AbstractRestDocsTests {
     void createNewAccessTokenAndNewRefreshToken() throws Exception {
 
         //given
-        CreateAccessTokenRequest tokenRequest = CreateAccessTokenRequest.builder()
-                .grantType("refreshToken")
-                .refreshToken("eyJhbGciOiJIUzI1NiJ9.eyJ1c2VyIjoiYWxpY2UifQ.DUMMY_SIGNATURE2")
-                .build();
-
         CreateAccessTokenResponse tokenResponse = CreateAccessTokenResponse.builder()
                 .accessToken("eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMjM0In0.DUMMY_SIGNATURE1")
                 .tokenType("Bearer")
@@ -70,8 +66,8 @@ public class RefreshTokenApiTest extends AbstractRestDocsTests {
 
         //when
         ResultActions result = mockMvc.perform(post("/api/token")
-                .content(objectMapper.writeValueAsString(tokenRequest))
-                .contentType(MediaType.APPLICATION_JSON));
+                .cookie(new Cookie("refresh", "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMjM0In0.DUMMY_SIGNATURE2"))
+        );
 
         //then
         result.andExpect(status().isOk())
@@ -91,17 +87,11 @@ public class RefreshTokenApiTest extends AbstractRestDocsTests {
     void return400WhenInvalidRequest() throws Exception {
 
         //given
-        CreateAccessTokenRequest tokenRequest = CreateAccessTokenRequest.builder()
-                .refreshToken("eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMjM0In0.DUMMY_SIGNATURE1")
-                .build();
-
-        given(refreshTokenCreationService.createNewAccessTokenAndNewRefreshToken(any(HttpServletRequest.class), any(HttpServletResponse.class)))
+       given(refreshTokenCreationService.createNewAccessTokenAndNewRefreshToken(any(HttpServletRequest.class), any(HttpServletResponse.class)))
                 .willThrow(new BadRequestException(ErrorCode.BAD_REQUEST));
 
         //when
-        ResultActions result = mockMvc.perform(post("/api/token")
-                .content(objectMapper.writeValueAsString(tokenRequest))
-                .contentType(MediaType.APPLICATION_JSON));
+        ResultActions result = mockMvc.perform(post("/api/token"));
 
         //then
         result.andExpect(status().isBadRequest())
@@ -119,18 +109,13 @@ public class RefreshTokenApiTest extends AbstractRestDocsTests {
     void return401WhenInvalidToken() throws Exception {
 
         //given
-        CreateAccessTokenRequest tokenRequest = CreateAccessTokenRequest.builder()
-                .grantType("refreshToken")
-                .refreshToken("eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMjM0In0.EXPIRED_DUMMY_SIGNATURE1")
-                .build();
-
         given(refreshTokenCreationService.createNewAccessTokenAndNewRefreshToken(any(HttpServletRequest.class), any(HttpServletResponse.class)))
                 .willThrow(new UnauthorizedException(ErrorCode.UNAUTHORIZED));
 
         //when
         ResultActions result = mockMvc.perform(post("/api/token")
-                .content(objectMapper.writeValueAsString(tokenRequest))
-                .contentType(MediaType.APPLICATION_JSON));
+                .cookie(new Cookie("refresh", "expiredGciOiJIUzI1NiJ9.eyJzdWIiOiIxMjM0In0.DUMMY_SIGNATURE2"))
+        );
 
         //then
         result.andExpect(status().isUnauthorized())
@@ -148,18 +133,13 @@ public class RefreshTokenApiTest extends AbstractRestDocsTests {
     void return404WhenInsufficientScope() throws Exception {
 
         //given
-        CreateAccessTokenRequest tokenRequest = CreateAccessTokenRequest.builder()
-                .grantType("refreshToken")
-                .refreshToken("eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMjM0In0.GUEST_DUMMY_SIGNATURE1")
-                .build();
-
         given(refreshTokenCreationService.createNewAccessTokenAndNewRefreshToken(any(HttpServletRequest.class), any(HttpServletResponse.class)))
                 .willThrow(new ForbiddenException(ErrorCode.FORBIDDEN));
 
         //when
         ResultActions result = mockMvc.perform(post("/api/token")
-                .content(objectMapper.writeValueAsString(tokenRequest))
-                .contentType(MediaType.APPLICATION_JSON));
+                .cookie(new Cookie("refresh", "justGuestGciOiJIUzI1NiJ9.eyJzdWIiOiIxMjM0In0.DUMMY_SIGNATURE2"))
+        );
 
         //then
         result.andExpect(status().isForbidden())
