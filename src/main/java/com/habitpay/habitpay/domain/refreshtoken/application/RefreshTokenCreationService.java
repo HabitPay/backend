@@ -13,48 +13,50 @@ import com.habitpay.habitpay.global.error.exception.ErrorCode;
 import com.habitpay.habitpay.global.error.exception.UnauthorizedException;
 import com.habitpay.habitpay.global.response.SuccessCode;
 import com.habitpay.habitpay.global.response.SuccessResponse;
+import com.habitpay.habitpay.global.util.CookieUtil;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Service;
 
 import java.util.Objects;
+
+import static com.habitpay.habitpay.global.config.jwt.TokenService.REFRESH_TOKEN_EXPIRED_AT;
 
 @RequiredArgsConstructor
 @Service
 @Slf4j
 public class RefreshTokenCreationService {
 
-    private final TokenProvider tokenProvider;
     private final MemberSearchService memberSearchService;
-    private final TokenService tokenService;
     private final RefreshTokenUtilService refreshTokenUtilService;
     private final RefreshTokenSearchService refreshTokenSearchService;
 
     private final RefreshTokenRepository refreshTokenRepository;
 
+    private final TokenProvider tokenProvider;
+    private final TokenService tokenService;
+    private final CookieUtil cookieUtil;
 
-    public SuccessResponse<CreateAccessTokenResponse> createNewAccessTokenAndNewRefreshToken(CreateAccessTokenRequest requestBody) {
 
-        String grantType = requestBody.getGrantType();
+    public SuccessResponse<CreateAccessTokenResponse> createNewAccessTokenAndNewRefreshToken(
+            HttpServletRequest request,
+            HttpServletResponse response) {
 
-        if (grantType == null) {
-            log.error("요청 헤더 grantType의 값이 null입니다.");
-            throw new BadRequestException(ErrorCode.BAD_REQUEST);
-        }
-
-        if (!grantType.equals("refreshToken")) {
-            log.error("요청 헤더 grantType의 값이 refreshToken이 아닙니다.");
-            throw new BadRequestException(ErrorCode.BAD_REQUEST);
-        }
-
-        String newAccessToken = this.createNewAccessToken(requestBody.getRefreshToken());
-        String refreshToken = this.createRefreshToken(tokenService.getUserId(newAccessToken));
+        String oldRefreshToken = cookieUtil.getRefreshToken(request);
+        String newAccessToken = this.createNewAccessToken(oldRefreshToken);
+        String newRefreshToken = this.createRefreshToken(tokenService.getUserId(newAccessToken));
+        cookieUtil.setRefreshToken(response, newRefreshToken);
 
         CreateAccessTokenResponse tokenResponse = new CreateAccessTokenResponse(
                 newAccessToken,
                 "Bearer",
-                tokenService.getAccessTokenExpiresInToMillis(),
-                refreshToken);
+                tokenService.getAccessTokenExpiresInToMillis());
+
+        log.info(String.valueOf(SuccessCode.REFRESH_TOKEN_SUCCESS));
 
         return SuccessResponse.of(
                 SuccessCode.REFRESH_TOKEN_SUCCESS,

@@ -67,7 +67,7 @@ public class TokenProvider {
             log.error("토큰이 만료되었습니다.");
             return false;
         } catch (MalformedJwtException e) {
-            log.error("잘못된 토큰 형식입니다..");
+            log.error("잘못된 토큰 형식입니다.");
             return false;
         } catch (SignatureException e) {
             log.error("서명 검증에 실패했습니다.");

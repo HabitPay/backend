@@ -1,14 +1,21 @@
 package com.habitpay.habitpay.global.util;
 
+import com.habitpay.habitpay.global.error.exception.BadRequestException;
+import com.habitpay.habitpay.global.error.exception.ErrorCode;
+import com.habitpay.habitpay.global.error.exception.UnauthorizedException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseCookie;
+import org.springframework.stereotype.Service;
 import org.springframework.util.SerializationUtils;
 
 import java.util.Base64;
 
-// todo : refresh token 목적으로 만든 util. 추후 필요 없으면 삭제하기
+import static com.habitpay.habitpay.global.config.jwt.TokenService.REFRESH_TOKEN_EXPIRED_AT;
+
+@Service
 @Slf4j
 public class CookieUtil {
 
@@ -37,35 +44,34 @@ public class CookieUtil {
         }
     }
 
-    // todo : 보안에 취약. 직렬화 및 역직렬화 방식 바꿔야 함.
-//    public static String serialize(Object object) {
-//        return Base64.getUrlEncoder()
-//                .encodeToString(SerializationUtils.serialize(object));
-//    }
-//
-//    public static <T> T deserialize(Cookie cookie, Class<T> cls) {
-//        return cls.cast(
-//                SerializationUtils.deserialize(
-//                        Base64.getUrlDecoder().decode(cookie.getValue())
-//                )
-//        );
-//    }
-
-    public static String getAccessToken(HttpServletRequest request) {
+    public String getRefreshToken(HttpServletRequest request) {
         Cookie[] cookies = request.getCookies();
 
         if (cookies == null) {
             log.info("cookies is null");
-            return null;
+            throw new BadRequestException(ErrorCode.JWT_CLIENT_HAS_NO_IDEA_ABOUT_GRANT_TYPE);
         }
 
         for (Cookie cookie : cookies) {
-            if (cookie.getName().equals("accessToken")) {
-                log.info("accessToken: {}", cookie.getValue());
+            if (cookie.getName().equals("refresh")) {
+                log.info("refreshToken: {}", cookie.getValue());
                 return cookie.getValue();
             }
         }
 
-        return null;
+        throw new BadRequestException(ErrorCode.JWT_CLIENT_HAS_NO_IDEA_ABOUT_GRANT_TYPE);
+    }
+
+    public void setRefreshToken(HttpServletResponse response, String refreshToken) {
+
+    ResponseCookie responseCookie = ResponseCookie.from("refresh", refreshToken)
+            .httpOnly(true)
+            .maxAge(REFRESH_TOKEN_EXPIRED_AT)
+            .domain("localhost")
+            .path("/")
+//            .secure() // todo
+            .build();
+
+        response.addHeader("Set-Cookie", responseCookie.toString());
     }
 }
