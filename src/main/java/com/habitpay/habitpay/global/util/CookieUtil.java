@@ -68,6 +68,7 @@ public class CookieUtil {
             .maxAge(REFRESH_TOKEN_EXPIRED_AT)
             .domain("localhost")
             .path("/")
+//            .secure() // todo
             .build();
 
         response.addHeader("Set-Cookie", responseCookie.toString());

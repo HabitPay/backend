@@ -31,15 +31,14 @@ import static com.habitpay.habitpay.global.config.jwt.TokenService.REFRESH_TOKEN
 @Slf4j
 public class RefreshTokenCreationService {
 
-    private final TokenProvider tokenProvider;
     private final MemberSearchService memberSearchService;
-    private final TokenService tokenService;
     private final RefreshTokenUtilService refreshTokenUtilService;
     private final RefreshTokenSearchService refreshTokenSearchService;
 
     private final RefreshTokenRepository refreshTokenRepository;
 
-    // todo
+    private final TokenProvider tokenProvider;
+    private final TokenService tokenService;
     private final CookieUtil cookieUtil;
 
 
@@ -56,6 +55,8 @@ public class RefreshTokenCreationService {
                 newAccessToken,
                 "Bearer",
                 tokenService.getAccessTokenExpiresInToMillis());
+
+        log.info(String.valueOf(SuccessCode.REFRESH_TOKEN_SUCCESS));
 
         return SuccessResponse.of(
                 SuccessCode.REFRESH_TOKEN_SUCCESS,

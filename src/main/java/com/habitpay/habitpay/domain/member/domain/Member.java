@@ -1,6 +1,7 @@
 package com.habitpay.habitpay.domain.member.domain;
 
 import com.habitpay.habitpay.domain.model.BaseTime;
+import com.habitpay.habitpay.domain.refreshtoken.domain.RefreshToken;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
