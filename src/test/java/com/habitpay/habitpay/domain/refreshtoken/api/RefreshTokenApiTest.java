@@ -13,6 +13,8 @@ import com.habitpay.habitpay.global.error.exception.ForbiddenException;
 import com.habitpay.habitpay.global.error.exception.UnauthorizedException;
 import com.habitpay.habitpay.global.response.SuccessCode;
 import com.habitpay.habitpay.global.response.SuccessResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,10 +63,9 @@ public class RefreshTokenApiTest extends AbstractRestDocsTests {
                 .accessToken("eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMjM0In0.DUMMY_SIGNATURE1")
                 .tokenType("Bearer")
                 .expiresIn(Duration.ofMinutes(30).toMillis())
-                .refreshToken("eyJhbGciOiJIUzI1NiJ9.eyJ1c2VyIjoiYWxpY2UifQ.DUMMY_SIGNATURE3")
                 .build();
 
-        given(refreshTokenCreationService.createNewAccessTokenAndNewRefreshToken(any(CreateAccessTokenRequest.class)))
+        given(refreshTokenCreationService.createNewAccessTokenAndNewRefreshToken(any(HttpServletRequest.class), any(HttpServletResponse.class)))
                 .willReturn(SuccessResponse.of(SuccessCode.REFRESH_TOKEN_SUCCESS, tokenResponse));
 
         //when
@@ -75,16 +76,11 @@ public class RefreshTokenApiTest extends AbstractRestDocsTests {
         //then
         result.andExpect(status().isOk())
                 .andDo(document("refreshToken/create-new-access-token-and-new-refresh-token",
-                        requestFields(
-                                fieldWithPath("grantType").description("클라이언트가 액세스 토큰을 요청할 때 사용하는 인증 방법. \"refreshToken\""),
-                                fieldWithPath("refreshToken").description("클라이언트가 보관하던 리프레시 토큰")
-                        ),
                         responseFields(
                                 fieldWithPath("message").description("메시지"),
                                 fieldWithPath("data.accessToken").description("새로 발급한 액세스 토큰"),
                                 fieldWithPath("data.tokenType").description("발급한 토큰의 유형. \"Bearer\""),
-                                fieldWithPath("data.expiresIn").description("액세스 토큰의 유효 기간"),
-                                fieldWithPath("data.refreshToken").description("새로 발급한 리프레시 토큰. 추후 새 액세스 토큰 발급 시 이용된다.")
+                                fieldWithPath("data.expiresIn").description("액세스 토큰의 유효 기간")
                         )
                 ));
 
@@ -99,7 +95,7 @@ public class RefreshTokenApiTest extends AbstractRestDocsTests {
                 .refreshToken("eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMjM0In0.DUMMY_SIGNATURE1")
                 .build();
 
-        given(refreshTokenCreationService.createNewAccessTokenAndNewRefreshToken(any(CreateAccessTokenRequest.class)))
+        given(refreshTokenCreationService.createNewAccessTokenAndNewRefreshToken(any(HttpServletRequest.class), any(HttpServletResponse.class)))
                 .willThrow(new BadRequestException(ErrorCode.BAD_REQUEST));
 
         //when
@@ -128,7 +124,7 @@ public class RefreshTokenApiTest extends AbstractRestDocsTests {
                 .refreshToken("eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMjM0In0.EXPIRED_DUMMY_SIGNATURE1")
                 .build();
 
-        given(refreshTokenCreationService.createNewAccessTokenAndNewRefreshToken(any(CreateAccessTokenRequest.class)))
+        given(refreshTokenCreationService.createNewAccessTokenAndNewRefreshToken(any(HttpServletRequest.class), any(HttpServletResponse.class)))
                 .willThrow(new UnauthorizedException(ErrorCode.UNAUTHORIZED));
 
         //when
@@ -157,7 +153,7 @@ public class RefreshTokenApiTest extends AbstractRestDocsTests {
                 .refreshToken("eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMjM0In0.GUEST_DUMMY_SIGNATURE1")
                 .build();
 
-        given(refreshTokenCreationService.createNewAccessTokenAndNewRefreshToken(any(CreateAccessTokenRequest.class)))
+        given(refreshTokenCreationService.createNewAccessTokenAndNewRefreshToken(any(HttpServletRequest.class), any(HttpServletResponse.class)))
                 .willThrow(new ForbiddenException(ErrorCode.FORBIDDEN));
 
         //when
