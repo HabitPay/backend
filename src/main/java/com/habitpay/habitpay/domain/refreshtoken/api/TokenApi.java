@@ -4,6 +4,8 @@ import com.habitpay.habitpay.domain.refreshtoken.application.RefreshTokenCreatio
 import com.habitpay.habitpay.domain.refreshtoken.dto.CreateAccessTokenRequest;
 import com.habitpay.habitpay.domain.refreshtoken.dto.CreateAccessTokenResponse;
 import com.habitpay.habitpay.global.response.SuccessResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -23,8 +25,9 @@ public class TokenApi {
 
     @PostMapping("/token")
     public SuccessResponse<CreateAccessTokenResponse> createNewAccessTokenAndNewRefreshToken(
-            @RequestBody CreateAccessTokenRequest requestBody) {
+            HttpServletRequest request,
+            HttpServletResponse response) {
 
-        return refreshTokenCreationService.createNewAccessTokenAndNewRefreshToken(requestBody);
+        return refreshTokenCreationService.createNewAccessTokenAndNewRefreshToken(request, response);
     }
 }

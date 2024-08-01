@@ -2,6 +2,7 @@ package com.habitpay.habitpay.global.config.auth;
 
 import com.habitpay.habitpay.domain.refreshtoken.application.RefreshTokenCreationService;
 import com.habitpay.habitpay.global.config.jwt.TokenService;
+import com.habitpay.habitpay.global.util.CookieUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +27,7 @@ public class CustomOAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSucc
 
     private final TokenService tokenService;
     private final RefreshTokenCreationService refreshTokenCreationService;
+    private final CookieUtil cookieUtil;
 
     @Override
     public void onAuthenticationSuccess(
@@ -43,14 +45,8 @@ public class CustomOAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSucc
 
             super.clearAuthenticationAttributes(request);
 
-            ResponseCookie responseCookie = ResponseCookie.from("refresh", refreshToken)
-                    .httpOnly(true)
-                    .maxAge(REFRESH_TOKEN_EXPIRED_AT)
-                    .domain("habitpay.link")
-                    .path("/")
-                    .build();
+            cookieUtil.setRefreshToken(response, refreshToken);
 
-            response.addHeader("Set-Cookie", responseCookie.toString());
             response.sendRedirect(UriComponentsBuilder.fromUriString(redirectUrl)
                     .queryParam("accessToken", accessToken)
                     .build().toUriString());
