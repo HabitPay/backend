@@ -12,10 +12,18 @@
 
 === 토큰 리프레시 요청
 
-Request Body에 클라이언트가 가지고 있던 리프레시 토큰을 담아 형식에 맞게 요청합니다.
-리프레시 토큰이 유효하고 적절하다면, 새로운 액세스 토큰과 함께 새로운 리프레시 토큰을 세트로 발급합니다.
+백엔드 URL에 요청을 보냈으나 401 Unauthorized 상태 코드를 받았다면,
+액세스 토큰이 만료되는 등 더 이상 사용할 수 없다는 의미입니다.
 
-이때 "grantType" 속성의 값은 "refreshToken"으로 정확히 보내야 합니다.
+그 경우 "/api/token" 경로를 통해 토큰 재발급을 요청해야 합니다.
+리프레시 토큰은 이미 쿠키에 세팅되어 요청에 담기기 때문에, 추가로 보내야 할 값은 없습니다.
+
+다만 표준 CORS 요청은 기본적으로 쿠키를 포함한 인증 정보를 설정할 수 없습니다.
+그렇기 때문에 인증 정보(쿠키 등)를 요청에 추가하도록 수동으로 "withCredentials: true" 설정을 해줘야 합니다.
+
+(이는 백엔드에서 쿠키를 포함한 응답을 보낼 때 "Access-Control-Allow-Credentials" 설정을 "true"로 맞춰야 하는 이유와 동일합니다.)
+
+리프레시 토큰이 유효하고 적절하다면 새로운 액세스 토큰은 응답 본문에, 새로운 리프레시 토큰은 쿠키에 담아 재발급합니다.
 
 operation::refreshToken/create-new-access-token-and-new-refresh-token[snippets='http-request,http-response,request-fields,response-fields']
 
