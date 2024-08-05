@@ -53,7 +53,7 @@ public class CookieUtil {
         }
 
         for (Cookie cookie : cookies) {
-            if (cookie.getName().equals("refresh")) {
+            if (cookie.getName().equals("refresh_token")) {
                 log.info("refreshToken: {}", cookie.getValue());
                 return cookie.getValue();
             }
@@ -64,7 +64,7 @@ public class CookieUtil {
 
     public void setRefreshToken(HttpServletResponse response, String refreshToken) {
 
-    ResponseCookie responseCookie = ResponseCookie.from("refresh", refreshToken)
+    ResponseCookie responseCookie = ResponseCookie.from("refresh_token", refreshToken)
             .httpOnly(true)
             .maxAge(REFRESH_TOKEN_EXPIRED_AT)
             .domain("localhost")
