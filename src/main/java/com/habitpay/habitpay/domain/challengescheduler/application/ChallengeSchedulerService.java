@@ -13,13 +13,10 @@ public class ChallengeSchedulerService {
 
     private final ChallengeSearchService challengeSearchService;
 
-    // todo:  챌린지 시작, 종료 시 알림 서비스
-//    @Scheduled()
-//    public void noticeStartOfChallenge() {}
-//
-//    @Scheduled()
-//    public void noticeEndOfChallenge() {}
-
+    // todo: 챌린지 시작, 종료 시 state 값 변경하는 메서드 (ScheduledExecutorService?)
+    //     : 사용자에게 알림 보내는 로직 추가할 수 있음
+//    public void startChallenge() {}
+//    public void endChallenge() {}
 
     @Scheduled()
     public void checkParticipationForChallenge() {}

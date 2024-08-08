@@ -40,6 +40,7 @@ public class Challenge extends BaseTime {
     @Column()
     private String description;
 
+    // todo: state 바이트 확인 ()
     @Column(nullable = false)
     private byte state;
 
