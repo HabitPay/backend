@@ -41,6 +41,9 @@ public class Challenge extends BaseTime {
     private String description;
 
     @Column(nullable = false)
+    private byte state;
+
+    @Column(nullable = false)
     private ZonedDateTime startDate;
 
     @Column(nullable = false)
