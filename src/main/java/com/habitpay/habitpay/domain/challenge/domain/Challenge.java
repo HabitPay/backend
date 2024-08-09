@@ -82,6 +82,7 @@ public class Challenge extends BaseTime {
         this.participatingDays = participatingDays;
         this.totalParticipatingDaysCount = totalParticipatingDaysCount;
         this.feePerAbsence = feePerAbsence;
+        this.totalAbsenceFee = 0;
     }
 
     public static Challenge of(Member host, ChallengeCreationRequest challengeCreationRequest) {
@@ -134,5 +135,9 @@ public class Challenge extends BaseTime {
         DayOfWeek today = ZonedDateTime.now().getDayOfWeek();
         int todayBitPosition = 6 - (today.getValue() - 1);
         return (this.participatingDays & (1 << todayBitPosition)) != 0;
+    }
+
+    public void plusTotalAbsenceFeeByMember() {
+        this.totalAbsenceFee += this.getFeePerAbsence();
     }
 }

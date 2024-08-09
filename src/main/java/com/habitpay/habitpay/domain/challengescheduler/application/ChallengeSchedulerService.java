@@ -1,10 +1,10 @@
 package com.habitpay.habitpay.domain.challengescheduler.application;
 
-import com.habitpay.habitpay.domain.challenge.application.ChallengeSearchService;
 import com.habitpay.habitpay.domain.challenge.dao.ChallengeRepository;
 import com.habitpay.habitpay.domain.challenge.domain.Challenge;
 import com.habitpay.habitpay.domain.challenge.domain.ChallengeState;
 import com.habitpay.habitpay.domain.challengeenrollment.dao.ChallengeEnrollmentRepository;
+import com.habitpay.habitpay.domain.challengeenrollment.domain.ChallengeEnrollment;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -27,17 +27,21 @@ public class ChallengeSchedulerService {
 //    public void startChallenge() {}
 //    public void endChallenge() {}
 
-    @Scheduled()
+    @Scheduled(cron = "0 0 0 * * *", zone = "Asia/Seoul")
     public void checkParticipationForChallenge() {
         DayOfWeek today = ZonedDateTime.now().getDayOfWeek();
         byte todayBitPosition = (byte) ((byte) 1 << (7 - today.getValue()));
+
         List<Challenge> challengeList = challengeRepository.findAllByStateAndParticipatingDays(
                 ChallengeState.IN_PROGRESS.getBitValue(), todayBitPosition);
 
-        challengeList.stream()
-                        .map(challenge -> {
-                            challengeEnrollmentRepository.findAllByChallenge(challenge);
-                        });
+            challengeEnrollmentRepository.findAllByChallengeIn(challengeList)
+                    .forEach(enrollment -> {
+                                if (!enrollment.isParticipatedToday()) {
+                            enrollment.plusFailureCountWithScheduler();
+                        }
+                                enrollment.resetIsParticipatedToday();
+                    });
     }
 
     // 1번 방식
@@ -57,11 +61,6 @@ public class ChallengeSchedulerService {
 //                                     (그리고 이 메서드 완료 후에 false로 다시 돌려놓기)
 
 // true면 패스, false면 enrollment.failureCount +1 증가
-
-    // 기본값은 false
-    // 계속 false
-    // 포스트 맞게 올리면 true로 바뀜
-    // 다음 날도 true인 상태
 
 // --------------------------
 
