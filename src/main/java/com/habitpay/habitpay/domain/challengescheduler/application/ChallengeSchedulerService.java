@@ -9,6 +9,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import java.time.DayOfWeek;
+import java.time.ZonedDateTime;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -25,7 +27,12 @@ public class ChallengeSchedulerService {
 
     @Scheduled()
     public void checkParticipationForChallenge() {
-//        List<Challenge> challengeList = challengeRepository.findAllByStateAndParticipatingDays(ChallengeState.IN_PROGRESS, );
+        DayOfWeek today = ZonedDateTime.now().getDayOfWeek();
+        byte todayBitPosition = (byte) ((byte) 1 << (7 - today.getValue()));
+        List<Challenge> challengeList = challengeRepository.findAllByStateAndParticipatingDays(
+                ChallengeState.IN_PROGRESS.getBitValue(), todayBitPosition);
+
+
     }
 
     // 1번 방식
