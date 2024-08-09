@@ -15,5 +15,4 @@ public enum ChallengeState {
     ChallengeState(int bitValue) {
         this.bitValue = (byte) bitValue;
     }
-
 }
