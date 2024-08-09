@@ -40,7 +40,6 @@ public class Challenge extends BaseTime {
     @Column()
     private String description;
 
-    // todo: state 바이트 확인 ()
     @Column(nullable = false)
     private byte state;
 
@@ -77,6 +76,7 @@ public class Challenge extends BaseTime {
         this.host = member;
         this.title = title;
         this.description = description;
+        this.state = ChallengeState.SCHEDULED.getBitValue();
         this.startDate = startDate;
         this.endDate = endDate;
         this.participatingDays = participatingDays;

@@ -45,6 +45,9 @@ public class ChallengeEnrollment {
     @Column(nullable = false)
     private int totalFee;
 
+    @Column(nullable = false)
+    private boolean hasParticipationRecord;
+
     @Builder
     public ChallengeEnrollment(Challenge challenge, Member member) {
         this.challenge = challenge;
@@ -54,6 +57,7 @@ public class ChallengeEnrollment {
         this.successCount = 0;
         this.failureCount = 0;
         this.totalFee = 0;
+        this.hasParticipationRecord = false;
     }
 
     public static ChallengeEnrollment of(Member member, Challenge challenge) {

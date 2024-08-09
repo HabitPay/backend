@@ -4,6 +4,7 @@ import com.habitpay.habitpay.domain.challenge.application.ChallengeSearchService
 import com.habitpay.habitpay.domain.challenge.dao.ChallengeRepository;
 import com.habitpay.habitpay.domain.challenge.domain.Challenge;
 import com.habitpay.habitpay.domain.challenge.domain.ChallengeState;
+import com.habitpay.habitpay.domain.challengeenrollment.dao.ChallengeEnrollmentRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -19,6 +20,7 @@ import java.util.List;
 public class ChallengeSchedulerService {
 
     private final ChallengeRepository challengeRepository;
+    private final ChallengeEnrollmentRepository challengeEnrollmentRepository;
 
     // todo: 챌린지 시작, 종료 시 state 값 변경하는 메서드 (ScheduledExecutorService?)
     //     : 사용자에게 알림 보내는 로직 추가할 수 있음
@@ -32,7 +34,10 @@ public class ChallengeSchedulerService {
         List<Challenge> challengeList = challengeRepository.findAllByStateAndParticipatingDays(
                 ChallengeState.IN_PROGRESS.getBitValue(), todayBitPosition);
 
-
+        challengeList.stream()
+                        .map(challenge -> {
+                            challengeEnrollmentRepository.findAllByChallenge(challenge);
+                        });
     }
 
     // 1번 방식
@@ -52,6 +57,11 @@ public class ChallengeSchedulerService {
 //                                     (그리고 이 메서드 완료 후에 false로 다시 돌려놓기)
 
 // true면 패스, false면 enrollment.failureCount +1 증가
+
+    // 기본값은 false
+    // 계속 false
+    // 포스트 맞게 올리면 true로 바뀜
+    // 다음 날도 true인 상태
 
 // --------------------------
 
