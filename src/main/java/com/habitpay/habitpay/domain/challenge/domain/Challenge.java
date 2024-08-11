@@ -41,6 +41,9 @@ public class Challenge extends BaseTime {
     private String description;
 
     @Column(nullable = false)
+    private byte state;
+
+    @Column(nullable = false)
     private ZonedDateTime startDate;
 
     @Column(nullable = false)
@@ -73,11 +76,13 @@ public class Challenge extends BaseTime {
         this.host = member;
         this.title = title;
         this.description = description;
+        this.state = ChallengeState.SCHEDULED.getBitValue();
         this.startDate = startDate;
         this.endDate = endDate;
         this.participatingDays = participatingDays;
         this.totalParticipatingDaysCount = totalParticipatingDaysCount;
         this.feePerAbsence = feePerAbsence;
+        this.totalAbsenceFee = 0;
     }
 
     public static Challenge of(Member host, ChallengeCreationRequest challengeCreationRequest) {
@@ -130,5 +135,9 @@ public class Challenge extends BaseTime {
         DayOfWeek today = ZonedDateTime.now().getDayOfWeek();
         int todayBitPosition = 6 - (today.getValue() - 1);
         return (this.participatingDays & (1 << todayBitPosition)) != 0;
+    }
+
+    public void plusTotalAbsenceFeeByMember() {
+        this.totalAbsenceFee += this.getFeePerAbsence();
     }
 }

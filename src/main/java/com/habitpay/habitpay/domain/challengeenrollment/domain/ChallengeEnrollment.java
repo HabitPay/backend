@@ -45,6 +45,9 @@ public class ChallengeEnrollment {
     @Column(nullable = false)
     private int totalFee;
 
+    @Column(nullable = false)
+    private boolean isParticipateToday;
+
     @Builder
     public ChallengeEnrollment(Challenge challenge, Member member) {
         this.challenge = challenge;
@@ -54,6 +57,7 @@ public class ChallengeEnrollment {
         this.successCount = 0;
         this.failureCount = 0;
         this.totalFee = 0;
+        this.isParticipateToday = false;
     }
 
     public static ChallengeEnrollment of(Member member, Challenge challenge) {
@@ -66,6 +70,17 @@ public class ChallengeEnrollment {
     public void plusSuccessCountWithParticipationRecord(ChallengeParticipationRecord record) {
         if (this.equals(record.getChallengeEnrollment())) {
             ++this.successCount;
+            this.isParticipateToday = true;
         }
+    }
+
+    public void plusFailureCountWithScheduler() {
+        ++this.failureCount;
+        this.totalFee += this.getChallenge().getFeePerAbsence();
+        this.getChallenge().plusTotalAbsenceFeeByMember();
+    }
+
+    public void resetIsParticipatedToday() {
+        this.isParticipateToday = false;
     }
 }

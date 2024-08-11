@@ -1,5 +1,6 @@
 package com.habitpay.habitpay.domain.challengeparticipationrecord.application;
 
+import com.habitpay.habitpay.domain.challengeenrollment.dao.ChallengeEnrollmentRepository;
 import com.habitpay.habitpay.domain.challengeenrollment.domain.ChallengeEnrollment;
 import com.habitpay.habitpay.domain.challengeparticipationrecord.dao.ChallengeParticipationRecordRepository;
 import com.habitpay.habitpay.domain.challengeparticipationrecord.domain.ChallengeParticipationRecord;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Service;
 public class ChallengeParticipationRecordCreationService {
 
     private final ChallengeParticipationRecordRepository challengeParticipationRecordRepository;
+    private final ChallengeEnrollmentRepository challengeEnrollmentRepository;
 
     public ChallengeParticipationRecord save(ChallengeEnrollment enrollment, ChallengePost post) {
 
@@ -25,6 +27,7 @@ public class ChallengeParticipationRecordCreationService {
                                 .build());
 
         enrollment.plusSuccessCountWithParticipationRecord(record);
+        challengeEnrollmentRepository.save(enrollment);
         return record;
     }
 }
