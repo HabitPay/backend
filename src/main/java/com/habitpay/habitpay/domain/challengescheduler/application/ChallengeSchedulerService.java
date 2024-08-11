@@ -35,12 +35,19 @@ public class ChallengeSchedulerService {
         List<Challenge> challengeList = challengeRepository.findAllByStateAndParticipatingDays(
                 ChallengeState.IN_PROGRESS.getBitValue(), todayBitPosition);
 
-            challengeEnrollmentRepository.findAllByChallengeIn(challengeList)
-                    .forEach(enrollment -> {
-                                if (!enrollment.isParticipatedToday()) {
+            List<ChallengeEnrollment> enrollmentList = challengeEnrollmentRepository
+                    .findAllByChallengeIn(challengeList)
+                    .stream()
+                    .map(enrollment -> {
+                        if (!enrollment.isParticipatedToday()) {
                             enrollment.plusFailureCountWithScheduler();
-                        }
+                        } else {
                                 enrollment.resetIsParticipatedToday();
-                    });
+                        }
+                        return enrollment;
+                    })
+                    .toList();
+
+            challengeEnrollmentRepository.saveAll(enrollmentList);
     }
 }
