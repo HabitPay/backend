@@ -48,6 +48,7 @@ public class ChallengeSchedulerService {
                     })
                     .toList();
 
+            challengeRepository.saveAll(challengeList);
             challengeEnrollmentRepository.saveAll(enrollmentList);
     }
 }
