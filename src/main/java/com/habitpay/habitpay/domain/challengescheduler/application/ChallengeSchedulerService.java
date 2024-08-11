@@ -30,16 +30,16 @@ public class ChallengeSchedulerService {
     @Scheduled(cron = "0 0 0 * * *", zone = "Asia/Seoul")
     public void checkParticipationForChallenge() {
         DayOfWeek yesterdayOfWeek = ZonedDateTime.now().minusDays(1).getDayOfWeek();
-        byte todayBitPosition = (byte) ((byte) 1 << (7 - yesterdayOfWeek.getValue()));
+        byte yesterdayBitPosition = (byte) ((byte) 1 << (7 - yesterdayOfWeek.getValue()));
 
         List<Challenge> challengeList = challengeRepository.findAllByStateAndParticipatingDays(
-                ChallengeState.IN_PROGRESS.getBitValue(), todayBitPosition);
+                ChallengeState.IN_PROGRESS.getBitValue(), yesterdayBitPosition);
 
             List<ChallengeEnrollment> enrollmentList = challengeEnrollmentRepository
                     .findAllByChallengeIn(challengeList)
                     .stream()
                     .map(enrollment -> {
-                        if (!enrollment.isParticipatedToday()) {
+                        if (!enrollment.isParticipateToday()) {
                             enrollment.plusFailureCountWithScheduler();
                         } else {
                                 enrollment.resetIsParticipatedToday();
