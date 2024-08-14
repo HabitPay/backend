@@ -41,6 +41,9 @@ public class Challenge extends BaseTime {
     private String description;
 
     @Column(nullable = false)
+    private ChallengeState state;
+
+    @Column(nullable = false)
     private ZonedDateTime startDate;
 
     @Column(nullable = false)
@@ -73,6 +76,7 @@ public class Challenge extends BaseTime {
         this.host = member;
         this.title = title;
         this.description = description;
+        this.state = ChallengeState.SCHEDULED;
         this.startDate = startDate;
         this.endDate = endDate;
         this.participatingDays = participatingDays;
