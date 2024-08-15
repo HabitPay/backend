@@ -18,7 +18,7 @@ public class ParticipationStat {
     private Long id;
 
     @OneToOne
-    @JoinColumn
+    @JoinColumn(name = "challenge_enrollment_id")
     private ChallengeEnrollment challengeEnrollment;
 
     @Column(nullable = false)
