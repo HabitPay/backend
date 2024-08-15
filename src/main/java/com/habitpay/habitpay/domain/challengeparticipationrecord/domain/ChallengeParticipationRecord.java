@@ -6,17 +6,15 @@ import com.habitpay.habitpay.domain.challengepost.domain.ChallengePost;
 import com.habitpay.habitpay.domain.model.BaseTime;
 import com.habitpay.habitpay.domain.participationstat.domain.ParticipationStat;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 @EntityListeners(AuditingEntityListener.class)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
+@Setter
 @Entity
 @Table(name = "challenge_participation_record")
 public class ChallengeParticipationRecord extends BaseTime {
@@ -37,15 +35,21 @@ public class ChallengeParticipationRecord extends BaseTime {
     private ParticipationStat participationStat;
 
     @Column(nullable = false)
-    private Date targetDate;
+    private LocalDate targetDate;
 
     @OneToOne
     @JoinColumn(name = "challenge_post_id")
     private ChallengePost challengePost;
 
     @Builder
-    public ChallengeParticipationRecord(ChallengeEnrollment enrollment, ChallengePost post) {
+    public ChallengeParticipationRecord(
+            ChallengeEnrollment enrollment,
+            ParticipationStat stat,
+            LocalDate targetDate) {
+        this.challenge = enrollment.getChallenge();
         this.challengeEnrollment = enrollment;
-        this.challengePost = post;
+        this.participationStat = stat;
+        this.targetDate = targetDate;
     }
+
 }

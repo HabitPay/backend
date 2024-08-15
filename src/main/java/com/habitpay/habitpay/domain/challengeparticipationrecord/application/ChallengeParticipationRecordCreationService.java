@@ -8,21 +8,25 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class ChallengeParticipationRecordCreationService {
 
     private final ChallengeParticipationRecordRepository challengeParticipationRecordRepository;
+    private final ChallengeParticipationRecordSearchService challengeParticipationRecordSearchService;
 
-    public ChallengeParticipationRecord save(ChallengeEnrollment enrollment, ChallengePost post) {
+    public ChallengeParticipationRecord save(
+            ChallengeEnrollment enrollment,
+            LocalDate today,
+            ChallengePost post) {
 
-        ChallengeParticipationRecord record =
-                challengeParticipationRecordRepository.save(
-                        ChallengeParticipationRecord.builder()
-                                .enrollment(enrollment)
-                                .post(post)
-                                .build());
+        ChallengeParticipationRecord record = challengeParticipationRecordSearchService
+                .findByChallengeEnrollmentAndTargetDate(enrollment, today);
+        record.setChallengePost(post);
+        challengeParticipationRecordRepository.save(record);
 
         enrollment.plusSuccessCountWithParticipationRecord(record);
         return record;

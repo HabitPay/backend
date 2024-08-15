@@ -14,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.ZonedDateTime;
 import java.util.Optional;
@@ -64,7 +65,8 @@ public class ChallengePostUtilService {
             return;
         }
 
-        challengeParticipationRecordCreationService.save(enrollment, post);
+        LocalDate today = now.toLocalDate();
+        challengeParticipationRecordCreationService.save(enrollment, today, post);
     }
 
     private boolean isAlreadyParticipateToday(ChallengeEnrollment enrollment, ZonedDateTime now) {
