@@ -3,6 +3,7 @@ package com.habitpay.habitpay.domain.challengeparticipationrecord.application;
 import com.habitpay.habitpay.domain.challengeenrollment.domain.ChallengeEnrollment;
 import com.habitpay.habitpay.domain.challengeparticipationrecord.dao.ChallengeParticipationRecordRepository;
 import com.habitpay.habitpay.domain.challengeparticipationrecord.domain.ChallengeParticipationRecord;
+import com.habitpay.habitpay.domain.challengeparticipationrecord.exception.MandatoryRecordNotFoundException;
 import com.habitpay.habitpay.domain.challengeparticipationrecord.exception.RecordNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -45,6 +46,6 @@ public class ChallengeParticipationRecordSearchService {
             ChallengeEnrollment enrollment,
             LocalDate targetDate) {
         return challengeParticipationRecordRepository.findByChallengeEnrollmentAndTargetDate(enrollment, targetDate)
-                .orElseThrow();
+                .orElseThrow(() -> new MandatoryRecordNotFoundException(enrollment.getId(), targetDate.toString()));
     }
 }

@@ -43,6 +43,7 @@ public enum ErrorCode {
   
       // Challenge Participation Record
     RECORD_NOT_FOUND(HttpStatus.NOT_FOUND, "챌린지 참여 기록이 존재하지 않습니다."),
+    MANDATORY_RECORD_NOT_FOUND(HttpStatus.NOT_FOUND, "챌린지 참여 기록 연결 중 문제가 발생했습니다. 관리자에게 문의하십시오."),
 
     // Challenge Post
     POST_NOT_FOUND(HttpStatus.NOT_FOUND, "포스트가 존재하지 않습니다."),
