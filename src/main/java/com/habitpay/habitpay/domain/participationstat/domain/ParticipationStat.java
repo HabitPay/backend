@@ -22,20 +22,20 @@ public class ParticipationStat {
     private ChallengeEnrollment challengeEnrollment;
 
     @Column(nullable = false)
-    private Long successCount;
+    private int successCount;
 
     @Column(nullable = false)
-    private Long failureCount;
+    private int failureCount;
 
     @Column(nullable = false)
-    private Long totalFee;
+    private int totalFee;
 
     @Builder
     public ParticipationStat(ChallengeEnrollment enrollment) {
         this.challengeEnrollment = enrollment;
-        this.successCount = 0L;
-        this.failureCount = 0L;
-        this.totalFee = 0L;
+        this.successCount = 0;
+        this.failureCount = 0;
+        this.totalFee = 0;
     }
 
     public static ParticipationStat of(ChallengeEnrollment enrollment) {

@@ -25,24 +25,13 @@ public class ChallengeAbsenceFeeSearchService {
 
     private final ChallengeEnrollmentRepository challengeEnrollmentRepository;
 
-
-//    public int findPersonalTotalFeeOfChallenge(Member member, Challenge challenge) {
-//        Optional<ChallengeEnrollment> optionalEnrollment = challengeEnrollmentSearchService.findByMemberAndChallenge(member, challenge);
-//        return optionalEnrollment.map(ChallengeEnrollment::getTotalFee)
-//                .orElseThrow(() -> new NotEnrolledChallengeException(member.getId(), challenge.getId()));
-//    }
-
-    // todo: challenge를 받아서, 챌린지에 등록한 enrollment list 기준으로 fee를 담은 DTO 만들어도 될 듯함
-//    public int findPersonalTotalFeeOfChallenge(ChallengeEnrollment enrollment) {
-//        return enrollment.getTotalFee();
-//    }
-    public Long findPersonalTotalFeeOfChallenge(ChallengeEnrollment enrollment) {
+    public int findPersonalTotalFeeOfChallenge(ChallengeEnrollment enrollment) {
         return enrollment.getParticipationStat().getTotalFee();
     }
 
     public List<MemberFeeResponse> makeMemberFeeDataListOfChallenge(Challenge challenge) {
         int totalParticipatingDaysCount = challenge.getTotalParticipatingDaysCount();
-        if (totalParticipatingDaysCount == 0) {throw new DaysCountException(0L); }
+        if (totalParticipatingDaysCount == 0) {throw new DaysCountException(totalParticipatingDaysCount); }
 
         return challengeEnrollmentRepository
                 .findAllByChallenge(challenge)
