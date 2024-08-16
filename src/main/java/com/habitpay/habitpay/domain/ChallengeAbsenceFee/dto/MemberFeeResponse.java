@@ -7,8 +7,8 @@ import lombok.Getter;
 @Builder
 public class MemberFeeResponse {
     private String nickname;
-    private Long totalFee;
-    private Long completionRate;
+    private int totalFee;
+    private int completionRate;
 
     public static MemberFeeResponse of(MemberFeeDTO memberFeeDto, int totalCount) {
         return MemberFeeResponse.builder()

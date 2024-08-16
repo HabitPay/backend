@@ -23,5 +23,5 @@ public interface ChallengeEnrollmentRepository extends JpaRepository<ChallengeEn
     "JOIN e.member m " +
     "JOIN e.participationStat s " +
     "WHERE e.challenge = :challenge")
-    List<MemberFeeDTO> findAllByChallenge(Challenge challenge);
+    List<MemberFeeDTO> findMemberFeeDTOByChallenge(Challenge challenge);
 }

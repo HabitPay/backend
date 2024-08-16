@@ -39,7 +39,7 @@ public class ChallengeSchedulerService {
 
         LocalDate targetDate = yesterday.toLocalDate();
         List<ParticipationStat> statList = new ArrayList<>();
-        challengeParticipationRecordRepository.findByChallengeInAndTargetDate(challengeList, targetDate)
+        challengeParticipationRecordRepository.findRecordCheckDTOByChallengeInAndTargetDate(challengeList, targetDate)
                 .forEach(recordDto -> {
                     if (!recordDto.getRecord().existChallengePost()) {
                         recordDto.getStat().setFailureCountAndTotalFee(recordDto.getFeePerAbsence());

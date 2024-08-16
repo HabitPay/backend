@@ -4,8 +4,6 @@ import com.habitpay.habitpay.domain.challenge.domain.Challenge;
 import com.habitpay.habitpay.domain.challengeenrollment.domain.ChallengeEnrollment;
 import com.habitpay.habitpay.domain.challengeparticipationrecord.domain.ChallengeParticipationRecord;
 import com.habitpay.habitpay.domain.challengeparticipationrecord.dto.RecordCheckDTO;
-import org.hibernate.boot.model.source.spi.AttributePath;
-import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -31,5 +29,5 @@ public interface ChallengeParticipationRecordRepository extends JpaRepository<Ch
             "JOIN r.challenge c " +
             "WHERE r.challenge IN :challenges " +
             "AND r.targetDate = :targetDate")
-    List<RecordCheckDTO> findByChallengeInAndTargetDate(List<Challenge> challenges, LocalDate targetDate);
+    List<RecordCheckDTO> findRecordCheckDTOByChallengeInAndTargetDate(List<Challenge> challenges, LocalDate targetDate);
 }

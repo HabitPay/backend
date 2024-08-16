@@ -7,10 +7,10 @@ import lombok.Getter;
 @Builder
 public class MemberFeeDTO {
     private String nickname;
-    private Long totalFee;
-    private Long successCount;
+    private int totalFee;
+    private int successCount;
 
-    public static MemberFeeDTO of(String nickname, Long totalFee, Long successCount) {
+    public static MemberFeeDTO of(String nickname, int totalFee, int successCount) {
         return MemberFeeDTO.builder()
                 .nickname(nickname)
                 .totalFee(totalFee)

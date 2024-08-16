@@ -64,6 +64,7 @@ public class Challenge extends BaseTime {
     @Column(nullable = false)
     private int feePerAbsence;
 
+    // todo : 지우기
     @Column(nullable = false)
     private int totalAbsenceFee;
 
