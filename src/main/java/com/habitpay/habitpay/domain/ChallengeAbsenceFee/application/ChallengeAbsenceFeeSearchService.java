@@ -32,6 +32,7 @@ public class ChallengeAbsenceFeeSearchService {
 //    }
 
     // todo: 역시 위의 새로운 방식을 기준으로 해서 fee의 합을 반환해도 될 듯함 (정합성에도 좋음)
+    //       그 경우 challenge의 totalFee 속성 없애기
 //    public int findTotalFeeOfChallenge(Challenge challenge) {
 //        return challenge.getTotalAbsenceFee();
 //    }
