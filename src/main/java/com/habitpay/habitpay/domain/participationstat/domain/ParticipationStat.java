@@ -38,6 +38,12 @@ public class ParticipationStat {
         this.totalFee = 0L;
     }
 
+    public static ParticipationStat of(ChallengeEnrollment enrollment) {
+        return ParticipationStat.builder()
+                .enrollment(enrollment)
+                .build();
+    }
+
     public void setSuccessCount() {
         ++this.successCount;
     }

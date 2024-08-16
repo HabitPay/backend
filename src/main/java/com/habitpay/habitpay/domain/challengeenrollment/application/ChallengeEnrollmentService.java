@@ -7,6 +7,8 @@ import com.habitpay.habitpay.domain.challengeenrollment.domain.ChallengeEnrollme
 import com.habitpay.habitpay.domain.challengeenrollment.dto.ChallengeEnrollmentResponse;
 import com.habitpay.habitpay.domain.challengeenrollment.exception.AlreadyEnrolledChallengeException;
 import com.habitpay.habitpay.domain.member.domain.Member;
+import com.habitpay.habitpay.domain.participationstat.dao.ParticipationStatRepository;
+import com.habitpay.habitpay.domain.participationstat.domain.ParticipationStat;
 import com.habitpay.habitpay.global.error.exception.BadRequestException;
 import com.habitpay.habitpay.global.error.exception.ErrorCode;
 import com.habitpay.habitpay.global.response.SuccessCode;
@@ -23,6 +25,7 @@ import java.time.ZonedDateTime;
 @RequiredArgsConstructor
 public class ChallengeEnrollmentService {
     private final ChallengeEnrollmentRepository challengeEnrollmentRepository;
+    private final ParticipationStatRepository participationStatRepository;
     private final ChallengeSearchService challengeSearchService;
 
     @Transactional
@@ -38,7 +41,10 @@ public class ChallengeEnrollmentService {
         challenge.setNumberOfParticipants(challenge.getNumberOfParticipants() + 1);
 
         ChallengeEnrollment challengeEnrollment = ChallengeEnrollment.of(member, challenge);
+        ParticipationStat participationStat = ParticipationStat.of(challengeEnrollment);
+        challengeEnrollment.setParticipationStat(participationStat);
         challengeEnrollmentRepository.save(challengeEnrollment);
+        participationStatRepository.save(participationStat);
 
         return SuccessResponse.of(
                 SuccessCode.ENROLL_CHALLENGE_SUCCESS,
