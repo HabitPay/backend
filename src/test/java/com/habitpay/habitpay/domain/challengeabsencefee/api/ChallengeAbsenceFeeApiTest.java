@@ -52,11 +52,11 @@ public class ChallengeAbsenceFeeApiTest extends AbstractRestDocsTests {
 
         // given
         FeeStatusResponse feeStatusResponse = FeeStatusResponse.builder()
-                .totalFee(1000)
-                .myFee(0)
+                .totalFee(1500)
+                .myFee(500)
                 .memberFeeList(List.of(
                         new MemberFeeResponse("testUser", 1000, 10),
-                        new MemberFeeResponse("selfUser", 0, 20)))
+                        new MemberFeeResponse("selfUser", 500, 20)))
                 .build();
 
         given(challengeAbsenceFeeSearchService.makeMemberFeeDataListOfChallenge(any(Long.class), any(Member.class)))
