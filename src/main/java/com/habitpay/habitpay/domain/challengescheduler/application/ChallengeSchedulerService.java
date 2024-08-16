@@ -4,13 +4,11 @@ import com.habitpay.habitpay.domain.challenge.dao.ChallengeRepository;
 import com.habitpay.habitpay.domain.challenge.domain.Challenge;
 import com.habitpay.habitpay.domain.challenge.domain.ChallengeState;
 import com.habitpay.habitpay.domain.challengeparticipationrecord.dao.ChallengeParticipationRecordRepository;
-import com.habitpay.habitpay.domain.challengeparticipationrecord.domain.ChallengeParticipationRecord;
-import com.habitpay.habitpay.domain.challengeparticipationrecord.dto.RecordCheckDTO;
+import com.habitpay.habitpay.domain.participationstat.dao.ParticipationStatRepository;
 import com.habitpay.habitpay.domain.participationstat.domain.ParticipationStat;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -24,8 +22,9 @@ public class ChallengeSchedulerService {
 
     private final ChallengeRepository challengeRepository;
     private final ChallengeParticipationRecordRepository challengeParticipationRecordRepository;
+    private final ParticipationStatRepository participationStatRepository;
 
-    // todo : Challenge 시작, 종료 시 state 변경 등
+    // todo : Challenge 시작, 종료 시 state 변경 등 메서드
 
     @Scheduled(cron = "0 0 0 * * *", zone = "Asia/Seoul")
     public void checkParticipationForChallenge() {
@@ -48,6 +47,6 @@ public class ChallengeSchedulerService {
                     }
                 });
 
-
+        participationStatRepository.saveAll(statList);
     }
 }
