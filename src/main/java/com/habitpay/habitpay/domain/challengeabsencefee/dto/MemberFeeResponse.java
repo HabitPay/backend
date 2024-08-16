@@ -1,10 +1,13 @@
-package com.habitpay.habitpay.domain.ChallengeAbsenceFee.dto;
+package com.habitpay.habitpay.domain.challengeabsencefee.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
 @Builder
+@AllArgsConstructor
 public class MemberFeeResponse {
     private String nickname;
     private int totalFee;

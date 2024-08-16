@@ -1,4 +1,4 @@
-package com.habitpay.habitpay.domain.ChallengeAbsenceFee.dto;
+package com.habitpay.habitpay.domain.challengeabsencefee.dto;
 
 import lombok.Builder;
 import lombok.Getter;

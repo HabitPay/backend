@@ -1,4 +1,4 @@
-package com.habitpay.habitpay.domain.ChallengeAbsenceFee.exception;
+package com.habitpay.habitpay.domain.challengeabsencefee.exception;
 
 import com.habitpay.habitpay.global.error.exception.ErrorCode;
 import com.habitpay.habitpay.global.error.exception.IllegalArgumentException;

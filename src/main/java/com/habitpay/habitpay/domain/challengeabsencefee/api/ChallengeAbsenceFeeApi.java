@@ -1,8 +1,7 @@
-package com.habitpay.habitpay.domain.ChallengeAbsenceFee.api;
+package com.habitpay.habitpay.domain.challengeabsencefee.api;
 
-import com.habitpay.habitpay.domain.ChallengeAbsenceFee.application.ChallengeAbsenceFeeSearchService;
-import com.habitpay.habitpay.domain.ChallengeAbsenceFee.dto.FeeStatusResponse;
-import com.habitpay.habitpay.domain.ChallengeAbsenceFee.dto.MemberFeeResponse;
+import com.habitpay.habitpay.domain.challengeabsencefee.application.ChallengeAbsenceFeeSearchService;
+import com.habitpay.habitpay.domain.challengeabsencefee.dto.FeeStatusResponse;
 import com.habitpay.habitpay.global.config.auth.CustomUserDetails;
 import com.habitpay.habitpay.global.response.SuccessResponse;
 import lombok.RequiredArgsConstructor;

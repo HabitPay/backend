@@ -1,8 +1,8 @@
-package com.habitpay.habitpay.domain.ChallengeAbsenceFee.application;
+package com.habitpay.habitpay.domain.challengeabsencefee.application;
 
-import com.habitpay.habitpay.domain.ChallengeAbsenceFee.dto.FeeStatusResponse;
-import com.habitpay.habitpay.domain.ChallengeAbsenceFee.dto.MemberFeeResponse;
-import com.habitpay.habitpay.domain.ChallengeAbsenceFee.exception.DaysCountException;
+import com.habitpay.habitpay.domain.challengeabsencefee.dto.FeeStatusResponse;
+import com.habitpay.habitpay.domain.challengeabsencefee.dto.MemberFeeResponse;
+import com.habitpay.habitpay.domain.challengeabsencefee.exception.DaysCountException;
 import com.habitpay.habitpay.domain.challenge.application.ChallengeSearchService;
 import com.habitpay.habitpay.domain.challenge.domain.Challenge;
 import com.habitpay.habitpay.domain.challengeenrollment.application.ChallengeEnrollmentSearchService;
