@@ -13,5 +13,6 @@ import lombok.NoArgsConstructor;
 @Builder
 public class RecordCheckDTO {
     private ChallengeParticipationRecord record;
+    private ParticipationStat stat;
     private int FeePerAbsence;
 }
