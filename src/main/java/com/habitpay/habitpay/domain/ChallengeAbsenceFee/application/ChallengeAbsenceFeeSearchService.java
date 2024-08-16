@@ -20,17 +20,19 @@ public class ChallengeAbsenceFeeSearchService {
 
     private final ChallengeEnrollmentSearchService challengeEnrollmentSearchService;
 
-    public int findPersonalTotalFeeOfChallenge(Member member, Challenge challenge) {
-        Optional<ChallengeEnrollment> optionalEnrollment = challengeEnrollmentSearchService.findByMemberAndChallenge(member, challenge);
-        return optionalEnrollment.map(ChallengeEnrollment::getTotalFee)
-                .orElseThrow(() -> new NotEnrolledChallengeException(member.getId(), challenge.getId()));
-    }
+//    public int findPersonalTotalFeeOfChallenge(Member member, Challenge challenge) {
+//        Optional<ChallengeEnrollment> optionalEnrollment = challengeEnrollmentSearchService.findByMemberAndChallenge(member, challenge);
+//        return optionalEnrollment.map(ChallengeEnrollment::getTotalFee)
+//                .orElseThrow(() -> new NotEnrolledChallengeException(member.getId(), challenge.getId()));
+//    }
 
-    public int findPersonalTotalFeeOfChallenge(ChallengeEnrollment enrollment) {
-        return enrollment.getTotalFee();
-    }
+    // todo: challenge를 받아서, 챌린지에 등록한 enrollment list 기준으로 fee를 담은 DTO 만들어도 될 듯함
+//    public int findPersonalTotalFeeOfChallenge(ChallengeEnrollment enrollment) {
+//        return enrollment.getTotalFee();
+//    }
 
-    public int findTotalFeeOfChallenge(Challenge challenge) {
-        return challenge.getTotalAbsenceFee();
-    }
+    // todo: 역시 위의 새로운 방식을 기준으로 해서 fee의 합을 반환해도 될 듯함 (정합성에도 좋음)
+//    public int findTotalFeeOfChallenge(Challenge challenge) {
+//        return challenge.getTotalAbsenceFee();
+//    }
 }

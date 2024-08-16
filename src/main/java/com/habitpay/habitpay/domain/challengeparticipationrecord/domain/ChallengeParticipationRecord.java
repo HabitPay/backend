@@ -52,4 +52,8 @@ public class ChallengeParticipationRecord extends BaseTime {
         this.targetDate = targetDate;
     }
 
+    public boolean existChallengePost() {
+        return this.challengePost != null;
+    }
+
 }

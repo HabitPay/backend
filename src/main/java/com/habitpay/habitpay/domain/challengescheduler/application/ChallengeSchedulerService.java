@@ -38,9 +38,16 @@ public class ChallengeSchedulerService {
 
         LocalDate targetDate = yesterday.toLocalDate();
         List<ChallengeParticipationRecord> recordList = challengeParticipationRecordRepository
-                .findByChallengeInAndTargetDate(challengeList, targetDate);
-
-
+                .findByChallengeInAndTargetDate(challengeList, targetDate)
+                .stream()
+                .map(record -> {
+                    if (record.existChallengePost()) {
+//                        record.getParticipationStat()
+                        // stat, challenge fee
+                    }
+                    return record;
+                })
+                .toList();
 
 
 //        1. Challenge 목록 DB 조회(진행 중, 요일 기준)

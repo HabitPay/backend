@@ -28,7 +28,7 @@ public class ChallengeParticipationRecordCreationService {
         record.setChallengePost(post);
         challengeParticipationRecordRepository.save(record);
 
-        enrollment.plusSuccessCountWithParticipationRecord(record);
+        record.getParticipationStat().setSuccessCount();
         return record;
     }
 }

@@ -36,24 +36,12 @@ public class ChallengeEnrollment {
     @Column()
     private ZonedDateTime givenUpDate;
 
-    @Column(nullable = false)
-    private int successCount;
-
-    @Column(nullable = false)
-    private int failureCount;
-
-    @Column(nullable = false)
-    private int totalFee;
-
     @Builder
     public ChallengeEnrollment(Challenge challenge, Member member) {
         this.challenge = challenge;
         this.member = member;
         this.isGivenUp = false;
         this.enrolledDate = ZonedDateTime.now();
-        this.successCount = 0;
-        this.failureCount = 0;
-        this.totalFee = 0;
     }
 
     public static ChallengeEnrollment of(Member member, Challenge challenge) {
@@ -61,11 +49,5 @@ public class ChallengeEnrollment {
                 .challenge(challenge)
                 .member(member)
                 .build();
-    }
-
-    public void plusSuccessCountWithParticipationRecord(ChallengeParticipationRecord record) {
-        if (this.equals(record.getChallengeEnrollment())) {
-            ++this.successCount;
-        }
     }
 }

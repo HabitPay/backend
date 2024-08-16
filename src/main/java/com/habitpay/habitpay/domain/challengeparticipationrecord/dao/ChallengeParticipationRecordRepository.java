@@ -6,6 +6,7 @@ import com.habitpay.habitpay.domain.challengeparticipationrecord.domain.Challeng
 import org.hibernate.boot.model.source.spi.AttributePath;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -23,6 +24,11 @@ public interface ChallengeParticipationRecordRepository extends JpaRepository<Ch
 
     Optional<ChallengeParticipationRecord> findByChallengeEnrollmentAndTargetDate(ChallengeEnrollment enrollment, LocalDate targetDate);
 
-    @EntityGraph(attributePaths = {"participationStat", "challengePost"})
+    @Query("SELECT new com.habitpay.habitpay.domain.challengeparticipationrecord.dto.RecordCheckDTO(r, c.feePerAbsence) " +
+            "FROM ChallengeParticipationRecord r " +
+            "JOIN FETCH r.participationStat " +
+            "JOIN r.challenge c " +
+            "WHERE r.challenge IN :challenges " +
+            "AND r.targetDate = :targetDate")
     List<ChallengeParticipationRecord> findByChallengeInAndTargetDate(List<Challenge> challenges, LocalDate targetDate);
 }

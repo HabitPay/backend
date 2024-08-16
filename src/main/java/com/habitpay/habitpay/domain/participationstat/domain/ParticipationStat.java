@@ -37,4 +37,12 @@ public class ParticipationStat {
         this.failureCount = 0L;
         this.totalFee = 0L;
     }
+
+    public void setSuccessCount() {
+        ++successCount;
+    }
+
+    public void setFailureCountAndTotalFee() {
+        ++failureCount;
+    }
 }
