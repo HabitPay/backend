@@ -36,8 +36,11 @@ public class ChallengeAbsenceFeeSearchService {
 //    public int findPersonalTotalFeeOfChallenge(ChallengeEnrollment enrollment) {
 //        return enrollment.getTotalFee();
 //    }
+    public Long findPersonalTotalFeeOfChallenge(ChallengeEnrollment enrollment) {
+        return enrollment.getParticipationStat().getTotalFee();
+    }
 
-    public List<MemberFeeResponse> makeMemberFeeListOfChallenge(Challenge challenge) {
+    public List<MemberFeeResponse> makeMemberFeeDataListOfChallenge(Challenge challenge) {
         int totalParticipatingDaysCount = challenge.getTotalParticipatingDaysCount();
         if (totalParticipatingDaysCount == 0) {throw new DaysCountException(0L); }
 
