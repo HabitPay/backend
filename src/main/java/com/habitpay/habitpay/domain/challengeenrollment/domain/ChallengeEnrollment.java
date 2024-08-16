@@ -3,6 +3,7 @@ package com.habitpay.habitpay.domain.challengeenrollment.domain;
 import com.habitpay.habitpay.domain.challenge.domain.Challenge;
 import com.habitpay.habitpay.domain.challengeparticipationrecord.domain.ChallengeParticipationRecord;
 import com.habitpay.habitpay.domain.member.domain.Member;
+import com.habitpay.habitpay.domain.participationstat.domain.ParticipationStat;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
@@ -35,6 +36,10 @@ public class ChallengeEnrollment {
 
     @Column()
     private ZonedDateTime givenUpDate;
+
+    @OneToOne
+    @JoinColumn(name = "participation_stat_id")
+    private ParticipationStat participationStat;
 
     @Builder
     public ChallengeEnrollment(Challenge challenge, Member member) {

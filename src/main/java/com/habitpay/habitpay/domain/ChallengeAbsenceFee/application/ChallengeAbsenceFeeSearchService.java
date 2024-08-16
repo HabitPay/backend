@@ -1,5 +1,6 @@
 package com.habitpay.habitpay.domain.ChallengeAbsenceFee.application;
 
+import com.habitpay.habitpay.domain.ChallengeAbsenceFee.dto.MemberFeeResponse;
 import com.habitpay.habitpay.domain.challenge.application.ChallengeSearchService;
 import com.habitpay.habitpay.domain.challenge.domain.Challenge;
 import com.habitpay.habitpay.domain.challengeenrollment.application.ChallengeEnrollmentSearchService;
@@ -10,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
@@ -19,6 +21,7 @@ import java.util.Optional;
 public class ChallengeAbsenceFeeSearchService {
 
     private final ChallengeEnrollmentSearchService challengeEnrollmentSearchService;
+
 
 //    public int findPersonalTotalFeeOfChallenge(Member member, Challenge challenge) {
 //        Optional<ChallengeEnrollment> optionalEnrollment = challengeEnrollmentSearchService.findByMemberAndChallenge(member, challenge);
@@ -30,6 +33,10 @@ public class ChallengeAbsenceFeeSearchService {
 //    public int findPersonalTotalFeeOfChallenge(ChallengeEnrollment enrollment) {
 //        return enrollment.getTotalFee();
 //    }
+
+    public List<MemberFeeResponse> makeMemberFeeListOfChallenge(Challenge challenge) {
+
+    }
 
     // todo: 역시 위의 새로운 방식을 기준으로 해서 fee의 합을 반환해도 될 듯함 (정합성에도 좋음)
     //       그 경우 challenge의 totalFee 속성 없애기
