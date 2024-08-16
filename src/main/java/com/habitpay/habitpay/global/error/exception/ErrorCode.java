@@ -41,9 +41,12 @@ public enum ErrorCode {
     NOT_ALLOWED_TO_CANCEL_ENROLLMENT_OF_HOST(HttpStatus.BAD_REQUEST, "챌린지 주최자는 참여 취소가 불가능 합니다."),
     NOT_ALLOWED_TO_DELETE_CHALLENGE(HttpStatus.FORBIDDEN, "챌린지 삭제는 챌린지 주최자만 가능합니다."),
   
-      // Challenge Participation Record
+    // Challenge Participation Record
     RECORD_NOT_FOUND(HttpStatus.NOT_FOUND, "챌린지 참여 기록이 존재하지 않습니다."),
     MANDATORY_RECORD_NOT_FOUND(HttpStatus.NOT_FOUND, "챌린지 참여 기록 연결 중 문제가 발생했습니다. 관리자에게 문의하십시오."),
+
+    // Challenge Absence Fee
+    TOTAL_PARTICIPATING_DAYS_COUNT_VALUE_IS_ILLEGAL(HttpStatus.BAD_REQUEST, "총 참여 일수 값이 유효하지 않습니다."),
 
     // Challenge Post
     POST_NOT_FOUND(HttpStatus.NOT_FOUND, "포스트가 존재하지 않습니다."),

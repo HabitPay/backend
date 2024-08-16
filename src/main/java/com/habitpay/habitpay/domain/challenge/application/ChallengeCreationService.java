@@ -36,6 +36,7 @@ public class ChallengeCreationService {
         challenge.setNumberOfParticipants(challenge.getNumberOfParticipants() + 1);
         challengeRepository.save(challenge);
 
+        // todo: ChallengeEnrollmentService에 반복되는 로직 존재 -> 메서드화?
         ChallengeEnrollment challengeEnrollment = ChallengeEnrollment.of(member, challenge);
         ParticipationStat participationStat = ParticipationStat.of(challengeEnrollment);
         challengeEnrollment.setParticipationStat(participationStat);
