@@ -10,7 +10,6 @@ import java.util.List;
 
 public interface ChallengeRepository extends JpaRepository<Challenge, Long> {
 
-
     @Query(value = "SELECT * FROM challenge WHERE state = :state AND participating_days & :day = :day", nativeQuery = true)
     List<Challenge> findAllByStateAndParticipatingDays(
             @Param("state") ChallengeState state,

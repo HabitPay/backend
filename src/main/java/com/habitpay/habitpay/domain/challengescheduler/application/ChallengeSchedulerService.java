@@ -27,19 +27,19 @@ public class ChallengeSchedulerService {
     private final ParticipationStatRepository participationStatRepository;
 
     @Scheduled(cron = "0 0 0 * * *", zone = "Asia/Seoul")
-    public void setChallengeStateForStart() {
-        // 오늘 날짜 시작인 챌린지 리스트 얻기
+    public void setChallengeForStart() {
+        // 오늘 날짜 시작인 챌린지 리스트 얻기 -> todo : 챌린지의 시작 날짜를 zoneDateTime이 아닌 날짜로 바꾼 후에 repository에서 날짜 검색 메서드 추가하기
         // 챌린지 리스트를 state 진행 중으로 바꾸기
-        // 각 챌린지 내의 멤버를 위한 참여 목록 한 번에 모두! 만들기
+        // -----------------
 
-        // 매일 자정에 검사
-        // 시작 날짜 요일과 오늘 요일이 동일한 경우
-        // 1주일 치 참여 목록 만들기
+        // 각 챌린지 내의 멤버 리스트 얻기
+        // 멤버 리스트 순회하면서 참여 목록 한 번에 모두! 만들기
+
         // 챌린지 생성일이 시작 요일과 동일한 경우만 참여 목록 1주일치 생성하는 예외 처리 필요
     }
 
     @Scheduled(cron = "0 0 0 * * *", zone = "Asia/Seoul")
-    public void setChallengeStateForEnd() {}
+    public void setChallengeForEnd() {}
 
     @Transactional
     @Scheduled(cron = "0 0 0 * * *", zone = "Asia/Seoul")
