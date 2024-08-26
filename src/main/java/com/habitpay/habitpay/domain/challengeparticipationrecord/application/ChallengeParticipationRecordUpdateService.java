@@ -13,12 +13,12 @@ import java.time.LocalDate;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class ChallengeParticipationRecordCreationService {
+public class ChallengeParticipationRecordUpdateService {
 
     private final ChallengeParticipationRecordRepository challengeParticipationRecordRepository;
     private final ChallengeParticipationRecordSearchService challengeParticipationRecordSearchService;
 
-    public ChallengeParticipationRecord save(
+    public ChallengeParticipationRecord setChallengePost(
             ChallengeEnrollment enrollment,
             LocalDate today,
             ChallengePost post) {

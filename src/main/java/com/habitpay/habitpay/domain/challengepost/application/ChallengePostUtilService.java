@@ -2,7 +2,7 @@ package com.habitpay.habitpay.domain.challengepost.application;
 
 import com.habitpay.habitpay.domain.challenge.domain.Challenge;
 import com.habitpay.habitpay.domain.challengeenrollment.domain.ChallengeEnrollment;
-import com.habitpay.habitpay.domain.challengeparticipationrecord.application.ChallengeParticipationRecordCreationService;
+import com.habitpay.habitpay.domain.challengeparticipationrecord.application.ChallengeParticipationRecordUpdateService;
 import com.habitpay.habitpay.domain.challengeparticipationrecord.application.ChallengeParticipationRecordSearchService;
 import com.habitpay.habitpay.domain.challengeparticipationrecord.domain.ChallengeParticipationRecord;
 import com.habitpay.habitpay.domain.challengepost.domain.ChallengePost;
@@ -24,7 +24,7 @@ import java.util.Optional;
 @Slf4j
 public class ChallengePostUtilService {
 
-    private final ChallengeParticipationRecordCreationService challengeParticipationRecordCreationService;
+    private final ChallengeParticipationRecordUpdateService challengeParticipationRecordUpdateService;
     private final ChallengeParticipationRecordSearchService challengeParticipationRecordSearchService;
 
 
@@ -66,7 +66,7 @@ public class ChallengePostUtilService {
         }
 
         LocalDate today = now.toLocalDate();
-        challengeParticipationRecordCreationService.save(enrollment, today, post);
+        challengeParticipationRecordUpdateService.setChallengePost(enrollment, today, post);
     }
 
     private boolean isAlreadyParticipateToday(ChallengeEnrollment enrollment, ZonedDateTime now) {
