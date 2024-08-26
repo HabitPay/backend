@@ -26,7 +26,20 @@ public class ChallengeSchedulerService {
     private final ChallengeParticipationRecordRepository challengeParticipationRecordRepository;
     private final ParticipationStatRepository participationStatRepository;
 
-    // todo : Challenge 시작, 종료 시 state 변경 등 메서드
+    @Scheduled(cron = "0 0 0 * * *", zone = "Asia/Seoul")
+    public void setChallengeStateForStart() {
+        // 오늘 날짜 시작인 챌린지 리스트 얻기
+        // 챌린지 리스트를 state 진행 중으로 바꾸기
+        // 각 챌린지 내의 멤버를 위한 참여 목록 한 번에 모두! 만들기
+
+        // 매일 자정에 검사
+        // 시작 날짜 요일과 오늘 요일이 동일한 경우
+        // 1주일 치 참여 목록 만들기
+        // 챌린지 생성일이 시작 요일과 동일한 경우만 참여 목록 1주일치 생성하는 예외 처리 필요
+    }
+
+    @Scheduled(cron = "0 0 0 * * *", zone = "Asia/Seoul")
+    public void setChallengeStateForEnd() {}
 
     @Transactional
     @Scheduled(cron = "0 0 0 * * *", zone = "Asia/Seoul")
