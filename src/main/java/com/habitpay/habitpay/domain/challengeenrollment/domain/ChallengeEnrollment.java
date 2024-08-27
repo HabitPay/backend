@@ -3,14 +3,17 @@ package com.habitpay.habitpay.domain.challengeenrollment.domain;
 import com.habitpay.habitpay.domain.challenge.domain.Challenge;
 import com.habitpay.habitpay.domain.challengeparticipationrecord.domain.ChallengeParticipationRecord;
 import com.habitpay.habitpay.domain.member.domain.Member;
+import com.habitpay.habitpay.domain.participationstat.domain.ParticipationStat;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.ZonedDateTime;
 
 @Getter
+@Setter
 @NoArgsConstructor
 @Entity
 @Table(name = "challenge_enrollment")
@@ -36,14 +39,9 @@ public class ChallengeEnrollment {
     @Column()
     private ZonedDateTime givenUpDate;
 
-    @Column(nullable = false)
-    private int successCount;
-
-    @Column(nullable = false)
-    private int failureCount;
-
-    @Column(nullable = false)
-    private int totalFee;
+    @OneToOne
+    @JoinColumn(name = "participation_stat_id")
+    private ParticipationStat participationStat;
 
     @Builder
     public ChallengeEnrollment(Challenge challenge, Member member) {
@@ -51,9 +49,6 @@ public class ChallengeEnrollment {
         this.member = member;
         this.isGivenUp = false;
         this.enrolledDate = ZonedDateTime.now();
-        this.successCount = 0;
-        this.failureCount = 0;
-        this.totalFee = 0;
     }
 
     public static ChallengeEnrollment of(Member member, Challenge challenge) {
@@ -61,11 +56,5 @@ public class ChallengeEnrollment {
                 .challenge(challenge)
                 .member(member)
                 .build();
-    }
-
-    public void plusSuccessCountWithParticipationRecord(ChallengeParticipationRecord record) {
-        if (this.equals(record.getChallengeEnrollment())) {
-            ++this.successCount;
-        }
     }
 }

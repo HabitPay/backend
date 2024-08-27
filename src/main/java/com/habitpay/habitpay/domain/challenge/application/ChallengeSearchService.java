@@ -8,6 +8,8 @@ import com.habitpay.habitpay.domain.challengeenrollment.dao.ChallengeEnrollmentR
 import com.habitpay.habitpay.domain.challengeenrollment.domain.ChallengeEnrollment;
 import com.habitpay.habitpay.domain.challengeparticipationrecord.dao.ChallengeParticipationRecordRepository;
 import com.habitpay.habitpay.domain.member.domain.Member;
+import com.habitpay.habitpay.domain.participationstat.dao.ParticipationStatRepository;
+import com.habitpay.habitpay.domain.participationstat.domain.ParticipationStat;
 import com.habitpay.habitpay.global.config.aws.S3FileService;
 import com.habitpay.habitpay.global.response.SuccessCode;
 import com.habitpay.habitpay.global.response.SuccessResponse;
@@ -46,12 +48,13 @@ public class ChallengeSearchService {
 
     private ChallengeEnrolledListItemResponse mapToResponse(ChallengeEnrollment challengeEnrollment) {
         Challenge challenge = challengeEnrollment.getChallenge();
+        ParticipationStat stat = challengeEnrollment.getParticipationStat();
         boolean isParticipatedToday = challengeParticipationRecordRepository
                 .findByChallengeEnrollment(challengeEnrollment)
                 .isPresent();
         String hostProfileImageUrl = Optional.ofNullable(challenge.getHost().getImageFileName())
                 .map((imageFileName) -> s3FileService.getGetPreSignedUrl("profiles", imageFileName))
                 .orElse("");
-        return ChallengeEnrolledListItemResponse.of(challenge, challengeEnrollment, hostProfileImageUrl, isParticipatedToday);
+        return ChallengeEnrolledListItemResponse.of(challenge, challengeEnrollment, stat, hostProfileImageUrl, isParticipatedToday);
     }
 }
