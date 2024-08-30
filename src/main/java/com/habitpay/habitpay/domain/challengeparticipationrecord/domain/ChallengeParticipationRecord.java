@@ -22,22 +22,22 @@ public class ChallengeParticipationRecord extends BaseTime {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "challenge_id")
     private Challenge challenge;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "challenge_enrollment_id")
     private ChallengeEnrollment challengeEnrollment;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "participation_stat_id")
     private ParticipationStat participationStat;
 
     @Column(nullable = false)
     private LocalDate targetDate;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "challenge_post_id")
     private ChallengePost challengePost;
 
