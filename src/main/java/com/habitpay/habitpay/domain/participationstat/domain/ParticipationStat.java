@@ -48,8 +48,7 @@ public class ParticipationStat {
         this.successCount = value;
     }
 
-    public void setFailureCountAndTotalFee(int fee) {
-        ++this.failureCount;
-        this.totalFee += fee;
-    }
+    public void setFailureCount(int value) { this.failureCount = value; }
+
+    public void setTotalFee(int value) { this.totalFee = value; }
 }

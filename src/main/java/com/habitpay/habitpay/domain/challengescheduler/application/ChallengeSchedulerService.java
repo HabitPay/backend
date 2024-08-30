@@ -62,7 +62,9 @@ public class ChallengeSchedulerService {
         challengeParticipationRecordSearchService.findByChallengesAndTargetDate(challengeList, targetDate)
                 .forEach(record -> {
                     if (!record.existChallengePost()) {
-                        record.getParticipationStat().setFailureCountAndTotalFee(record.getChallenge().getFeePerAbsence());
+                        ParticipationStat stat = record.getParticipationStat();
+                        stat.setFailureCount(stat.getFailureCount() + 1);
+                        stat.setTotalFee(stat.getTotalFee() + record.getChallenge().getFeePerAbsence());
                         failStatList.add(record.getParticipationStat());
                         failRecordList.add(record);
                     }
