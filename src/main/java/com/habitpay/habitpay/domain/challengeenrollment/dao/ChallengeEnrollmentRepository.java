@@ -1,6 +1,6 @@
 package com.habitpay.habitpay.domain.challengeenrollment.dao;
 
-import com.habitpay.habitpay.domain.challengeabsencefee.dto.MemberFeeDTO;
+import com.habitpay.habitpay.domain.challengeabsencefee.dto.MemberFeeView;
 import com.habitpay.habitpay.domain.challenge.domain.Challenge;
 import com.habitpay.habitpay.domain.challengeenrollment.domain.ChallengeEnrollment;
 import com.habitpay.habitpay.domain.member.domain.Member;
@@ -18,10 +18,10 @@ public interface ChallengeEnrollmentRepository extends JpaRepository<ChallengeEn
     List<ChallengeEnrollment> findAllByMember(Member member);
     List<ChallengeEnrollment> findTop3ByChallenge(Challenge challenge);
 
-    @Query("SELECT new com.habitpay.habitpay.domain.challengeabsencefee.dto.MemberFeeDTO(m.nickname, s.totalFee, s.successCount) " +
+    @Query("SELECT new com.habitpay.habitpay.domain.challengeabsencefee.dto.MemberFeeView(m.nickname, s.totalFee, (s.successCount / :totalCount) * 100) " +
     "FROM ChallengeEnrollment e " +
     "JOIN e.member m " +
     "JOIN e.participationStat s " +
     "WHERE e.challenge = :challenge")
-    List<MemberFeeDTO> findMemberFeeDTOByChallenge(Challenge challenge);
+    List<MemberFeeView> findMemberFeeViewByChallenge(Challenge challenge, int totalCount);
 }

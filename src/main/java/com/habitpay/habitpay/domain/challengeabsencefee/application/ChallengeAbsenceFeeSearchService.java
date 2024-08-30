@@ -34,10 +34,7 @@ public class ChallengeAbsenceFeeSearchService {
         if (totalParticipatingDaysCount == 0) {throw new DaysCountException(totalParticipatingDaysCount); }
 
         List<MemberFeeView> memberFeeViewList = challengeEnrollmentRepository
-                .findMemberFeeDTOByChallenge(challenge)
-                .stream()
-                .map(memberFeeDto -> MemberFeeView.of(memberFeeDto, totalParticipatingDaysCount))
-                .toList();
+                .findMemberFeeViewByChallenge(challenge, totalParticipatingDaysCount);
 
         FeeStatusResponse feeStatusResponse = FeeStatusResponse.builder()
                 .totalFee(findTotalFeeOfChallenge(memberFeeViewList))
