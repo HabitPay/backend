@@ -23,11 +23,13 @@ public interface ChallengeParticipationRecordRepository extends JpaRepository<Ch
 
     Optional<ChallengeParticipationRecord> findByChallengeEnrollmentAndTargetDate(ChallengeEnrollment enrollment, LocalDate targetDate);
 
-    @Query("SELECT new com.habitpay.habitpay.domain.challengeparticipationrecord.dto.RecordCheckDTO(r, s, c.feePerAbsence) " +
-            "FROM ChallengeParticipationRecord r " +
-            "JOIN r.participationStat s " +
-            "JOIN r.challenge c " +
-            "WHERE r.challenge IN :challenges " +
-            "AND r.targetDate = :targetDate")
-    List<RecordCheckDTO> findRecordCheckDTOByChallengeInAndTargetDate(List<Challenge> challenges, LocalDate targetDate);
+//    @Query("SELECT new com.habitpay.habitpay.domain.challengeparticipationrecord.dto.RecordCheckDTO(r, s, c.feePerAbsence) " +
+//            "FROM ChallengeParticipationRecord r " +
+//            "JOIN r.participationStat s " +
+//            "JOIN r.challenge c " +
+//            "WHERE r.challenge IN :challenges " +
+//            "AND r.targetDate = :targetDate")
+//    List<RecordCheckDTO> findRecordCheckDTOByChallengeInAndTargetDate(List<Challenge> challenges, LocalDate targetDate);
+
+    List<ChallengeParticipationRecord> findByChallengeInAndTargetDate(List<Challenge> challengeList, LocalDate targetDate);
 }

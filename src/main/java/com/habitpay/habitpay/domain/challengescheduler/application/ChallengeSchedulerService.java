@@ -48,23 +48,31 @@ public class ChallengeSchedulerService {
         ZonedDateTime yesterday = ZonedDateTime.now().minusDays(1);
         DayOfWeek yesterdayOfWeek = yesterday.getDayOfWeek();
         byte yesterdayBitPosition = (byte) ((byte) 1 << (7 - yesterdayOfWeek.getValue()));
+        // 검사하고자 하는 날의 요일 비트 포지션을 구한다
 
         List<Challenge> challengeList = challengeRepository
                 .findAllByStateAndParticipatingDays(ChallengeState.IN_PROGRESS, yesterdayBitPosition);
         if (challengeList.isEmpty()) { return; }
+        // 진행 중이면서 위에서 구한 비트 포지션에 부합하는 챌린지 리스트를 조회한다
 
         LocalDate targetDate = yesterday.toLocalDate();
         List<ParticipationStat> failStatList = new ArrayList<>();
         List<ChallengeParticipationRecord> failRecordList = new ArrayList<>();
+        // 이제 레코드를 찾아야 하니까 검사하려는 날의 날짜를 다시 제대로 구한다
 
-        challengeParticipationRecordRepository.findRecordCheckDTOByChallengeInAndTargetDate(challengeList, targetDate)
-                .forEach(recordDto -> {
-                    if (!recordDto.getRecord().existChallengePost()) {
-                        recordDto.getStat().setFailureCountAndTotalFee(recordDto.getFeePerAbsence());
-                        failStatList.add(recordDto.getStat());
-                        failRecordList.add(recordDto.getRecord());
-                    }
-                });
+        // 챌린지와 레코드 날짜를 기준으로 레코드 리스트를 얻어야 한다
+        // 레코드마다 챌린지 포스트 속성이 있는지 검사한다
+        // 없을 때만 매번 스탯 불러와서 수정한다 -> 이건 모아서 다시 DB에 저장도 해야 한다
+        // 레코드 삭제할 거니까 없는 레코드도 따로 저장해야 한다
+
+//        challengeParticipationRecordRepository.findRecordCheckDTOByChallengeInAndTargetDate(challengeList, targetDate)
+//                .forEach(recordDto -> {
+//                    if (!recordDto.getRecord().existChallengePost()) {
+//                        recordDto.getStat().setFailureCountAndTotalFee(recordDto.getFeePerAbsence());
+//                        failStatList.add(recordDto.getStat());
+//                        failRecordList.add(recordDto.getRecord());
+//                    }
+//                });
 
         participationStatRepository.saveAll(failStatList);
         challengeParticipationRecordRepository.deleteAll(failRecordList);

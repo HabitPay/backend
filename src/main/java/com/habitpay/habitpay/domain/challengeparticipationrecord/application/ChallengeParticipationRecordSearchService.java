@@ -1,5 +1,6 @@
 package com.habitpay.habitpay.domain.challengeparticipationrecord.application;
 
+import com.habitpay.habitpay.domain.challenge.domain.Challenge;
 import com.habitpay.habitpay.domain.challengeenrollment.domain.ChallengeEnrollment;
 import com.habitpay.habitpay.domain.challengeparticipationrecord.dao.ChallengeParticipationRecordRepository;
 import com.habitpay.habitpay.domain.challengeparticipationrecord.domain.ChallengeParticipationRecord;
@@ -47,5 +48,11 @@ public class ChallengeParticipationRecordSearchService {
             LocalDate targetDate) {
         return challengeParticipationRecordRepository.findByChallengeEnrollmentAndTargetDate(enrollment, targetDate)
                 .orElseThrow(() -> new MandatoryRecordNotFoundException(enrollment.getId(), targetDate.toString()));
+    }
+
+    public List<ChallengeParticipationRecord> findByChallengesAndTargetDate(
+            List<Challenge> challengeList,
+            LocalDate targetDate) {
+        return challengeParticipationRecordRepository.findByChallengeInAndTargetDate(challengeList, targetDate);
     }
 }
