@@ -17,7 +17,7 @@ public class ParticipationStat {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "challenge_enrollment_id")
     private ChallengeEnrollment challengeEnrollment;
 
