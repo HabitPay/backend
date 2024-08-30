@@ -1,7 +1,7 @@
 package com.habitpay.habitpay.domain.challengeabsencefee.application;
 
 import com.habitpay.habitpay.domain.challengeabsencefee.dto.FeeStatusResponse;
-import com.habitpay.habitpay.domain.challengeabsencefee.dto.MemberFeeResponse;
+import com.habitpay.habitpay.domain.challengeabsencefee.dto.MemberFeeView;
 import com.habitpay.habitpay.domain.challengeabsencefee.exception.DaysCountException;
 import com.habitpay.habitpay.domain.challenge.application.ChallengeSearchService;
 import com.habitpay.habitpay.domain.challenge.domain.Challenge;
@@ -33,16 +33,16 @@ public class ChallengeAbsenceFeeSearchService {
         int totalParticipatingDaysCount = challenge.getTotalParticipatingDaysCount();
         if (totalParticipatingDaysCount == 0) {throw new DaysCountException(totalParticipatingDaysCount); }
 
-        List<MemberFeeResponse> memberFeeResponseList = challengeEnrollmentRepository
+        List<MemberFeeView> memberFeeViewList = challengeEnrollmentRepository
                 .findMemberFeeDTOByChallenge(challenge)
                 .stream()
-                .map(memberFeeDto -> MemberFeeResponse.of(memberFeeDto, totalParticipatingDaysCount))
+                .map(memberFeeDto -> MemberFeeView.of(memberFeeDto, totalParticipatingDaysCount))
                 .toList();
 
         FeeStatusResponse feeStatusResponse = FeeStatusResponse.builder()
-                .totalFee(findTotalFeeOfChallenge(memberFeeResponseList))
+                .totalFee(findTotalFeeOfChallenge(memberFeeViewList))
                 .myFee(findPersonalTotalFeeOfChallenge(enrollment))
-                .memberFeeList(memberFeeResponseList)
+                .memberFeeList(memberFeeViewList)
                 .build();
 
         return SuccessResponse.of(
@@ -55,7 +55,7 @@ public class ChallengeAbsenceFeeSearchService {
         return enrollment.getParticipationStat().getTotalFee();
     }
 
-    private static int findTotalFeeOfChallenge(List<MemberFeeResponse> memberFeeList) {
-        return memberFeeList.stream().mapToInt(MemberFeeResponse::getTotalFee).sum();
+    private static int findTotalFeeOfChallenge(List<MemberFeeView> memberFeeList) {
+        return memberFeeList.stream().mapToInt(MemberFeeView::getTotalFee).sum();
     }
 }

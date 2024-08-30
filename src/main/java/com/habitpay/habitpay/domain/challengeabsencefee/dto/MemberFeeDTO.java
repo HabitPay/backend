@@ -10,11 +10,9 @@ public class MemberFeeDTO {
     private int totalFee;
     private int successCount;
 
-    public static MemberFeeDTO of(String nickname, int totalFee, int successCount) {
-        return MemberFeeDTO.builder()
-                .nickname(nickname)
-                .totalFee(totalFee)
-                .successCount(successCount)
-                .build();
+    public MemberFeeDTO(String nickname, int totalFee, int successCount) {
+        this.nickname = nickname;
+        this.totalFee = totalFee;
+        this.successCount = successCount;
     }
 }

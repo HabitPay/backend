@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.habitpay.habitpay.docs.springrestdocs.AbstractRestDocsTests;
 import com.habitpay.habitpay.domain.challengeabsencefee.application.ChallengeAbsenceFeeSearchService;
 import com.habitpay.habitpay.domain.challengeabsencefee.dto.FeeStatusResponse;
-import com.habitpay.habitpay.domain.challengeabsencefee.dto.MemberFeeResponse;
+import com.habitpay.habitpay.domain.challengeabsencefee.dto.MemberFeeView;
 import com.habitpay.habitpay.domain.member.domain.Member;
 import com.habitpay.habitpay.global.config.jwt.TokenProvider;
 import com.habitpay.habitpay.global.config.jwt.TokenService;
@@ -55,8 +55,8 @@ public class ChallengeAbsenceFeeApiTest extends AbstractRestDocsTests {
                 .totalFee(1500)
                 .myFee(500)
                 .memberFeeList(List.of(
-                        new MemberFeeResponse("testUser", 1000, 10),
-                        new MemberFeeResponse("selfUser", 500, 20)))
+                        new MemberFeeView("testUser", 1000, 10),
+                        new MemberFeeView("selfUser", 500, 20)))
                 .build();
 
         given(challengeAbsenceFeeSearchService.makeMemberFeeDataListOfChallenge(any(Long.class), any(Member.class)))
