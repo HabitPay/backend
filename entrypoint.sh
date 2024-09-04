@@ -20,8 +20,6 @@ development() {
 }
 
 deploy() {
-    local JAR_FILE=build/libs/*.jar
-    mv $JAR_FILE app.jar
     java -jar Dspring.profiles.active=prod app.jar
 }
 
