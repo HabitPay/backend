@@ -11,6 +11,8 @@ services:
       interval: 5s
       timeout: 5s
       retries: 30
+    env_file:
+      - ./env/.env.prod
     networks:
       - backend-connection
 
@@ -26,6 +28,8 @@ services:
       interval: 5s
       timeout: 5s
       retries: 30
+    env_file:
+      - ./env/.env.prod
     networks:
       - backend-connection
 
