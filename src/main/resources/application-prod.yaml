@@ -1,15 +1,8 @@
 spring:
-  config:
-    activate:
-      on-profile: prod
   jpa:
     hibernate:
-      ddl-auto: validate # 서비스 배포 시 none 으로 변경
-  datasource:
-    url: jdbc:postgresql://${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}
-    username: ${POSTGRES_USER}
-    password: ${POSTGRES_PASSWORD}
-
+      ddl-auto: validate
+---
 jwt:
   issuer: ${JWT_ISSUER}
   secret: ${JWT_SECRET}

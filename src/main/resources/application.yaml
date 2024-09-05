@@ -11,6 +11,10 @@ spring:
             scope: ${GOOGLE_SCOPE}
   jpa:
     database: postgresql
+  datasource:
+    url: jdbc:postgresql://${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}
+    username: ${POSTGRES_USER}
+    password: ${POSTGRES_PASSWORD}
 ---
 spring:
   cloud:
@@ -25,13 +29,8 @@ spring:
         access-key: ${AWS_ACCESS_KEY}
         secret-key: ${AWS_SECRET_KEY}
 ---
-application:
-  origin-url: ${ORIGIN_URL}
+cors:
+  allowed-origins: ${ALLOWED_ORIGINS}
 ---
-spring:
-  profiles:
-    active: local
----
-spring:
-  profiles:
-    active: prod
+oauth:
+  redirect-url: ${REDIRECT_URL}
