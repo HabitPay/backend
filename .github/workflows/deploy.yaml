@@ -43,8 +43,16 @@ jobs:
       contents: read
 
     steps:
-      - uses: actions/checkout@v4
-        with: ${{ secret.GH_PAT }}
+      - name: Checkout backend
+        uses: actions/checkout@v4
+
+      - name: Checkout env
+        uses: actions/checkout@v4
+        with:
+          repository: habitpay/env
+          token: ${{ secrets.GH_PAT }}
+          path: backend
+
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
