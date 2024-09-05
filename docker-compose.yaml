@@ -7,10 +7,10 @@ services:
     restart: on-failure:3
     healthcheck:
       test: "wget --quiet --spider localhost:8080/actuator/health || exit 1"
-      start_period: 30s
-      interval: 5s
+      start_period: 40s
+      interval: 1m
       timeout: 5s
-      retries: 30
+      retries: 5
     env_file:
       - ./env/.env.prod
     networks:
@@ -24,10 +24,10 @@ services:
     restart: on-failure:3
     healthcheck:
       test: "wget --quiet --spider localhost:8080/actuator/health || exit 1"
-      start_period: 30s
-      interval: 5s
+      start_period: 40s
+      interval: 1m
       timeout: 5s
-      retries: 30
+      retries: 5
     env_file:
       - ./env/.env.prod
     networks:
