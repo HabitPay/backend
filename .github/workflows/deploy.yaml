@@ -81,7 +81,7 @@ jobs:
 
   deploy-new-container:
     runs-on: ubuntu-latest
-    needs: ["build-spring-and-docker-image"]
+    needs: ["create-release", "build-spring-and-docker-image"]
     steps:
       - name: Deploy a new version of the container
         uses: peterkimzz/aws-ssm-send-command@master
