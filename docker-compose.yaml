@@ -12,7 +12,7 @@ services:
       timeout: 5s
       retries: 5
     env_file:
-      - ./env/.env.prod
+      - ../env/.env.backend.prod
     networks:
       - backend-connection
 
@@ -29,7 +29,7 @@ services:
       timeout: 5s
       retries: 5
     env_file:
-      - ./env/.env.prod
+      - ../env/.env.backend.prod
     networks:
       - backend-connection
 
