@@ -20,7 +20,7 @@ development() {
 }
 
 deploy() {
-    java -jar Dspring.profiles.active=prod app.jar
+    java -jar -Dspring.profiles.active=prod app.jar
 }
 
 if [ $1 = "deploy" ]; then
