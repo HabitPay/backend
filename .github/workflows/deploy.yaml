@@ -93,7 +93,7 @@ jobs:
           instance-ids: ${{ secrets.BACKEND_INSTANCE_ID }}
 
           working-directory: ${{ secrets.BACKEND_WORKING_DIRECTORY }}
-          command: /bin/bash ./git-pull.sh; /bin/bash ./deploy.sh ${{ secrets.DOCKERHUB_ACCOUNT }}/${{ secrets.DOCKERHUB_REPOSITORY }}:${{ needs.create-release.outputs.new_tag }}
+          command: /bin/bash ./git-pull.sh; /bin/bash ./deploy.sh "${{ secrets.DOCKERHUB_ACCOUNT }}/${{ secrets.DOCKERHUB_REPOSITORY }}:${{ needs.create-release.outputs.new_tag }}"
           comment: Deploy a New Version of the Container
 
       - name: Change the backend container server in nginx
