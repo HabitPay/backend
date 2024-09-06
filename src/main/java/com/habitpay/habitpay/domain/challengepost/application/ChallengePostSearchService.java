@@ -14,6 +14,7 @@ import com.habitpay.habitpay.domain.postphoto.application.PostPhotoSearchService
 import com.habitpay.habitpay.domain.postphoto.application.PostPhotoUtilService;
 import com.habitpay.habitpay.domain.postphoto.domain.PostPhoto;
 import com.habitpay.habitpay.domain.postphoto.dto.PostPhotoView;
+import com.habitpay.habitpay.global.config.aws.S3FileService;
 import com.habitpay.habitpay.global.response.SuccessCode;
 import com.habitpay.habitpay.global.response.SuccessResponse;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +26,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -35,6 +37,7 @@ public class ChallengePostSearchService {
     private final PostPhotoUtilService postPhotoUtilService;
     private final ChallengeEnrollmentSearchService challengeEnrollmentSearchService;
     private final ChallengeSearchService challengeSearchService;
+    private final S3FileService s3FileService;
 
     private final ChallengePostRepository challengePostRepository;
 
@@ -43,9 +46,14 @@ public class ChallengePostSearchService {
         List<PostPhoto> photoList = postPhotoSearchService.findAllByPost(challengePost);
         List<PostPhotoView> photoViewList = postPhotoUtilService.makePhotoViewList(photoList);
 
+        // todo: 반복해서 사용되므로 메서드화하기 (member 서비스 내 코드가 원조)
+        Member writer = challengePost.getWriter();
+        String imageFileName = Optional.ofNullable(writer.getImageFileName()).orElse("");
+        String imageUrl = imageFileName.isEmpty() ? "" : s3FileService.getGetPreSignedUrl("profiles", imageFileName);
+
         return SuccessResponse.of(
                 SuccessCode.NO_MESSAGE,
-                new PostViewResponse(challengePost, photoViewList)
+                new PostViewResponse(challengePost, imageUrl, photoViewList)
         );
     }
 
@@ -108,7 +116,11 @@ public class ChallengePostSearchService {
         return postList.stream()
                 .map(post -> {
                     List<PostPhotoView> photoViewList = postPhotoUtilService.makePhotoViewList(postPhotoSearchService.findAllByPost(post));
-                    return new PostViewResponse(post, photoViewList);
+                    // todo: 반복 코드
+                    Member writer = post.getWriter();
+                    String imageFileName = Optional.ofNullable(writer.getImageFileName()).orElse("");
+                    String imageUrl = imageFileName.isEmpty() ? "" : s3FileService.getGetPreSignedUrl("profiles", imageFileName);
+                    return new PostViewResponse(post, imageUrl, photoViewList);
                 })
                 .toList();
     }
