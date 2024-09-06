@@ -20,6 +20,7 @@ public class PostViewResponse {
     private Long challengeEnrollmentId;
     private String content;
     private String writer;
+    private String profileUrl;
     private Boolean isAnnouncement;
     private LocalDateTime createdAt;
     private List<PostPhotoView> photoViewList;
