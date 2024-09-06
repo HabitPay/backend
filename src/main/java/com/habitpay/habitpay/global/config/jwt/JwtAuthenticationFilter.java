@@ -25,8 +25,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String accessToken = RequestHeaderUtil.getAccessToken(request);
+        String requestURI = request.getRequestURI();
 
         log.info("request: [{} {}]", request.getMethod(), request.getRequestURI());
+
+        // /actuator/health 요청은 JWT 검증을 생략
+        if ("/actuator/health".equals(requestURI)) {
+            filterChain.doFilter(request, response);
+            return;
+        }
 
         // TODO: 예외처리 추가하기
 
