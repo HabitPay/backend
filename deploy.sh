@@ -42,7 +42,6 @@ switch() {
     local current=$1
     local target=$2
 
-    log "Docker image: $DOCKER_IMAGE"
     log "$current is running. Turning on $target container..."
     yq -i ".services.$target.image = \"$DOCKER_IMAGE\"" docker-compose.yml
     sudo docker compose -p $APPLICATION up "$target" -d
@@ -59,6 +58,8 @@ switch() {
 }
 
 main() {
+    log "Docker image: $DOCKER_IMAGE"
+
     local is_application_running=$(sudo docker compose -p $APPLICATION ls | grep running | sed 's/.*/true/')
     local is_blue_running=$(docker container inspect blue --format='{{json .State.Status}}' | sed 's/"//g')
     local is_green_running=$(docker container inspect green --format='{{json .State.Status}}' | sed 's/"//g')
@@ -71,6 +72,7 @@ main() {
         switch green blue
     else
         log "Application is not running. Starting the application...(with blue container)"
+        yq -i ".services.blue.image = \"$DOCKER_IMAGE\"" docker-compose.yml
         sudo docker compose -p $APPLICATION up blue -d
     fi
 }
