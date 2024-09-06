@@ -1,13 +1,16 @@
 name: Java CI with Gradle and CD with Docker
 
 on:
+  workflow_dispatch:
+  push:
+    branches:
+      - "main"
   pull_request:
     branches:
       - "main"
 
 jobs:
   create-release:
-    if: github.event.pull_request.merge == true
     runs-on: ubuntu-latest
     permissions:
       contents: write
