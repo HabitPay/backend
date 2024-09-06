@@ -2,7 +2,3 @@ spring:
   jpa:
     hibernate:
       ddl-auto: validate
----
-jwt:
-  issuer: ${JWT_ISSUER}
-  secret: ${JWT_SECRET}
