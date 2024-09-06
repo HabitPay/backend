@@ -42,6 +42,7 @@ switch() {
     local current=$1
     local target=$2
 
+    log "Docker image: $DOCKER_IMAGE"
     log "$current is running. Turning on $target container..."
     yq -i ".services.$target.image = \"$DOCKER_IMAGE\"" docker-compose.yml
     sudo docker compose -p $APPLICATION up "$target" -d
