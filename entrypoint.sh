@@ -16,13 +16,11 @@ development() {
 
     ./gradlew --status
 
-    ./gradlew --build-cache --parallel -t bootRun
+    ./gradlew --build-cache --parallel -t bootRun --args='--spring.profiles.active=dev'
 }
 
 deploy() {
-    local JAR_FILE=build/libs/*.jar
-    mv $JAR_FILE app.jar
-    java -jar Dspring.profiles.active=prod app.jar
+    java -jar -Dspring.profiles.active=prod app.jar
 }
 
 if [ $1 = "deploy" ]; then

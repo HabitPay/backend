@@ -7,7 +7,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseCookie;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
@@ -16,14 +16,13 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.IOException;
 
-import static com.habitpay.habitpay.global.config.jwt.TokenService.REFRESH_TOKEN_EXPIRED_AT;
-
 @Slf4j
 @Component
 @RequiredArgsConstructor
 public class CustomOAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
-    private final String redirectUrl = "https://habitpay.link/auth";
+    @Value("${oauth.redirect-url}")
+    private String redirectUrl;
 
     private final TokenService tokenService;
     private final RefreshTokenCreationService refreshTokenCreationService;
