@@ -2,6 +2,7 @@ package com.habitpay.habitpay.domain.challenge.dto;
 
 import com.habitpay.habitpay.domain.challenge.domain.Challenge;
 import com.habitpay.habitpay.domain.challengeenrollment.domain.ChallengeEnrollment;
+import com.habitpay.habitpay.domain.participationstat.domain.ParticipationStat;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -27,7 +28,7 @@ public class ChallengeEnrolledListItemResponse {
     private Boolean isTodayParticipatingDay;
     private Boolean isParticipatedToday;
 
-    public static ChallengeEnrolledListItemResponse of(Challenge challenge, ChallengeEnrollment challengeEnrollment, String hostProfileImage, boolean isParticipatedToday) {
+    public static ChallengeEnrolledListItemResponse of(Challenge challenge, ChallengeEnrollment challengeEnrollment, ParticipationStat stat, String hostProfileImage, boolean isParticipatedToday) {
         return ChallengeEnrolledListItemResponse.builder()
                 .challengeId(challenge.getId())
                 .title(challenge.getTitle())
@@ -39,10 +40,10 @@ public class ChallengeEnrolledListItemResponse {
                 .numberOfParticipants(challenge.getNumberOfParticipants())
                 .isPaidAll(challenge.isPaidAll())
                 .participatingDays(challenge.getParticipatingDays())
-                .totalFee(challengeEnrollment.getTotalFee())
+                .totalFee(stat.getTotalFee())
                 .hostProfileImage(hostProfileImage)
                 .isMemberGivenUp(challengeEnrollment.isGivenUp())
-                .successCount(challengeEnrollment.getSuccessCount())
+                .successCount(stat.getSuccessCount())
                 .isTodayParticipatingDay(challenge.isTodayParticipatingDay())
                 .isParticipatedToday(isParticipatedToday)
                 .build();

@@ -9,6 +9,8 @@ import com.habitpay.habitpay.domain.challengeenrollment.dao.ChallengeEnrollmentR
 import com.habitpay.habitpay.domain.challengeenrollment.domain.ChallengeEnrollment;
 import com.habitpay.habitpay.domain.member.application.MemberSearchService;
 import com.habitpay.habitpay.domain.member.domain.Member;
+import com.habitpay.habitpay.domain.participationstat.dao.ParticipationStatRepository;
+import com.habitpay.habitpay.domain.participationstat.domain.ParticipationStat;
 import com.habitpay.habitpay.global.response.SuccessCode;
 import com.habitpay.habitpay.global.response.SuccessResponse;
 import lombok.AllArgsConstructor;
@@ -22,6 +24,7 @@ import java.time.ZonedDateTime;
 public class ChallengeCreationService {
     private final ChallengeRepository challengeRepository;
     private final ChallengeEnrollmentRepository challengeEnrollmentRepository;
+    private final ParticipationStatRepository participationStatRepository;
 
     @Transactional
     public SuccessResponse<ChallengeCreationResponse> createChallenge(ChallengeCreationRequest challengeCreationRequest, Member member) {
@@ -33,8 +36,12 @@ public class ChallengeCreationService {
         challenge.setNumberOfParticipants(challenge.getNumberOfParticipants() + 1);
         challengeRepository.save(challenge);
 
+        // todo: ChallengeEnrollmentService에 반복되는 로직 존재 -> 메서드화?
         ChallengeEnrollment challengeEnrollment = ChallengeEnrollment.of(member, challenge);
+        ParticipationStat participationStat = ParticipationStat.of(challengeEnrollment);
+        challengeEnrollment.setParticipationStat(participationStat);
         challengeEnrollmentRepository.save(challengeEnrollment);
+        participationStatRepository.save(participationStat);
 
         return SuccessResponse.of(
                 SuccessCode.CREATE_CHALLENGE_SUCCESS,
