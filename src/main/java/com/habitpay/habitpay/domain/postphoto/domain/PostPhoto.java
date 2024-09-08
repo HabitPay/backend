@@ -19,7 +19,7 @@ public class PostPhoto extends BaseTime {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "challenge_post_id")
     private ChallengePost challengePost;
 

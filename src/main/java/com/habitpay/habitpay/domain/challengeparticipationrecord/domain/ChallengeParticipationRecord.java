@@ -1,18 +1,20 @@
 package com.habitpay.habitpay.domain.challengeparticipationrecord.domain;
 
+import com.habitpay.habitpay.domain.challenge.domain.Challenge;
 import com.habitpay.habitpay.domain.challengeenrollment.domain.ChallengeEnrollment;
 import com.habitpay.habitpay.domain.challengepost.domain.ChallengePost;
 import com.habitpay.habitpay.domain.model.BaseTime;
+import com.habitpay.habitpay.domain.participationstat.domain.ParticipationStat;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
+import java.time.LocalDate;
 
 @EntityListeners(AuditingEntityListener.class)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
+@Setter
 @Entity
 @Table(name = "challenge_participation_record")
 public class ChallengeParticipationRecord extends BaseTime {
@@ -20,17 +22,38 @@ public class ChallengeParticipationRecord extends BaseTime {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "challenge_id")
+    private Challenge challenge;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "challenge_enrollment_id")
     private ChallengeEnrollment challengeEnrollment;
 
-    @OneToOne
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "participation_stat_id")
+    private ParticipationStat participationStat;
+
+    @Column(nullable = false)
+    private LocalDate targetDate;
+
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "challenge_post_id")
     private ChallengePost challengePost;
 
     @Builder
-    public ChallengeParticipationRecord(ChallengeEnrollment enrollment, ChallengePost post) {
+    public ChallengeParticipationRecord(
+            ChallengeEnrollment enrollment,
+            ParticipationStat stat,
+            LocalDate targetDate) {
+        this.challenge = enrollment.getChallenge();
         this.challengeEnrollment = enrollment;
-        this.challengePost = post;
+        this.participationStat = stat;
+        this.targetDate = targetDate;
     }
+
+    public boolean existChallengePost() {
+        return this.challengePost != null;
+    }
+
 }
