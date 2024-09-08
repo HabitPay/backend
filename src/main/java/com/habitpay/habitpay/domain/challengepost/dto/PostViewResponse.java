@@ -20,15 +20,17 @@ public class PostViewResponse {
     private Long challengeEnrollmentId;
     private String content;
     private String writer;
+    private String profileUrl;
     private Boolean isAnnouncement;
     private LocalDateTime createdAt;
     private List<PostPhotoView> photoViewList;
 
-    public PostViewResponse(ChallengePost post, List<PostPhotoView> photoViewList) {
+    public PostViewResponse(ChallengePost post, String profileUrl, List<PostPhotoView> photoViewList) {
         this.id = post.getId();
         this.challengeEnrollmentId = post.getChallengeEnrollment().getId();
         this.content = post.getContent();
         this.writer = post.getWriter().getNickname();
+        this.profileUrl = profileUrl;
         this.isAnnouncement = post.getIsAnnouncement();
         this.createdAt = post.getCreatedAt();
         this.photoViewList = photoViewList;

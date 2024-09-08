@@ -83,6 +83,7 @@ public class ChallengePostApiTest extends AbstractRestDocsTests {
                 .challengeEnrollmentId(1L)
                 .content("This is test post.")
                 .writer("test user")
+                .profileUrl("https://picsum.photos/id/40/200/300")
                 .isAnnouncement(false)
                 .createdAt(LocalDateTime.now())
                 .photoViewList(List.of(
@@ -111,6 +112,7 @@ public class ChallengePostApiTest extends AbstractRestDocsTests {
                                 fieldWithPath("data.challengeEnrollmentId").description("포스트가 소속된 enrollment id"),
                                 fieldWithPath("data.content").description("포스트 내용"),
                                 fieldWithPath("data.writer").description("작성자"),
+                                fieldWithPath("data.profileUrl").description("작성자 프로필 이미지 URL"),
                                 fieldWithPath("data.isAnnouncement").description("공지글 여부"),
                                 fieldWithPath("data.createdAt").description("생성 일시"),
                                 fieldWithPath("data.photoViewList").description("포스트 포토(URL 포함) 데이터를 담은 객체 배열"),
@@ -132,6 +134,7 @@ public class ChallengePostApiTest extends AbstractRestDocsTests {
                         .challengeEnrollmentId(1L)
                         .content("This is test post 1.")
                         .writer("test user")
+                        .profileUrl("")
                         .isAnnouncement(false)
                         .createdAt(LocalDateTime.now())
                         .photoViewList(List.of(new PostPhotoView(1L, 1L, "https://picsum.photos/id/40/200/300")))
@@ -141,6 +144,7 @@ public class ChallengePostApiTest extends AbstractRestDocsTests {
                         .challengeEnrollmentId(2L)
                         .content("This is test post 2.")
                         .writer("test user")
+                        .profileUrl("https://picsum.photos/id/40/200/300")
                         .isAnnouncement(false)
                         .createdAt(LocalDateTime.now())
                         .photoViewList(List.of(new PostPhotoView(2L, 2L, "https://picsum.photos/id/40/200/300")))
@@ -172,6 +176,7 @@ public class ChallengePostApiTest extends AbstractRestDocsTests {
                                 fieldWithPath("data.content[].challengeEnrollmentId").description("포스트가 소속된 enrollment id"),
                                 fieldWithPath("data.content[].content").description("포스트 내용"),
                                 fieldWithPath("data.content[].writer").description("작성자"),
+                                fieldWithPath("data.content[].profileUrl").description("작성자 프로필 이미지 URL"),
                                 fieldWithPath("data.content[].isAnnouncement").description("공지글 여부"),
                                 fieldWithPath("data.content[].createdAt").description("생성 일시"),
                                 fieldWithPath("data.content[].photoViewList").description("포스트 포토(URL 포함) 데이터를 담은 객체 배열"),
@@ -215,6 +220,7 @@ public class ChallengePostApiTest extends AbstractRestDocsTests {
                         .challengeEnrollmentId(1L)
                         .content("This is announcement test post 1.")
                         .writer("test user")
+                        .profileUrl("")
                         .isAnnouncement(true)
                         .createdAt(LocalDateTime.now())
                         .photoViewList(List.of(new PostPhotoView(1L, 1L, "https://picsum.photos/id/40/200/300")))
@@ -224,6 +230,7 @@ public class ChallengePostApiTest extends AbstractRestDocsTests {
                         .challengeEnrollmentId(2L)
                         .content("This is announcement test post 2.")
                         .writer("test user")
+                        .profileUrl("https://picsum.photos/id/40/200/300")
                         .isAnnouncement(true)
                         .createdAt(LocalDateTime.now())
                         .photoViewList(List.of(new PostPhotoView(2L, 2L, "https://picsum.photos/id/40/200/300")))
@@ -255,6 +262,7 @@ public class ChallengePostApiTest extends AbstractRestDocsTests {
                                 fieldWithPath("data.content[].challengeEnrollmentId").description("포스트가 소속된 enrollment id"),
                                 fieldWithPath("data.content[].content").description("포스트 내용"),
                                 fieldWithPath("data.content[].writer").description("작성자"),
+                                fieldWithPath("data.content[].profileUrl").description("작성자 프로필 이미지 URL"),
                                 fieldWithPath("data.content[].isAnnouncement").description("공지글 여부"),
                                 fieldWithPath("data.content[].createdAt").description("생성 일시"),
                                 fieldWithPath("data.content[].photoViewList").description("포스트 포토(URL 포함) 데이터를 담은 객체 배열"),
@@ -299,6 +307,7 @@ public class ChallengePostApiTest extends AbstractRestDocsTests {
                         .challengeEnrollmentId(1L)
                         .content("This is test post 1 by me.")
                         .writer("test user")
+                        .profileUrl("")
                         .isAnnouncement(false)
                         .createdAt(LocalDateTime.now())
                         .photoViewList(List.of(new PostPhotoView(1L, 1L, "https://picsum.photos/id/40/200/300")))
@@ -308,6 +317,7 @@ public class ChallengePostApiTest extends AbstractRestDocsTests {
                         .challengeEnrollmentId(2L)
                         .content("This is test post 2 by me.")
                         .writer("test user")
+                        .profileUrl("https://picsum.photos/id/40/200/300")
                         .isAnnouncement(false)
                         .createdAt(LocalDateTime.now())
                         .photoViewList(List.of(new PostPhotoView(2L, 2L, "https://picsum.photos/id/40/200/300")))
@@ -339,6 +349,7 @@ public class ChallengePostApiTest extends AbstractRestDocsTests {
                                 fieldWithPath("data.content[].challengeEnrollmentId").description("포스트가 소속된 enrollment id"),
                                 fieldWithPath("data.content[].content").description("포스트 내용"),
                                 fieldWithPath("data.content[].writer").description("작성자"),
+                                fieldWithPath("data.content[].profileUrl").description("작성자 프로필 이미지 URL"),
                                 fieldWithPath("data.content[].isAnnouncement").description("공지글 여부"),
                                 fieldWithPath("data.content[].createdAt").description("생성 일시"),
                                 fieldWithPath("data.content[].photoViewList").description("포스트 포토(URL 포함) 데이터를 담은 객체 배열"),
