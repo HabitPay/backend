@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -45,14 +46,14 @@ public class ChallengeParticipationRecordSearchService {
 
     public ChallengeParticipationRecord findByChallengeEnrollmentAndTargetDate(
             ChallengeEnrollment enrollment,
-            LocalDate targetDate) {
-        return challengeParticipationRecordRepository.findByChallengeEnrollmentAndTargetDate(enrollment, targetDate)
-                .orElseThrow(() -> new MandatoryRecordNotFoundException(enrollment.getId(), targetDate.toString()));
+            ZonedDateTime startOfTargetDate) {
+        return challengeParticipationRecordRepository.findByChallengeEnrollmentAndTargetDate(enrollment, startOfTargetDate)
+                .orElseThrow(() -> new MandatoryRecordNotFoundException(enrollment.getId(), startOfTargetDate.toString()));
     }
 
     public List<ChallengeParticipationRecord> findByChallengesAndTargetDate(
             List<Challenge> challengeList,
-            LocalDate targetDate) {
-        return challengeParticipationRecordRepository.findByChallengeInAndTargetDate(challengeList, targetDate);
+            ZonedDateTime startOfTargetDate) {
+        return challengeParticipationRecordRepository.findByChallengeInAndTargetDate(challengeList, startOfTargetDate);
     }
 }

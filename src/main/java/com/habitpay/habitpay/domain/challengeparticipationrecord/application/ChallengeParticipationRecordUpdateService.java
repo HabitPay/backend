@@ -10,7 +10,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
+import java.time.ZonedDateTime;
 
 @Service
 @RequiredArgsConstructor
@@ -21,13 +21,13 @@ public class ChallengeParticipationRecordUpdateService {
     private final ParticipationStatRepository participationStatRepository;
     private final ChallengeParticipationRecordSearchService challengeParticipationRecordSearchService;
 
-    public ChallengeParticipationRecord setChallengePost(
+    public void setChallengePost(
             ChallengeEnrollment enrollment,
-            LocalDate today,
+            ZonedDateTime startOfTargetDate,
             ChallengePost post) {
 
         ChallengeParticipationRecord record = challengeParticipationRecordSearchService
-                .findByChallengeEnrollmentAndTargetDate(enrollment, today);
+                .findByChallengeEnrollmentAndTargetDate(enrollment, startOfTargetDate);
         record.setChallengePost(post);
         challengeParticipationRecordRepository.save(record);
 
@@ -35,6 +35,5 @@ public class ChallengeParticipationRecordUpdateService {
         stat.setSuccessCount(stat.getSuccessCount() + 1);
         participationStatRepository.save(stat);
 
-        return record;
     }
 }

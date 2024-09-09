@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -55,11 +56,11 @@ public class ChallengeSchedulerService {
                 .findAllByStateAndParticipatingDays(ChallengeState.IN_PROGRESS, yesterdayBitPosition);
         if (challengeList.isEmpty()) { return; }
 
-        LocalDate targetDate = yesterday.toLocalDate();
+        ZonedDateTime startOfTargetDate = yesterday.with(LocalTime.MIDNIGHT);
         List<ParticipationStat> failStatList = new ArrayList<>();
         List<ChallengeParticipationRecord> failRecordList = new ArrayList<>();
 
-        challengeParticipationRecordSearchService.findByChallengesAndTargetDate(challengeList, targetDate)
+        challengeParticipationRecordSearchService.findByChallengesAndTargetDate(challengeList, startOfTargetDate)
                 .forEach(record -> {
                     if (!record.existChallengePost()) {
                         ParticipationStat stat = record.getParticipationStat();

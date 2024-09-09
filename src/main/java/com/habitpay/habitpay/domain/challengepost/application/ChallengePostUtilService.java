@@ -65,8 +65,8 @@ public class ChallengePostUtilService {
             return;
         }
 
-        LocalDate today = now.toLocalDate();
-        challengeParticipationRecordUpdateService.setChallengePost(enrollment, today, post);
+        ZonedDateTime startOfTargetDate = now.with(LocalTime.MIDNIGHT);
+        challengeParticipationRecordUpdateService.setChallengePost(enrollment, startOfTargetDate, post);
     }
 
     private boolean isAlreadyParticipateToday(ChallengeEnrollment enrollment, ZonedDateTime now) {

@@ -10,6 +10,7 @@ import lombok.*;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDate;
+import java.time.ZonedDateTime;
 
 @EntityListeners(AuditingEntityListener.class)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -35,7 +36,7 @@ public class ChallengeParticipationRecord extends BaseTime {
     private ParticipationStat participationStat;
 
     @Column(nullable = false)
-    private LocalDate targetDate;
+    private ZonedDateTime targetDate;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "challenge_post_id")
@@ -45,7 +46,7 @@ public class ChallengeParticipationRecord extends BaseTime {
     public ChallengeParticipationRecord(
             ChallengeEnrollment enrollment,
             ParticipationStat stat,
-            LocalDate targetDate) {
+            ZonedDateTime targetDate) {
         this.challenge = enrollment.getChallenge();
         this.challengeEnrollment = enrollment;
         this.participationStat = stat;
