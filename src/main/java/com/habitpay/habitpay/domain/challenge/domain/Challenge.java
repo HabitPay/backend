@@ -131,6 +131,11 @@ public class Challenge extends BaseTime {
         this.numberOfParticipants = numberOfParticipants;
     }
 
+    public Challenge setStateInProgress() {
+        this.state = ChallengeState.IN_PROGRESS;
+        return this;
+    }
+
     public boolean isTodayParticipatingDay() {
         DayOfWeek today = ZonedDateTime.now().getDayOfWeek();
         int todayBitPosition = 6 - (today.getValue() - 1);

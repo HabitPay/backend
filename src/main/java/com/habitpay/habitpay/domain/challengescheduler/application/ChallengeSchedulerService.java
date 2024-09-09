@@ -3,9 +3,12 @@ package com.habitpay.habitpay.domain.challengescheduler.application;
 import com.habitpay.habitpay.domain.challenge.dao.ChallengeRepository;
 import com.habitpay.habitpay.domain.challenge.domain.Challenge;
 import com.habitpay.habitpay.domain.challenge.domain.ChallengeState;
+import com.habitpay.habitpay.domain.challengeenrollment.dao.ChallengeEnrollmentRepository;
+import com.habitpay.habitpay.domain.challengeenrollment.domain.ChallengeEnrollment;
 import com.habitpay.habitpay.domain.challengeparticipationrecord.application.ChallengeParticipationRecordSearchService;
 import com.habitpay.habitpay.domain.challengeparticipationrecord.dao.ChallengeParticipationRecordRepository;
 import com.habitpay.habitpay.domain.challengeparticipationrecord.domain.ChallengeParticipationRecord;
+import com.habitpay.habitpay.domain.member.domain.Member;
 import com.habitpay.habitpay.domain.participationstat.dao.ParticipationStatRepository;
 import com.habitpay.habitpay.domain.participationstat.domain.ParticipationStat;
 import lombok.RequiredArgsConstructor;
@@ -27,15 +30,26 @@ public class ChallengeSchedulerService {
     private final ChallengeRepository challengeRepository;
     private final ParticipationStatRepository participationStatRepository;
     private final ChallengeParticipationRecordRepository challengeParticipationRecordRepository;
+    private final ChallengeEnrollmentRepository challengeEnrollmentRepository;
     private final ChallengeParticipationRecordSearchService challengeParticipationRecordSearchService;
 
     @Scheduled(cron = "0 0 0 * * *", zone = "Asia/Seoul")
     public void setChallengeForStart() {
-        // 오늘 날짜 시작인 챌린지 리스트 얻기 -> todo : 챌린지의 시작 날짜를 zoneDateTime이 아닌 날짜로 바꾼 후에 repository에서 날짜 검색 메서드 추가하기
+        // 오늘 날짜 시작인 챌린지 리스트 얻기
+        // todo : 시작 날짜 ZonedDateTime으로 받는 거 데이터 타입 확인하기
+//        List<Challenge> challengeList = ;
+        List<Challenge> challengeList = new ArrayList<>();
+
         // 챌린지 리스트를 state 진행 중으로 바꾸기
-        // -----------------
+        challengeList = challengeList
+                .stream()
+                .map(Challenge::setStateInProgress)
+                .toList();
 
         // 각 챌린지 내의 멤버 리스트 얻기
+        List<ChallengeEnrollment> enrollmentList = challengeEnrollmentRepository
+                .findAllByChallengeIn(challengeList);
+
         // 멤버 리스트 순회하면서 참여 목록 한 번에 모두! 만들기
 
         // 챌린지 생성일이 시작 요일과 동일한 경우만 참여 목록 따로 생성하는 예외 처리 필요
