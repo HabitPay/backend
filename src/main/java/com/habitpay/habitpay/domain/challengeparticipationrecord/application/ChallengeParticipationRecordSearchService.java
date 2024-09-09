@@ -10,12 +10,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -31,17 +27,6 @@ public class ChallengeParticipationRecordSearchService {
 
     public List<ChallengeParticipationRecord> findAllByChallengeEnrollment(ChallengeEnrollment enrollment) {
         return challengeParticipationRecordRepository.findAllByChallengeEnrollment(enrollment);
-    }
-
-    public Optional<ChallengeParticipationRecord> findTodayRecordInEnrollment(
-            ChallengeEnrollment enrollment,
-            LocalDateTime startOfDay,
-            LocalDateTime endOfDay) {
-        return challengeParticipationRecordRepository.findByChallengeEnrollmentAndCreatedAtBetween(
-                enrollment,
-                startOfDay,
-                endOfDay
-        );
     }
 
     public ChallengeParticipationRecord findByChallengeEnrollmentAndTargetDate(

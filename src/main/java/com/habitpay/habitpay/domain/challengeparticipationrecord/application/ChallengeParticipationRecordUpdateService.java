@@ -22,12 +22,9 @@ public class ChallengeParticipationRecordUpdateService {
     private final ChallengeParticipationRecordSearchService challengeParticipationRecordSearchService;
 
     public void setChallengePost(
-            ChallengeEnrollment enrollment,
-            ZonedDateTime startOfTargetDate,
+            ChallengeParticipationRecord record,
             ChallengePost post) {
 
-        ChallengeParticipationRecord record = challengeParticipationRecordSearchService
-                .findByChallengeEnrollmentAndTargetDate(enrollment, startOfTargetDate);
         record.setChallengePost(post);
         challengeParticipationRecordRepository.save(record);
 

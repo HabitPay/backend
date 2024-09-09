@@ -61,24 +61,14 @@ public class ChallengePostUtilService {
             return;
         }
 
-        if (isAlreadyParticipateToday(enrollment, now)) {
+        ZonedDateTime nowDate = now.with(LocalTime.MIDNIGHT);
+        ChallengeParticipationRecord record = challengeParticipationRecordSearchService
+                .findByChallengeEnrollmentAndTargetDate(enrollment, nowDate);
+        if (record.existChallengePost()) {
             return;
         }
 
-        ZonedDateTime startOfTargetDate = now.with(LocalTime.MIDNIGHT);
-        challengeParticipationRecordUpdateService.setChallengePost(enrollment, startOfTargetDate, post);
-    }
-
-    private boolean isAlreadyParticipateToday(ChallengeEnrollment enrollment, ZonedDateTime now) {
-
-        Optional<ChallengeParticipationRecord> optionalRecord
-                = challengeParticipationRecordSearchService.findTodayRecordInEnrollment(
-                enrollment,
-                now.toLocalDate().atStartOfDay(),
-                now.toLocalDate().atTime(LocalTime.MAX)
-        );
-
-        return optionalRecord.isPresent();
+        challengeParticipationRecordUpdateService.setChallengePost(record, post);
     }
 
 }
