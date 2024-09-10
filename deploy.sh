@@ -74,6 +74,7 @@ main() {
         log "Application is not running. Starting the application...(with blue container)"
         yq -i ".services.blue.image = \"$DOCKER_IMAGE\"" docker-compose.yaml
         sudo docker compose -p $APPLICATION up blue -d
+        healthcheck blue
     fi
 }
 
