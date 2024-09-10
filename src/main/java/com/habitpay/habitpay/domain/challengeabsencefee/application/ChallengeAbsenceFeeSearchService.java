@@ -1,6 +1,7 @@
 package com.habitpay.habitpay.domain.challengeabsencefee.application;
 
 import com.habitpay.habitpay.domain.challengeabsencefee.dto.FeeStatusResponse;
+import com.habitpay.habitpay.domain.challengeabsencefee.dto.MemberFee;
 import com.habitpay.habitpay.domain.challengeabsencefee.dto.MemberFeeView;
 import com.habitpay.habitpay.domain.challengeabsencefee.exception.DaysCountException;
 import com.habitpay.habitpay.domain.challenge.application.ChallengeSearchService;
@@ -39,7 +40,7 @@ public class ChallengeAbsenceFeeSearchService {
         FeeStatusResponse feeStatusResponse = FeeStatusResponse.builder()
                 .totalFee(findTotalFeeOfChallenge(memberFeeViewList))
                 .myFee(findPersonalTotalFeeOfChallenge(enrollment))
-                .memberFeeList(memberFeeViewList)
+                .memberFee(MemberFee.of(memberFeeViewList, member.getId()))
                 .build();
 
         return SuccessResponse.of(
