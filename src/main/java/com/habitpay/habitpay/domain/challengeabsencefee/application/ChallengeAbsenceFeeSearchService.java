@@ -40,7 +40,7 @@ public class ChallengeAbsenceFeeSearchService {
         FeeStatusResponse feeStatusResponse = FeeStatusResponse.builder()
                 .totalFee(findTotalFeeOfChallenge(memberFeeViewList))
                 .myFee(findPersonalTotalFeeOfChallenge(enrollment))
-                .memberFee(MemberFee.of(memberFeeViewList, member.getId()))
+                .memberFeeList(MemberFee.of(memberFeeViewList, member.getId()))
                 .build();
 
         return SuccessResponse.of(
