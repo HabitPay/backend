@@ -42,7 +42,7 @@ public enum ErrorCode {
     NOT_ALLOWED_TO_DELETE_CHALLENGE(HttpStatus.FORBIDDEN, "챌린지 삭제는 챌린지 주최자만 가능합니다."),
   
     // Challenge Participation Record
-    RECORD_NOT_FOUND(HttpStatus.NOT_FOUND, "챌린지 참여 기록이 존재하지 않습니다. 혹은 챌린지 참여를 위한 설정 중일 수 있습니다. 잠시 후 다시 시도해주세요."),
+    RECORD_NOT_FOUND(HttpStatus.NOT_FOUND, "챌린지 참여 기록이 존재하지 않습니다."),
     MANDATORY_RECORD_NOT_FOUND(HttpStatus.NOT_FOUND, "챌린지 참여 기록 연결 중 문제가 발생했습니다. 관리자에게 문의하십시오."),
 
     // Challenge Absence Fee

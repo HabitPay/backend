@@ -1,6 +1,7 @@
 package com.habitpay.habitpay.domain.challengepost.application;
 
 import com.habitpay.habitpay.domain.challenge.domain.Challenge;
+import com.habitpay.habitpay.domain.challenge.domain.ChallengeState;
 import com.habitpay.habitpay.domain.challengeenrollment.domain.ChallengeEnrollment;
 import com.habitpay.habitpay.domain.challengeparticipationrecord.application.ChallengeParticipationRecordUpdateService;
 import com.habitpay.habitpay.domain.challengeparticipationrecord.application.ChallengeParticipationRecordSearchService;
@@ -40,8 +41,11 @@ public class ChallengePostUtilService {
 
     public boolean isChallengePeriodForPost(Challenge challenge) {
         ZonedDateTime now = ZonedDateTime.now();
+        ChallengeState state = challenge.getState();
 
-        return now.isAfter(challenge.getStartDate()) && !challenge.isPaidAll();
+        return (state.equals(ChallengeState.IN_PROGRESS)
+                || state.equals(ChallengeState.COMPLETED_PENDING_SETTLEMENT))
+                && now.isAfter(challenge.getStartDate());
     }
 
     public void verifyChallengePostForRecord(ChallengePost post) {
