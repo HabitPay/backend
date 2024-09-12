@@ -74,11 +74,12 @@ public class ChallengeAbsenceFeeApiTest extends AbstractRestDocsTests {
                                 fieldWithPath("message").description("메시지"),
                                 fieldWithPath("data.totalFee").description("챌린지 내 전체 누적 벌금 총합"),
                                 fieldWithPath("data.myFee").description("챌린지 내 나의 누적 벌금 총합"),
-                                fieldWithPath("data.memberFeeList").description("챌린지 내 멤버별 벌금 현황 목록"),
-                                fieldWithPath("data.memberFeeList[].nickname").description("멤버 닉네임"),
-                                fieldWithPath("data.memberFeeList[].totalFee").description("챌린지 내 멤버의 누적 벌금 총합"),
-                                fieldWithPath("data.memberFeeList[].completionRate").description("챌린지 내 멤버의 달성률")
-                        )
+                                fieldWithPath("data.memberFee").description("챌린지 내 멤버별 벌금 현황 목록"),
+                                fieldWithPath("data.memberFee[].nickname").description("멤버 닉네임"),
+                                fieldWithPath("data.memberFee[].totalFee").description("챌린지 내 멤버의 누적 벌금 총합"),
+                                fieldWithPath("data.memberFee[].completionRate").description("챌린지 내 멤버의 달성률"),
+                                fieldWithPath("data.memberFee[].isMe").description("나의 벌금 현황 여부")
+                                )
                 ));
     }
 }
