@@ -12,5 +12,5 @@ import java.util.List;
 public class FeeStatusResponse {
     private int totalFee;
     private int myFee;
-    private List<MemberFeeView> memberFeeList;
+    private List<MemberFee> memberFeeList;
 }

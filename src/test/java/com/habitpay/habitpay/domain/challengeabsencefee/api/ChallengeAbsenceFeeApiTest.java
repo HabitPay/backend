@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.habitpay.habitpay.docs.springrestdocs.AbstractRestDocsTests;
 import com.habitpay.habitpay.domain.challengeabsencefee.application.ChallengeAbsenceFeeSearchService;
 import com.habitpay.habitpay.domain.challengeabsencefee.dto.FeeStatusResponse;
+import com.habitpay.habitpay.domain.challengeabsencefee.dto.MemberFee;
 import com.habitpay.habitpay.domain.challengeabsencefee.dto.MemberFeeView;
 import com.habitpay.habitpay.domain.member.domain.Member;
 import com.habitpay.habitpay.global.config.jwt.TokenProvider;
@@ -55,8 +56,8 @@ public class ChallengeAbsenceFeeApiTest extends AbstractRestDocsTests {
                 .totalFee(1500)
                 .myFee(500)
                 .memberFeeList(List.of(
-                        new MemberFeeView("testUser", 1000, 10),
-                        new MemberFeeView("selfUser", 500, 20)))
+                        new MemberFee("testUser", 1000, 10, true),
+                        new MemberFee("selfUser", 500, 20, false)))
                 .build();
 
         given(challengeAbsenceFeeSearchService.makeMemberFeeDataListOfChallenge(any(Long.class), any(Member.class)))
@@ -76,8 +77,9 @@ public class ChallengeAbsenceFeeApiTest extends AbstractRestDocsTests {
                                 fieldWithPath("data.memberFeeList").description("챌린지 내 멤버별 벌금 현황 목록"),
                                 fieldWithPath("data.memberFeeList[].nickname").description("멤버 닉네임"),
                                 fieldWithPath("data.memberFeeList[].totalFee").description("챌린지 내 멤버의 누적 벌금 총합"),
-                                fieldWithPath("data.memberFeeList[].completionRate").description("챌린지 내 멤버의 달성률")
-                        )
+                                fieldWithPath("data.memberFeeList[].completionRate").description("챌린지 내 멤버의 달성률"),
+                                fieldWithPath("data.memberFeeList[].isMe").description("나의 벌금 현황 여부")
+                                )
                 ));
     }
 }
