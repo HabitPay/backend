@@ -3,9 +3,13 @@ package com.habitpay.habitpay.domain.challenge.api;
 import com.habitpay.habitpay.domain.challenge.application.*;
 import com.habitpay.habitpay.domain.challenge.dto.*;
 import com.habitpay.habitpay.global.config.auth.CustomUserDetails;
+import com.habitpay.habitpay.global.response.PageResponse;
 import com.habitpay.habitpay.global.response.SuccessResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,6 +26,13 @@ public class ChallengeApi {
     private final ChallengeDetailsService challengeDetailsService;
     private final ChallengeSearchService challengeSearchService;
     private final ChallengeDeleteService challengeDeleteService;
+
+    @GetMapping("/challenges")
+    public SuccessResponse<PageResponse<ChallengePageResponse>> getChallengePage(
+            @PageableDefault(size = 20, sort = "id", direction = Sort.Direction.DESC) Pageable pageable
+    ) {
+        return challengeSearchService.getChallengePage(pageable);
+    }
 
     @GetMapping("/challenges/me")
     public SuccessResponse<List<ChallengeEnrolledListItemResponse>> getEnrolledChallengeList(
