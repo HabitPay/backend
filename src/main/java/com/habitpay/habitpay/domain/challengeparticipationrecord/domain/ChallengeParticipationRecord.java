@@ -45,12 +45,19 @@ public class ChallengeParticipationRecord extends BaseTime {
     @Builder
     public ChallengeParticipationRecord(
             ChallengeEnrollment enrollment,
-            ParticipationStat stat,
             ZonedDateTime targetDate) {
         this.challenge = enrollment.getChallenge();
         this.challengeEnrollment = enrollment;
-        this.participationStat = stat;
+        this.participationStat = enrollment.getParticipationStat();
         this.targetDate = targetDate;
+    }
+
+    public static ChallengeParticipationRecord of(ChallengeEnrollment enrollment, ZonedDateTime targetDate) {
+        return ChallengeParticipationRecord
+                .builder()
+                .enrollment(enrollment)
+                .targetDate(targetDate)
+                .build();
     }
 
     public boolean existChallengePost() {
