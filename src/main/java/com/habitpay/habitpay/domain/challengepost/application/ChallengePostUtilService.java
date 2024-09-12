@@ -7,6 +7,7 @@ import com.habitpay.habitpay.domain.challengeparticipationrecord.application.Cha
 import com.habitpay.habitpay.domain.challengeparticipationrecord.application.ChallengeParticipationRecordSearchService;
 import com.habitpay.habitpay.domain.challengeparticipationrecord.domain.ChallengeParticipationRecord;
 import com.habitpay.habitpay.domain.challengepost.domain.ChallengePost;
+import com.habitpay.habitpay.domain.challengepost.exception.InvalidStateForPostException;
 import com.habitpay.habitpay.domain.member.domain.Member;
 import com.habitpay.habitpay.global.error.exception.ErrorCode;
 import com.habitpay.habitpay.global.error.exception.ForbiddenException;
@@ -15,10 +16,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.DayOfWeek;
-import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.ZonedDateTime;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -39,13 +38,19 @@ public class ChallengePostUtilService {
         return challenge.getHost().equals(member);
     }
 
-    public boolean isChallengePeriodForPost(Challenge challenge) {
+    public void checkChallengePeriodForPost(Challenge challenge) {
         ZonedDateTime now = ZonedDateTime.now();
         ChallengeState state = challenge.getState();
 
-        return (state.equals(ChallengeState.IN_PROGRESS)
+        if (now.isAfter(challenge.getStartDate()) && state.equals(ChallengeState.SCHEDULED)) {
+            throw new InvalidStateForPostException(challenge.getId());
+        }
+
+        if ((state.equals(ChallengeState.IN_PROGRESS)
                 || state.equals(ChallengeState.COMPLETED_PENDING_SETTLEMENT))
-                && now.isAfter(challenge.getStartDate());
+                && now.isAfter(challenge.getStartDate())) {
+            throw new ForbiddenException(ErrorCode.POST_EDITABLE_ONLY_WITHIN_CHALLENGE_PERIOD);
+        }
     }
 
     public void verifyChallengePostForRecord(ChallengePost post) {

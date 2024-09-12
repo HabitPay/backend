@@ -55,6 +55,7 @@ public enum ErrorCode {
     POST_CANNOT_BE_DELETED(HttpStatus.FORBIDDEN, "일반 포스트 삭제는 제공되지 않는 기능입니다."),
     POST_PHOTO_IMAGE_SIZE_TOO_LARGE(HttpStatus.BAD_REQUEST, "이미지 파일의 크기가 제한을 초과했습니다. (최대 1MB)"),
     PHOTO_NOT_FOUND(HttpStatus.NOT_FOUND, "포스트 포토가 존재하지 않습니다."),
+    NEED_TO_WAIT_FOR_CHALLENGE_SET(HttpStatus.BAD_REQUEST, "챌린지 시작을 위한 설정 진행 중입니다. 잠시 후 다시 시도해주세요."),
     POST_EDITABLE_ONLY_WITHIN_CHALLENGE_PERIOD(HttpStatus.BAD_REQUEST, "챌린지 유효 기간에만 포스트를 작성 및 수정할 수 있습니다.");
 
     private HttpStatus status;

@@ -1,6 +1,5 @@
 package com.habitpay.habitpay.domain.challengepost.application;
 
-import com.habitpay.habitpay.domain.challenge.application.ChallengeSearchService;
 import com.habitpay.habitpay.domain.challenge.domain.Challenge;
 import com.habitpay.habitpay.domain.challengepost.dao.ChallengePostRepository;
 import com.habitpay.habitpay.domain.challengepost.domain.ChallengePost;
@@ -37,10 +36,7 @@ public class ChallengePostUpdateService {
     public SuccessResponse<List<String>> patchPost(ModifyPostRequest request, Long postId, Member member) {
         ChallengePost post = challengePostSearchService.getChallengePostById(postId);
 
-        if (!challengePostUtilService.isChallengePeriodForPost(post.getChallenge())) {
-            throw new ForbiddenException(ErrorCode.POST_EDITABLE_ONLY_WITHIN_CHALLENGE_PERIOD);
-        }
-
+        challengePostUtilService.checkChallengePeriodForPost(post.getChallenge());
         challengePostUtilService.authorizePostWriter(post, member);
 
         patchContent(post, request.getContent());

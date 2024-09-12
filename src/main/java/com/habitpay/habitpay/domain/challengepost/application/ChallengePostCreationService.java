@@ -37,9 +37,7 @@ public class ChallengePostCreationService {
     public SuccessResponse<List<String>> createPost(AddPostRequest request, Long challengeId, Member member) {
 
         Challenge challenge = challengeSearchService.getChallengeById(challengeId);
-        if (!challengePostUtilService.isChallengePeriodForPost(challenge)) {
-            throw new ForbiddenException(ErrorCode.POST_EDITABLE_ONLY_WITHIN_CHALLENGE_PERIOD);
-        }
+        challengePostUtilService.checkChallengePeriodForPost(challenge);
 
         ChallengePost challengePost = this.savePost(request, challenge, member);
         if (!challengePost.getIsAnnouncement()) {
