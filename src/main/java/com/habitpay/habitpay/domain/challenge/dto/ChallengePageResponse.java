@@ -14,6 +14,7 @@ public record ChallengePageResponse(
         ZonedDateTime stopDate,
         int numberOfParticipants,
         int participatingDays,
+        Boolean isStarted,
         Boolean isEnded,
         String hostNickname,
         String hostProfileImage
@@ -28,7 +29,8 @@ public record ChallengePageResponse(
                 .stopDate(challenge.getStopDate())
                 .numberOfParticipants(challenge.getNumberOfParticipants())
                 .participatingDays(challenge.getParticipatingDays())
-                .isEnded(challenge.getEndDate().isAfter(ZonedDateTime.now()))
+                .isStarted(ZonedDateTime.now().isAfter(challenge.getStartDate()))
+                .isEnded(ZonedDateTime.now().isAfter(challenge.getEndDate()))
                 .hostNickname(challenge.getHost().getNickname())
                 .hostProfileImage(hostProfileImage)
                 .build();
