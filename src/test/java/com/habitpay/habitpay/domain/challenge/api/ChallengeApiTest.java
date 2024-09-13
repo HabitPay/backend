@@ -85,6 +85,7 @@ public class ChallengeApiTest extends AbstractRestDocsTests {
                 .stopDate(null)
                 .numberOfParticipants(1)
                 .participatingDays(1 << 2)
+                .isStarted(true)
                 .isEnded(false)
                 .hostNickname("챌린지 주최자 닉네임")
                 .hostProfileImage("챌린지 주최자 프로필 이미지")
@@ -115,6 +116,7 @@ public class ChallengeApiTest extends AbstractRestDocsTests {
                                 fieldWithPath("data.content[].stopDate").description("챌린지 중단 일시"),
                                 fieldWithPath("data.content[].numberOfParticipants").description("챌린지 참여자 수"),
                                 fieldWithPath("data.content[].participatingDays").description("챌린지 총 진행 일"),
+                                fieldWithPath("data.content[].isStarted").description("챌린지 시작 여부"),
                                 fieldWithPath("data.content[].isEnded").description("챌린지 종료 여부"),
                                 fieldWithPath("data.content[].hostNickname").description("챌린지 주최자 닉네임"),
                                 fieldWithPath("data.content[].hostProfileImage").description("챌린지 주최자 프로필 이미지"),
