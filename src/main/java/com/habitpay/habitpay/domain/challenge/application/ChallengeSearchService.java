@@ -37,7 +37,9 @@ public class ChallengeSearchService {
     public SuccessResponse<PageResponse<ChallengePageResponse>> getChallengePage(Pageable pageable) {
         Page<ChallengePageResponse> challengePage = challengeRepository.findAll(pageable)
                 .map(challenge -> {
-                    String hostProfileImage = s3FileService.getGetPreSignedUrl("profiles", challenge.getHost().getImageFileName());
+                    String hostProfileImage = Optional.ofNullable(challenge.getHost().getImageFileName())
+                            .map((imageFilename) -> s3FileService.getGetPreSignedUrl("profiles", imageFilename))
+                            .orElse("");
                     return ChallengePageResponse.of(challenge, hostProfileImage);
                 });
 
