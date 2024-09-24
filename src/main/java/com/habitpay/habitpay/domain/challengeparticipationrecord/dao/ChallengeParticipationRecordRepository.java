@@ -7,6 +7,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -14,12 +16,9 @@ public interface ChallengeParticipationRecordRepository extends JpaRepository<Ch
     List<ChallengeParticipationRecord> findAllByChallengeEnrollment(ChallengeEnrollment enrollment);
 
     // todo: 사용처 보고 필요하면 수정
-    Optional<ChallengeParticipationRecord> findByChallengeEnrollment(ChallengeEnrollment challengeEnrollment);
+    Optional<List<ChallengeParticipationRecord>> findByChallengeEnrollment(ChallengeEnrollment challengeEnrollment);
 
-    // todo: 생성 일시 말고 타겟 데이트로 찾아야 함
-    Optional<ChallengeParticipationRecord> findByChallengeEnrollmentAndCreatedAtBetween(ChallengeEnrollment enrollment, LocalDateTime startOfDay, LocalDateTime endOfDay);
+    Optional<ChallengeParticipationRecord> findByChallengeEnrollmentAndTargetDate(ChallengeEnrollment challengeEnrollment, ZonedDateTime startOfTargetDate);
 
-    Optional<ChallengeParticipationRecord> findByChallengeEnrollmentAndTargetDate(ChallengeEnrollment enrollment, LocalDate targetDate);
-
-    List<ChallengeParticipationRecord> findByChallengeInAndTargetDate(List<Challenge> challengeList, LocalDate targetDate);
+    List<ChallengeParticipationRecord> findByChallengeInAndTargetDate(Collection<Challenge> challenge, ZonedDateTime startOfTargetDate);
 }

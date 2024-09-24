@@ -12,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.time.DayOfWeek;
 import java.time.ZonedDateTime;
+import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
@@ -131,9 +132,38 @@ public class Challenge extends BaseTime {
         this.numberOfParticipants = numberOfParticipants;
     }
 
+    public void setStateInProgress() {
+        this.state = ChallengeState.IN_PROGRESS;
+    }
+
+    public void setStateCompletedPendingSettlement() {
+        this.state = ChallengeState.COMPLETED_PENDING_SETTLEMENT;
+    }
+
     public boolean isTodayParticipatingDay() {
         DayOfWeek today = ZonedDateTime.now().getDayOfWeek();
         int todayBitPosition = 6 - (today.getValue() - 1);
         return (this.participatingDays & (1 << todayBitPosition)) != 0;
+    }
+
+    public List<ZonedDateTime> getParticipationDates() {
+
+        List<ZonedDateTime> dates = new ArrayList<>();
+
+        byte daysOfWeek = getParticipatingDays();
+        for (int i = 0; i < 7; ++i) {
+            if ((daysOfWeek & (1 << i)) != 0) {
+
+             DayOfWeek targetDay = DayOfWeek.of(7 - i);
+             ZonedDateTime targetDate = getStartDate().with(TemporalAdjusters.nextOrSame(targetDay));
+
+             while (!targetDate.isAfter(getEndDate())) {
+                 dates.add(targetDate);
+                 targetDate = targetDate.plusWeeks(1);
+             }
+            }
+        }
+
+        return dates;
     }
 }
