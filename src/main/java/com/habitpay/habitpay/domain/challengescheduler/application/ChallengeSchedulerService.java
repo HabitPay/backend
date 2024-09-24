@@ -25,7 +25,6 @@ public class ChallengeSchedulerService {
     private final ChallengeRepository challengeRepository;
     private final ParticipationStatRepository participationStatRepository;
     private final ChallengeParticipationRecordRepository challengeParticipationRecordRepository;
-    private final ChallengeParticipationRecordSearchService challengeParticipationRecordSearchService;
     private final SchedulerTaskHelperService schedulerTaskHelperService;
 
     @Scheduled(cron = "0 0 0 * * *", zone = "Asia/Seoul")
