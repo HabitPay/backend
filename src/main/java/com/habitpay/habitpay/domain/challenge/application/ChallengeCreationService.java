@@ -18,6 +18,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Collections;
 import java.util.List;
@@ -65,7 +66,8 @@ public class ChallengeCreationService {
     }
 
     private boolean isStartDateIsToday(ZonedDateTime startDate) {
+        ZonedDateTime startDateInLocalZone = startDate.withZoneSameInstant(ZoneId.of("Asia/Seoul"));
         ZonedDateTime now = ZonedDateTime.now();
-        return  startDate.toLocalDate().equals(now.toLocalDate());
+        return  startDateInLocalZone.toLocalDate().equals(now.toLocalDate());
     }
 }

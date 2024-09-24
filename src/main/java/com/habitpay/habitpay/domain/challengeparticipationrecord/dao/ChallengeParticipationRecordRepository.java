@@ -16,10 +16,7 @@ public interface ChallengeParticipationRecordRepository extends JpaRepository<Ch
     List<ChallengeParticipationRecord> findAllByChallengeEnrollment(ChallengeEnrollment enrollment);
 
     // todo: 사용처 보고 필요하면 수정
-    Optional<ChallengeParticipationRecord> findByChallengeEnrollment(ChallengeEnrollment challengeEnrollment);
-
-    // todo: 생성 일시 말고 타겟 데이트로 찾아야 함
-    Optional<ChallengeParticipationRecord> findByChallengeEnrollmentAndCreatedAtBetween(ChallengeEnrollment enrollment, LocalDateTime startOfDay, LocalDateTime endOfDay);
+    Optional<List<ChallengeParticipationRecord>> findByChallengeEnrollment(ChallengeEnrollment challengeEnrollment);
 
     Optional<ChallengeParticipationRecord> findByChallengeEnrollmentAndTargetDate(ChallengeEnrollment challengeEnrollment, ZonedDateTime startOfTargetDate);
 
