@@ -4,11 +4,9 @@ import com.habitpay.habitpay.domain.challenge.dao.ChallengeRepository;
 import com.habitpay.habitpay.domain.challenge.domain.Challenge;
 import com.habitpay.habitpay.domain.challenge.domain.ChallengeState;
 import com.habitpay.habitpay.domain.challengeenrollment.dao.ChallengeEnrollmentRepository;
-import com.habitpay.habitpay.domain.challengeenrollment.domain.ChallengeEnrollment;
 import com.habitpay.habitpay.domain.challengeparticipationrecord.application.ChallengeParticipationRecordSearchService;
 import com.habitpay.habitpay.domain.challengeparticipationrecord.dao.ChallengeParticipationRecordRepository;
 import com.habitpay.habitpay.domain.challengeparticipationrecord.domain.ChallengeParticipationRecord;
-import com.habitpay.habitpay.domain.member.domain.Member;
 import com.habitpay.habitpay.domain.participationstat.dao.ParticipationStatRepository;
 import com.habitpay.habitpay.domain.participationstat.domain.ParticipationStat;
 import lombok.RequiredArgsConstructor;
@@ -27,50 +25,25 @@ public class ChallengeSchedulerService {
     private final ChallengeRepository challengeRepository;
     private final ParticipationStatRepository participationStatRepository;
     private final ChallengeParticipationRecordRepository challengeParticipationRecordRepository;
-    private final ChallengeEnrollmentRepository challengeEnrollmentRepository;
     private final ChallengeParticipationRecordSearchService challengeParticipationRecordSearchService;
+    private final SchedulerTaskHelperService schedulerTaskHelperService;
 
     @Scheduled(cron = "0 0 0 * * *", zone = "Asia/Seoul")
     public void setChallengeForStart() {
 
-        // todo : 시작 날짜 ZonedDateTime으로 받는 거 데이터 타입 확인하기
-
-        ZoneId zoneId = ZoneId.systemDefault();
-        ZonedDateTime startOfDay = ZonedDateTime.now(zoneId).toLocalDate().atStartOfDay(zoneId);
-        ZonedDateTime endOfDay = ZonedDateTime.now(zoneId).toLocalDate().atTime(LocalTime.MAX).atZone(zoneId);
-
-        List<Challenge> challengeList = challengeRepository.findAllByStartDateBetweenAndState(startOfDay, endOfDay, ChallengeState.SCHEDULED);
+        // todo : 시작 날짜 ZonedDateTime으로 받고 있음 -> 날짜 데이터(without 시간)만으로 데이터 타입 바꾸기(프론트, 백 모두)
+        List<Challenge> challengeList = schedulerTaskHelperService.findStartingChallenges();
 
         challengeList.forEach(Challenge::setStateInProgress);
 
-        challengeList.forEach(challenge -> {
-            List<ChallengeEnrollment> enrollmentList = challengeEnrollmentRepository.findAllByChallenge(challenge);
-            List<ZonedDateTime> participationDates = challenge.getParticipationDates();
-
-            List<ChallengeParticipationRecord> recordList = createRecordsForEnrollments(enrollmentList, participationDates);
-            challengeParticipationRecordRepository.saveAll(recordList);
-        });
-
+        schedulerTaskHelperService.createRecordsForChallenges(challengeList);
         challengeRepository.saveAll(challengeList);
 
         // todo :
         //  챌린지 '생성일'이 '시작 날짜'와 동일한 경우 참여 목록 따로 생성하는 예외 처리 필요
     }
 
-    public List<ChallengeParticipationRecord> createRecordsForEnrollments(
-            List<ChallengeEnrollment> enrollmentList,
-            List<ZonedDateTime> participationDates) {
 
-        List<ChallengeParticipationRecord> recordList = new ArrayList<>();
-
-        enrollmentList.forEach(enrollment -> {
-            participationDates.forEach(date -> {
-                recordList.add(ChallengeParticipationRecord.of(enrollment, date));
-            });
-        });
-
-        return recordList;
-    }
 
     @Scheduled(cron = "0 0 0 * * *", zone = "Asia/Seoul")
     public void setChallengeForEnd() {}
