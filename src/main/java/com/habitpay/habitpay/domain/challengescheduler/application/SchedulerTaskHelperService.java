@@ -5,8 +5,10 @@ import com.habitpay.habitpay.domain.challenge.domain.Challenge;
 import com.habitpay.habitpay.domain.challenge.domain.ChallengeState;
 import com.habitpay.habitpay.domain.challengeenrollment.dao.ChallengeEnrollmentRepository;
 import com.habitpay.habitpay.domain.challengeenrollment.domain.ChallengeEnrollment;
+import com.habitpay.habitpay.domain.challengeparticipationrecord.application.ChallengeParticipationRecordSearchService;
 import com.habitpay.habitpay.domain.challengeparticipationrecord.dao.ChallengeParticipationRecordRepository;
 import com.habitpay.habitpay.domain.challengeparticipationrecord.domain.ChallengeParticipationRecord;
+import com.habitpay.habitpay.domain.participationstat.domain.ParticipationStat;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -24,6 +26,7 @@ public class SchedulerTaskHelperService {
     private final ChallengeRepository challengeRepository;
     private final ChallengeEnrollmentRepository challengeEnrollmentRepository;
     private final ChallengeParticipationRecordRepository challengeParticipationRecordRepository;
+    private final ChallengeParticipationRecordSearchService challengeParticipationRecordSearchService;
 
     public List<Challenge> findStartingChallenges() {
         ZoneId zoneId = ZoneId.systemDefault();
@@ -64,5 +67,21 @@ public class SchedulerTaskHelperService {
         byte yesterdayBitPosition = (byte) ((byte) 1 << (7 - yesterdayOfWeek.getValue()));
 
         return challengeRepository.findAllByStateAndParticipatingDays(ChallengeState.IN_PROGRESS, yesterdayBitPosition);
+    }
+
+    public void checkFailedParticipation(List<Challenge> challengeList,
+                                         ZonedDateTime yesterday,
+                                         List<ParticipationStat> failStatList,
+                                         List<ChallengeParticipationRecord> failRecordList) {
+        challengeParticipationRecordSearchService.findByChallengesAndTargetDate(challengeList, yesterday)
+                .forEach(record -> {
+                    if (!record.existChallengePost()) {
+                        ParticipationStat stat = record.getParticipationStat();
+                        stat.setFailureCount(stat.getFailureCount() + 1);
+                        stat.setTotalFee(stat.getTotalFee() + record.getChallenge().getFeePerAbsence());
+                        failStatList.add(record.getParticipationStat());
+                        failRecordList.add(record);
+                    }
+                });
     }
 }

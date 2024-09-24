@@ -52,24 +52,14 @@ public class ChallengeSchedulerService {
     @Scheduled(cron = "0 0 0 * * *", zone = "Asia/Seoul")
     public void checkParticipationForChallenge() {
 
-        ZonedDateTime yesterday = ZonedDateTime.now().minusDays(1);
+        ZonedDateTime yesterday = ZonedDateTime.now().minusDays(1).with(LocalTime.MIDNIGHT);
         List<Challenge> challengeList = schedulerTaskHelperService.findChallengesForTodayParticipation(yesterday);
+
         if (challengeList.isEmpty()) { return; }
 
-        ZonedDateTime startOfYesterday = yesterday.with(LocalTime.MIDNIGHT);
         List<ParticipationStat> failStatList = new ArrayList<>();
         List<ChallengeParticipationRecord> failRecordList = new ArrayList<>();
-
-        challengeParticipationRecordSearchService.findByChallengesAndTargetDate(challengeList, startOfYesterday)
-                .forEach(record -> {
-                    if (!record.existChallengePost()) {
-                        ParticipationStat stat = record.getParticipationStat();
-                        stat.setFailureCount(stat.getFailureCount() + 1);
-                        stat.setTotalFee(stat.getTotalFee() + record.getChallenge().getFeePerAbsence());
-                        failStatList.add(record.getParticipationStat());
-                        failRecordList.add(record);
-                    }
-                });
+        schedulerTaskHelperService.checkFailedParticipation(challengeList, yesterday, failStatList, failRecordList);
 
         participationStatRepository.saveAll(failStatList);
         challengeParticipationRecordRepository.deleteAll(failRecordList);
