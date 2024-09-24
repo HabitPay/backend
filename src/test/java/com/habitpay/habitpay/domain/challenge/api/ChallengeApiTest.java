@@ -12,6 +12,7 @@ import com.habitpay.habitpay.global.config.jwt.TokenService;
 import com.habitpay.habitpay.global.error.exception.ErrorCode;
 import com.habitpay.habitpay.global.error.exception.ForbiddenException;
 import com.habitpay.habitpay.global.error.exception.InvalidValueException;
+import com.habitpay.habitpay.global.response.PageResponse;
 import com.habitpay.habitpay.global.response.SuccessCode;
 import com.habitpay.habitpay.global.response.SuccessResponse;
 import com.habitpay.habitpay.global.security.WithMockOAuth2User;
@@ -20,6 +21,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
@@ -65,6 +69,65 @@ public class ChallengeApiTest extends AbstractRestDocsTests {
 
     @MockBean
     TokenProvider tokenProvider;
+
+
+    @Test
+    @WithMockOAuth2User
+    @DisplayName("챌린지 전체 목록 조회")
+    void getChallengePage() throws Exception {
+
+        // given
+        ChallengePageResponse response = ChallengePageResponse.builder()
+                .id(1L)
+                .title("챌린지 제목")
+                .startDate(ZonedDateTime.now())
+                .endDate(ZonedDateTime.now().plusDays(5))
+                .stopDate(null)
+                .numberOfParticipants(1)
+                .participatingDays(1 << 2)
+                .isStarted(true)
+                .isEnded(false)
+                .hostNickname("챌린지 주최자 닉네임")
+                .hostProfileImage("챌린지 주최자 프로필 이미지")
+                .build();
+
+        Page page = new PageImpl<>(List.of(response));
+
+        given(challengeSearchService.getChallengePage(any(Pageable.class)))
+                .willReturn(SuccessResponse.of(SuccessCode.NO_MESSAGE, PageResponse.from(page)));
+
+        // when
+        ResultActions result = mockMvc.perform(get("/api/challenges")
+                .param("page", "page-number")
+                .header(HttpHeaders.AUTHORIZATION, AUTHORIZATION_HEADER_PREFIX + "ACCESS_TOKEN"));
+
+        // then
+        result.andExpect(status().isOk())
+                .andDo(document("challenge/get-challenge-page",
+                        requestHeaders(
+                                headerWithName(HttpHeaders.AUTHORIZATION).description("액세스 토큰")
+                        ),
+                        responseFields(
+                                fieldWithPath("message").description("메세지"),
+                                fieldWithPath("data.content[].id").description("챌린지 ID"),
+                                fieldWithPath("data.content[].title").description("챌린지 제목"),
+                                fieldWithPath("data.content[].startDate").description("챌린지 시작 일시"),
+                                fieldWithPath("data.content[].endDate").description("챌린지 종료 일시"),
+                                fieldWithPath("data.content[].stopDate").description("챌린지 중단 일시"),
+                                fieldWithPath("data.content[].numberOfParticipants").description("챌린지 참여자 수"),
+                                fieldWithPath("data.content[].participatingDays").description("챌린지 총 진행 일"),
+                                fieldWithPath("data.content[].isStarted").description("챌린지 시작 여부"),
+                                fieldWithPath("data.content[].isEnded").description("챌린지 종료 여부"),
+                                fieldWithPath("data.content[].hostNickname").description("챌린지 주최자 닉네임"),
+                                fieldWithPath("data.content[].hostProfileImage").description("챌린지 주최자 프로필 이미지"),
+                                fieldWithPath("data.page").description("현재 페이지 번호"),
+                                fieldWithPath("data.size").description("현재 페이지 조회 결과 건수"),
+                                fieldWithPath("data.totalElements").description("전체 페이지 조회 결과 건수"),
+                                fieldWithPath("data.totalPages").description("전체 페이지 수"),
+                                fieldWithPath("data.hasNextPage").description("다음 페이지 존재 유무")
+                        )));
+    }
+
 
     @Test
     @WithMockOAuth2User
@@ -179,7 +242,6 @@ public class ChallengeApiTest extends AbstractRestDocsTests {
                         )
                 ));
     }
-
 
     @Test
     @WithMockOAuth2User

@@ -29,6 +29,12 @@ spring:
         access-key: ${AWS_ACCESS_KEY}
         secret-key: ${AWS_SECRET_KEY}
 ---
+spring:
+  data:
+    web:
+      pageable:
+        one-indexed-parameters: true
+---
 jwt:
   issuer: ${JWT_ISSUER}
   secret: ${JWT_SECRET}
