@@ -53,18 +53,14 @@ public class ChallengeSchedulerService {
     public void checkParticipationForChallenge() {
 
         ZonedDateTime yesterday = ZonedDateTime.now().minusDays(1);
-        DayOfWeek yesterdayOfWeek = yesterday.getDayOfWeek();
-        byte yesterdayBitPosition = (byte) ((byte) 1 << (7 - yesterdayOfWeek.getValue()));
-
-        List<Challenge> challengeList = challengeRepository
-                .findAllByStateAndParticipatingDays(ChallengeState.IN_PROGRESS, yesterdayBitPosition);
+        List<Challenge> challengeList = schedulerTaskHelperService.findChallengesForTodayParticipation(yesterday);
         if (challengeList.isEmpty()) { return; }
 
-        ZonedDateTime startOfTargetDate = yesterday.with(LocalTime.MIDNIGHT);
+        ZonedDateTime startOfYesterday = yesterday.with(LocalTime.MIDNIGHT);
         List<ParticipationStat> failStatList = new ArrayList<>();
         List<ChallengeParticipationRecord> failRecordList = new ArrayList<>();
 
-        challengeParticipationRecordSearchService.findByChallengesAndTargetDate(challengeList, startOfTargetDate)
+        challengeParticipationRecordSearchService.findByChallengesAndTargetDate(challengeList, startOfYesterday)
                 .forEach(record -> {
                     if (!record.existChallengePost()) {
                         ParticipationStat stat = record.getParticipationStat();

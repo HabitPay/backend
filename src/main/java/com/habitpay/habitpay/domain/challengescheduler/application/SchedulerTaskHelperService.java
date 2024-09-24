@@ -10,6 +10,7 @@ import com.habitpay.habitpay.domain.challengeparticipationrecord.domain.Challeng
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.DayOfWeek;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -50,10 +51,18 @@ public class SchedulerTaskHelperService {
 
         enrollmentList.forEach(enrollment -> {
             participationDates.forEach(date -> {
-                recordList.add(ChallengeParticipationRecord.of(enrollment, date));
+                ZonedDateTime startOfDate = date.with(LocalTime.MIDNIGHT);
+                recordList.add(ChallengeParticipationRecord.of(enrollment, startOfDate));
             });
         });
 
         return recordList;
+    }
+
+    public List<Challenge> findChallengesForTodayParticipation(ZonedDateTime targetDay) {
+        DayOfWeek yesterdayOfWeek = targetDay.getDayOfWeek();
+        byte yesterdayBitPosition = (byte) ((byte) 1 << (7 - yesterdayOfWeek.getValue()));
+
+        return challengeRepository.findAllByStateAndParticipatingDays(ChallengeState.IN_PROGRESS, yesterdayBitPosition);
     }
 }
