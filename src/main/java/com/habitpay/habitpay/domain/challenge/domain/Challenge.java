@@ -132,9 +132,12 @@ public class Challenge extends BaseTime {
         this.numberOfParticipants = numberOfParticipants;
     }
 
-    public Challenge setStateInProgress() {
+    public void setStateInProgress() {
         this.state = ChallengeState.IN_PROGRESS;
-        return this;
+    }
+
+    public void setStateCompletedPendingSettlement() {
+        this.state = ChallengeState.COMPLETED_PENDING_SETTLEMENT;
     }
 
     public boolean isTodayParticipatingDay() {

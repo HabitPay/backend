@@ -37,15 +37,7 @@ public class ChallengeSchedulerService {
 
         schedulerTaskHelperService.createRecordsForChallenges(challengeList);
         challengeRepository.saveAll(challengeList);
-
-        // todo :
-        //  챌린지 '생성일'이 '시작 날짜'와 동일한 경우 참여 목록 따로 생성하는 예외 처리 필요
     }
-
-
-
-    @Scheduled(cron = "0 0 0 * * *", zone = "Asia/Seoul")
-    public void setChallengeForEnd() {}
 
     @Transactional
     @Scheduled(cron = "0 0 0 * * *", zone = "Asia/Seoul")
@@ -62,5 +54,13 @@ public class ChallengeSchedulerService {
 
         participationStatRepository.saveAll(failStatList);
         challengeParticipationRecordRepository.deleteAll(failRecordList);
+    }
+
+    @Scheduled(cron = "0 0 0 * * *", zone = "Asia/Seoul")
+    public void setChallengeForEnd() {
+
+        ZonedDateTime yesterday = ZonedDateTime.now().minusDays(1);
+        List<Challenge> challengeList = schedulerTaskHelperService.findEndingChallenges(yesterday);
+        challengeList.forEach(Challenge::setStateCompletedPendingSettlement);
     }
 }

@@ -84,4 +84,11 @@ public class SchedulerTaskHelperService {
                     }
                 });
     }
+
+    public List<Challenge> findEndingChallenges(ZonedDateTime targetDay) {
+        ZonedDateTime startOfDay = targetDay.with(LocalTime.MIDNIGHT);
+        ZonedDateTime endOfDay = targetDay.with(LocalTime.MAX);
+
+        return challengeRepository.findAllByEndDateBetweenAndState(startOfDay, endOfDay, ChallengeState.IN_PROGRESS);
+    }
 }
