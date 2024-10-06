@@ -51,6 +51,11 @@ public class ChallengeApi {
         return challengeDetailsService.getChallengeFeePerAbsence(id);
     }
 
+    @GetMapping("/challenges/{id}/dates")
+    public SuccessResponse<ChallengeDatesResponse> getChallengeDates(@PathVariable("id") Long id) {
+        return challengeDetailsService.getChallengeDates(id);
+    }
+
     @PostMapping("/challenges")
     public SuccessResponse<ChallengeCreationResponse> createChallenge(@RequestBody ChallengeCreationRequest challengeCreationRequest,
                                                                       @AuthenticationPrincipal CustomUserDetails user) {
