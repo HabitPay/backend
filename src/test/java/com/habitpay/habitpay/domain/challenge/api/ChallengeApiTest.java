@@ -325,6 +325,65 @@ public class ChallengeApiTest extends AbstractRestDocsTests {
                 ));
     }
 
+
+    @Test
+    @WithMockOAuth2User
+    @DisplayName("챌린지 진행 기간 조회")
+    void getChallengeDates() throws Exception {
+
+        // given
+        ChallengeDatesResponse challengeDatesResponse = ChallengeDatesResponse.builder()
+                .startDate(ZonedDateTime.now())
+                .endDate(ZonedDateTime.now().plusDays(2))
+                .build();
+
+        given(challengeDetailsService.getChallengeDates(anyLong()))
+                .willReturn(SuccessResponse.of(SuccessCode.NO_MESSAGE, challengeDatesResponse));
+
+        // when
+        ResultActions result = mockMvc.perform(get("/api/challenges/{id}/dates", 1L)
+                .header(HttpHeaders.AUTHORIZATION, AUTHORIZATION_HEADER_PREFIX + "ACCESS_TOKEN"));
+
+        // then
+        result.andExpect(status().isOk())
+                .andDo(document("challenge/get-challenge-dates",
+                        requestHeaders(
+                                headerWithName(HttpHeaders.AUTHORIZATION).description("액세스 토큰")
+                        ),
+                        responseFields(
+                                fieldWithPath("message").description("메세지"),
+                                fieldWithPath("data.startDate").description("챌린지 시작 날짜"),
+                                fieldWithPath("data.endDate").description("챌린지 종료 날짜")
+                        )
+                ));
+    }
+
+    @Test
+    @WithMockOAuth2User
+    @DisplayName("챌린지 진행 기간 조회 예외처리 - 존재하지 않는 챌린지 (404 Not Found)")
+    void getChallengeDatesNotFoundException() throws Exception {
+
+        // given
+        given(challengeDetailsService.getChallengeDates(anyLong()))
+                .willThrow(new ChallengeNotFoundException(0L));
+
+        // when
+        ResultActions result = mockMvc.perform(get("/api/challenges/{id}/dates", 0L)
+                .header(HttpHeaders.AUTHORIZATION, AUTHORIZATION_HEADER_PREFIX + "ACCESS_TOKEN"));
+
+        // then
+        result.andExpect(status().isNotFound())
+                .andDo(document("challenge/get-challenge-dates-not-found-exception",
+                        requestHeaders(
+                                headerWithName(HttpHeaders.AUTHORIZATION).description("액세스 토큰")
+                        ),
+                        responseFields(
+                                fieldWithPath("code").description("오류 응답 코드"),
+                                fieldWithPath("message").description("오류 메세지")
+                        )
+                ));
+    }
+
     @Test
     @WithMockOAuth2User
     @DisplayName("챌린지 생성")
