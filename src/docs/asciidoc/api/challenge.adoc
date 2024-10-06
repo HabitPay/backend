@@ -71,6 +71,20 @@ operation::challenge/get-challenge-dates[snippets='http-request,http-response,re
 
 operation::challenge/get-challenge-dates-not-found-exception[snippets='http-request,http-response,response-fields']
 
+=== 챌린지 참여 요일 조회
+
+첼린지 참여 요일을 조회합니다.
+
+operation::challenge/get-challenge-participating-days[snippets='http-request,http-response,response-fields']
+
+==== 에러 응답
+
+===== 챌린지가 존재하지 않는 경우 (404 Not Found)
+
+존재하지 않는 챌린지를 조회한 경우입니다.
+
+operation::challenge/get-challenge-participating-days-not-found-exception[snippets='http-request,http-response,response-fields']
+
 === 챌린지 생성
 
 새로운 첼린지를 생성합니다.
