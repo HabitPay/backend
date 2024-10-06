@@ -56,6 +56,11 @@ public class ChallengeApi {
         return challengeDetailsService.getChallengeDates(id);
     }
 
+    @GetMapping("/challenges/{id}/participating-days")
+    public SuccessResponse<ChallengeParticipatingDaysResponse> getChallengeParticipatingDays(@PathVariable("id") Long id) {
+        return challengeDetailsService.getChallengeParticipatingDays(id);
+    }
+
     @PostMapping("/challenges")
     public SuccessResponse<ChallengeCreationResponse> createChallenge(@RequestBody ChallengeCreationRequest challengeCreationRequest,
                                                                       @AuthenticationPrincipal CustomUserDetails user) {

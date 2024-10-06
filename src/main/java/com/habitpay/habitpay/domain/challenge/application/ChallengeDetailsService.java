@@ -4,6 +4,7 @@ import com.habitpay.habitpay.domain.challenge.domain.Challenge;
 import com.habitpay.habitpay.domain.challenge.dto.ChallengeDatesResponse;
 import com.habitpay.habitpay.domain.challenge.dto.ChallengeDetailsResponse;
 import com.habitpay.habitpay.domain.challenge.dto.ChallengeFeePerAbsenceResponse;
+import com.habitpay.habitpay.domain.challenge.dto.ChallengeParticipatingDaysResponse;
 import com.habitpay.habitpay.domain.challengeenrollment.dao.ChallengeEnrollmentRepository;
 import com.habitpay.habitpay.domain.challengeenrollment.domain.ChallengeEnrollment;
 import com.habitpay.habitpay.domain.member.domain.Member;
@@ -64,6 +65,15 @@ public class ChallengeDetailsService {
         return SuccessResponse.of(
                 SuccessCode.NO_MESSAGE,
                 ChallengeDatesResponse.from(challenge)
+        );
+    }
+
+    public SuccessResponse<ChallengeParticipatingDaysResponse> getChallengeParticipatingDays(Long challengeId) {
+        Challenge challenge = challengeSearchService.getChallengeById(challengeId);
+
+        return SuccessResponse.of(
+                SuccessCode.NO_MESSAGE,
+                ChallengeParticipatingDaysResponse.from(challenge)
         );
     }
 }
