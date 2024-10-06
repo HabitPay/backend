@@ -43,6 +43,20 @@ operation::challenge/get-challenge-details[snippets='http-request,http-response,
 
 operation::challenge/get-challenge-details-not-found-exception[snippets='http-request,http-response,response-fields']
 
+=== 챌린지 1회 실패당 벌금 조회
+
+첼린지 1회 실패당 벌금을 조회합니다.
+
+operation::challenge/get-challenge-fee-per-absence[snippets='http-request,http-response,response-fields']
+
+==== 에러 응답
+
+===== 챌린지가 존재하지 않는 경우 (404 Not Found)
+
+존재하지 않는 챌린지를 조회한 경우입니다.
+
+operation::challenge/get-challenge-fee-per-absence-not-found-exception[snippets='http-request,http-response,response-fields']
+
 === 챌린지 생성
 
 새로운 첼린지를 생성합니다.

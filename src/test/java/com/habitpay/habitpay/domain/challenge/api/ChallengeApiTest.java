@@ -271,6 +271,62 @@ public class ChallengeApiTest extends AbstractRestDocsTests {
 
     @Test
     @WithMockOAuth2User
+    @DisplayName("챌린지 1회 실패당 벌금 조회")
+    void getChallengeFeePerAbsence() throws Exception {
+
+        // given
+        ChallengeFeePerAbsenceResponse challengeFeePerAbsenceResponse = ChallengeFeePerAbsenceResponse.builder()
+                .feePerAbsence(1000)
+                .build();
+
+        given(challengeDetailsService.getChallengeFeePerAbsence(anyLong()))
+                .willReturn(SuccessResponse.of(SuccessCode.NO_MESSAGE, challengeFeePerAbsenceResponse));
+
+        // when
+        ResultActions result = mockMvc.perform(get("/api/challenges/{id}/fees/absence", 1L)
+                .header(HttpHeaders.AUTHORIZATION, AUTHORIZATION_HEADER_PREFIX + "ACCESS_TOKEN"));
+
+        // then
+        result.andExpect(status().isOk())
+                .andDo(document("challenge/get-challenge-fee-per-absence",
+                        requestHeaders(
+                                headerWithName(HttpHeaders.AUTHORIZATION).description("액세스 토큰")
+                        ),
+                        responseFields(
+                                fieldWithPath("message").description("메세지"),
+                                fieldWithPath("data.feePerAbsence").description("미참여 1회당 벌금")
+                        )
+                ));
+    }
+
+    @Test
+    @WithMockOAuth2User
+    @DisplayName("챌린지 1회 실패당 벌금 조회 예외처리 - 존재하지 않는 챌린지 (404 Not Found)")
+    void getChallengeFeePerAbsenceNotFoundException() throws Exception {
+
+        // given
+        given(challengeDetailsService.getChallengeFeePerAbsence(anyLong()))
+                .willThrow(new ChallengeNotFoundException(0L));
+
+        // when
+        ResultActions result = mockMvc.perform(get("/api/challenges/{id}/fees/absence", 0L)
+                .header(HttpHeaders.AUTHORIZATION, AUTHORIZATION_HEADER_PREFIX + "ACCESS_TOKEN"));
+
+        // then
+        result.andExpect(status().isNotFound())
+                .andDo(document("challenge/get-challenge-fee-per-absence-not-found-exception",
+                        requestHeaders(
+                                headerWithName(HttpHeaders.AUTHORIZATION).description("액세스 토큰")
+                        ),
+                        responseFields(
+                                fieldWithPath("code").description("오류 응답 코드"),
+                                fieldWithPath("message").description("오류 메세지")
+                        )
+                ));
+    }
+
+    @Test
+    @WithMockOAuth2User
     @DisplayName("챌린지 생성")
     void createChallenge() throws Exception {
 
