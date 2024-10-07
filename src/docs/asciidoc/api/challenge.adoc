@@ -99,6 +99,17 @@ operation::challenge/create-challenge[snippets='http-request,http-response,respo
 
 operation::challenge/create-challenge-invalid-start-time[snippets='http-request,http-response,response-fields']
 
+===== 챌린지 진행 기간에 참여 요일이 포함되지 않은 경우 (400 Bad Request)
+
+챌린지 진행 기간에 선택한 참여 요일이 전혀 포함되지 않은 경우입니다.
+
+예시
+
+- 진행 기간: 2024.10.07(월) ~ 2024.10.08(화)
+- 참여 요일: 수요일
+
+operation::challenge/create-challenge-invalid-participating-days[snippets='http-request,http-response,response-fields']
+
 === 챌린지 정보 수정
 
 챌린지 정보를 수정합니다.
