@@ -74,8 +74,6 @@ public class ChallengeCreationService {
             currentDate = currentDate.plusDays(1);
         }
 
-        challengeDays.forEach(day -> System.out.printf("day: %s\n", day));
-
         int count = 0;
         for (int bit = 0; bit <= 6; bit += 1) {
             int dayBitPosition = 6 - bit; // [0000000] 7자리 비트 사용. 가장 왼쪽 비트가 월요일.
@@ -83,7 +81,6 @@ public class ChallengeCreationService {
             if ((participatingDays & (1 << dayBitPosition)) != 0) {
                 DayOfWeek dayOfWeek = DayOfWeek.of(bit + 1); // (1=Monday, 7=Sunday)
                 count = challengeDays.contains(dayOfWeek) ? count + 1 : count;
-                System.out.printf("dayOfWeek: %s, count: %d\n", dayOfWeek, count);
             }
         }
 
