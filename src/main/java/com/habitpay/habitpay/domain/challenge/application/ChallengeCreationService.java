@@ -5,10 +5,10 @@ import com.habitpay.habitpay.domain.challenge.domain.Challenge;
 import com.habitpay.habitpay.domain.challenge.dto.ChallengeCreationRequest;
 import com.habitpay.habitpay.domain.challenge.dto.ChallengeCreationResponse;
 import com.habitpay.habitpay.domain.challenge.exception.ChallengeStartTimeInvalidException;
+import com.habitpay.habitpay.domain.challenge.exception.InvalidChallengeParticipatingDaysException;
 import com.habitpay.habitpay.domain.challengeenrollment.dao.ChallengeEnrollmentRepository;
 import com.habitpay.habitpay.domain.challengeenrollment.domain.ChallengeEnrollment;
 import com.habitpay.habitpay.domain.challengescheduler.application.SchedulerTaskHelperService;
-import com.habitpay.habitpay.domain.member.application.MemberSearchService;
 import com.habitpay.habitpay.domain.member.domain.Member;
 import com.habitpay.habitpay.domain.participationstat.dao.ParticipationStatRepository;
 import com.habitpay.habitpay.domain.participationstat.domain.ParticipationStat;
@@ -18,9 +18,11 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.DayOfWeek;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.List;
 
 @Service
@@ -33,9 +35,8 @@ public class ChallengeCreationService {
 
     @Transactional
     public SuccessResponse<ChallengeCreationResponse> createChallenge(ChallengeCreationRequest challengeCreationRequest, Member member) {
-        if (isStartDateBeforeNow(challengeCreationRequest.getStartDate())) {
-            throw new ChallengeStartTimeInvalidException(challengeCreationRequest.getStartDate());
-        }
+        validateChallengeStartDate(challengeCreationRequest.getStartDate());
+        validateChallengeParticipatingDays(challengeCreationRequest);
 
         Challenge challenge = Challenge.of(member, challengeCreationRequest);
         challenge.setNumberOfParticipants(challenge.getNumberOfParticipants() + 1);
@@ -61,13 +62,42 @@ public class ChallengeCreationService {
         );
     }
 
-    private boolean isStartDateBeforeNow(ZonedDateTime startDate) {
-        return startDate.isBefore(ZonedDateTime.now());
+    private void validateChallengeParticipatingDays(ChallengeCreationRequest challengeCreationRequest) {
+        ZonedDateTime startDate = challengeCreationRequest.getStartDate();
+        ZonedDateTime endDate = challengeCreationRequest.getEndDate();
+        int participatingDays = challengeCreationRequest.getParticipatingDays();
+
+        EnumSet<DayOfWeek> challengeDays = EnumSet.noneOf(DayOfWeek.class);
+        ZonedDateTime currentDate = startDate;
+        while (!currentDate.isAfter(endDate) && challengeDays.size() < 7) {
+            challengeDays.add(currentDate.getDayOfWeek());
+            currentDate = currentDate.plusDays(1);
+        }
+
+        int count = 0;
+        for (int bit = 0; bit <= 6; bit += 1) {
+            int dayBitPosition = 6 - bit; // [0000000] 7자리 비트 사용. 가장 왼쪽 비트가 월요일.
+
+            if ((participatingDays & (1 << dayBitPosition)) != 0) {
+                DayOfWeek dayOfWeek = DayOfWeek.of(bit + 1); // (1=Monday, 7=Sunday)
+                count = challengeDays.contains(dayOfWeek) ? count + 1 : count;
+            }
+        }
+
+        if (count == 0) {
+            throw new InvalidChallengeParticipatingDaysException();
+        }
+    }
+
+    private void validateChallengeStartDate(ZonedDateTime startDate) {
+        if (startDate.isBefore(ZonedDateTime.now())) {
+            throw new ChallengeStartTimeInvalidException(startDate);
+        }
     }
 
     private boolean isStartDateIsToday(ZonedDateTime startDate) {
         ZonedDateTime startDateInLocalZone = startDate.withZoneSameInstant(ZoneId.of("Asia/Seoul"));
         ZonedDateTime now = ZonedDateTime.now();
-        return  startDateInLocalZone.toLocalDate().equals(now.toLocalDate());
+        return startDateInLocalZone.toLocalDate().equals(now.toLocalDate());
     }
 }

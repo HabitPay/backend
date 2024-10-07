@@ -6,6 +6,7 @@ import com.habitpay.habitpay.domain.challenge.application.*;
 import com.habitpay.habitpay.domain.challenge.dto.*;
 import com.habitpay.habitpay.domain.challenge.exception.ChallengeNotFoundException;
 import com.habitpay.habitpay.domain.challenge.exception.ChallengeStartTimeInvalidException;
+import com.habitpay.habitpay.domain.challenge.exception.InvalidChallengeParticipatingDaysException;
 import com.habitpay.habitpay.domain.member.domain.Member;
 import com.habitpay.habitpay.global.config.jwt.TokenProvider;
 import com.habitpay.habitpay.global.config.jwt.TokenService;
@@ -28,6 +29,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
 
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.List;
 
@@ -259,9 +261,6 @@ public class ChallengeApiTest extends AbstractRestDocsTests {
         // then
         result.andExpect(status().isNotFound())
                 .andDo(document("challenge/get-challenge-details-not-found-exception",
-                        requestHeaders(
-                                headerWithName(HttpHeaders.AUTHORIZATION).description("액세스 토큰")
-                        ),
                         responseFields(
                                 fieldWithPath("code").description("오류 응답 코드"),
                                 fieldWithPath("message").description("오류 메세지")
@@ -289,9 +288,6 @@ public class ChallengeApiTest extends AbstractRestDocsTests {
         // then
         result.andExpect(status().isOk())
                 .andDo(document("challenge/get-challenge-fee-per-absence",
-                        requestHeaders(
-                                headerWithName(HttpHeaders.AUTHORIZATION).description("액세스 토큰")
-                        ),
                         responseFields(
                                 fieldWithPath("message").description("메세지"),
                                 fieldWithPath("data.feePerAbsence").description("미참여 1회당 벌금")
@@ -315,9 +311,6 @@ public class ChallengeApiTest extends AbstractRestDocsTests {
         // then
         result.andExpect(status().isNotFound())
                 .andDo(document("challenge/get-challenge-fee-per-absence-not-found-exception",
-                        requestHeaders(
-                                headerWithName(HttpHeaders.AUTHORIZATION).description("액세스 토큰")
-                        ),
                         responseFields(
                                 fieldWithPath("code").description("오류 응답 코드"),
                                 fieldWithPath("message").description("오류 메세지")
@@ -373,9 +366,6 @@ public class ChallengeApiTest extends AbstractRestDocsTests {
         // then
         result.andExpect(status().isNotFound())
                 .andDo(document("challenge/get-challenge-dates-not-found-exception",
-                        requestHeaders(
-                                headerWithName(HttpHeaders.AUTHORIZATION).description("액세스 토큰")
-                        ),
                         responseFields(
                                 fieldWithPath("code").description("오류 응답 코드"),
                                 fieldWithPath("message").description("오류 메세지")
@@ -430,9 +420,6 @@ public class ChallengeApiTest extends AbstractRestDocsTests {
         // then
         result.andExpect(status().isNotFound())
                 .andDo(document("challenge/get-challenge-participating-days-not-found-exception",
-                        requestHeaders(
-                                headerWithName(HttpHeaders.AUTHORIZATION).description("액세스 토큰")
-                        ),
                         responseFields(
                                 fieldWithPath("code").description("오류 응답 코드"),
                                 fieldWithPath("message").description("오류 메세지")
@@ -531,23 +518,48 @@ public class ChallengeApiTest extends AbstractRestDocsTests {
         // then
         result.andExpect(status().isBadRequest())
                 .andDo(document("challenge/create-challenge-invalid-start-time",
-                        requestHeaders(
-                                headerWithName(HttpHeaders.AUTHORIZATION).description("액세스 토큰")
-                        ),
-                        requestFields(
-                                fieldWithPath("title").description("챌린지 제목"),
-                                fieldWithPath("description").description("챌린지 설명"),
-                                fieldWithPath("startDate").description("챌린지 시작 일시"),
-                                fieldWithPath("endDate").description("챌린지 종료 일시"),
-                                fieldWithPath("participatingDays").description("챌린지 참여 요일"),
-                                fieldWithPath("feePerAbsence").description("미참여 1회당 벌금")
-                        ),
                         responseFields(
                                 fieldWithPath("code").description("오류 응답 코드"),
                                 fieldWithPath("message").description("오류 메세지")
                         )
                 ));
     }
+
+    @Test
+    @WithMockOAuth2User
+    @DisplayName("챌린지 생성 예외처리 - 챌린지 참여 요일 유효성 검증 (400 Bad Request)")
+    void createChallengeInvalidParticipatingDays() throws Exception {
+
+        // given
+        ZonedDateTime startDate = ZonedDateTime.of(2024, 10, 7, 0, 0, 0, 0, ZoneId.of("Asia/Seoul"));
+        ChallengeCreationRequest challengeCreationRequest = ChallengeCreationRequest.builder()
+                .title("챌린지 제목")
+                .description("챌린지 설명")
+                .startDate(startDate)
+                .endDate(startDate.plusDays(1))
+                .participatingDays((byte) (1 << 4))
+                .feePerAbsence(1000)
+                .build();
+
+        given(challengeCreationService.createChallenge(any(ChallengeCreationRequest.class), any(Member.class)))
+                .willThrow(new InvalidChallengeParticipatingDaysException());
+
+        // when
+        ResultActions result = mockMvc.perform(post("/api/challenges")
+                .header(HttpHeaders.AUTHORIZATION, AUTHORIZATION_HEADER_PREFIX + "ACCESS_TOKEN")
+                .content(objectMapper.writeValueAsString(challengeCreationRequest))
+                .contentType(MediaType.APPLICATION_JSON));
+
+        // then
+        result.andExpect(status().isBadRequest())
+                .andDo(document("challenge/create-challenge-invalid-participating-days",
+                        responseFields(
+                                fieldWithPath("code").description("오류 응답 코드"),
+                                fieldWithPath("message").description("오류 메세지")
+                        )
+                ));
+    }
+
 
     @Test
     @WithMockOAuth2User
@@ -620,12 +632,6 @@ public class ChallengeApiTest extends AbstractRestDocsTests {
         // then
         result.andExpect(status().isBadRequest())
                 .andDo(document("challenge/patch-challenge-duplicated-description-exception",
-                        requestHeaders(
-                                headerWithName(HttpHeaders.AUTHORIZATION).description("액세스 토큰")
-                        ),
-                        requestFields(
-                                fieldWithPath("description").description("챌린지 설명")
-                        ),
                         responseFields(
                                 fieldWithPath("code").description("오류 응답 코드"),
                                 fieldWithPath("message").description("오류 메세지")
@@ -655,12 +661,6 @@ public class ChallengeApiTest extends AbstractRestDocsTests {
         // then
         result.andExpect(status().isForbidden())
                 .andDo(document("challenge/patch-challenge-forbidden-exception",
-                        requestHeaders(
-                                headerWithName(HttpHeaders.AUTHORIZATION).description("액세스 토큰")
-                        ),
-                        requestFields(
-                                fieldWithPath("description").description("챌린지 설명")
-                        ),
                         responseFields(
                                 fieldWithPath("code").description("오류 응답 코드"),
                                 fieldWithPath("message").description("오류 메세지")
@@ -711,9 +711,6 @@ public class ChallengeApiTest extends AbstractRestDocsTests {
         // then
         result.andExpect(status().isForbidden())
                 .andDo(document("challenge/delete-forbidden-exception",
-                        requestHeaders(
-                                headerWithName(HttpHeaders.AUTHORIZATION).description("액세스 토큰")
-                        ),
                         responseFields(
                                 fieldWithPath("code").description("오류 응답 코드"),
                                 fieldWithPath("message").description("오류 메세지")
@@ -737,15 +734,10 @@ public class ChallengeApiTest extends AbstractRestDocsTests {
         // then
         result.andExpect(status().isNotFound())
                 .andDo(document("challenge/delete-not-found-exception",
-                        requestHeaders(
-                                headerWithName(HttpHeaders.AUTHORIZATION).description("액세스 토큰")
-                        ),
                         responseFields(
                                 fieldWithPath("code").description("오류 응답 코드"),
                                 fieldWithPath("message").description("오류 메세지")
                         )
                 ));
     }
-
-
 }
