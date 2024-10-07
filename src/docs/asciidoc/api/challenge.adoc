@@ -59,7 +59,7 @@ operation::challenge/get-challenge-fee-per-absence-not-found-exception[snippets=
 
 === 챌린지 진행 기간 조회
 
-첼린지 1회 실패당 벌금을 조회합니다.
+첼린지 진행 기간을 조회합니다.
 
 operation::challenge/get-challenge-dates[snippets='http-request,http-response,response-fields']
 
