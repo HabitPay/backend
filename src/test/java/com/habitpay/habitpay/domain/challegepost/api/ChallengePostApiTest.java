@@ -98,7 +98,7 @@ public class ChallengePostApiTest extends AbstractRestDocsTests {
                 .header(HttpHeaders.AUTHORIZATION, AUTHORIZATION_HEADER_PREFIX + "ACCESS_TOKEN"));
 
         //then
-        result.andExpect(status().isNotFound())
+        result.andExpect(status().isOk())
                 .andDo(document("challengePost/get-challenge-post",
                         requestHeaders(
                                 headerWithName(HttpHeaders.AUTHORIZATION).description("액세스 토큰")
