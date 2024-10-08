@@ -57,6 +57,20 @@ operation::challenge/get-challenge-fee-per-absence[snippets='http-request,http-r
 
 operation::challenge/get-challenge-fee-per-absence-not-found-exception[snippets='http-request,http-response,response-fields']
 
+=== 챌린지 전체 벌금 조회
+
+챌린지 내에 현재까지 모인 벌금의 총합을 조회합니다.
+
+operation::challenge/get-challenge-total-absence-fee[snippets='http-request,http-response,response-fields']
+
+==== 에러 응답
+
+===== 챌린지가 존재하지 않는 경우 (404 Not Found)
+
+존재하지 않는 챌린지를 조회한 경우입니다.
+
+operation::challenge/get-challenge-total-absence-fee-not-found-exception[snippets='http-request,http-response,response-fields']
+
 === 챌린지 진행 기간 조회
 
 첼린지 진행 기간을 조회합니다.

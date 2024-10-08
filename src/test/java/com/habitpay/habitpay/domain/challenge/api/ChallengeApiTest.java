@@ -322,6 +322,56 @@ public class ChallengeApiTest extends AbstractRestDocsTests {
 
     @Test
     @WithMockOAuth2User
+    @DisplayName("챌린지 전체 벌금 조회")
+    void getChallengeTotalAbsenceFee() throws Exception {
+
+        // given
+        ChallengeTotalAbsenceFeeResponse challengeTotalAbsenceFeeResponse = ChallengeTotalAbsenceFeeResponse.builder()
+                .totalAbsenceFee(3000)
+                .build();
+
+        given(challengeDetailsService.getChallengeTotalAbsenceFee(anyLong()))
+                .willReturn(SuccessResponse.of(SuccessCode.NO_MESSAGE, challengeTotalAbsenceFeeResponse));
+
+        // when
+        ResultActions result = mockMvc.perform(get("/api/challenges/{id}/fees/absence/total", 1L)
+                .header(HttpHeaders.AUTHORIZATION, AUTHORIZATION_HEADER_PREFIX + "ACCESS_TOKEN"));
+
+        // then
+        result.andExpect(status().isOk())
+                .andDo(document("challenge/get-challenge-total-absence-fee",
+                        responseFields(
+                                fieldWithPath("message").description("메세지"),
+                                fieldWithPath("data.totalAbsenceFee").description("현재까지 모인 챌린지 벌금 총액")
+                        )
+                ));
+    }
+
+    @Test
+    @WithMockOAuth2User
+    @DisplayName("챌린지 전체 벌금 조회 예외처리 - 존재하지 않는 챌린지 (404 Not Found)")
+    void getChallengeTotalAbsenceFeeNotFoundException() throws Exception {
+
+        // given
+        given(challengeDetailsService.getChallengeTotalAbsenceFee(anyLong()))
+                .willThrow(new ChallengeNotFoundException(0L));
+
+        // when
+        ResultActions result = mockMvc.perform(get("/api/challenges/{id}/fees/absence/total", 0L)
+                .header(HttpHeaders.AUTHORIZATION, AUTHORIZATION_HEADER_PREFIX + "ACCESS_TOKEN"));
+
+        // then
+        result.andExpect(status().isNotFound())
+                .andDo(document("challenge/get-challenge-total-absence-fee-not-found-exception",
+                        responseFields(
+                                fieldWithPath("code").description("오류 응답 코드"),
+                                fieldWithPath("message").description("오류 메세지")
+                        )
+                ));
+    }
+
+    @Test
+    @WithMockOAuth2User
     @DisplayName("챌린지 진행 기간 조회")
     void getChallengeDates() throws Exception {
 

@@ -1,10 +1,7 @@
 package com.habitpay.habitpay.domain.challenge.application;
 
 import com.habitpay.habitpay.domain.challenge.domain.Challenge;
-import com.habitpay.habitpay.domain.challenge.dto.ChallengeDatesResponse;
-import com.habitpay.habitpay.domain.challenge.dto.ChallengeDetailsResponse;
-import com.habitpay.habitpay.domain.challenge.dto.ChallengeFeePerAbsenceResponse;
-import com.habitpay.habitpay.domain.challenge.dto.ChallengeParticipatingDaysResponse;
+import com.habitpay.habitpay.domain.challenge.dto.*;
 import com.habitpay.habitpay.domain.challengeenrollment.dao.ChallengeEnrollmentRepository;
 import com.habitpay.habitpay.domain.challengeenrollment.domain.ChallengeEnrollment;
 import com.habitpay.habitpay.domain.member.domain.Member;
@@ -39,11 +36,7 @@ public class ChallengeDetailsService {
                 })
                 .toList();
 
-        List<ChallengeEnrollment> enrollmentList = challengeEnrollmentRepository.findAllByChallenge(challenge);
-        int totalAbsenceFee = enrollmentList
-                .stream()
-                .mapToInt(enrollment -> enrollment.getParticipationStat().getTotalFee())
-                .sum();
+        int totalAbsenceFee = sumAllFeesOfChallenge(challenge);
 
         return SuccessResponse.of(
                 SuccessCode.NO_MESSAGE,
@@ -63,6 +56,24 @@ public class ChallengeDetailsService {
                 SuccessCode.NO_MESSAGE,
                 ChallengeFeePerAbsenceResponse.from(challenge)
         );
+    }
+
+    public SuccessResponse<ChallengeTotalAbsenceFeeResponse> getChallengeTotalAbsenceFee(Long challengeId) {
+        Challenge challenge = challengeSearchService.getChallengeById(challengeId);
+        int totalAbsenceFee = sumAllFeesOfChallenge(challenge);
+
+        return SuccessResponse.of(
+                SuccessCode.NO_MESSAGE,
+                ChallengeTotalAbsenceFeeResponse.from(totalAbsenceFee)
+        );
+    }
+
+    private int sumAllFeesOfChallenge(Challenge challenge) {
+        List<ChallengeEnrollment> enrollmentList = challengeEnrollmentRepository.findAllByChallenge(challenge);
+        return enrollmentList
+                .stream()
+                .mapToInt(enrollment -> enrollment.getParticipationStat().getTotalFee())
+                .sum();
     }
 
     public SuccessResponse<ChallengeDatesResponse> getChallengeDates(Long challengeId) {
