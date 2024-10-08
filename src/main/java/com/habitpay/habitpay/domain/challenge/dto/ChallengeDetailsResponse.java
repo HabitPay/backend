@@ -19,6 +19,7 @@ public class ChallengeDetailsResponse {
     private int numberOfParticipants;
     private int participatingDays;
     private int feePerAbsence;
+    private int totalFee;
     private Boolean isPaidAll;
     private String hostNickname;
     private List<String> enrolledMembersProfileImageList;
