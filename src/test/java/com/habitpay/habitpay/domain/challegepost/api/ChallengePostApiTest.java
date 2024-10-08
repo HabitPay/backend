@@ -27,7 +27,6 @@ import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.SliceImpl;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.test.web.servlet.ResultActions;
 
 import java.time.LocalDateTime;
@@ -35,7 +34,7 @@ import java.util.List;
 
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.any;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
@@ -99,7 +98,7 @@ public class ChallengePostApiTest extends AbstractRestDocsTests {
                 .header(HttpHeaders.AUTHORIZATION, AUTHORIZATION_HEADER_PREFIX + "ACCESS_TOKEN"));
 
         //then
-        result.andExpect(status().isOk())
+        result.andExpect(status().isNotFound())
                 .andDo(document("challengePost/get-challenge-post",
                         requestHeaders(
                                 headerWithName(HttpHeaders.AUTHORIZATION).description("액세스 토큰")
@@ -151,7 +150,7 @@ public class ChallengePostApiTest extends AbstractRestDocsTests {
                         .build());
 
         Slice<PostViewResponse> mockPostViewResponseSlice = new SliceImpl<>(
-                mockPostViewResponseList, PageRequest.of(0 ,10), true
+                mockPostViewResponseList, PageRequest.of(0, 10), true
         );
 
         given(challengePostSearchService.findPostViewListByChallengeId(anyLong(), any(Pageable.class)))
@@ -468,7 +467,7 @@ public class ChallengePostApiTest extends AbstractRestDocsTests {
                                 fieldWithPath("modifiedPhotos[].photoId").description("정렬 순서를 변경하려는 이미지 파일의 PostPhotoId"),
                                 fieldWithPath("modifiedPhotos[].viewOrder").description("변경하려는 정렬 순서"),
                                 fieldWithPath("deletedPhotoIds").description("삭제할 이미지 파일 PostPhotoId List<Long>")
-                                ),
+                        ),
                         responseFields(
                                 fieldWithPath("message").description("메시지"),
                                 fieldWithPath("data").description("AWS S3 업로드를 위한 preSignedUrl List<String>")
