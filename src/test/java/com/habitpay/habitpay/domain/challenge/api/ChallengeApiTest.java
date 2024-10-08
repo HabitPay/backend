@@ -206,6 +206,7 @@ public class ChallengeApiTest extends AbstractRestDocsTests {
                 .numberOfParticipants(1)
                 .participatingDays(1 << 2)
                 .feePerAbsence(1000)
+                .totalAbsenceFee(0)
                 .isPaidAll(false)
                 .hostNickname("챌린지 주최자 닉네임")
                 .enrolledMembersProfileImageList(List.of("imageLink1", "imageLink2", "imageLink3"))
@@ -236,6 +237,7 @@ public class ChallengeApiTest extends AbstractRestDocsTests {
                                 fieldWithPath("data.numberOfParticipants").description("챌린지 참여 인"),
                                 fieldWithPath("data.participatingDays").description("챌린지 참여 요일"),
                                 fieldWithPath("data.feePerAbsence").description("미참여 1회당 벌금"),
+                                fieldWithPath("data.totalAbsenceFee").description("챌린지 전체 벌금"),
                                 fieldWithPath("data.isPaidAll").description("최종 정산 여부"),
                                 fieldWithPath("data.hostNickname").description("챌린지 주최자 닉네임"),
                                 fieldWithPath("data.enrolledMembersProfileImageList").description("챌린지 참여자 프로필 이미지 (최대 3명)"),

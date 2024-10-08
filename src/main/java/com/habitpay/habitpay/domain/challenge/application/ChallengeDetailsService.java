@@ -39,12 +39,18 @@ public class ChallengeDetailsService {
                 })
                 .toList();
 
+        List<ChallengeEnrollment> enrollmentList = challengeEnrollmentRepository.findAllByChallenge(challenge);
+        int totalAbsenceFee = enrollmentList
+                .stream()
+                .mapToInt(enrollment -> enrollment.getParticipationStat().getTotalFee())
+                .sum();
 
         return SuccessResponse.of(
                 SuccessCode.NO_MESSAGE,
                 ChallengeDetailsResponse.of(
                         member,
                         challenge,
+                        totalAbsenceFee,
                         enrolledMembersProfileImageList,
                         isMemberEnrolledInChallenge)
         );
