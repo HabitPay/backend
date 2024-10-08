@@ -96,8 +96,12 @@ public class ChallengeCreationService {
     }
 
     private boolean isStartDateIsToday(ZonedDateTime startDate) {
-        ZonedDateTime startDateInLocalZone = startDate.withZoneSameInstant(ZoneId.of("Asia/Seoul"));
         ZonedDateTime now = ZonedDateTime.now();
-        return startDateInLocalZone.toLocalDate().equals(now.toLocalDate());
+
+        if (startDate.isBefore(now)) {
+            throw new ChallengeStartTimeInvalidException(startDate);
+        }
+
+        return startDate.toLocalDate().equals(now.toLocalDate());
     }
 }
