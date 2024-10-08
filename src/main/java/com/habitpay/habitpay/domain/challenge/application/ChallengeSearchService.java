@@ -23,6 +23,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalTime;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -67,7 +68,7 @@ public class ChallengeSearchService {
     private ChallengeEnrolledListItemResponse mapToResponse(ChallengeEnrollment challengeEnrollment) {
         Challenge challenge = challengeEnrollment.getChallenge();
         ParticipationStat stat = challengeEnrollment.getParticipationStat();
-        ZonedDateTime startOfToday = ZonedDateTime.now().with(LocalTime.MIDNIGHT);
+        ZonedDateTime startOfToday = ZonedDateTime.now().withZoneSameInstant(ZoneId.of("Asia/Seoul")).with(LocalTime.MIDNIGHT);
         boolean isParticipatedToday = challengeParticipationRecordRepository
                 .findByChallengeEnrollmentAndTargetDate(challengeEnrollment, startOfToday)
                 .map(ChallengeParticipationRecord::existChallengePost)
