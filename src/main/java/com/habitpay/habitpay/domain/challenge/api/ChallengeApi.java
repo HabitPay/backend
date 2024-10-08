@@ -51,6 +51,9 @@ public class ChallengeApi {
         return challengeDetailsService.getChallengeFeePerAbsence(id);
     }
 
+    @GetMapping("/challenges/{id}/fees/total")
+    public SuccessResponse<> getChallengeTotalFee() {}
+
     @GetMapping("/challenges/{id}/dates")
     public SuccessResponse<ChallengeDatesResponse> getChallengeDates(@PathVariable("id") Long id) {
         return challengeDetailsService.getChallengeDates(id);
