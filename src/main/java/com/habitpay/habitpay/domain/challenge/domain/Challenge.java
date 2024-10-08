@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.time.DayOfWeek;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
@@ -137,8 +138,10 @@ public class Challenge extends BaseTime {
     }
 
     public boolean isTodayParticipatingDay() {
-        DayOfWeek today = ZonedDateTime.now().getDayOfWeek();
+        ZonedDateTime nowInSeoul = ZonedDateTime.now().withZoneSameInstant(ZoneId.of("Asia/Seoul"));
+        DayOfWeek today = nowInSeoul.getDayOfWeek();
         int todayBitPosition = 6 - (today.getValue() - 1);
+
         return (this.participatingDays & (1 << todayBitPosition)) != 0;
     }
 
