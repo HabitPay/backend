@@ -46,9 +46,9 @@ public class ChallengePostUtilService {
             throw new InvalidStateForPostException(challenge.getId());
         }
 
-        if ((state.equals(ChallengeState.IN_PROGRESS)
+        if (!(state.equals(ChallengeState.IN_PROGRESS)
                 || state.equals(ChallengeState.COMPLETED_PENDING_SETTLEMENT))
-                && now.isAfter(challenge.getStartDate())) {
+                || !now.isAfter(challenge.getStartDate())) {
             throw new ForbiddenException(ErrorCode.POST_EDITABLE_ONLY_WITHIN_CHALLENGE_PERIOD);
         }
     }
