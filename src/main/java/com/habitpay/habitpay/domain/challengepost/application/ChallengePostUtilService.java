@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.DayOfWeek;
 import java.time.LocalTime;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
 @Service
@@ -62,7 +63,9 @@ public class ChallengePostUtilService {
             return;
         }
 
-        DayOfWeek nowDayOfWeek = now.getDayOfWeek();
+        ZonedDateTime nowInLocal = now.withZoneSameInstant(ZoneId.of("Asia/Seoul"));
+
+        DayOfWeek nowDayOfWeek = nowInLocal.getDayOfWeek();
         int nowDayOfWeekValue = nowDayOfWeek.getValue();
         boolean todayIsParticipationDay = (challenge.getParticipatingDays() & (1 << (7 - nowDayOfWeekValue))) != 0;
 
@@ -70,7 +73,7 @@ public class ChallengePostUtilService {
             return;
         }
 
-        ZonedDateTime nowDate = now.with(LocalTime.MIDNIGHT);
+        ZonedDateTime nowDate = nowInLocal.with(LocalTime.MIDNIGHT);
         ChallengeParticipationRecord record = challengeParticipationRecordSearchService
                 .findByChallengeEnrollmentAndTargetDate(enrollment, nowDate);
         if (record.existChallengePost()) {
