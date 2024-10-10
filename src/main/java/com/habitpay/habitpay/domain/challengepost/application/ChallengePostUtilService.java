@@ -63,7 +63,9 @@ public class ChallengePostUtilService {
             return;
         }
 
-        ZonedDateTime nowInLocal = now.withZoneSameInstant(ZoneId.of("Asia/Seoul"));
+        // todo : seoul
+        ZonedDateTime nowInLocal = now;
+//        ZonedDateTime nowInLocal = now.withZoneSameInstant(ZoneId.of("Asia/Seoul"));
 
         DayOfWeek nowDayOfWeek = nowInLocal.getDayOfWeek();
         int nowDayOfWeekValue = nowDayOfWeek.getValue();

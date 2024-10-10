@@ -138,7 +138,9 @@ public class Challenge extends BaseTime {
     }
 
     public boolean isTodayParticipatingDay() {
-        ZonedDateTime nowInLocal = ZonedDateTime.now().withZoneSameInstant(ZoneId.of("Asia/Seoul"));
+        // todo : seoul
+        ZonedDateTime nowInLocal = ZonedDateTime.now();
+//        ZonedDateTime nowInLocal = ZonedDateTime.now().withZoneSameInstant(ZoneId.of("Asia/Seoul"));
         DayOfWeek today = nowInLocal.getDayOfWeek();
         int todayBitPosition = 6 - (today.getValue() - 1);
 
@@ -154,7 +156,9 @@ public class Challenge extends BaseTime {
             if ((daysOfWeek & (1 << i)) != 0) {
 
              DayOfWeek targetDay = DayOfWeek.of(7 - i);
-             ZonedDateTime startDateInLocal = this.getStartDate().withZoneSameInstant(ZoneId.of("Asia/Seoul"));
+             // todo : seoul
+                ZonedDateTime startDateInLocal = this.getStartDate();
+//                ZonedDateTime startDateInLocal = this.getStartDate().withZoneSameInstant(ZoneId.of("Asia/Seoul"));
              ZonedDateTime targetDate = startDateInLocal.with(TemporalAdjusters.nextOrSame(targetDay));
 
              while (!targetDate.isAfter(getEndDate())) {
