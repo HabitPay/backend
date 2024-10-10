@@ -158,6 +158,7 @@ public class Challenge extends BaseTime {
              DayOfWeek targetDay = DayOfWeek.of(7 - i);
              // todo : seoul
                 ZonedDateTime startDateInLocal = this.getStartDate();
+                System.out.println("DB에서 불러온 시작 날짜 : " + startDateInLocal);
 //                ZonedDateTime startDateInLocal = this.getStartDate().withZoneSameInstant(ZoneId.of("Asia/Seoul"));
              ZonedDateTime targetDate = startDateInLocal.with(TemporalAdjusters.nextOrSame(targetDay));
 
