@@ -11,6 +11,10 @@ spring:
             scope: ${GOOGLE_SCOPE}
   jpa:
     database: postgresql
+    properties:
+      hibernate:
+        jdbc:
+          time_zone: Asia/Seoul
   datasource:
     url: jdbc:postgresql://${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}
     username: ${POSTGRES_USER}
