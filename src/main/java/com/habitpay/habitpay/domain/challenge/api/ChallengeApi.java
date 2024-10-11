@@ -46,26 +46,6 @@ public class ChallengeApi {
         return challengeDetailsService.getChallengeDetails(id, user.getMember());
     }
 
-    @GetMapping("/challenges/{id}/fees/absence")
-    public SuccessResponse<ChallengeFeePerAbsenceResponse> getChallengeFeePerAbsence(@PathVariable("id") Long id) {
-        return challengeDetailsService.getChallengeFeePerAbsence(id);
-    }
-
-    @GetMapping("/challenges/{id}/fees/absence/total")
-    public SuccessResponse<ChallengeTotalAbsenceFeeResponse> getChallengeTotalAbsenceFee(@PathVariable("id") Long id) {
-        return challengeDetailsService.getChallengeTotalAbsenceFee(id);
-    }
-
-    @GetMapping("/challenges/{id}/dates")
-    public SuccessResponse<ChallengeDatesResponse> getChallengeDates(@PathVariable("id") Long id) {
-        return challengeDetailsService.getChallengeDates(id);
-    }
-
-    @GetMapping("/challenges/{id}/participating-days")
-    public SuccessResponse<ChallengeParticipatingDaysResponse> getChallengeParticipatingDays(@PathVariable("id") Long id) {
-        return challengeDetailsService.getChallengeParticipatingDays(id);
-    }
-
     @PostMapping("/challenges")
     public SuccessResponse<ChallengeCreationResponse> createChallenge(@RequestBody ChallengeCreationRequest challengeCreationRequest,
                                                                       @AuthenticationPrincipal CustomUserDetails user) {
