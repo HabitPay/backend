@@ -44,3 +44,6 @@ cors:
 ---
 oauth:
   redirect-url: ${REDIRECT_URL}
+---
+timezone:
+  time-zone: ${TIME_ZONE}
