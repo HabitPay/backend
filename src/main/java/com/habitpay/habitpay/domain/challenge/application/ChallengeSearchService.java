@@ -71,7 +71,6 @@ public class ChallengeSearchService {
     private ChallengeEnrolledListItemResponse mapToResponse(ChallengeEnrollment challengeEnrollment) {
         Challenge challenge = challengeEnrollment.getChallenge();
         ParticipationStat stat = challengeEnrollment.getParticipationStat();
-        // todo : 근데 이거는 변환 안 해도 되지 않나?
         ZonedDateTime startOfToday = timeZoneConverter.convertEtcToLocalTimeZone(ZonedDateTime.now()).with(LocalTime.MIDNIGHT);
         boolean isParticipatedToday = challengeParticipationRecordRepository
                 .findByChallengeEnrollmentAndTargetDate(challengeEnrollment, startOfToday)
