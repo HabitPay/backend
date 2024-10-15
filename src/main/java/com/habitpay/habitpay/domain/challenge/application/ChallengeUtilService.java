@@ -15,7 +15,7 @@ import java.util.List;
 @Service
 public class ChallengeUtilService {
 
-    TimeZoneConverter timeZoneConverter;
+    private final TimeZoneConverter timeZoneConverter;
 
     public boolean isTodayParticipatingDay(Challenge challenge) {
         ZonedDateTime nowInLocal = timeZoneConverter.convertEtcToLocalTimeZone(ZonedDateTime.now());
@@ -37,7 +37,7 @@ public class ChallengeUtilService {
                 ZonedDateTime startDateInLocal = timeZoneConverter.convertEtcToLocalTimeZone(challenge.getStartDate());
                 ZonedDateTime targetDate = startDateInLocal.with(TemporalAdjusters.nextOrSame(targetDay));
 
-                while (!targetDate.isAfter(challenge.getEndDate())) {
+                while (!targetDate.isAfter(timeZoneConverter.convertEtcToLocalTimeZone(challenge.getEndDate()))) {
                     dates.add(targetDate);
                     targetDate = targetDate.plusWeeks(1);
                 }
