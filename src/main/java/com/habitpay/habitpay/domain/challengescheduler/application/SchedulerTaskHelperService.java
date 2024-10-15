@@ -31,6 +31,7 @@ public class SchedulerTaskHelperService {
     private final ChallengeUtilService challengeUtilService;
 
     public List<Challenge> findStartingChallenges() {
+        // todo : 시간대 확인
         ZoneId zoneId = ZoneId.systemDefault();
         ZonedDateTime startOfDay = ZonedDateTime.now(zoneId).toLocalDate().atStartOfDay(zoneId);
         ZonedDateTime endOfDay = ZonedDateTime.now(zoneId).toLocalDate().atTime(LocalTime.MAX).atZone(zoneId);

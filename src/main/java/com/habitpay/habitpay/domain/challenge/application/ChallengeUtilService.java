@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.DayOfWeek;
+import java.time.LocalTime;
 import java.time.ZonedDateTime;
 import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
@@ -37,7 +38,11 @@ public class ChallengeUtilService {
                 ZonedDateTime startDateInLocal = timeZoneConverter.convertEtcToLocalTimeZone(challenge.getStartDate());
                 ZonedDateTime targetDate = startDateInLocal.with(TemporalAdjusters.nextOrSame(targetDay));
 
-                while (!targetDate.isAfter(timeZoneConverter.convertEtcToLocalTimeZone(challenge.getEndDate()))) {
+                // todo
+                ZonedDateTime tempEndDate = timeZoneConverter.convertEtcToLocalTimeZone(challenge.getEndDate());
+                ZonedDateTime endDate = tempEndDate.toLocalDate().atTime(LocalTime.MAX).atZone(tempEndDate.getZone());
+
+                while (!targetDate.isAfter(endDate)) {
                     dates.add(targetDate);
                     targetDate = targetDate.plusWeeks(1);
                 }
