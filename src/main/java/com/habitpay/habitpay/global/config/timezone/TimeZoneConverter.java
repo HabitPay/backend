@@ -13,7 +13,7 @@ public class TimeZoneConverter {
 
     private final TimeZoneProperties timeZoneProperties;
 
-    public ZonedDateTime convertEtcToTargetTimeZone(ZonedDateTime etcTime) {
+    public ZonedDateTime convertEtcToEnvTimeZone(ZonedDateTime etcTime) {
         return etcTime.withZoneSameInstant(ZoneId.of(timeZoneProperties.getTimeZone()));
     }
 }
