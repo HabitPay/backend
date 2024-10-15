@@ -10,6 +10,7 @@ import com.habitpay.habitpay.domain.challenge.exception.InvalidChallengeParticip
 import com.habitpay.habitpay.domain.member.domain.Member;
 import com.habitpay.habitpay.global.config.jwt.TokenProvider;
 import com.habitpay.habitpay.global.config.jwt.TokenService;
+import com.habitpay.habitpay.global.config.timezone.TimeZoneProperties;
 import com.habitpay.habitpay.global.error.exception.ErrorCode;
 import com.habitpay.habitpay.global.error.exception.ForbiddenException;
 import com.habitpay.habitpay.global.error.exception.InvalidValueException;
@@ -65,6 +66,9 @@ public class ChallengeApiTest extends AbstractRestDocsTests {
 
     @MockBean
     ChallengeDeleteService challengeDeleteService;
+
+    @MockBean
+    TimeZoneProperties timeZoneProperties;
 
     @MockBean
     TokenService tokenService;
@@ -374,7 +378,7 @@ public class ChallengeApiTest extends AbstractRestDocsTests {
     void createChallengeInvalidParticipatingDays() throws Exception {
 
         // given
-        ZonedDateTime startDate = ZonedDateTime.of(2024, 10, 7, 0, 0, 0, 0, ZoneId.of("Asia/Seoul"));
+        ZonedDateTime startDate = ZonedDateTime.of(2024, 10, 7, 0, 0, 0, 0, ZoneId.of(timeZoneProperties.getTimeZone()));
         ChallengeCreationRequest challengeCreationRequest = ChallengeCreationRequest.builder()
                 .title("챌린지 제목")
                 .description("챌린지 설명")
