@@ -26,7 +26,7 @@ public class ChallengeDetailsResponse {
     private Boolean isHost;
     private Boolean isMemberEnrolledInChallenge;
 
-    public static ChallengeDetailsResponse of(Member member, Challenge challenge, int totalAbsenceFee, List<String> enrolledMembersProfileImageList, Boolean isMemberEnrolledInChallenge) {
+    public static ChallengeDetailsResponse of(Member member, Challenge challenge, List<String> enrolledMembersProfileImageList, Boolean isMemberEnrolledInChallenge) {
         return ChallengeDetailsResponse.builder()
                 .title(challenge.getTitle())
                 .description(challenge.getDescription())
@@ -37,7 +37,9 @@ public class ChallengeDetailsResponse {
                 .isPaidAll(challenge.isPaidAll())
                 .participatingDays(challenge.getParticipatingDays())
                 .feePerAbsence(challenge.getFeePerAbsence())
-                .totalAbsenceFee(totalAbsenceFee)
+                // todo : 챌린지 엔티티에 전체 벌금 필드 살린 후 수정하기
+                .totalAbsenceFee(0)
+//                .totalAbsenceFee(challenge.getTotalAbsenceFee)
                 .hostNickname(challenge.getHost().getNickname())
                 .enrolledMembersProfileImageList(enrolledMembersProfileImageList)
                 .isHost(challenge.getHost().getId().equals(member.getId()))
