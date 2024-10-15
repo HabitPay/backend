@@ -1,7 +1,6 @@
 package com.habitpay.habitpay.global.config.timezone;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.ZoneId;
@@ -13,7 +12,7 @@ public class TimeZoneConverter {
 
     private final TimeZoneProperties timeZoneProperties;
 
-    public ZonedDateTime convertEtcToEnvTimeZone(ZonedDateTime etcTime) {
+    public ZonedDateTime convertEtcToLocalTimeZone(ZonedDateTime etcTime) {
         return etcTime.withZoneSameInstant(ZoneId.of(timeZoneProperties.getTimeZone()));
     }
 }
