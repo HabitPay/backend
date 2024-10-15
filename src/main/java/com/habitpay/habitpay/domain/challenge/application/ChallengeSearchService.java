@@ -37,6 +37,7 @@ public class ChallengeSearchService {
     private final ChallengeRepository challengeRepository;
     private final ChallengeEnrollmentRepository challengeEnrollmentRepository;
     private final ChallengeParticipationRecordRepository challengeParticipationRecordRepository;
+    private final ChallengeUtilService challengeUtilService;
 
     public SuccessResponse<PageResponse<ChallengePageResponse>> getChallengePage(Pageable pageable) {
         Page<ChallengePageResponse> challengePage = challengeRepository.findAll(pageable)
@@ -76,6 +77,7 @@ public class ChallengeSearchService {
         String hostProfileImageUrl = Optional.ofNullable(challenge.getHost().getImageFileName())
                 .map((imageFileName) -> s3FileService.getGetPreSignedUrl("profiles", imageFileName))
                 .orElse("");
-        return ChallengeEnrolledListItemResponse.of(challenge, challengeEnrollment, stat, hostProfileImageUrl, isParticipatedToday);
+        boolean isTodayParticipatingDay = challengeUtilService.isTodayParticipatingDay(challenge);
+        return ChallengeEnrolledListItemResponse.of(challenge, challengeEnrollment, stat, hostProfileImageUrl, isTodayParticipatingDay, isParticipatedToday);
     }
 }

@@ -137,12 +137,4 @@ public class Challenge extends BaseTime {
         this.state = ChallengeState.COMPLETED_PENDING_SETTLEMENT;
     }
 
-    public boolean isTodayParticipatingDay() {
-        ZonedDateTime nowInLocal = ZonedDateTime.now().withZoneSameInstant(ZoneId.of("Asia/Seoul"));
-        DayOfWeek today = nowInLocal.getDayOfWeek();
-        int todayBitPosition = 6 - (today.getValue() - 1);
-
-        return (this.participatingDays & (1 << todayBitPosition)) != 0;
-    }
-
 }
