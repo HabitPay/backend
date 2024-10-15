@@ -49,13 +49,4 @@ public class ChallengeDetailsService {
                         isMemberEnrolledInChallenge)
         );
     }
-
-    // TODO: Challenge 엔티티에 totalAbsenceFee 컬럼 추가 후 아래의 함수 삭제 부탁드립니다. (from. joonhan)
-    private int sumAllFeesOfChallenge(Challenge challenge) {
-        List<ChallengeEnrollment> enrollmentList = challengeEnrollmentRepository.findAllByChallenge(challenge);
-        return enrollmentList
-                .stream()
-                .mapToInt(enrollment -> enrollment.getParticipationStat().getTotalFee())
-                .sum();
-    }
 }
