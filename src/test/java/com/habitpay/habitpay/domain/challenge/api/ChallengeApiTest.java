@@ -48,6 +48,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class ChallengeApiTest extends AbstractRestDocsTests {
 
     static final String AUTHORIZATION_HEADER_PREFIX = "Bearer ";
+    static final String TIMEZONE = "Asia/Seoul";
 
     @Autowired
     ObjectMapper objectMapper;
@@ -378,6 +379,7 @@ public class ChallengeApiTest extends AbstractRestDocsTests {
     void createChallengeInvalidParticipatingDays() throws Exception {
 
         // given
+        given(timeZoneProperties.getTimeZone()).willReturn(TIMEZONE);
         ZonedDateTime startDate = ZonedDateTime.of(2024, 10, 7, 0, 0, 0, 0, ZoneId.of(timeZoneProperties.getTimeZone()));
         ChallengeCreationRequest challengeCreationRequest = ChallengeCreationRequest.builder()
                 .title("챌린지 제목")
