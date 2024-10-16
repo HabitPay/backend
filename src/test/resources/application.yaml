@@ -46,3 +46,6 @@ cors:
 ---
 oauth:
   redirect-url: http://localhost:3000/auth
+---
+timezone:
+  time-zone: "Asia/Seoul"
