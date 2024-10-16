@@ -41,6 +41,10 @@ spring:
             redirect-uri: ${GOOGLE_REDIRECT_URI}
             scope: ${GOOGLE_SCOPE}
 ---
+spring:
+  flyway:
+    enabled: false
+---
 cors:
   allowed-origins: http://localhost:3000
 ---
