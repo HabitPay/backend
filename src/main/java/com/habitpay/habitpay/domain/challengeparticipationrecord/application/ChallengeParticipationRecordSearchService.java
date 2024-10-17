@@ -29,7 +29,7 @@ public class ChallengeParticipationRecordSearchService {
         return challengeParticipationRecordRepository.findAllByChallengeEnrollment(enrollment);
     }
 
-    public ChallengeParticipationRecord findByChallengeEnrollmentAndTargetDate(
+    public ChallengeParticipationRecord getByChallengeEnrollmentAndTargetDate(
             ChallengeEnrollment enrollment,
             ZonedDateTime startOfTargetDate) {
         return challengeParticipationRecordRepository.findByChallengeEnrollmentAndTargetDate(enrollment, startOfTargetDate)
