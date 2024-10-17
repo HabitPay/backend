@@ -30,6 +30,9 @@ public class ChallengeRecordsService {
         List<ZonedDateTime> failDayList = new ArrayList<>();
         List<ZonedDateTime> upcomingDayList = new ArrayList<>();
 
+//        requiredParticipationDates.stream()
+//                .forEach(dates -> {});
+
         return SuccessResponse.of(
                 SuccessCode.NO_MESSAGE,
                 ChallengeRecordsResponse.builder()

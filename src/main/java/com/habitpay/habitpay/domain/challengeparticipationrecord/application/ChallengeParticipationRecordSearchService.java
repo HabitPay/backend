@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -27,6 +28,12 @@ public class ChallengeParticipationRecordSearchService {
 
     public List<ChallengeParticipationRecord> findAllByChallengeEnrollment(ChallengeEnrollment enrollment) {
         return challengeParticipationRecordRepository.findAllByChallengeEnrollment(enrollment);
+    }
+
+    public Optional<ChallengeParticipationRecord> findByChallengeEnrollmentAndTargetDate(
+            ChallengeEnrollment enrollment,
+            ZonedDateTime startOfTargetDate) {
+        return challengeParticipationRecordRepository.findByChallengeEnrollmentAndTargetDate(enrollment, startOfTargetDate);
     }
 
     public ChallengeParticipationRecord getByChallengeEnrollmentAndTargetDate(
