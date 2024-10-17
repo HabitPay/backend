@@ -21,6 +21,7 @@ public class ChallengeDetailsResponse {
     private int feePerAbsence;
     private int totalAbsenceFee;
     private Boolean isPaidAll;
+    private Boolean isTodayParticipatingDay;
     private String hostNickname;
     private List<String> enrolledMembersProfileImageList;
     private Boolean isHost;
