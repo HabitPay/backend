@@ -103,10 +103,9 @@ public class Challenge extends BaseTime {
         if (this == object) {
             return true;
         }
-        if (!(object instanceof Challenge)) {
+        if (!(object instanceof Challenge challenge)) {
             return false;
         }
-        Challenge challenge = (Challenge) object;
         return Objects.equals(id, challenge.id);
     }
 
