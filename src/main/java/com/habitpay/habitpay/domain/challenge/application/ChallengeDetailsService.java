@@ -4,6 +4,7 @@ import com.habitpay.habitpay.domain.challenge.domain.Challenge;
 import com.habitpay.habitpay.domain.challenge.dto.ChallengeDetailsResponse;
 import com.habitpay.habitpay.domain.challengeenrollment.dao.ChallengeEnrollmentRepository;
 import com.habitpay.habitpay.domain.challengeenrollment.domain.ChallengeEnrollment;
+import com.habitpay.habitpay.domain.challengeparticipationrecord.application.ChallengeParticipationRecordUtilService;
 import com.habitpay.habitpay.domain.member.domain.Member;
 import com.habitpay.habitpay.global.config.aws.S3FileService;
 import com.habitpay.habitpay.global.response.SuccessCode;
@@ -21,12 +22,14 @@ import java.util.Optional;
 public class ChallengeDetailsService {
     private final S3FileService s3FileService;
     private final ChallengeSearchService challengeSearchService;
+    private final ChallengeParticipationRecordUtilService challengeParticipationRecordUtilService;
     private final ChallengeEnrollmentRepository challengeEnrollmentRepository;
 
     public SuccessResponse<ChallengeDetailsResponse> getChallengeDetails(Long challengeId, Member member) {
         Challenge challenge = challengeSearchService.getChallengeById(challengeId);
-        Boolean isMemberEnrolledInChallenge = challengeEnrollmentRepository.findByMemberAndChallenge(member, challenge)
-                .isPresent();
+        Optional<ChallengeEnrollment> optionalEnrollment = challengeEnrollmentRepository.findByMemberAndChallenge(member, challenge);
+        Boolean isMemberEnrolledInChallenge = optionalEnrollment.isPresent();
+        boolean isParticipatedToday = isMemberEnrolledInChallenge && challengeParticipationRecordUtilService.getIsParticipatedToday(optionalEnrollment.get());
         List<ChallengeEnrollment> challengeEnrollmentList = challengeEnrollmentRepository.findTop3ByChallenge(challenge);
         List<String> enrolledMembersProfileImageList = challengeEnrollmentList.stream()
                 .map((challengeEnrollment) -> {
@@ -42,7 +45,8 @@ public class ChallengeDetailsService {
                         member,
                         challenge,
                         enrolledMembersProfileImageList,
-                        isMemberEnrolledInChallenge)
+                        isMemberEnrolledInChallenge,
+                        isParticipatedToday)
         );
     }
 }

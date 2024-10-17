@@ -7,6 +7,7 @@ import com.habitpay.habitpay.domain.challenge.dto.ChallengePageResponse;
 import com.habitpay.habitpay.domain.challenge.exception.ChallengeNotFoundException;
 import com.habitpay.habitpay.domain.challengeenrollment.dao.ChallengeEnrollmentRepository;
 import com.habitpay.habitpay.domain.challengeenrollment.domain.ChallengeEnrollment;
+import com.habitpay.habitpay.domain.challengeparticipationrecord.application.ChallengeParticipationRecordUtilService;
 import com.habitpay.habitpay.domain.challengeparticipationrecord.dao.ChallengeParticipationRecordRepository;
 import com.habitpay.habitpay.domain.challengeparticipationrecord.domain.ChallengeParticipationRecord;
 import com.habitpay.habitpay.domain.member.domain.Member;
@@ -37,6 +38,7 @@ public class ChallengeSearchService {
     private final ChallengeRepository challengeRepository;
     private final ChallengeEnrollmentRepository challengeEnrollmentRepository;
     private final ChallengeParticipationRecordRepository challengeParticipationRecordRepository;
+    private final ChallengeParticipationRecordUtilService challengeParticipationRecordUtilService;
 
     public SuccessResponse<PageResponse<ChallengePageResponse>> getChallengePage(Pageable pageable) {
         Page<ChallengePageResponse> challengePage = challengeRepository.findAll(pageable)
@@ -68,11 +70,7 @@ public class ChallengeSearchService {
     private ChallengeEnrolledListItemResponse mapToResponse(ChallengeEnrollment challengeEnrollment) {
         Challenge challenge = challengeEnrollment.getChallenge();
         ParticipationStat stat = challengeEnrollment.getParticipationStat();
-        ZonedDateTime startOfToday = ZonedDateTime.now().withZoneSameInstant(ZoneId.of("Asia/Seoul")).with(LocalTime.MIDNIGHT);
-        boolean isParticipatedToday = challengeParticipationRecordRepository
-                .findByChallengeEnrollmentAndTargetDate(challengeEnrollment, startOfToday)
-                .map(ChallengeParticipationRecord::existChallengePost)
-                .orElseGet(() -> false);
+        boolean isParticipatedToday = challengeParticipationRecordUtilService.getIsParticipatedToday(challengeEnrollment);
         String hostProfileImageUrl = Optional.ofNullable(challenge.getHost().getImageFileName())
                 .map((imageFileName) -> s3FileService.getGetPreSignedUrl("profiles", imageFileName))
                 .orElse("");
