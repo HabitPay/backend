@@ -9,7 +9,7 @@ import java.util.List;
 @Getter
 @Builder
 public class ChallengeRecordsResponse {
-    List<ZonedDateTime> successRecordList;
-    List<ZonedDateTime> failRecordList;
-    List<ZonedDateTime> upcomingRecordList;
+    List<ZonedDateTime> successDayList;
+    List<ZonedDateTime> failDayList;
+    List<ZonedDateTime> upcomingDayList;
 }
