@@ -37,9 +37,7 @@ public class ChallengeDetailsResponse {
                 .isPaidAll(challenge.isPaidAll())
                 .participatingDays(challenge.getParticipatingDays())
                 .feePerAbsence(challenge.getFeePerAbsence())
-                // todo : 챌린지 엔티티에 전체 벌금 필드 살린 후 수정하기
-                .totalAbsenceFee(0)
-//                .totalAbsenceFee(challenge.getTotalAbsenceFee)
+                .totalAbsenceFee(challenge.getTotalAbsenceFee())
                 .hostNickname(challenge.getHost().getNickname())
                 .enrolledMembersProfileImageList(enrolledMembersProfileImageList)
                 .isHost(challenge.getHost().getId().equals(member.getId()))
