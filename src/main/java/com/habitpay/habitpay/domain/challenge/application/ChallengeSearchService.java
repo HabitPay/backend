@@ -70,8 +70,7 @@ public class ChallengeSearchService {
     private ChallengeEnrolledListItemResponse mapToResponse(ChallengeEnrollment challengeEnrollment) {
         Challenge challenge = challengeEnrollment.getChallenge();
         ParticipationStat stat = challengeEnrollment.getParticipationStat();
-        ZonedDateTime startOfToday = ZonedDateTime.now().withZoneSameInstant(ZoneId.of("Asia/Seoul")).with(LocalTime.MIDNIGHT);
-        boolean isParticipatedToday = challengeParticipationRecordUtilService.getIsParticipatedToday(challengeEnrollment, startOfToday);
+        boolean isParticipatedToday = challengeParticipationRecordUtilService.getIsParticipatedToday(challengeEnrollment);
         String hostProfileImageUrl = Optional.ofNullable(challenge.getHost().getImageFileName())
                 .map((imageFileName) -> s3FileService.getGetPreSignedUrl("profiles", imageFileName))
                 .orElse("");

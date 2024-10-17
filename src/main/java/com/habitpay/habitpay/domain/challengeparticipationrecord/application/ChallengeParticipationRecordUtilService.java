@@ -6,6 +6,8 @@ import com.habitpay.habitpay.domain.challengeparticipationrecord.domain.Challeng
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalTime;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
 @Service
@@ -14,9 +16,11 @@ public class ChallengeParticipationRecordUtilService {
 
     private final ChallengeParticipationRecordRepository challengeParticipationRecordRepository;
 
-    public boolean getIsParticipatedToday(ChallengeEnrollment enrollment, ZonedDateTime targetDay) {
+    public boolean getIsParticipatedToday(ChallengeEnrollment enrollment) {
+        ZonedDateTime startOfToday = ZonedDateTime.now().withZoneSameInstant(ZoneId.of("Asia/Seoul")).with(LocalTime.MIDNIGHT);
+
         return challengeParticipationRecordRepository
-                .findByChallengeEnrollmentAndTargetDate(enrollment, targetDay)
+                .findByChallengeEnrollmentAndTargetDate(enrollment, startOfToday)
                 .map(ChallengeParticipationRecord::existChallengePost)
                 .orElseGet(() -> false);
     }

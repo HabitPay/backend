@@ -27,7 +27,7 @@ public class ChallengeDetailsResponse {
     private Boolean isHost;
     private Boolean isMemberEnrolledInChallenge;
 
-    public static ChallengeDetailsResponse of(Member member, Challenge challenge, List<String> enrolledMembersProfileImageList, Boolean isMemberEnrolledInChallenge) {
+    public static ChallengeDetailsResponse of(Member member, Challenge challenge, List<String> enrolledMembersProfileImageList, Boolean isMemberEnrolledInChallenge, Boolean isParticipatedToday) {
         return ChallengeDetailsResponse.builder()
                 .title(challenge.getTitle())
                 .description(challenge.getDescription())
@@ -36,7 +36,7 @@ public class ChallengeDetailsResponse {
                 .stopDate(challenge.getStopDate())
                 .numberOfParticipants(challenge.getNumberOfParticipants())
                 .isPaidAll(challenge.isPaidAll())
-                .isParticipatedToday()
+                .isParticipatedToday(isParticipatedToday)
                 .participatingDays(challenge.getParticipatingDays())
                 .feePerAbsence(challenge.getFeePerAbsence())
                 .totalAbsenceFee(challenge.getTotalAbsenceFee())
