@@ -8,6 +8,7 @@ import com.habitpay.habitpay.domain.challengeenrollment.domain.ChallengeEnrollme
 import com.habitpay.habitpay.domain.challengeparticipationrecord.application.ChallengeParticipationRecordSearchService;
 import com.habitpay.habitpay.domain.challengeparticipationrecord.dao.ChallengeParticipationRecordRepository;
 import com.habitpay.habitpay.domain.challengeparticipationrecord.domain.ChallengeParticipationRecord;
+import com.habitpay.habitpay.domain.participationstat.dao.ParticipationStatRepository;
 import com.habitpay.habitpay.domain.participationstat.domain.ParticipationStat;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -26,6 +27,7 @@ public class SchedulerTaskHelperService {
     private final ChallengeRepository challengeRepository;
     private final ChallengeEnrollmentRepository challengeEnrollmentRepository;
     private final ChallengeParticipationRecordRepository challengeParticipationRecordRepository;
+    private final ParticipationStatRepository participationStatRepository;
     private final ChallengeParticipationRecordSearchService challengeParticipationRecordSearchService;
 
     public List<Challenge> findStartingChallenges() {
@@ -69,20 +71,37 @@ public class SchedulerTaskHelperService {
         return challengeRepository.findAllByStateAndParticipatingDays(ChallengeState.IN_PROGRESS, yesterdayBitPosition);
     }
 
-    public void checkFailedParticipation(List<Challenge> challengeList,
-                                         ZonedDateTime yesterday,
-                                         List<ParticipationStat> failStatList,
-                                         List<ChallengeParticipationRecord> failRecordList) {
+    public void checkFailedParticipation(List<Challenge> challengeList, ZonedDateTime yesterday) {
+        List<Challenge> feeAddedChallengeList = new ArrayList<>();
+        List<ParticipationStat> failStatList = new ArrayList<>();
+        List<ChallengeParticipationRecord> failRecordList = new ArrayList<>();
+
         challengeParticipationRecordSearchService.findByChallengesAndTargetDate(challengeList, yesterday)
                 .forEach(record -> {
                     if (!record.existChallengePost()) {
                         ParticipationStat stat = record.getParticipationStat();
+                        Challenge challenge = record.getChallenge();
                         stat.setFailureCount(stat.getFailureCount() + 1);
-                        stat.setTotalFee(stat.getTotalFee() + record.getChallenge().getFeePerAbsence());
+                        stat.setTotalFee(stat.getTotalFee() + challenge.getFeePerAbsence());
+                        challenge.setTotalAbsenceFee(challenge.getTotalAbsenceFee() + challenge.getFeePerAbsence());
                         failStatList.add(record.getParticipationStat());
                         failRecordList.add(record);
+                        saveOrUpdateChallengeList(feeAddedChallengeList, challenge);
                     }
                 });
+
+        participationStatRepository.saveAll(failStatList);
+        challengeParticipationRecordRepository.deleteAll(failRecordList);
+        challengeRepository.saveAll(feeAddedChallengeList);
+    }
+
+    private void saveOrUpdateChallengeList(List<Challenge> challengeList, Challenge challenge) {
+        int index = challengeList.indexOf(challenge);
+        if (index != -1) {
+            challengeList.set(index, challenge);
+        } else {
+            challengeList.add(challenge);
+        }
     }
 
     public List<Challenge> findEndingChallenges(ZonedDateTime targetDay) {

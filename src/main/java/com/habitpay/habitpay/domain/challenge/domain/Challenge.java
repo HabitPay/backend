@@ -129,6 +129,8 @@ public class Challenge extends BaseTime {
         this.numberOfParticipants = numberOfParticipants;
     }
 
+    public void setTotalAbsenceFee(int value) { this.totalAbsenceFee = value; }
+
     public void setStateInProgress() {
         this.state = ChallengeState.IN_PROGRESS;
     }

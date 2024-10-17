@@ -23,8 +23,6 @@ import java.util.List;
 public class ChallengeSchedulerService {
 
     private final ChallengeRepository challengeRepository;
-    private final ParticipationStatRepository participationStatRepository;
-    private final ChallengeParticipationRecordRepository challengeParticipationRecordRepository;
     private final SchedulerTaskHelperService schedulerTaskHelperService;
 
     @Scheduled(cron = "0 0 0 * * *", zone = "Asia/Seoul")
@@ -48,12 +46,7 @@ public class ChallengeSchedulerService {
 
         if (challengeList.isEmpty()) { return; }
 
-        List<ParticipationStat> failStatList = new ArrayList<>();
-        List<ChallengeParticipationRecord> failRecordList = new ArrayList<>();
-        schedulerTaskHelperService.checkFailedParticipation(challengeList, yesterday, failStatList, failRecordList);
-
-        participationStatRepository.saveAll(failStatList);
-        challengeParticipationRecordRepository.deleteAll(failRecordList);
+        schedulerTaskHelperService.checkFailedParticipation(challengeList, yesterday);
     }
 
     @Scheduled(cron = "0 0 0 * * *", zone = "Asia/Seoul")
@@ -62,5 +55,6 @@ public class ChallengeSchedulerService {
         ZonedDateTime yesterday = ZonedDateTime.now().minusDays(1);
         List<Challenge> challengeList = schedulerTaskHelperService.findEndingChallenges(yesterday);
         challengeList.forEach(Challenge::setStateCompletedPendingSettlement);
+        challengeRepository.saveAll(challengeList);
     }
 }
