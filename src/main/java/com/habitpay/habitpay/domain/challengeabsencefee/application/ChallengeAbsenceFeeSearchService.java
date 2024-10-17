@@ -38,7 +38,7 @@ public class ChallengeAbsenceFeeSearchService {
                 .findMemberFeeViewByChallenge(challenge, totalParticipatingDaysCount);
 
         FeeStatusResponse feeStatusResponse = FeeStatusResponse.builder()
-                .totalFee(findTotalFeeOfChallenge(memberFeeViewList))
+                .totalFee(challenge.getTotalAbsenceFee())
                 .myFee(findPersonalTotalFeeOfChallenge(enrollment))
                 .memberFeeList(MemberFee.of(memberFeeViewList, member.getId()))
                 .build();
@@ -53,7 +53,4 @@ public class ChallengeAbsenceFeeSearchService {
         return enrollment.getParticipationStat().getTotalFee();
     }
 
-    private static int findTotalFeeOfChallenge(List<MemberFeeView> memberFeeList) {
-        return memberFeeList.stream().mapToInt(MemberFeeView::getTotalFee).sum();
-    }
 }

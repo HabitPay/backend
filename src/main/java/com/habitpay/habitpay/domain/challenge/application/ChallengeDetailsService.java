@@ -36,26 +36,13 @@ public class ChallengeDetailsService {
                 })
                 .toList();
 
-        // TODO: Challenge 엔티티에 totalAbsenceFee 컬럼 추가 후 Response 생성 시 전달하는 매개변수도 함께 변경 부탁드립니다. (from. joonhan)
-        int totalAbsenceFee = sumAllFeesOfChallenge(challenge);
-
         return SuccessResponse.of(
                 SuccessCode.NO_MESSAGE,
                 ChallengeDetailsResponse.of(
                         member,
                         challenge,
-                        totalAbsenceFee,
                         enrolledMembersProfileImageList,
                         isMemberEnrolledInChallenge)
         );
-    }
-
-    // TODO: Challenge 엔티티에 totalAbsenceFee 컬럼 추가 후 아래의 함수 삭제 부탁드립니다. (from. joonhan)
-    private int sumAllFeesOfChallenge(Challenge challenge) {
-        List<ChallengeEnrollment> enrollmentList = challengeEnrollmentRepository.findAllByChallenge(challenge);
-        return enrollmentList
-                .stream()
-                .mapToInt(enrollment -> enrollment.getParticipationStat().getTotalFee())
-                .sum();
     }
 }

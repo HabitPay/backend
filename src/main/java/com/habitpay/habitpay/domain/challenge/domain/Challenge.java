@@ -17,6 +17,7 @@ import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Objects;
 
 @Getter
 @NoArgsConstructor
@@ -81,6 +82,7 @@ public class Challenge extends BaseTime {
         this.participatingDays = participatingDays;
         this.totalParticipatingDaysCount = totalParticipatingDaysCount;
         this.feePerAbsence = feePerAbsence;
+        this.totalAbsenceFee = 0;
     }
 
     public static Challenge of(Member host, ChallengeCreationRequest challengeCreationRequest) {
@@ -94,6 +96,22 @@ public class Challenge extends BaseTime {
                 .totalParticipatingDaysCount(calculateTotalParticipatingDays(challengeCreationRequest))
                 .feePerAbsence(challengeCreationRequest.getFeePerAbsence())
                 .build();
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) {
+            return true;
+        }
+        if (!(object instanceof Challenge challenge)) {
+            return false;
+        }
+        return Objects.equals(id, challenge.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 
     private static int calculateTotalParticipatingDays(ChallengeCreationRequest challengeCreationRequest) {
@@ -128,6 +146,8 @@ public class Challenge extends BaseTime {
     public void setNumberOfParticipants(int numberOfParticipants) {
         this.numberOfParticipants = numberOfParticipants;
     }
+
+    public void setTotalAbsenceFee(int value) { this.totalAbsenceFee = value; }
 
     public void setStateInProgress() {
         this.state = ChallengeState.IN_PROGRESS;
