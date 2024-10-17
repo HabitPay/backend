@@ -36,6 +36,7 @@ public class ChallengeDetailsResponse {
                 .stopDate(challenge.getStopDate())
                 .numberOfParticipants(challenge.getNumberOfParticipants())
                 .isPaidAll(challenge.isPaidAll())
+                .isParticipatedToday()
                 .participatingDays(challenge.getParticipatingDays())
                 .feePerAbsence(challenge.getFeePerAbsence())
                 .totalAbsenceFee(challenge.getTotalAbsenceFee())
