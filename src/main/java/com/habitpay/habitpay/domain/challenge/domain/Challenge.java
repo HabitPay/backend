@@ -82,6 +82,7 @@ public class Challenge extends BaseTime {
         this.participatingDays = participatingDays;
         this.totalParticipatingDaysCount = totalParticipatingDaysCount;
         this.feePerAbsence = feePerAbsence;
+        this.totalAbsenceFee = 0;
     }
 
     public static Challenge of(Member host, ChallengeCreationRequest challengeCreationRequest) {
