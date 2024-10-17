@@ -26,6 +26,7 @@ public class ChallengeApi {
     private final ChallengeDetailsService challengeDetailsService;
     private final ChallengeSearchService challengeSearchService;
     private final ChallengeDeleteService challengeDeleteService;
+    private final ChallengeRecordsService challengeRecordsService;
 
     @GetMapping("/challenges")
     public SuccessResponse<PageResponse<ChallengePageResponse>> getChallengePage(
@@ -47,9 +48,9 @@ public class ChallengeApi {
     }
 
     @GetMapping("/challenges/{id}/records")
-    public SuccessResponse<> getChallengeRecords(@PathVariable("id") Long id,
+    public SuccessResponse<ChallengeRecordsResponse> getChallengeRecords(@PathVariable("id") Long id,
                                                  @AuthenticationPrincipal CustomUserDetails user) {
-        return ;
+        return challengeRecordsService.getChallengeRecords(id, user.getMember());
     }
 
     @PostMapping("/challenges")
