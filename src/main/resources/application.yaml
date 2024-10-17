@@ -35,6 +35,11 @@ spring:
       pageable:
         one-indexed-parameters: true
 ---
+spring:
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+---
 jwt:
   issuer: ${JWT_ISSUER}
   secret: ${JWT_SECRET}
