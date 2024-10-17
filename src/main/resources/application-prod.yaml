@@ -1,7 +1,4 @@
 spring:
   jpa:
     hibernate:
-      ddl-auto: update
-#  sql:
-#    init:
-#      platform: postgresql
+      ddl-auto: validate

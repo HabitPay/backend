@@ -25,17 +25,14 @@ import java.util.List;
 @Table(name = "challenge")
 public class Challenge extends BaseTime {
 
+    @OneToMany(mappedBy = "challenge", cascade = CascadeType.REMOVE)
+    List<ChallengeEnrollment> challengeEnrollmentList = new ArrayList<>();
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     @ManyToOne
     @JoinColumn(name = "member_id")
     private Member host;
-
-    @OneToMany(mappedBy = "challenge", cascade = CascadeType.REMOVE)
-    List<ChallengeEnrollment> challengeEnrollmentList = new ArrayList<>();
-    
     @Column(nullable = false)
     private String title;
 
@@ -65,6 +62,9 @@ public class Challenge extends BaseTime {
 
     @Column(nullable = false)
     private int feePerAbsence;
+
+    @Column(nullable = false)
+    private int totalAbsenceFee;
 
     @Column(nullable = false)
     private boolean isPaidAll;
