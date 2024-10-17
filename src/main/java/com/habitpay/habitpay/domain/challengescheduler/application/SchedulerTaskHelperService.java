@@ -1,5 +1,6 @@
 package com.habitpay.habitpay.domain.challengescheduler.application;
 
+import com.habitpay.habitpay.domain.challenge.application.ChallengeUtilService;
 import com.habitpay.habitpay.domain.challenge.dao.ChallengeRepository;
 import com.habitpay.habitpay.domain.challenge.domain.Challenge;
 import com.habitpay.habitpay.domain.challenge.domain.ChallengeState;
@@ -27,8 +28,10 @@ public class SchedulerTaskHelperService {
     private final ChallengeEnrollmentRepository challengeEnrollmentRepository;
     private final ChallengeParticipationRecordRepository challengeParticipationRecordRepository;
     private final ChallengeParticipationRecordSearchService challengeParticipationRecordSearchService;
+    private final ChallengeUtilService challengeUtilService;
 
     public List<Challenge> findStartingChallenges() {
+        // todo : 시간대 확인
         ZoneId zoneId = ZoneId.systemDefault();
         ZonedDateTime startOfDay = ZonedDateTime.now(zoneId).toLocalDate().atStartOfDay(zoneId);
         ZonedDateTime endOfDay = ZonedDateTime.now(zoneId).toLocalDate().atTime(LocalTime.MAX).atZone(zoneId);
@@ -39,7 +42,7 @@ public class SchedulerTaskHelperService {
     public void createRecordsForChallenges(List<Challenge> challengeList) {
         challengeList.forEach(challenge -> {
             List<ChallengeEnrollment> enrollmentList = challengeEnrollmentRepository.findAllByChallenge(challenge);
-            List<ZonedDateTime> participationDates = challenge.getParticipationDates();
+            List<ZonedDateTime> participationDates = challengeUtilService.getParticipationDates(challenge);
 
             List<ChallengeParticipationRecord> recordList = createRecordsForEnrollments(enrollmentList, participationDates);
             challengeParticipationRecordRepository.saveAll(recordList);

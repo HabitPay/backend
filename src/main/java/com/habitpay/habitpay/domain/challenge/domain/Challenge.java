@@ -137,33 +137,4 @@ public class Challenge extends BaseTime {
         this.state = ChallengeState.COMPLETED_PENDING_SETTLEMENT;
     }
 
-    public boolean isTodayParticipatingDay() {
-        ZonedDateTime nowInLocal = ZonedDateTime.now().withZoneSameInstant(ZoneId.of("Asia/Seoul"));
-        DayOfWeek today = nowInLocal.getDayOfWeek();
-        int todayBitPosition = 6 - (today.getValue() - 1);
-
-        return (this.participatingDays & (1 << todayBitPosition)) != 0;
-    }
-
-    public List<ZonedDateTime> getParticipationDates() {
-
-        List<ZonedDateTime> dates = new ArrayList<>();
-
-        byte daysOfWeek = getParticipatingDays();
-        for (int i = 0; i < 7; ++i) {
-            if ((daysOfWeek & (1 << i)) != 0) {
-
-                DayOfWeek targetDay = DayOfWeek.of(7 - i);
-                ZonedDateTime startDateInLocal = this.getStartDate().withZoneSameInstant(ZoneId.of("Asia/Seoul"));
-                ZonedDateTime targetDate = startDateInLocal.with(TemporalAdjusters.nextOrSame(targetDay));
-
-                while (!targetDate.isAfter(getEndDate())) {
-                    dates.add(targetDate);
-                    targetDate = targetDate.plusWeeks(1);
-                }
-            }
-        }
-
-        return dates;
-    }
 }
