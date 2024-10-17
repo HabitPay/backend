@@ -21,6 +21,7 @@ public class ChallengeDetailsResponse {
     private int feePerAbsence;
     private int totalAbsenceFee;
     private Boolean isPaidAll;
+    private Boolean isTodayParticipatingDay;
     private Boolean isParticipatedToday;
     private String hostNickname;
     private List<String> enrolledMembersProfileImageList;
@@ -36,6 +37,7 @@ public class ChallengeDetailsResponse {
                 .stopDate(challenge.getStopDate())
                 .numberOfParticipants(challenge.getNumberOfParticipants())
                 .isPaidAll(challenge.isPaidAll())
+                .isTodayParticipatingDay(challenge.isTodayParticipatingDay())
                 .isParticipatedToday(isParticipatedToday)
                 .participatingDays(challenge.getParticipatingDays())
                 .feePerAbsence(challenge.getFeePerAbsence())
