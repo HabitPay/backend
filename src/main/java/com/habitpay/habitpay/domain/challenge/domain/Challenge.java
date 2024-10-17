@@ -17,6 +17,7 @@ import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Objects;
 
 @Getter
 @NoArgsConstructor
@@ -94,6 +95,23 @@ public class Challenge extends BaseTime {
                 .totalParticipatingDaysCount(calculateTotalParticipatingDays(challengeCreationRequest))
                 .feePerAbsence(challengeCreationRequest.getFeePerAbsence())
                 .build();
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) {
+            return true;
+        }
+        if (object == null || getClass() != object.getClass()) {
+            return false;
+        }
+        Challenge challenge = (Challenge) object;
+        return Objects.equals(id, challenge.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 
     private static int calculateTotalParticipatingDays(ChallengeCreationRequest challengeCreationRequest) {
