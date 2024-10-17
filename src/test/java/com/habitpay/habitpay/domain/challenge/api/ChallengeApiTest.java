@@ -244,7 +244,7 @@ public class ChallengeApiTest extends AbstractRestDocsTests {
                                 fieldWithPath("data.enrolledMembersProfileImageList").description("챌린지 참여자 프로필 이미지 (최대 3명)"),
                                 fieldWithPath("data.isHost").description("현재 접속한 사용자 == 챌린지 주최자"),
                                 fieldWithPath("data.isMemberEnrolledInChallenge").description("현재 접속한 사용자의 챌린지 참여 여부"),
-                                fieldWithPath("data.isParticipatedToday").description("현재 접속한 사용자가 챌린지의 참가자일 경우, 금일 참여했는지 여부(참가자기 아니어도 false)")
+                                fieldWithPath("data.isParticipatedToday").description("현재 접속한 사용자가 챌린지의 참가자일 경우, 금일 참여했는지 여부(참가자가 아니어도 false)")
                         )
                 ));
     }
