@@ -46,6 +46,12 @@ public class ChallengeApi {
         return challengeDetailsService.getChallengeDetails(id, user.getMember());
     }
 
+    @GetMapping("/challenges/{id}/records")
+    public SuccessResponse<> getChallengeRecords(@PathVariable("id") Long id,
+                                                 @AuthenticationPrincipal CustomUserDetails user) {
+        return ;
+    }
+
     @PostMapping("/challenges")
     public SuccessResponse<ChallengeCreationResponse> createChallenge(@RequestBody ChallengeCreationRequest challengeCreationRequest,
                                                                       @AuthenticationPrincipal CustomUserDetails user) {
