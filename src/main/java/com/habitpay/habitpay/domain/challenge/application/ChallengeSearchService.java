@@ -66,7 +66,7 @@ public class ChallengeSearchService {
     private ChallengeEnrolledListItemResponse mapToResponse(ChallengeEnrollment challengeEnrollment) {
         Challenge challenge = challengeEnrollment.getChallenge();
         ParticipationStat stat = challengeEnrollment.getParticipationStat();
-        boolean isParticipatedToday = challengeParticipationRecordSearchService.hasParticipationRecord(challengeEnrollment);
+        boolean isParticipatedToday = challengeParticipationRecordSearchService.hasParticipationPostForToday(challengeEnrollment);
         String hostProfileImageUrl = Optional.ofNullable(challenge.getHost().getImageFileName())
                 .map((imageFileName) -> s3FileService.getGetPreSignedUrl("profiles", imageFileName))
                 .orElse("");

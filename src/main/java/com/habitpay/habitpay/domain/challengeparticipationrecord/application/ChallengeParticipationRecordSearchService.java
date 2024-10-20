@@ -31,7 +31,7 @@ public class ChallengeParticipationRecordSearchService {
         return challengeParticipationRecordRepository.findAllByChallengeEnrollment(enrollment);
     }
 
-    public boolean hasParticipationRecord(ChallengeEnrollment challengeEnrollment) {
+    public boolean hasParticipationPostForToday(ChallengeEnrollment challengeEnrollment) {
         ZonedDateTime startOfToday = ZonedDateTime.now().withZoneSameInstant(ZoneId.of("Asia/Seoul")).with(LocalTime.MIDNIGHT);
 
         return challengeParticipationRecordRepository.findByChallengeEnrollmentAndTargetDate(challengeEnrollment, startOfToday)

@@ -31,7 +31,7 @@ public class ChallengeDetailsService {
 
         boolean isMemberEnrolledInChallenge = optionalEnrollment.isPresent();
         boolean isParticipatedToday = optionalEnrollment
-                .map(challengeParticipationRecordSearchService::hasParticipationRecord)
+                .map(challengeParticipationRecordSearchService::hasParticipationPostForToday)
                 .orElseGet(() -> false);
         List<ChallengeEnrollment> challengeEnrollmentList = challengeEnrollmentRepository.findTop3ByChallenge(challenge);
         List<String> enrolledMembersProfileImageList = challengeEnrollmentList.stream()
