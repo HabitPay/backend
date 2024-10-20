@@ -35,7 +35,7 @@ public class ChallengeParticipationRecordSearchService {
         ZonedDateTime startOfToday = ZonedDateTime.now().withZoneSameInstant(ZoneId.of("Asia/Seoul")).with(LocalTime.MIDNIGHT);
 
         return challengeParticipationRecordRepository.findByChallengeEnrollmentAndTargetDate(challengeEnrollment, startOfToday)
-                .map(ChallengeParticipationRecord::existChallengePost)
+                .map(ChallengeParticipationRecord::existsChallengePost)
                 .orElseGet(() -> false);
     }
 

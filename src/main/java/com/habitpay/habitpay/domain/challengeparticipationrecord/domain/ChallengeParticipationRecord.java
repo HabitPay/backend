@@ -9,7 +9,6 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import java.time.LocalDate;
 import java.time.ZonedDateTime;
 
 @EntityListeners(AuditingEntityListener.class)
@@ -60,7 +59,7 @@ public class ChallengeParticipationRecord extends BaseTime {
                 .build();
     }
 
-    public boolean existChallengePost() {
+    public boolean existsChallengePost() {
         return this.challengePost != null;
     }
 

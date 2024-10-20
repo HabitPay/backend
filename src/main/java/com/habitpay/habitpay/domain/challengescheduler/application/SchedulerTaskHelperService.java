@@ -78,7 +78,7 @@ public class SchedulerTaskHelperService {
 
         challengeParticipationRecordSearchService.findByChallengesAndTargetDate(challengeList, yesterday)
                 .forEach(record -> {
-                    if (!record.existChallengePost()) {
+                    if (!record.existsChallengePost()) {
                         ParticipationStat stat = record.getParticipationStat();
                         Challenge challenge = record.getChallenge();
                         stat.setFailureCount(stat.getFailureCount() + 1);

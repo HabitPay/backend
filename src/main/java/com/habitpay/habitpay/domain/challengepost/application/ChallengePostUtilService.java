@@ -3,8 +3,8 @@ package com.habitpay.habitpay.domain.challengepost.application;
 import com.habitpay.habitpay.domain.challenge.domain.Challenge;
 import com.habitpay.habitpay.domain.challenge.domain.ChallengeState;
 import com.habitpay.habitpay.domain.challengeenrollment.domain.ChallengeEnrollment;
-import com.habitpay.habitpay.domain.challengeparticipationrecord.application.ChallengeParticipationRecordUpdateService;
 import com.habitpay.habitpay.domain.challengeparticipationrecord.application.ChallengeParticipationRecordSearchService;
+import com.habitpay.habitpay.domain.challengeparticipationrecord.application.ChallengeParticipationRecordUpdateService;
 import com.habitpay.habitpay.domain.challengeparticipationrecord.domain.ChallengeParticipationRecord;
 import com.habitpay.habitpay.domain.challengepost.domain.ChallengePost;
 import com.habitpay.habitpay.domain.challengepost.exception.InvalidStateForPostException;
@@ -76,7 +76,7 @@ public class ChallengePostUtilService {
         ZonedDateTime nowDate = nowInLocal.with(LocalTime.MIDNIGHT);
         ChallengeParticipationRecord record = challengeParticipationRecordSearchService
                 .findByChallengeEnrollmentAndTargetDate(enrollment, nowDate);
-        if (record.existChallengePost()) {
+        if (record.existsChallengePost()) {
             return;
         }
 
