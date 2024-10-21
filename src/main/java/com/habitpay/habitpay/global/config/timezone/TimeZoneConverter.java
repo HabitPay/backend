@@ -10,9 +10,9 @@ import java.time.ZonedDateTime;
 @RequiredArgsConstructor
 @Service
 public class TimeZoneConverter {
-    private final TimeZoneProperties timeZoneProperties;
+    private static final TimeZoneProperties timeZoneProperties = new TimeZoneProperties();
 
-    public ZonedDateTime convertEtcToLocalTimeZone(ZonedDateTime etcTime) {
+    public static ZonedDateTime convertEtcToLocalTimeZone(ZonedDateTime etcTime) {
         return etcTime.withZoneSameInstant(ZoneId.of(timeZoneProperties.getTimeZone()));
     }
 }
