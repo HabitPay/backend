@@ -12,6 +12,7 @@ import com.habitpay.habitpay.domain.challengeparticipationrecord.dao.ChallengePa
 import com.habitpay.habitpay.domain.member.domain.Member;
 import com.habitpay.habitpay.domain.participationstat.domain.ParticipationStat;
 import com.habitpay.habitpay.global.config.aws.S3FileService;
+import com.habitpay.habitpay.global.config.timezone.TimeZoneConverter;
 import com.habitpay.habitpay.global.response.PageResponse;
 import com.habitpay.habitpay.global.response.SuccessCode;
 import com.habitpay.habitpay.global.response.SuccessResponse;
