@@ -21,12 +21,14 @@ public class ChallengeDetailsResponse {
     private int feePerAbsence;
     private int totalAbsenceFee;
     private Boolean isPaidAll;
+    private Boolean isTodayParticipatingDay;
+    private Boolean isParticipatedToday;
     private String hostNickname;
     private List<String> enrolledMembersProfileImageList;
     private Boolean isHost;
     private Boolean isMemberEnrolledInChallenge;
 
-    public static ChallengeDetailsResponse of(Member member, Challenge challenge, int totalAbsenceFee, List<String> enrolledMembersProfileImageList, Boolean isMemberEnrolledInChallenge) {
+    public static ChallengeDetailsResponse of(Member member, Challenge challenge, List<String> enrolledMembersProfileImageList, Boolean isMemberEnrolledInChallenge, Boolean isParticipatedToday) {
         return ChallengeDetailsResponse.builder()
                 .title(challenge.getTitle())
                 .description(challenge.getDescription())
@@ -35,9 +37,11 @@ public class ChallengeDetailsResponse {
                 .stopDate(challenge.getStopDate())
                 .numberOfParticipants(challenge.getNumberOfParticipants())
                 .isPaidAll(challenge.isPaidAll())
+                .isTodayParticipatingDay(challenge.isTodayParticipatingDay())
+                .isParticipatedToday(isParticipatedToday)
                 .participatingDays(challenge.getParticipatingDays())
                 .feePerAbsence(challenge.getFeePerAbsence())
-                .totalAbsenceFee(totalAbsenceFee)
+                .totalAbsenceFee(challenge.getTotalAbsenceFee())
                 .hostNickname(challenge.getHost().getNickname())
                 .enrolledMembersProfileImageList(enrolledMembersProfileImageList)
                 .isHost(challenge.getHost().getId().equals(member.getId()))

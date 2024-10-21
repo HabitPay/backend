@@ -10,6 +10,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalTime;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.List;
 
@@ -27,6 +29,14 @@ public class ChallengeParticipationRecordSearchService {
 
     public List<ChallengeParticipationRecord> findAllByChallengeEnrollment(ChallengeEnrollment enrollment) {
         return challengeParticipationRecordRepository.findAllByChallengeEnrollment(enrollment);
+    }
+
+    public boolean hasParticipationPostForToday(ChallengeEnrollment challengeEnrollment) {
+        ZonedDateTime startOfToday = ZonedDateTime.now().withZoneSameInstant(ZoneId.of("Asia/Seoul")).with(LocalTime.MIDNIGHT);
+
+        return challengeParticipationRecordRepository.findByChallengeEnrollmentAndTargetDate(challengeEnrollment, startOfToday)
+                .map(ChallengeParticipationRecord::existsChallengePost)
+                .orElseGet(() -> false);
     }
 
     public ChallengeParticipationRecord findByChallengeEnrollmentAndTargetDate(
