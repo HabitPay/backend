@@ -38,8 +38,6 @@ public class ChallengeSearchService {
     private final ChallengeRepository challengeRepository;
     private final ChallengeEnrollmentRepository challengeEnrollmentRepository;
     private final ChallengeParticipationRecordRepository challengeParticipationRecordRepository;
-    private final ChallengeUtilService challengeUtilService;
-    private final TimeZoneConverter timeZoneConverter;
 
     public SuccessResponse<PageResponse<ChallengePageResponse>> getChallengePage(Pageable pageable) {
         Page<ChallengePageResponse> challengePage = challengeRepository.findAll(pageable)
@@ -71,7 +69,7 @@ public class ChallengeSearchService {
     private ChallengeEnrolledListItemResponse mapToResponse(ChallengeEnrollment challengeEnrollment) {
         Challenge challenge = challengeEnrollment.getChallenge();
         ParticipationStat stat = challengeEnrollment.getParticipationStat();
-        ZonedDateTime startOfToday = timeZoneConverter.convertEtcToLocalTimeZone(ZonedDateTime.now()).with(LocalTime.MIDNIGHT);
+        ZonedDateTime startOfToday = TimeZoneConverter.convertEtcToLocalTimeZone(ZonedDateTime.now()).with(LocalTime.MIDNIGHT);
         boolean isParticipatedToday = challengeParticipationRecordRepository
                 .findByChallengeEnrollmentAndTargetDate(challengeEnrollment, startOfToday)
                 .map(ChallengeParticipationRecord::existChallengePost)
@@ -79,7 +77,6 @@ public class ChallengeSearchService {
         String hostProfileImageUrl = Optional.ofNullable(challenge.getHost().getImageFileName())
                 .map((imageFileName) -> s3FileService.getGetPreSignedUrl("profiles", imageFileName))
                 .orElse("");
-        boolean isTodayParticipatingDay = challengeUtilService.isTodayParticipatingDay(challenge);
-        return ChallengeEnrolledListItemResponse.of(challenge, challengeEnrollment, stat, hostProfileImageUrl, isTodayParticipatingDay, isParticipatedToday);
+        return ChallengeEnrolledListItemResponse.of(challenge, challengeEnrollment, stat, hostProfileImageUrl, isParticipatedToday);
     }
 }

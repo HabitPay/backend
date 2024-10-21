@@ -28,7 +28,7 @@ public class ChallengeEnrolledListItemResponse {
     private Boolean isTodayParticipatingDay;
     private Boolean isParticipatedToday;
 
-    public static ChallengeEnrolledListItemResponse of(Challenge challenge, ChallengeEnrollment challengeEnrollment, ParticipationStat stat, String hostProfileImage, boolean isTodayParticipatingDay, boolean isParticipatedToday) {
+    public static ChallengeEnrolledListItemResponse of(Challenge challenge, ChallengeEnrollment challengeEnrollment, ParticipationStat stat, String hostProfileImage, boolean isParticipatedToday) {
         return ChallengeEnrolledListItemResponse.builder()
                 .challengeId(challenge.getId())
                 .title(challenge.getTitle())
@@ -44,7 +44,7 @@ public class ChallengeEnrolledListItemResponse {
                 .hostProfileImage(hostProfileImage)
                 .isMemberGivenUp(challengeEnrollment.isGivenUp())
                 .successCount(stat.getSuccessCount())
-                .isTodayParticipatingDay(isTodayParticipatingDay)
+                .isTodayParticipatingDay(challenge.isTodayParticipatingDay())
                 .isParticipatedToday(isParticipatedToday)
                 .build();
     }
