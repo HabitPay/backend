@@ -28,7 +28,6 @@ public class ChallengePostUtilService {
 
     private final ChallengeParticipationRecordUpdateService challengeParticipationRecordUpdateService;
     private final ChallengeParticipationRecordSearchService challengeParticipationRecordSearchService;
-    private final TimeZoneConverter timeZoneConverter;
 
     public void authorizePostWriter(ChallengePost post, Member member) {
         if (!post.getWriter().equals(member)) {
@@ -64,7 +63,7 @@ public class ChallengePostUtilService {
             return;
         }
 
-        ZonedDateTime nowInLocal = timeZoneConverter.convertEtcToLocalTimeZone(now);
+        ZonedDateTime nowInLocal = TimeZoneConverter.convertEtcToLocalTimeZone(now);
 
         DayOfWeek nowDayOfWeek = nowInLocal.getDayOfWeek();
         int nowDayOfWeekValue = nowDayOfWeek.getValue();
