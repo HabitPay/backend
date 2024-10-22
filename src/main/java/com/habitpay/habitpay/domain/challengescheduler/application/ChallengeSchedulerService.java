@@ -53,8 +53,8 @@ public class ChallengeSchedulerService {
 
     @Scheduled(cron = "0 0 0 * * *", zone = "Asia/Seoul")
     public void setChallengeForEnd() {
-
-        ZonedDateTime yesterday = ZonedDateTime.now().minusDays(1);
+        ZonedDateTime today = TimeZoneConverter.convertEtcToLocalTimeZone(ZonedDateTime.now());
+        ZonedDateTime yesterday = today.minusDays(1);
         List<Challenge> challengeList = schedulerTaskHelperService.findEndingChallenges(yesterday);
         challengeList.forEach(Challenge::setStateCompletedPendingSettlement);
         challengeRepository.saveAll(challengeList);
