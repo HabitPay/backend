@@ -6,6 +6,7 @@ import com.habitpay.habitpay.domain.challengeparticipationrecord.dao.ChallengePa
 import com.habitpay.habitpay.domain.challengeparticipationrecord.domain.ChallengeParticipationRecord;
 import com.habitpay.habitpay.domain.challengeparticipationrecord.exception.MandatoryRecordNotFoundException;
 import com.habitpay.habitpay.domain.challengeparticipationrecord.exception.RecordNotFoundException;
+import com.habitpay.habitpay.global.config.timezone.TimeZoneConverter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -32,7 +33,7 @@ public class ChallengeParticipationRecordSearchService {
     }
 
     public boolean hasParticipationPostForToday(ChallengeEnrollment challengeEnrollment) {
-        ZonedDateTime startOfToday = ZonedDateTime.now().withZoneSameInstant(ZoneId.of("Asia/Seoul")).with(LocalTime.MIDNIGHT);
+        ZonedDateTime startOfToday = TimeZoneConverter.convertEtcToLocalTimeZone(ZonedDateTime.now()).with(LocalTime.MIDNIGHT);
 
         return challengeParticipationRecordRepository.findByChallengeEnrollmentAndTargetDate(challengeEnrollment, startOfToday)
                 .map(ChallengeParticipationRecord::existsChallengePost)

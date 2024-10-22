@@ -10,6 +10,7 @@ import com.habitpay.habitpay.domain.challengeparticipationrecord.dao.ChallengePa
 import com.habitpay.habitpay.domain.challengeparticipationrecord.domain.ChallengeParticipationRecord;
 import com.habitpay.habitpay.domain.participationstat.dao.ParticipationStatRepository;
 import com.habitpay.habitpay.domain.participationstat.domain.ParticipationStat;
+import com.habitpay.habitpay.global.config.timezone.TimeZoneConverter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -31,10 +32,9 @@ public class SchedulerTaskHelperService {
     private final ChallengeParticipationRecordSearchService challengeParticipationRecordSearchService;
 
     public List<Challenge> findStartingChallenges() {
-        // todo : 시간대 확인
-        ZoneId zoneId = ZoneId.systemDefault();
-        ZonedDateTime startOfDay = ZonedDateTime.now(zoneId).toLocalDate().atStartOfDay(zoneId);
-        ZonedDateTime endOfDay = ZonedDateTime.now(zoneId).toLocalDate().atTime(LocalTime.MAX).atZone(zoneId);
+        ZonedDateTime today = TimeZoneConverter.convertEtcToLocalTimeZone(ZonedDateTime.now());
+        ZonedDateTime startOfDay = today.toLocalDate().atStartOfDay(today.getZone());
+        ZonedDateTime endOfDay = today.toLocalDate().atTime(LocalTime.MAX).atZone(today.getZone());
 
         return challengeRepository.findAllByStartDateBetweenAndState(startOfDay, endOfDay, ChallengeState.SCHEDULED);
     }
