@@ -9,6 +9,7 @@ import com.habitpay.habitpay.domain.challengeparticipationrecord.dao.ChallengePa
 import com.habitpay.habitpay.domain.challengeparticipationrecord.domain.ChallengeParticipationRecord;
 import com.habitpay.habitpay.domain.participationstat.dao.ParticipationStatRepository;
 import com.habitpay.habitpay.domain.participationstat.domain.ParticipationStat;
+import com.habitpay.habitpay.global.config.timezone.TimeZoneConverter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -41,7 +42,8 @@ public class ChallengeSchedulerService {
     @Scheduled(cron = "0 0 0 * * *", zone = "Asia/Seoul")
     public void checkParticipationForChallenge() {
 
-        ZonedDateTime yesterday = ZonedDateTime.now().minusDays(1).with(LocalTime.MIDNIGHT);
+        ZonedDateTime today = TimeZoneConverter.convertEtcToLocalTimeZone(ZonedDateTime.now());
+        ZonedDateTime yesterday = today.minusDays(1).with(LocalTime.MIDNIGHT);
         List<Challenge> challengeList = schedulerTaskHelperService.findChallengesForTodayParticipation(yesterday);
 
         if (challengeList.isEmpty()) { return; }
