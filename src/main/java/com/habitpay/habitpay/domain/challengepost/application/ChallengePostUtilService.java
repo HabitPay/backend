@@ -75,7 +75,7 @@ public class ChallengePostUtilService {
 
         ZonedDateTime nowDate = nowInLocal.with(LocalTime.MIDNIGHT);
         ChallengeParticipationRecord record = challengeParticipationRecordSearchService
-                .findByChallengeEnrollmentAndTargetDate(enrollment, nowDate);
+                .getByChallengeEnrollmentAndTargetDate(enrollment, nowDate);
         if (record.existsChallengePost()) {
             return;
         }
