@@ -16,7 +16,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.DayOfWeek;
 import java.time.LocalTime;
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -81,13 +80,12 @@ public class SchedulerTaskHelperService {
                 .forEach(record -> {
                     if (!record.existsChallengePost()) {
                         ParticipationStat stat = record.getParticipationStat();
-                        Challenge challenge = record.getChallenge();
+                        Challenge challenge = getChallengeInList(feeAddedChallengeList, record.getChallenge());
                         stat.setFailureCount(stat.getFailureCount() + 1);
                         stat.setTotalFee(stat.getTotalFee() + challenge.getFeePerAbsence());
                         challenge.setTotalAbsenceFee(challenge.getTotalAbsenceFee() + challenge.getFeePerAbsence());
                         failStatList.add(record.getParticipationStat());
                         failRecordList.add(record);
-                        saveOrUpdateChallengeList(feeAddedChallengeList, challenge);
                     }
                 });
 
@@ -96,12 +94,13 @@ public class SchedulerTaskHelperService {
         challengeRepository.saveAll(feeAddedChallengeList);
     }
 
-    private void saveOrUpdateChallengeList(List<Challenge> challengeList, Challenge challenge) {
+    private Challenge getChallengeInList(List<Challenge> challengeList, Challenge challenge) {
         int index = challengeList.indexOf(challenge);
         if (index != -1) {
-            challengeList.set(index, challenge);
+            return challengeList.get(index);
         } else {
             challengeList.add(challenge);
+            return challenge;
         }
     }
 
