@@ -4,6 +4,7 @@ import com.habitpay.habitpay.domain.challenge.dto.ChallengeCreationRequest;
 import com.habitpay.habitpay.domain.challengeenrollment.domain.ChallengeEnrollment;
 import com.habitpay.habitpay.domain.member.domain.Member;
 import com.habitpay.habitpay.domain.model.BaseTime;
+import com.habitpay.habitpay.global.config.timezone.TimeZoneConverter;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
@@ -11,6 +12,7 @@ import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.time.DayOfWeek;
+import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.temporal.TemporalAdjusters;
@@ -158,26 +160,30 @@ public class Challenge extends BaseTime {
     }
 
     public boolean isTodayParticipatingDay() {
-        ZonedDateTime nowInLocal = ZonedDateTime.now().withZoneSameInstant(ZoneId.of("Asia/Seoul"));
+        ZonedDateTime nowInLocal = TimeZoneConverter.convertEtcToLocalTimeZone(ZonedDateTime.now());
         DayOfWeek today = nowInLocal.getDayOfWeek();
         int todayBitPosition = 6 - (today.getValue() - 1);
 
-        return (this.participatingDays & (1 << todayBitPosition)) != 0;
+        return (this.getParticipatingDays() & (1 << todayBitPosition)) != 0;
     }
 
     public List<ZonedDateTime> getParticipationDates() {
 
         List<ZonedDateTime> dates = new ArrayList<>();
 
-        byte daysOfWeek = getParticipatingDays();
+        byte daysOfWeek = this.getParticipatingDays();
         for (int i = 0; i < 7; ++i) {
             if ((daysOfWeek & (1 << i)) != 0) {
 
                 DayOfWeek targetDay = DayOfWeek.of(7 - i);
-                ZonedDateTime startDateInLocal = this.getStartDate().withZoneSameInstant(ZoneId.of("Asia/Seoul"));
+                ZonedDateTime startDateInLocal = TimeZoneConverter.convertEtcToLocalTimeZone(this.getStartDate());
                 ZonedDateTime targetDate = startDateInLocal.with(TemporalAdjusters.nextOrSame(targetDay));
 
-                while (!targetDate.isAfter(getEndDate())) {
+                // todo
+                ZonedDateTime tempEndDate = TimeZoneConverter.convertEtcToLocalTimeZone(this.getEndDate());
+                ZonedDateTime endDate = tempEndDate.toLocalDate().atTime(LocalTime.MAX).atZone(tempEndDate.getZone());
+
+                while (!targetDate.isAfter(endDate)) {
                     dates.add(targetDate);
                     targetDate = targetDate.plusWeeks(1);
                 }
@@ -186,4 +192,5 @@ public class Challenge extends BaseTime {
 
         return dates;
     }
+
 }

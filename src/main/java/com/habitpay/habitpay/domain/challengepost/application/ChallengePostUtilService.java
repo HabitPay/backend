@@ -3,12 +3,13 @@ package com.habitpay.habitpay.domain.challengepost.application;
 import com.habitpay.habitpay.domain.challenge.domain.Challenge;
 import com.habitpay.habitpay.domain.challenge.domain.ChallengeState;
 import com.habitpay.habitpay.domain.challengeenrollment.domain.ChallengeEnrollment;
-import com.habitpay.habitpay.domain.challengeparticipationrecord.application.ChallengeParticipationRecordUpdateService;
 import com.habitpay.habitpay.domain.challengeparticipationrecord.application.ChallengeParticipationRecordSearchService;
+import com.habitpay.habitpay.domain.challengeparticipationrecord.application.ChallengeParticipationRecordUpdateService;
 import com.habitpay.habitpay.domain.challengeparticipationrecord.domain.ChallengeParticipationRecord;
 import com.habitpay.habitpay.domain.challengepost.domain.ChallengePost;
 import com.habitpay.habitpay.domain.challengepost.exception.InvalidStateForPostException;
 import com.habitpay.habitpay.domain.member.domain.Member;
+import com.habitpay.habitpay.global.config.timezone.TimeZoneConverter;
 import com.habitpay.habitpay.global.error.exception.ErrorCode;
 import com.habitpay.habitpay.global.error.exception.ForbiddenException;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +28,6 @@ public class ChallengePostUtilService {
 
     private final ChallengeParticipationRecordUpdateService challengeParticipationRecordUpdateService;
     private final ChallengeParticipationRecordSearchService challengeParticipationRecordSearchService;
-
 
     public void authorizePostWriter(ChallengePost post, Member member) {
         if (!post.getWriter().equals(member)) {
@@ -63,7 +63,7 @@ public class ChallengePostUtilService {
             return;
         }
 
-        ZonedDateTime nowInLocal = now.withZoneSameInstant(ZoneId.of("Asia/Seoul"));
+        ZonedDateTime nowInLocal = TimeZoneConverter.convertEtcToLocalTimeZone(now);
 
         DayOfWeek nowDayOfWeek = nowInLocal.getDayOfWeek();
         int nowDayOfWeekValue = nowDayOfWeek.getValue();
@@ -75,8 +75,8 @@ public class ChallengePostUtilService {
 
         ZonedDateTime nowDate = nowInLocal.with(LocalTime.MIDNIGHT);
         ChallengeParticipationRecord record = challengeParticipationRecordSearchService
-                .getByChallengeEnrollmentAndTargetDate(enrollment, nowDate);
-        if (record.existChallengePost()) {
+                .findByChallengeEnrollmentAndTargetDate(enrollment, nowDate);
+        if (record.existsChallengePost()) {
             return;
         }
 

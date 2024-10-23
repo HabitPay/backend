@@ -6,13 +6,15 @@ import com.habitpay.habitpay.domain.challengeparticipationrecord.dao.ChallengePa
 import com.habitpay.habitpay.domain.challengeparticipationrecord.domain.ChallengeParticipationRecord;
 import com.habitpay.habitpay.domain.challengeparticipationrecord.exception.MandatoryRecordNotFoundException;
 import com.habitpay.habitpay.domain.challengeparticipationrecord.exception.RecordNotFoundException;
+import com.habitpay.habitpay.global.config.timezone.TimeZoneConverter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalTime;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -30,13 +32,15 @@ public class ChallengeParticipationRecordSearchService {
         return challengeParticipationRecordRepository.findAllByChallengeEnrollment(enrollment);
     }
 
-    public Optional<ChallengeParticipationRecord> findByChallengeEnrollmentAndTargetDate(
-            ChallengeEnrollment enrollment,
-            ZonedDateTime startOfTargetDate) {
-        return challengeParticipationRecordRepository.findByChallengeEnrollmentAndTargetDate(enrollment, startOfTargetDate);
+    public boolean hasParticipationPostForToday(ChallengeEnrollment challengeEnrollment) {
+        ZonedDateTime startOfToday = TimeZoneConverter.convertEtcToLocalTimeZone(ZonedDateTime.now()).with(LocalTime.MIDNIGHT);
+
+        return challengeParticipationRecordRepository.findByChallengeEnrollmentAndTargetDate(challengeEnrollment, startOfToday)
+                .map(ChallengeParticipationRecord::existsChallengePost)
+                .orElseGet(() -> false);
     }
 
-    public ChallengeParticipationRecord getByChallengeEnrollmentAndTargetDate(
+    public ChallengeParticipationRecord findByChallengeEnrollmentAndTargetDate(
             ChallengeEnrollment enrollment,
             ZonedDateTime startOfTargetDate) {
         return challengeParticipationRecordRepository.findByChallengeEnrollmentAndTargetDate(enrollment, startOfTargetDate)
