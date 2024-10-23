@@ -286,7 +286,7 @@ public class ChallengeApiTest extends AbstractRestDocsTests {
 
     @Test
     @WithMockOAuth2User
-    @DisplayName("챌린지 별 참여 정보 조회")
+    @DisplayName("챌린지 별 참여 기록 조회")
     void getChallengeRecords() throws Exception {
 
         // given
