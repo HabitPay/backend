@@ -30,8 +30,10 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
 
+import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -67,6 +69,9 @@ public class ChallengeApiTest extends AbstractRestDocsTests {
 
     @MockBean
     ChallengeDeleteService challengeDeleteService;
+
+    @MockBean
+    ChallengeRecordsService challengeRecordsService;
 
     @MockBean
     TimeZoneProperties timeZoneProperties;
@@ -275,6 +280,41 @@ public class ChallengeApiTest extends AbstractRestDocsTests {
                         responseFields(
                                 fieldWithPath("code").description("오류 응답 코드"),
                                 fieldWithPath("message").description("오류 메세지")
+                        )
+                ));
+    }
+
+    @Test
+    @WithMockOAuth2User
+    @DisplayName("챌린지 별 참여 정보 조회")
+    void getChallengeRecords() throws Exception {
+
+        // given
+        LocalDate today = LocalDate.now();
+        ChallengeRecordsResponse challengeRecordsResponse = ChallengeRecordsResponse.builder()
+                .successDayList(List.of(today))
+                .failDayList(new ArrayList<>())
+                .upcomingDayList(List.of(today.plusWeeks(1)))
+                .build();
+
+        given(challengeRecordsService.getChallengeRecords(anyLong(), any(Member.class)))
+                .willReturn(SuccessResponse.of(SuccessCode.NO_MESSAGE, challengeRecordsResponse));
+
+        // when
+        ResultActions result = mockMvc.perform(get("/api/challenges/{id}/records", 1L)
+                .header(HttpHeaders.AUTHORIZATION, AUTHORIZATION_HEADER_PREFIX + "ACCESS_TOKEN"));
+
+        // then
+        result.andExpect(status().isOk())
+                .andDo(document("challenge/get-challenge-records",
+                        requestHeaders(
+                                headerWithName(HttpHeaders.AUTHORIZATION).description("액세스 토큰")
+                        ),
+                        responseFields(
+                                fieldWithPath("message").description("메세지"),
+                                fieldWithPath("data.successDayList").description("특정 챌린지 참여에 성공한 날짜 리스트"),
+                                fieldWithPath("data.failDayList").description("특정 챌린지 참여에 실패한 날짜 리스트"),
+                                fieldWithPath("data.upcomingDayList").description("특정 챌린지 참여가 예정되어 있는 날짜 리스트")
                         )
                 ));
     }
