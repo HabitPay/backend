@@ -15,6 +15,7 @@ import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -40,7 +41,13 @@ public class ChallengeParticipationRecordSearchService {
                 .orElseGet(() -> false);
     }
 
-    public ChallengeParticipationRecord findByChallengeEnrollmentAndTargetDate(
+    public Optional<ChallengeParticipationRecord> findByChallengeEnrollmentAndTargetDate(
+            ChallengeEnrollment enrollment,
+            ZonedDateTime startOfTargetDate) {
+        return challengeParticipationRecordRepository.findByChallengeEnrollmentAndTargetDate(enrollment, startOfTargetDate);
+    }
+
+    public ChallengeParticipationRecord getByChallengeEnrollmentAndTargetDate(
             ChallengeEnrollment enrollment,
             ZonedDateTime startOfTargetDate) {
         return challengeParticipationRecordRepository.findByChallengeEnrollmentAndTargetDate(enrollment, startOfTargetDate)
