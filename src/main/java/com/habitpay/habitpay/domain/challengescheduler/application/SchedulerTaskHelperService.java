@@ -34,8 +34,8 @@ public class SchedulerTaskHelperService {
 
     public List<Challenge> findStartingChallenges() {
         ZonedDateTime today = TimeZoneConverter.convertEtcToLocalTimeZone(ZonedDateTime.now());
-        ZonedDateTime startOfDay = today.toLocalDate().atStartOfDay(today.getZone());
-        ZonedDateTime endOfDay = today.toLocalDate().atTime(LocalTime.MAX).atZone(today.getZone());
+        ZonedDateTime startOfDay = today.with(LocalTime.MIDNIGHT);
+        ZonedDateTime endOfDay = today.with(LocalTime.MAX);
 
         return challengeRepository.findAllByStartDateBetweenAndState(startOfDay, endOfDay, ChallengeState.SCHEDULED);
     }
