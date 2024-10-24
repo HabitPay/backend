@@ -12,6 +12,7 @@ import com.habitpay.habitpay.domain.challengescheduler.application.SchedulerTask
 import com.habitpay.habitpay.domain.member.domain.Member;
 import com.habitpay.habitpay.domain.participationstat.dao.ParticipationStatRepository;
 import com.habitpay.habitpay.domain.participationstat.domain.ParticipationStat;
+import com.habitpay.habitpay.global.config.timezone.TimeZoneConverter;
 import com.habitpay.habitpay.global.response.SuccessCode;
 import com.habitpay.habitpay.global.response.SuccessResponse;
 import lombok.AllArgsConstructor;
@@ -63,8 +64,8 @@ public class ChallengeCreationService {
     }
 
     private void validateChallengeParticipatingDays(ChallengeCreationRequest challengeCreationRequest) {
-        ZonedDateTime startDate = challengeCreationRequest.getStartDate();
-        ZonedDateTime endDate = challengeCreationRequest.getEndDate();
+        ZonedDateTime startDate = TimeZoneConverter.convertEtcToLocalTimeZone(challengeCreationRequest.getStartDate());
+        ZonedDateTime endDate = TimeZoneConverter.convertEtcToLocalTimeZone(challengeCreationRequest.getEndDate());
         int participatingDays = challengeCreationRequest.getParticipatingDays();
 
         EnumSet<DayOfWeek> challengeDays = EnumSet.noneOf(DayOfWeek.class);

@@ -13,7 +13,6 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.time.DayOfWeek;
 import java.time.LocalTime;
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
@@ -88,17 +87,12 @@ public class Challenge extends BaseTime {
     }
 
     public static Challenge of(Member host, ChallengeCreationRequest challengeCreationRequest) {
-        ZonedDateTime startDateInLocal = TimeZoneConverter.convertEtcToLocalTimeZone(challengeCreationRequest.getStartDate());
-        ZonedDateTime endDateInLocal = TimeZoneConverter.convertEtcToLocalTimeZone(challengeCreationRequest.getEndDate());
-        ZonedDateTime startDate = startDateInLocal.with(LocalTime.MIDNIGHT);
-        ZonedDateTime endDate = endDateInLocal.with(LocalTime.MAX);
-
         return Challenge.builder()
                 .member(host)
                 .title(challengeCreationRequest.getTitle())
                 .description(challengeCreationRequest.getDescription())
-                .startDate(startDate)
-                .endDate(endDate)
+                .startDate(challengeCreationRequest.getStartDate())
+                .endDate(challengeCreationRequest.getEndDate())
                 .participatingDays(challengeCreationRequest.getParticipatingDays())
                 .totalParticipatingDaysCount(calculateTotalParticipatingDays(challengeCreationRequest))
                 .feePerAbsence(challengeCreationRequest.getFeePerAbsence())
