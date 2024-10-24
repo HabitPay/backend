@@ -9,7 +9,7 @@ import java.util.List;
 @Getter
 @Builder
 public class ChallengeRecordsResponse {
-    List<LocalDate> successDayList;
-    List<LocalDate> failureDayList;
-    List<LocalDate> upcomingDayList;
+    private List<LocalDate> successDayList;
+    private List<LocalDate> failureDayList;
+    private List<LocalDate> upcomingDayList;
 }
