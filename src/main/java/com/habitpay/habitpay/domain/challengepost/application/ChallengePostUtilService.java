@@ -63,16 +63,12 @@ public class ChallengePostUtilService {
             return;
         }
 
-        ZonedDateTime nowInLocal = TimeZoneConverter.convertEtcToLocalTimeZone(now);
-
-        DayOfWeek nowDayOfWeek = nowInLocal.getDayOfWeek();
-        int nowDayOfWeekValue = nowDayOfWeek.getValue();
-        boolean todayIsParticipationDay = (challenge.getParticipatingDays() & (1 << (7 - nowDayOfWeekValue))) != 0;
-
+        boolean todayIsParticipationDay = challenge.isTodayParticipatingDay();
         if (!todayIsParticipationDay) {
             return;
         }
 
+        ZonedDateTime nowInLocal = TimeZoneConverter.convertEtcToLocalTimeZone(now);
         ZonedDateTime nowDate = nowInLocal.with(LocalTime.MIDNIGHT);
         ChallengeParticipationRecord record = challengeParticipationRecordSearchService
                 .getByChallengeEnrollmentAndTargetDate(enrollment, nowDate);
