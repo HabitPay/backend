@@ -1,6 +1,7 @@
 package com.habitpay.habitpay.domain.challenge.application;
 
 import com.habitpay.habitpay.domain.challenge.domain.Challenge;
+import com.habitpay.habitpay.domain.challenge.dto.ChallengeRecords;
 import com.habitpay.habitpay.domain.challenge.dto.ChallengeRecordsResponse;
 import com.habitpay.habitpay.domain.challengeenrollment.application.ChallengeEnrollmentSearchService;
 import com.habitpay.habitpay.domain.challengeenrollment.domain.ChallengeEnrollment;
@@ -15,7 +16,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -30,33 +30,39 @@ public class ChallengeRecordsService {
         Challenge challenge = challengeSearchService.getChallengeById(challengeId);
         ChallengeEnrollment enrollment = challengeEnrollmentSearchService.getByMemberAndChallenge(member, challenge);
 
-        List<LocalDate> successDayList = new ArrayList<>();
-        List<LocalDate> failDayList = new ArrayList<>();
-        List<LocalDate> upcomingDayList = new ArrayList<>();
-
+        ChallengeRecords challengeRecords = new ChallengeRecords();
         List<ChallengeParticipationRecord> recordList = challengeParticipationRecordSearchService.findAllByChallengeEnrollment(enrollment);
         LocalDate today = TimeZoneConverter.convertEtcToLocalTimeZone(ZonedDateTime.now()).toLocalDate();
-        recordList
-                .forEach(record -> {
-                    LocalDate targetDate = TimeZoneConverter.convertEtcToLocalTimeZone(record.getTargetDate()).toLocalDate();
-                    if (targetDate.isBefore(today)) {
-                        List<LocalDate> targetList = record.existsChallengePost() ? successDayList : failDayList;
-                        targetList.add(targetDate);
-                    } else if (targetDate.isEqual(today)) {
-                        List<LocalDate> targetList = record.existsChallengePost() ? successDayList : upcomingDayList;
-                        targetList.add(targetDate);
-                    } else {
-                        upcomingDayList.add(targetDate);
-                    }
-                });
+
+        recordList.forEach(record -> categorizeRecord(record, today, challengeRecords));
 
         return SuccessResponse.of(
                 SuccessCode.NO_MESSAGE,
                 ChallengeRecordsResponse.builder()
-                        .successDayList(successDayList)
-                        .failDayList(failDayList)
-                        .upcomingDayList(upcomingDayList)
+                        .successDayList(challengeRecords.getSuccessDayList())
+                        .failureDayList(challengeRecords.getFailureDayList())
+                        .upcomingDayList(challengeRecords.getUpcomingDayList())
                         .build()
         );
+    }
+
+    private void categorizeRecord(ChallengeParticipationRecord record, LocalDate today, ChallengeRecords challengeRecords) {
+        LocalDate targetDate = TimeZoneConverter.convertEtcToLocalTimeZone(record.getTargetDate()).toLocalDate();
+
+        if (targetDate.isBefore(today)) {
+            if (record.existsChallengePost()) {
+                challengeRecords.addSuccessDay(targetDate);
+            } else {
+                challengeRecords.addFailureDay(targetDate);
+            }
+        } else if (targetDate.isEqual(today)) {
+            if (record.existsChallengePost()) {
+                challengeRecords.addSuccessDay(targetDate);
+            } else {
+                challengeRecords.addUpcomingDay(targetDate);
+            }
+        } else {
+            challengeRecords.addUpcomingDay(targetDate);
+        }
     }
 }

@@ -293,7 +293,7 @@ public class ChallengeApiTest extends AbstractRestDocsTests {
         LocalDate today = LocalDate.now();
         ChallengeRecordsResponse challengeRecordsResponse = ChallengeRecordsResponse.builder()
                 .successDayList(List.of(today))
-                .failDayList(new ArrayList<>())
+                .failureDayList(new ArrayList<>())
                 .upcomingDayList(List.of(today.plusWeeks(1)))
                 .build();
 
@@ -313,7 +313,7 @@ public class ChallengeApiTest extends AbstractRestDocsTests {
                         responseFields(
                                 fieldWithPath("message").description("메세지"),
                                 fieldWithPath("data.successDayList").description("특정 챌린지 참여에 성공한 날짜 리스트"),
-                                fieldWithPath("data.failDayList").description("특정 챌린지 참여에 실패한 날짜 리스트"),
+                                fieldWithPath("data.failureDayList").description("특정 챌린지 참여에 실패한 날짜 리스트"),
                                 fieldWithPath("data.upcomingDayList").description("특정 챌린지 참여가 예정되어 있는 날짜 리스트")
                         )
                 ));
