@@ -39,15 +39,15 @@ public class ChallengeRecordsService {
         recordList
                 .forEach(record -> {
                     LocalDate targetDate = TimeZoneConverter.convertEtcToLocalTimeZone(record.getTargetDate()).toLocalDate();
+                    List<LocalDate> targetList;
                     if (targetDate.isBefore(today)) {
-                        List<LocalDate> targetList = record.existsChallengePost() ? successDayList : failDayList;
-                        targetList.add(targetDate);
+                        targetList = record.existsChallengePost() ? successDayList : failDayList;
                     } else if (targetDate.isEqual(today)) {
-                        List<LocalDate> targetList = record.existsChallengePost() ? successDayList : upcomingDayList;
-                        targetList.add(targetDate);
+                        targetList = record.existsChallengePost() ? successDayList : upcomingDayList;
                     } else {
-                        upcomingDayList.add(targetDate);
+                        targetList = upcomingDayList;
                     }
+                    targetList.add(targetDate);
                 });
 
         return SuccessResponse.of(
