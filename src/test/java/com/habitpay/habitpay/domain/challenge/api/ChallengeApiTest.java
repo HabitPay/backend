@@ -293,7 +293,7 @@ public class ChallengeApiTest extends AbstractRestDocsTests {
         LocalDate today = LocalDate.now();
         ChallengeRecordsResponse challengeRecordsResponse = ChallengeRecordsResponse.builder()
                 .successDayList(List.of(today))
-                .failDayList(new ArrayList<>())
+                .failureDayList(new ArrayList<>())
                 .upcomingDayList(List.of(today.plusWeeks(1)))
                 .build();
 

@@ -10,15 +10,15 @@ import java.util.List;
 @Setter
 public class ChallengeRecords {
     private List<LocalDate> successDayList;
-    private List<LocalDate> failDayList;
+    private List<LocalDate> failureDayList;
     private List<LocalDate> upcomingDayList;
 
     public void addSuccessDay(LocalDate date) {
         successDayList.add(date);
     }
 
-    public void addFailDay(LocalDate date) {
-        failDayList.add(date);
+    public void addFailureDay(LocalDate date) {
+        failureDayList.add(date);
     }
 
     public void addUpcomingDay(LocalDate date) {

@@ -16,7 +16,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -41,7 +40,7 @@ public class ChallengeRecordsService {
                 SuccessCode.NO_MESSAGE,
                 ChallengeRecordsResponse.builder()
                         .successDayList(challengeRecords.getSuccessDayList())
-                        .failDayList(challengeRecords.getFailDayList())
+                        .failureDayList(challengeRecords.getFailureDayList())
                         .upcomingDayList(challengeRecords.getUpcomingDayList())
                         .build()
         );
@@ -54,7 +53,7 @@ public class ChallengeRecordsService {
             if (record.existsChallengePost()) {
                 challengeRecords.addSuccessDay(targetDate);
             } else {
-                challengeRecords.addFailDay(targetDate);
+                challengeRecords.addFailureDay(targetDate);
             }
         } else if (targetDate.isEqual(today)) {
             if (record.existsChallengePost()) {
