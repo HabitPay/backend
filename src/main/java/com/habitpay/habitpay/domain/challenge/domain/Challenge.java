@@ -88,12 +88,17 @@ public class Challenge extends BaseTime {
     }
 
     public static Challenge of(Member host, ChallengeCreationRequest challengeCreationRequest) {
+        ZonedDateTime startDateInLocal = TimeZoneConverter.convertEtcToLocalTimeZone(challengeCreationRequest.getStartDate());
+        ZonedDateTime endDateInLocal = TimeZoneConverter.convertEtcToLocalTimeZone(challengeCreationRequest.getEndDate());
+        ZonedDateTime startDate = startDateInLocal.with(LocalTime.MIDNIGHT);
+        ZonedDateTime endDate = endDateInLocal.with(LocalTime.MAX);
+
         return Challenge.builder()
                 .member(host)
                 .title(challengeCreationRequest.getTitle())
                 .description(challengeCreationRequest.getDescription())
-                .startDate(challengeCreationRequest.getStartDate())
-                .endDate(challengeCreationRequest.getEndDate())
+                .startDate(startDate)
+                .endDate(endDate)
                 .participatingDays(challengeCreationRequest.getParticipatingDays())
                 .totalParticipatingDaysCount(calculateTotalParticipatingDays(challengeCreationRequest))
                 .feePerAbsence(challengeCreationRequest.getFeePerAbsence())
