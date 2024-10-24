@@ -18,7 +18,9 @@ import java.time.DayOfWeek;
 import java.time.LocalTime;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -72,36 +74,56 @@ public class SchedulerTaskHelperService {
     }
 
     public void checkFailedParticipation(List<Challenge> challengeList, ZonedDateTime yesterday) {
-        List<Challenge> feeAddedChallengeList = new ArrayList<>();
-        List<ParticipationStat> failStatList = new ArrayList<>();
-        List<ChallengeParticipationRecord> failRecordList = new ArrayList<>();
+        HashMap<Challenge, Integer> challengeFailureCountMap = new HashMap<>();
+        List<ParticipationStat> failureStatList = new ArrayList<>();
+        List<ChallengeParticipationRecord> failureRecordList = new ArrayList<>();
 
         challengeParticipationRecordSearchService.findByChallengesAndTargetDate(challengeList, yesterday)
                 .forEach(record -> {
                     if (!record.existsChallengePost()) {
                         ParticipationStat stat = record.getParticipationStat();
-                        Challenge challenge = getChallengeInList(feeAddedChallengeList, record.getChallenge());
+                        Challenge challenge = record.getChallenge();
+
+                        setFailureCountInChallengeMap(challengeFailureCountMap, challenge);
                         stat.setFailureCount(stat.getFailureCount() + 1);
                         stat.setTotalFee(stat.getTotalFee() + challenge.getFeePerAbsence());
-                        challenge.setTotalAbsenceFee(challenge.getTotalAbsenceFee() + challenge.getFeePerAbsence());
-                        failStatList.add(record.getParticipationStat());
-                        failRecordList.add(record);
+
+                        failureStatList.add(record.getParticipationStat());
+                        failureRecordList.add(record);
                     }
                 });
 
-        participationStatRepository.saveAll(failStatList);
-        challengeParticipationRecordRepository.deleteAll(failRecordList);
+        List<Challenge> feeAddedChallengeList = calculateFeeForChallenges(challengeFailureCountMap);
+
+        participationStatRepository.saveAll(failureStatList);
+        challengeParticipationRecordRepository.deleteAll(failureRecordList);
         challengeRepository.saveAll(feeAddedChallengeList);
     }
 
-    private Challenge getChallengeInList(List<Challenge> challengeList, Challenge challenge) {
-        int index = challengeList.indexOf(challenge);
-        if (index != -1) {
-            return challengeList.get(index);
+    private void setFailureCountInChallengeMap(HashMap<Challenge, Integer> challengeFailureCountMap, Challenge challenge) {
+        if (challengeFailureCountMap.containsKey(challenge)) {
+            int currentFailures = challengeFailureCountMap.get(challenge);
+            challengeFailureCountMap.put(challenge, currentFailures + 1);
         } else {
-            challengeList.add(challenge);
-            return challenge;
+            challengeFailureCountMap.put(challenge, 1);
         }
+    }
+
+    private List<Challenge> calculateFeeForChallenges(HashMap<Challenge, Integer> challengeFailureCountMap) {
+        List<Challenge> feeAddedChallengeList = new ArrayList<>();
+
+        for (Map.Entry<Challenge, Integer> entry : challengeFailureCountMap.entrySet()) {
+            Challenge challenge = entry.getKey();
+            Integer failureCount = entry.getValue();
+
+            int feePerAbsence = challenge.getFeePerAbsence();
+            int currentTotalAbsenceFee = challenge.getTotalAbsenceFee();
+            challenge.setTotalAbsenceFee(currentTotalAbsenceFee + (feePerAbsence * failureCount));
+
+            feeAddedChallengeList.add(challenge);
+        }
+
+        return feeAddedChallengeList;
     }
 
     public List<Challenge> findEndingChallenges(ZonedDateTime targetDay) {
