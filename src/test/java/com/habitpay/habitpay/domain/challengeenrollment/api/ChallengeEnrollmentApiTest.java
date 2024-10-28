@@ -6,6 +6,7 @@ import com.habitpay.habitpay.domain.challengeenrollment.application.ChallengeEnr
 import com.habitpay.habitpay.domain.challengeenrollment.application.ChallengeEnrollmentService;
 import com.habitpay.habitpay.domain.challengeenrollment.dto.ChallengeEnrollmentResponse;
 import com.habitpay.habitpay.domain.challengeenrollment.exception.AlreadyEnrolledChallengeException;
+import com.habitpay.habitpay.domain.challengeenrollment.exception.AlreadyGivenUpChallengeException;
 import com.habitpay.habitpay.domain.challengeenrollment.exception.NotEnrolledChallengeException;
 import com.habitpay.habitpay.domain.member.domain.Member;
 import com.habitpay.habitpay.global.config.jwt.TokenProvider;
@@ -149,7 +150,7 @@ public class ChallengeEnrollmentApiTest extends AbstractRestDocsTests {
 
         // given
         given(challengeEnrollmentCancellationService.cancel(anyLong(), any(Member.class)))
-                .willReturn(SuccessResponse.<Void>of(SuccessCode.CANCEL_CHALLENGE_ENROLLMENT_SUCCESS));
+                .willReturn(SuccessResponse.of(SuccessCode.CANCEL_CHALLENGE_ENROLLMENT_SUCCESS));
 
         // when
         ResultActions result = mockMvc.perform(post("/api/challenges/{id}/cancel", 1L)
@@ -236,6 +237,84 @@ public class ChallengeEnrollmentApiTest extends AbstractRestDocsTests {
         // then
         result.andExpect(status().isBadRequest())
                 .andDo(document("challenge/cancel-challenge-enrollment-invalid-cancellation-time-exception",
+                        requestHeaders(
+                                headerWithName(HttpHeaders.AUTHORIZATION).description("액세스 토큰")
+                        ),
+                        responseFields(
+                                fieldWithPath("code").description("오류 응답 코드"),
+                                fieldWithPath("message").description("오류 메세지")
+                        )
+                ));
+    }
+
+    @Test
+    @WithMockOAuth2User
+    @DisplayName("챌린지 중도 포기")
+    void giveUpChallenge() throws Exception {
+
+        // given
+        given(challengeEnrollmentCancellationService.giveUp(anyLong(), any(Member.class)))
+                .willReturn(SuccessResponse.of(SuccessCode.GIVING_UP_CHALLENGE));
+
+        // when
+        ResultActions result = mockMvc.perform(post("/api/challenges/{id}/give-up", 1L)
+                .header(HttpHeaders.AUTHORIZATION, AUTHORIZATION_HEADER_PREFIX + "ACCESS_TOKEN"));
+
+        // then
+        result.andExpect(status().isOk())
+                .andDo(document("challenge/give-up-challenge",
+                        requestHeaders(
+                                headerWithName(HttpHeaders.AUTHORIZATION).description("액세스 토큰")
+                        ),
+                        responseFields(
+                                fieldWithPath("message").description("메세지"),
+                                fieldWithPath("data").description("null")
+                        )
+                ));
+    }
+
+    @Test
+    @WithMockOAuth2User
+    @DisplayName("챌린지 중도 포기 예외처리 - 챌린지 시작 시간 이전 (400 Bad Request)")
+    void tooEarlyGivingUpChallengeException() throws Exception {
+
+        // given
+        given(challengeEnrollmentCancellationService.giveUp(anyLong(), any(Member.class)))
+                .willThrow(new BadRequestException(ErrorCode.TOO_EARLY_GIVEN_UP_CHALLENGE));
+
+        // when
+        ResultActions result = mockMvc.perform(post("/api/challenges/{id}/give-up", 1L)
+                .header(HttpHeaders.AUTHORIZATION, AUTHORIZATION_HEADER_PREFIX + "ACCESS_TOKEN"));
+
+        // then
+        result.andExpect(status().isBadRequest())
+                .andDo(document("challenge/giving-up-challenge-too-early-exception",
+                        requestHeaders(
+                                headerWithName(HttpHeaders.AUTHORIZATION).description("액세스 토큰")
+                        ),
+                        responseFields(
+                                fieldWithPath("code").description("오류 응답 코드"),
+                                fieldWithPath("message").description("오류 메세지")
+                        )
+                ));
+    }
+
+    @Test
+    @WithMockOAuth2User
+    @DisplayName("챌린지 중도 포기 예외처리 - 이미 중도 포기한 경우 (400 Bad Request)")
+    void alreadyGivenUpChallengeException() throws Exception {
+
+        // given
+        given(challengeEnrollmentCancellationService.giveUp(anyLong(), any(Member.class)))
+                .willThrow(new AlreadyGivenUpChallengeException(anyLong(), anyLong()));
+
+        // when
+        ResultActions result = mockMvc.perform(post("/api/challenges/{id}/give-up", 1L)
+                .header(HttpHeaders.AUTHORIZATION, AUTHORIZATION_HEADER_PREFIX + "ACCESS_TOKEN"));
+
+        // then
+        result.andExpect(status().isBadRequest())
+                .andDo(document("challenge/already-given-up-challenge-exception",
                         requestHeaders(
                                 headerWithName(HttpHeaders.AUTHORIZATION).description("액세스 토큰")
                         ),
