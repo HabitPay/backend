@@ -441,11 +441,11 @@ public class ChallengePostApiTest extends AbstractRestDocsTests {
 
         List<String> presignedUrlList = List.of("https://please.upload/your-photo/here");
 
-        given(challengePostUpdateService.patchPost(any(ModifyPostRequest.class), anyLong(), any(Member.class)))
+        given(challengePostUpdateService.patchPost(any(ModifyPostRequest.class), anyLong(), anyLong(), any(Member.class)))
                 .willReturn(SuccessResponse.of(SuccessCode.PATCH_POST_SUCCESS, presignedUrlList));
 
         //when
-        ResultActions result = mockMvc.perform(patch("/api/posts/{id}", 1L)
+        ResultActions result = mockMvc.perform(patch("/api/challenges/{challengeId}/posts/{postId}", 1L, 1L)
                 .header(HttpHeaders.AUTHORIZATION, AUTHORIZATION_HEADER_PREFIX + "ACCESS_TOKEN")
                 .content(objectMapper.writeValueAsString(mockmodifyPostRequest))
                 .contentType(MediaType.APPLICATION_JSON));
