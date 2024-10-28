@@ -92,10 +92,12 @@ public class ChallengePostApi {
         return challengePostUpdateService.patchPost(request, challengeId, postId, user.getMember());
     }
 
-    @DeleteMapping("/posts/{id}")
+    @DeleteMapping("/challenges/{challengeId}/posts/{postId}")
     public SuccessResponse<Void> deletePost(
-            @PathVariable Long id, @AuthenticationPrincipal CustomUserDetails user) {
+            @PathVariable("challengeId") Long challengeId,
+            @PathVariable("postId") Long postId,
+            @AuthenticationPrincipal CustomUserDetails user) {
 
-        return challengePostDeleteService.deletePost(id, user.getMember());
+        return challengePostDeleteService.deletePost(challengeId, postId, user.getMember());
     }
 }
