@@ -1,6 +1,9 @@
 package com.habitpay.habitpay.domain.challengepost.application;
 
+import com.habitpay.habitpay.domain.challenge.application.ChallengeSearchService;
 import com.habitpay.habitpay.domain.challenge.domain.Challenge;
+import com.habitpay.habitpay.domain.challengeenrollment.application.ChallengeEnrollmentSearchService;
+import com.habitpay.habitpay.domain.challengeenrollment.domain.ChallengeEnrollment;
 import com.habitpay.habitpay.domain.challengepost.dao.ChallengePostRepository;
 import com.habitpay.habitpay.domain.challengepost.domain.ChallengePost;
 import com.habitpay.habitpay.domain.member.domain.Member;
@@ -19,22 +22,30 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class ChallengePostDeleteService {
 
-    private final ChallengePostRepository challengePostRepository;
+    private final ChallengeSearchService challengeSearchService;
+    private final ChallengeEnrollmentSearchService challengeEnrollmentSearchService;
     private final PostPhotoDeleteService postPhotoDeleteService;
     private final ChallengePostSearchService challengePostSearchService;
     private final ChallengePostUtilService challengePostUtilService;
 
+    private final ChallengePostRepository challengePostRepository;
+
     @Transactional
-    public SuccessResponse<Void> deletePost(Long postId, Member member) {
+    public SuccessResponse<Void> deletePost(Long challengeId, Long postId, Member member) {
+        Challenge challenge = challengeSearchService.getChallengeById(challengeId);
+        ChallengeEnrollment enrollment = challengeEnrollmentSearchService.getByMemberAndChallenge(member, challenge);
+
+        if (enrollment.isGivenUp()) {
+            throw new ForbiddenException(ErrorCode.POST_DELETION_FORBIDDEN_DUE_TO_GIVE_UP);
+        }
+
         ChallengePost post = challengePostSearchService.getChallengePostById(postId);
-        Challenge challenge = post.getChallenge();
 
         if (post.getIsAnnouncement()) {
             if (!challengePostUtilService.isChallengeHost(challenge, member)) {
                 throw new ForbiddenException(ErrorCode.ONLY_HOST_CAN_DELETE_ANNOUNCEMENT);
             }
-        }
-        else {
+        } else {
             throw new ForbiddenException(ErrorCode.POST_CANNOT_BE_DELETED);
         }
 
