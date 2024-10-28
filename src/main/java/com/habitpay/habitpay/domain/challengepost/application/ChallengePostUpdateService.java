@@ -1,6 +1,9 @@
 package com.habitpay.habitpay.domain.challengepost.application;
 
+import com.habitpay.habitpay.domain.challenge.application.ChallengeSearchService;
 import com.habitpay.habitpay.domain.challenge.domain.Challenge;
+import com.habitpay.habitpay.domain.challengeenrollment.application.ChallengeEnrollmentSearchService;
+import com.habitpay.habitpay.domain.challengeenrollment.domain.ChallengeEnrollment;
 import com.habitpay.habitpay.domain.challengepost.dao.ChallengePostRepository;
 import com.habitpay.habitpay.domain.challengepost.domain.ChallengePost;
 import com.habitpay.habitpay.domain.challengepost.dto.ModifyPostRequest;
@@ -27,14 +30,24 @@ public class ChallengePostUpdateService {
     private final PostPhotoCreationService postPhotoCreationService;
     private final PostPhotoUtilService postPhotoUtilService;
     private final PostPhotoDeleteService postPhotoDeleteService;
+    private final ChallengeSearchService challengeSearchService;
     private final ChallengePostSearchService challengePostSearchService;
     private final ChallengePostUtilService challengePostUtilService;
+    private final ChallengeEnrollmentSearchService challengeEnrollmentSearchService;
 
     private final ChallengePostRepository challengePostRepository;
 
     @Transactional
-    public SuccessResponse<List<String>> patchPost(ModifyPostRequest request, Long postId, Member member) {
+    public SuccessResponse<List<String>> patchPost(ModifyPostRequest request, Long challengeId, Long postId, Member member) {
+        Challenge challenge = challengeSearchService.getChallengeById(challengeId);
+        ChallengeEnrollment enrollment = challengeEnrollmentSearchService.getByMemberAndChallenge(member, challenge);
+
+        if (enrollment.isGivenUp()) {
+            throw new ForbiddenException(ErrorCode.POST_MODIFICATION_FORBIDDEN_DUE_TO_GIVE_UP);
+        }
+
         ChallengePost post = challengePostSearchService.getChallengePostById(postId);
+
 
         challengePostUtilService.checkChallengePeriodForPost(post.getChallenge());
         challengePostUtilService.authorizePostWriter(post, member);
