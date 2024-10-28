@@ -75,7 +75,7 @@ public class ChallengePostApi {
 //    }
     // -------------------------------------------------------------------------------
 
-    @PostMapping("/challenges/{id}/post")
+    @PostMapping("/challenges/{id}/posts")
     public SuccessResponse<List<String>> createPost(
             @RequestBody AddPostRequest request,
             @PathVariable("id") Long id,
