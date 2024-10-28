@@ -4,7 +4,6 @@ import com.habitpay.habitpay.domain.challenge.application.ChallengeSearchService
 import com.habitpay.habitpay.domain.challenge.domain.Challenge;
 import com.habitpay.habitpay.domain.challengeenrollment.application.ChallengeEnrollmentSearchService;
 import com.habitpay.habitpay.domain.challengeenrollment.domain.ChallengeEnrollment;
-import com.habitpay.habitpay.domain.challengeenrollment.exception.NotEnrolledChallengeException;
 import com.habitpay.habitpay.domain.challengepost.dao.ChallengePostRepository;
 import com.habitpay.habitpay.domain.challengepost.domain.ChallengePost;
 import com.habitpay.habitpay.domain.challengepost.dto.AddPostRequest;
@@ -37,9 +36,15 @@ public class ChallengePostCreationService {
     public SuccessResponse<List<String>> createPost(AddPostRequest request, Long challengeId, Member member) {
 
         Challenge challenge = challengeSearchService.getChallengeById(challengeId);
+        ChallengeEnrollment enrollment = challengeEnrollmentSearchService.getByMemberAndChallenge(member, challenge);
+
+        if (enrollment.isGivenUp()) {
+            throw new ForbiddenException(ErrorCode.POST_CREATION_FORBIDDEN_DUE_TO_GIVE_UP);
+        }
+
         challengePostUtilService.checkChallengePeriodForPost(challenge);
 
-        ChallengePost challengePost = this.savePost(request, challenge, member);
+        ChallengePost challengePost = this.savePost(request, challenge, member, enrollment);
         if (!challengePost.getIsAnnouncement()) {
             challengePostUtilService.verifyChallengePostForRecord(challengePost);
         }
@@ -51,10 +56,7 @@ public class ChallengePostCreationService {
         );
     }
 
-    private ChallengePost savePost(AddPostRequest request, Challenge challenge, Member member) {
-
-        ChallengeEnrollment enrollment = challengeEnrollmentSearchService.findByMemberAndChallenge(member, challenge)
-                .orElseThrow(() -> new NotEnrolledChallengeException(member.getId(), challenge.getId()));
+    private ChallengePost savePost(AddPostRequest request, Challenge challenge, Member member, ChallengeEnrollment enrollment) {
 
         if (request.getIsAnnouncement()) {
             if (!challengePostUtilService.isChallengeHost(challenge, member)) {
