@@ -481,7 +481,7 @@ public class ChallengePostApiTest extends AbstractRestDocsTests {
     void deletePost() throws Exception {
 
         //given
-        given(challengePostDeleteService.deletePost(anyLong(), any(Member.class)))
+        given(challengePostDeleteService.deletePost(anyLong(), anyLong(), any(Member.class)))
                 .willReturn(SuccessResponse.of(SuccessCode.DELETE_POST_SUCCESS));
 
         //when
