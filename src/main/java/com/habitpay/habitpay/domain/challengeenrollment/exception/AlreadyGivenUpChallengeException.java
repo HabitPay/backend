@@ -8,7 +8,7 @@ public class AlreadyGivenUpChallengeException extends BadRequestException {
     public AlreadyGivenUpChallengeException(Long memberId, Long challengeId) {
         super(
                 String.format("[Member: %d] is already given up [Challenge: %d]", memberId, challengeId),
-                ErrorCode.ALREADY_ENROLLED_IN_CHALLENGE
+                ErrorCode.ALREADY_GIVEN_UP_CHALLENGE
         );
     }
 }
