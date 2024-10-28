@@ -59,7 +59,8 @@ public enum ErrorCode {
     POST_PHOTO_IMAGE_SIZE_TOO_LARGE(HttpStatus.BAD_REQUEST, "이미지 파일의 크기가 제한을 초과했습니다. (최대 1MB)"),
     PHOTO_NOT_FOUND(HttpStatus.NOT_FOUND, "포스트 포토가 존재하지 않습니다."),
     NEED_TO_WAIT_FOR_CHALLENGE_SET(HttpStatus.BAD_REQUEST, "챌린지 시작을 위한 설정 진행 중입니다. 잠시 후 다시 시도해주세요."),
-    POST_EDITABLE_ONLY_WITHIN_CHALLENGE_PERIOD(HttpStatus.BAD_REQUEST, "챌린지 유효 기간에만 포스트를 작성 및 수정할 수 있습니다.");
+    POST_EDITABLE_ONLY_WITHIN_CHALLENGE_PERIOD(HttpStatus.BAD_REQUEST, "챌린지 유효 기간에만 포스트를 작성 및 수정할 수 있습니다."),
+    POST_CREATION_FORBIDDEN_DUE_TO_GIVE_UP(HttpStatus.FORBIDDEN, "챌린지 중도 포기 이후에는 게시물을 생성할 수 없습니다.");
 
     private HttpStatus status;
     private final String message;
