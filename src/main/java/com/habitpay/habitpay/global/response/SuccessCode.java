@@ -20,6 +20,7 @@ public enum SuccessCode {
     PATCH_CHALLENGE_SUCCESS("정상적으로 챌린지 정보 수정이 반영되었습니다."),
     ENROLL_CHALLENGE_SUCCESS("정상적으로 챌린지에 등록했습니다."),
     CANCEL_CHALLENGE_ENROLLMENT_SUCCESS("정상적으로 챌린지 등록을 취소했습니다."),
+    GIVING_UP_CHALLENGE("정상적으로 챌린지 중도 포기 처리가 되었습니다."),
     DELETE_CHALLENGE_SUCCESS("정상적으로 챌린지를 삭제했습니다."),
 
     // Post
