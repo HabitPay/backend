@@ -31,4 +31,8 @@ public class ChallengeEnrollmentApi {
         return challengeEnrollmentCancellationService.cancel(id, user.getMember());
     }
 
+    @PostMapping("/challenges/{id}/give-up")
+    public SuccessResponse<Void> giveUpChallenge(@PathVariable("id") Long id, @AuthenticationPrincipal CustomUserDetails user) {
+        return challengeEnrollmentCancellationService.giveUp(id, user.getMember());
+    }
 }

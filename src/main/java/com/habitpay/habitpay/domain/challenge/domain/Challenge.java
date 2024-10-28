@@ -130,7 +130,7 @@ public class Challenge extends BaseTime {
         // 2. 챌린지 총 참여 일수 계산
         ZonedDateTime date = challengeCreationRequest.getStartDate();
         ZonedDateTime endDate = challengeCreationRequest.getEndDate();
-        while (date.isBefore(endDate)) {
+        while (date.isBefore(endDate) || date.isEqual(endDate)) {
             if (daysOfParticipatingDays.contains(date.getDayOfWeek())) {
                 count += 1;
             }
@@ -148,7 +148,9 @@ public class Challenge extends BaseTime {
         this.numberOfParticipants = numberOfParticipants;
     }
 
-    public void setTotalAbsenceFee(int value) { this.totalAbsenceFee = value; }
+    public void setTotalAbsenceFee(int value) {
+        this.totalAbsenceFee = value;
+    }
 
     public void setStateInProgress() {
         this.state = ChallengeState.IN_PROGRESS;

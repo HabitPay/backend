@@ -28,9 +28,7 @@ data의 pageable 객체에는 페이지네이션 정보가 담겨있습니다.
 그러나 pageable 객체에 접근하지 않아도 바로 사용할 수 있는 메타 데이터가 추가로 존재합니다.
 
 data에서 content 배열, pageable 객체를 지나면 바로 페이징 메타 데이터가 존재합니다.
-특히 현재 페이지가 마지막 페이지인지 boolean으로 알려주는 "last" 속성이 있으므로,
-이를 활용할 수 있습니다.
-
+특히 현재 페이지가 마지막 페이지인지 boolean으로 알려주는 "last" 속성이 있으므로, 이를 활용할 수 있습니다.
 
 operation::challengePost/get-challenge-posts[snippets='http-request,http-response,response-fields']
 
@@ -55,12 +53,28 @@ operation::challengePost/get-challenge-posts-by-me[snippets='http-request,http-r
 
 operation::challengePost/create-challenge-post[snippets='http-request,http-response,request-fields,response-fields']
 
+==== 에러 응답
+
+===== 중도 포기한 경우 (403 Forbidden)
+
+챌린지를 중도 포기한 이후 게시물을 생성할 수 없습니다.
+
+operation::challenge/challenge-post-creation-forbidden-exception[snippets='http-request,http-response,response-fields']
+
 === 챌린지 포스트 수정
 
 경로 변수로 받은 post의 id값에 해당하는 포스트를 수정합니다.
 수정은 포스트 내용 변경, 공지 포스트 여부 변경과 함께 포스트 내 이미지 파일의 추가, 삭제 및 정렬 순서 변경을 포함합니다.
 
 operation::challengePost/patch-challenge-post[snippets='http-request,http-response,request-fields,response-fields']
+
+==== 에러 응답
+
+===== 중도 포기한 경우 (403 Forbidden)
+
+챌린지를 중도 포기한 이후 게시물을 수정할 수 없습니다.
+
+operation::challenge/challenge-post-modification-forbidden-exception[snippets='http-request,http-response,response-fields']
 
 === 챌린지 포스트 삭제
 
@@ -69,3 +83,11 @@ operation::challengePost/patch-challenge-post[snippets='http-request,http-respon
 공지 포스트만 챌린지 호스트가 삭제할 수 있습니다.
 
 operation::challengePost/delete-challenge-post[snippets='http-request,http-response,response-fields']
+
+==== 에러 응답
+
+===== 중도 포기한 경우 (403 Forbidden)
+
+챌린지를 중도 포기한 이후 게시물을 삭제할 수 없습니다.
+
+operation::challenge/challenge-post-deletion-forbidden-exception[snippets='http-request,http-response,response-fields']

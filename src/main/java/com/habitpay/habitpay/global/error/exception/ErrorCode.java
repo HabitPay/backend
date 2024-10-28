@@ -37,6 +37,8 @@ public enum ErrorCode {
     INVALID_CHALLENGE_PARTICIPATING_DAYS(HttpStatus.BAD_REQUEST, "챌린지 진행 기간에 선택한 챌린지 참여 요일이 포함되지 않았습니다."),
     INVALID_CHALLENGE_REGISTRATION_TIME(HttpStatus.BAD_REQUEST, "챌린지 등록 가능 시간이 아닙니다."),
     INVALID_CHALLENGE_CANCELLATION_TIME(HttpStatus.BAD_REQUEST, "챌린지 취소 가능한 시간이 지났습니다."),
+    TOO_EARLY_GIVEN_UP_CHALLENGE(HttpStatus.BAD_REQUEST, "챌린지 중도 포기는 챌린지 시작 이후에만 가능합니다."),
+    ALREADY_GIVEN_UP_CHALLENGE(HttpStatus.BAD_REQUEST, "이미 중도 포기한 챌린지 입니다."),
     ALREADY_ENROLLED_IN_CHALLENGE(HttpStatus.CONFLICT, "이미 참여한 챌린지 입니다."),
     NOT_ENROLLED_IN_CHALLENGE(HttpStatus.BAD_REQUEST, "참여하지 않은 챌린지 입니다."),
     NOT_ALLOWED_TO_CANCEL_ENROLLMENT_OF_HOST(HttpStatus.BAD_REQUEST, "챌린지 주최자는 참여 취소가 불가능 합니다."),
@@ -57,7 +59,10 @@ public enum ErrorCode {
     POST_PHOTO_IMAGE_SIZE_TOO_LARGE(HttpStatus.BAD_REQUEST, "이미지 파일의 크기가 제한을 초과했습니다. (최대 1MB)"),
     PHOTO_NOT_FOUND(HttpStatus.NOT_FOUND, "포스트 포토가 존재하지 않습니다."),
     NEED_TO_WAIT_FOR_CHALLENGE_SET(HttpStatus.BAD_REQUEST, "챌린지 시작을 위한 설정 진행 중입니다. 잠시 후 다시 시도해주세요."),
-    POST_EDITABLE_ONLY_WITHIN_CHALLENGE_PERIOD(HttpStatus.BAD_REQUEST, "챌린지 유효 기간에만 포스트를 작성 및 수정할 수 있습니다.");
+    POST_EDITABLE_ONLY_WITHIN_CHALLENGE_PERIOD(HttpStatus.BAD_REQUEST, "챌린지 유효 기간에만 포스트를 작성 및 수정할 수 있습니다."),
+    POST_CREATION_FORBIDDEN_DUE_TO_GIVE_UP(HttpStatus.FORBIDDEN, "챌린지 중도 포기 이후에는 게시물을 생성할 수 없습니다."),
+    POST_MODIFICATION_FORBIDDEN_DUE_TO_GIVE_UP(HttpStatus.FORBIDDEN, "챌린지 중도 포기 이후에는 게시물을 수정할 수 없습니다."),
+    POST_DELETION_FORBIDDEN_DUE_TO_GIVE_UP(HttpStatus.FORBIDDEN, "챌린지 중도 포기 이후에는 게시물을 삭제할 수 없습니다.");
 
     private HttpStatus status;
     private final String message;

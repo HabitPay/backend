@@ -3,6 +3,7 @@ package com.habitpay.habitpay.global.handler;
 import com.habitpay.habitpay.global.error.ErrorResponse;
 import com.habitpay.habitpay.global.error.exception.BusinessException;
 import com.habitpay.habitpay.global.error.exception.ErrorCode;
+import com.habitpay.habitpay.global.error.exception.ForbiddenException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +17,14 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(BusinessException.class)
     protected ResponseEntity<ErrorResponse> handleBusinessException(final BusinessException ex) {
         log.error("handleBusinessException: ", ex);
+        final ErrorCode errorCode = ex.getErrorCode();
+        final ErrorResponse response = ErrorResponse.of(errorCode);
+        return ResponseEntity.status(errorCode.getStatus()).body(response);
+    }
+
+    @ExceptionHandler(ForbiddenException.class)
+    protected ResponseEntity<ErrorResponse> handleForbiddenException(final ForbiddenException ex) {
+        log.error("handleForbiddenException: ", ex);
         final ErrorCode errorCode = ex.getErrorCode();
         final ErrorResponse response = ErrorResponse.of(errorCode);
         return ResponseEntity.status(errorCode.getStatus()).body(response);

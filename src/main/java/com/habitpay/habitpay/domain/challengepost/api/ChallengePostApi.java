@@ -1,6 +1,9 @@
 package com.habitpay.habitpay.domain.challengepost.api;
 
-import com.habitpay.habitpay.domain.challengepost.application.*;
+import com.habitpay.habitpay.domain.challengepost.application.ChallengePostCreationService;
+import com.habitpay.habitpay.domain.challengepost.application.ChallengePostDeleteService;
+import com.habitpay.habitpay.domain.challengepost.application.ChallengePostSearchService;
+import com.habitpay.habitpay.domain.challengepost.application.ChallengePostUpdateService;
 import com.habitpay.habitpay.domain.challengepost.dto.AddPostRequest;
 import com.habitpay.habitpay.domain.challengepost.dto.ModifyPostRequest;
 import com.habitpay.habitpay.domain.challengepost.dto.PostViewResponse;
@@ -36,7 +39,7 @@ public class ChallengePostApi {
 
     @GetMapping("/challenges/{id}/posts")
     public SuccessResponse<Slice<PostViewResponse>> getChallengePosts(
-            @PathVariable Long id,
+            @PathVariable("id") Long id,
             @PageableDefault(sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
 
         return challengePostSearchService.findPostViewListByChallengeId(id, pageable);
@@ -72,26 +75,29 @@ public class ChallengePostApi {
 //    }
     // -------------------------------------------------------------------------------
 
-    @PostMapping("/challenges/{id}/post")
+    @PostMapping("/challenges/{id}/posts")
     public SuccessResponse<List<String>> createPost(
             @RequestBody AddPostRequest request,
-            @PathVariable Long id,
+            @PathVariable("id") Long id,
             @AuthenticationPrincipal CustomUserDetails user) {
-
         return challengePostCreationService.createPost(request, id, user.getMember());
     }
 
-    @PatchMapping("/posts/{id}")
+    @PatchMapping("/challenges/{challengeId}/posts/{postId}")
     public SuccessResponse<List<String>> patchPost(
-            @RequestBody ModifyPostRequest request, @PathVariable Long id, @AuthenticationPrincipal CustomUserDetails user) {
+            @RequestBody ModifyPostRequest request, @PathVariable("challengeId") Long challengeId,
+            @PathVariable("postId") Long postId,
+            @AuthenticationPrincipal CustomUserDetails user) {
 
-        return challengePostUpdateService.patchPost(request, id, user.getMember());
+        return challengePostUpdateService.patchPost(request, challengeId, postId, user.getMember());
     }
 
-    @DeleteMapping("/posts/{id}")
+    @DeleteMapping("/challenges/{challengeId}/posts/{postId}")
     public SuccessResponse<Void> deletePost(
-            @PathVariable Long id, @AuthenticationPrincipal CustomUserDetails user) {
+            @PathVariable("challengeId") Long challengeId,
+            @PathVariable("postId") Long postId,
+            @AuthenticationPrincipal CustomUserDetails user) {
 
-        return challengePostDeleteService.deletePost(id, user.getMember());
+        return challengePostDeleteService.deletePost(challengeId, postId, user.getMember());
     }
 }

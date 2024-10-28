@@ -13,6 +13,8 @@ import com.habitpay.habitpay.domain.postphoto.dto.ModifyPostPhotoData;
 import com.habitpay.habitpay.domain.postphoto.dto.PostPhotoView;
 import com.habitpay.habitpay.global.config.jwt.TokenProvider;
 import com.habitpay.habitpay.global.config.jwt.TokenService;
+import com.habitpay.habitpay.global.error.exception.ErrorCode;
+import com.habitpay.habitpay.global.error.exception.ForbiddenException;
 import com.habitpay.habitpay.global.response.SuccessCode;
 import com.habitpay.habitpay.global.response.SuccessResponse;
 import com.habitpay.habitpay.global.security.WithMockOAuth2User;
@@ -383,7 +385,7 @@ public class ChallengePostApiTest extends AbstractRestDocsTests {
 
     @Test
     @WithMockOAuth2User
-    @DisplayName("챌린지 포스트 생성")
+    @DisplayName("챌린지 게시물 생성")
     void createPost() throws Exception {
 
         //given
@@ -399,7 +401,7 @@ public class ChallengePostApiTest extends AbstractRestDocsTests {
                 .willReturn(SuccessResponse.of(SuccessCode.CREATE_POST_SUCCESS, presignedUrlList));
 
         //when
-        ResultActions result = mockMvc.perform(post("/api/challenges/{id}/post", 1L)
+        ResultActions result = mockMvc.perform(post("/api/challenges/{id}/posts", 1L)
                 .header(HttpHeaders.AUTHORIZATION, AUTHORIZATION_HEADER_PREFIX + "ACCESS_TOKEN")
                 .content(objectMapper.writeValueAsString(mockAddPostRequest))
                 .contentType(MediaType.APPLICATION_JSON));
@@ -427,6 +429,40 @@ public class ChallengePostApiTest extends AbstractRestDocsTests {
 
     @Test
     @WithMockOAuth2User
+    @DisplayName("챌린지 게시물 생성 - 챌린지 중도 포기 이후 (403 Forbidden)")
+    void challengePostCreationForbiddenException() throws Exception {
+
+        // given
+        AddPostRequest mockAddPostRequest = AddPostRequest.builder()
+                .content("I want to create this post.")
+                .isAnnouncement(false)
+                .photos(List.of(new AddPostPhotoData(1L, "jpg", 100L)))
+                .build();
+
+        given(challengePostCreationService.createPost(any(AddPostRequest.class), anyLong(), any(Member.class)))
+                .willThrow(new ForbiddenException(ErrorCode.POST_CREATION_FORBIDDEN_DUE_TO_GIVE_UP));
+
+        // when
+        ResultActions result = mockMvc.perform(post("/api/challenges/{id}/posts", 1L)
+                .header(HttpHeaders.AUTHORIZATION, AUTHORIZATION_HEADER_PREFIX + "ACCESS_TOKEN")
+                .content(objectMapper.writeValueAsString(mockAddPostRequest))
+                .contentType(MediaType.APPLICATION_JSON));
+
+        // then
+        result.andExpect(status().isForbidden())
+                .andDo(document("challenge/challenge-post-creation-forbidden-exception",
+                        requestHeaders(
+                                headerWithName(HttpHeaders.AUTHORIZATION).description("액세스 토큰")
+                        ),
+                        responseFields(
+                                fieldWithPath("code").description("오류 응답 코드"),
+                                fieldWithPath("message").description("오류 메세지")
+                        )
+                ));
+    }
+
+    @Test
+    @WithMockOAuth2User
     @DisplayName("챌린지 포스트 수정")
     void patchPost() throws Exception {
 
@@ -441,11 +477,11 @@ public class ChallengePostApiTest extends AbstractRestDocsTests {
 
         List<String> presignedUrlList = List.of("https://please.upload/your-photo/here");
 
-        given(challengePostUpdateService.patchPost(any(ModifyPostRequest.class), anyLong(), any(Member.class)))
+        given(challengePostUpdateService.patchPost(any(ModifyPostRequest.class), anyLong(), anyLong(), any(Member.class)))
                 .willReturn(SuccessResponse.of(SuccessCode.PATCH_POST_SUCCESS, presignedUrlList));
 
         //when
-        ResultActions result = mockMvc.perform(patch("/api/posts/{id}", 1L)
+        ResultActions result = mockMvc.perform(patch("/api/challenges/{challengeId}/posts/{postId}", 1L, 1L)
                 .header(HttpHeaders.AUTHORIZATION, AUTHORIZATION_HEADER_PREFIX + "ACCESS_TOKEN")
                 .content(objectMapper.writeValueAsString(mockmodifyPostRequest))
                 .contentType(MediaType.APPLICATION_JSON));
@@ -477,15 +513,49 @@ public class ChallengePostApiTest extends AbstractRestDocsTests {
 
     @Test
     @WithMockOAuth2User
+    @DisplayName("챌린지 게시물 수정 - 챌린지 중도 포기 이후 (403 Forbidden)")
+    void challengePostModificationForbiddenException() throws Exception {
+
+        // given
+        AddPostRequest mockPatchRequest = AddPostRequest.builder()
+                .content("I want to create this post.")
+                .isAnnouncement(false)
+                .photos(List.of(new AddPostPhotoData(1L, "jpg", 100L)))
+                .build();
+
+        given(challengePostUpdateService.patchPost(any(ModifyPostRequest.class), anyLong(), anyLong(), any(Member.class)))
+                .willThrow(new ForbiddenException(ErrorCode.POST_MODIFICATION_FORBIDDEN_DUE_TO_GIVE_UP));
+
+        // when
+        ResultActions result = mockMvc.perform(patch("/api/challenges/{challengeId}/posts/{postId}", 1L, 1L)
+                .header(HttpHeaders.AUTHORIZATION, AUTHORIZATION_HEADER_PREFIX + "ACCESS_TOKEN")
+                .content(objectMapper.writeValueAsString(mockPatchRequest))
+                .contentType(MediaType.APPLICATION_JSON));
+
+        // then
+        result.andExpect(status().isForbidden())
+                .andDo(document("challenge/challenge-post-modification-forbidden-exception",
+                        requestHeaders(
+                                headerWithName(HttpHeaders.AUTHORIZATION).description("액세스 토큰")
+                        ),
+                        responseFields(
+                                fieldWithPath("code").description("오류 응답 코드"),
+                                fieldWithPath("message").description("오류 메세지")
+                        )
+                ));
+    }
+
+    @Test
+    @WithMockOAuth2User
     @DisplayName("챌린지 포스트 삭제")
     void deletePost() throws Exception {
 
         //given
-        given(challengePostDeleteService.deletePost(anyLong(), any(Member.class)))
+        given(challengePostDeleteService.deletePost(anyLong(), anyLong(), any(Member.class)))
                 .willReturn(SuccessResponse.of(SuccessCode.DELETE_POST_SUCCESS));
 
         //when
-        ResultActions result = mockMvc.perform(delete("/api/posts/{id}", 1L)
+        ResultActions result = mockMvc.perform(delete("/api/challenges/{challengeId}/posts/{postId}", 1L, 1L)
                 .header(HttpHeaders.AUTHORIZATION, AUTHORIZATION_HEADER_PREFIX + "ACCESS_TOKEN"));
 
         //then
@@ -497,6 +567,32 @@ public class ChallengePostApiTest extends AbstractRestDocsTests {
                         responseFields(
                                 fieldWithPath("message").description("메시지"),
                                 fieldWithPath("data").description("삭제된 포스트 id")
+                        )
+                ));
+    }
+
+    @Test
+    @WithMockOAuth2User
+    @DisplayName("챌린지 게시물 삭제 - 챌린지 중도 포기 이후 (403 Forbidden)")
+    void challengePostDeletionForbiddenException() throws Exception {
+
+        // given
+        given(challengePostDeleteService.deletePost(anyLong(), anyLong(), any(Member.class)))
+                .willThrow(new ForbiddenException(ErrorCode.POST_DELETION_FORBIDDEN_DUE_TO_GIVE_UP));
+
+        // when
+        ResultActions result = mockMvc.perform(delete("/api/challenges/{challengeId}/posts/{postId}", 1L, 1L)
+                .header(HttpHeaders.AUTHORIZATION, AUTHORIZATION_HEADER_PREFIX + "ACCESS_TOKEN"));
+
+        // then
+        result.andExpect(status().isForbidden())
+                .andDo(document("challenge/challenge-post-deletion-forbidden-exception",
+                        requestHeaders(
+                                headerWithName(HttpHeaders.AUTHORIZATION).description("액세스 토큰")
+                        ),
+                        responseFields(
+                                fieldWithPath("code").description("오류 응답 코드"),
+                                fieldWithPath("message").description("오류 메세지")
                         )
                 ));
     }

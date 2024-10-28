@@ -102,54 +102,6 @@ operation::challenge/patch-challenge-duplicated-description-exception[snippets='
 
 operation::challenge/patch-challenge-forbidden-exception[snippets='http-request,http-response,response-fields']
 
-=== 챌린지 참여자 등록
-
-사용자를 챌린지 참여자에 등록합니다.
-
-operation::challenge/enroll-challenge[snippets='http-request,http-response,response-fields']
-
-==== 에러 응답
-
-===== 챌린지 등록 시간이 지난 경우 (400 Bad Request)
-
-챌린지 시작 시간이 지나고 나서 등록하는 경우입니다.
-
-operation::challenge/enroll-challenge-invalid-registration-time-exception[snippets='http-request,http-response,response-fields']
-
-===== 이미 참여한 챌린지인 경우 (409 Conflict)
-
-이미 챌린지에 등록한 사용자가 다시 챌린지 등록하는 신청한 경우입니다.
-
-operation::challenge/enroll-challenge-already-enrolled-exception[snippets='http-request,http-response,response-fields']
-
-=== 챌린지 등록 취소
-
-등록한 챌린지를 취소합니다.
-
-취소는 챌린지 시작 시간 이전까지만 가능합니다.
-
-operation::challenge/cancel-challenge-enrollment[snippets='http-request,http-response,response-fields']
-
-==== 에러 응답
-
-===== 챌린지 주최자가 등록 취소 하는 경우 (400 Bad Request)
-
-챌린지 주최자는 등록을 취소할 수 없습니다.
-
-operation::challenge/cancel-challenge-enrollment-host-not-allowed-exception[snippets='http-request,http-response,response-fields']
-
-===== 챌린지에 참여하지 않은 경우 (400 Bad Request)
-
-참여하지 않은 챌린지를 취소하는 경우입니다.
-
-operation::challenge/cancel-challenge-enrollment-not-enrolled-exception[snippets='http-request,http-response,response-fields']
-
-===== 챌린지 등록 취소 시간을 지난 경우 (400 Bad Request)
-
-챌린지가 시작하고 나서 등록 취소를 하는 경우입니다.
-
-operation::challenge/cancel-challenge-enrollment-invalid-cancellation-time-exception[snippets='http-request,http-response,response-fields']
-
 === 챌린지 삭제
 
 챌린지를 삭제합니다.
