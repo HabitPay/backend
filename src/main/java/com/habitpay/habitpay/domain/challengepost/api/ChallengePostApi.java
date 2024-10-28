@@ -39,7 +39,7 @@ public class ChallengePostApi {
 
     @GetMapping("/challenges/{id}/posts")
     public SuccessResponse<Slice<PostViewResponse>> getChallengePosts(
-            @PathVariable Long id,
+            @PathVariable("id") Long id,
             @PageableDefault(sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
 
         return challengePostSearchService.findPostViewListByChallengeId(id, pageable);
@@ -80,15 +80,16 @@ public class ChallengePostApi {
             @RequestBody AddPostRequest request,
             @PathVariable("id") Long id,
             @AuthenticationPrincipal CustomUserDetails user) {
-
         return challengePostCreationService.createPost(request, id, user.getMember());
     }
 
-    @PatchMapping("/posts/{id}")
+    @PatchMapping("/challenges/{challengeId}/posts/{postId}")
     public SuccessResponse<List<String>> patchPost(
-            @RequestBody ModifyPostRequest request, @PathVariable Long id, @AuthenticationPrincipal CustomUserDetails user) {
+            @RequestBody ModifyPostRequest request, @PathVariable("challengeId") Long challengeId,
+            @PathVariable("postId") Long postId,
+            @AuthenticationPrincipal CustomUserDetails user) {
 
-        return challengePostUpdateService.patchPost(request, id, user.getMember());
+        return challengePostUpdateService.patchPost(request, challengeId, postId, user.getMember());
     }
 
     @DeleteMapping("/posts/{id}")
