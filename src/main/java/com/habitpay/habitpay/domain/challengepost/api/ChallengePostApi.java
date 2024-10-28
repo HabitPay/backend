@@ -1,6 +1,9 @@
 package com.habitpay.habitpay.domain.challengepost.api;
 
-import com.habitpay.habitpay.domain.challengepost.application.*;
+import com.habitpay.habitpay.domain.challengepost.application.ChallengePostCreationService;
+import com.habitpay.habitpay.domain.challengepost.application.ChallengePostDeleteService;
+import com.habitpay.habitpay.domain.challengepost.application.ChallengePostSearchService;
+import com.habitpay.habitpay.domain.challengepost.application.ChallengePostUpdateService;
 import com.habitpay.habitpay.domain.challengepost.dto.AddPostRequest;
 import com.habitpay.habitpay.domain.challengepost.dto.ModifyPostRequest;
 import com.habitpay.habitpay.domain.challengepost.dto.PostViewResponse;
@@ -75,7 +78,7 @@ public class ChallengePostApi {
     @PostMapping("/challenges/{id}/post")
     public SuccessResponse<List<String>> createPost(
             @RequestBody AddPostRequest request,
-            @PathVariable Long id,
+            @PathVariable("id") Long id,
             @AuthenticationPrincipal CustomUserDetails user) {
 
         return challengePostCreationService.createPost(request, id, user.getMember());
