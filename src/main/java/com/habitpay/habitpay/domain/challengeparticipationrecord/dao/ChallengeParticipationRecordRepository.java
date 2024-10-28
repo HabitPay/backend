@@ -4,9 +4,10 @@ import com.habitpay.habitpay.domain.challenge.domain.Challenge;
 import com.habitpay.habitpay.domain.challengeenrollment.domain.ChallengeEnrollment;
 import com.habitpay.habitpay.domain.challengeparticipationrecord.domain.ChallengeParticipationRecord;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.util.Collection;
 import java.util.List;
@@ -21,4 +22,8 @@ public interface ChallengeParticipationRecordRepository extends JpaRepository<Ch
     Optional<ChallengeParticipationRecord> findByChallengeEnrollmentAndTargetDate(ChallengeEnrollment challengeEnrollment, ZonedDateTime startOfTargetDate);
 
     List<ChallengeParticipationRecord> findByChallengeInAndTargetDate(Collection<Challenge> challenge, ZonedDateTime startOfTargetDate);
+
+    @Modifying
+    @Query("DELETE FROM ChallengeParticipationRecord r WHERE r.challengeEnrollment = :challengeEnrollment AND (r.targetDate > :date OR r.targetDate = :date)")
+    void deleteAllByChallengeEnrollmentAndTargetDateAfterOrTargetDate(@Param("challengeEnrollment") ChallengeEnrollment challengeEnrollment, @Param("date") ZonedDateTime date);
 }
