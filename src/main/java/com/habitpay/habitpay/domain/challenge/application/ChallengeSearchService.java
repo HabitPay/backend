@@ -58,12 +58,6 @@ public class ChallengeSearchService {
                 .toList();
     }
 
-    @Transactional(readOnly = true)
-    public Challenge getChallengeById(Long id) {
-        return challengeRepository.findById(id)
-                .orElseThrow(() -> new ChallengeNotFoundException(id));
-    }
-
     private ChallengeEnrolledListItemResponse toChallengeEnrolledListItemResponse(ChallengeEnrollment challengeEnrollment) {
         Challenge challenge = challengeEnrollment.getChallenge();
         ParticipationStat stat = challengeEnrollment.getParticipationStat();
@@ -73,4 +67,11 @@ public class ChallengeSearchService {
                 .orElse("");
         return ChallengeEnrolledListItemResponse.of(challenge, challengeEnrollment, stat, hostProfileImageUrl, isParticipatedToday);
     }
+
+    @Transactional(readOnly = true)
+    public Challenge getChallengeById(Long id) {
+        return challengeRepository.findById(id)
+                .orElseThrow(() -> new ChallengeNotFoundException(id));
+    }
+
 }
