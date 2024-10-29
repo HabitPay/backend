@@ -224,6 +224,7 @@ public class ChallengeApiTest extends AbstractRestDocsTests {
                 .isMemberEnrolledInChallenge(true)
                 .isTodayParticipatingDay(true)
                 .isParticipatedToday(true)
+                .isGivenUp(false)
                 .build();
 
         given(challengeDetailsService.getChallengeDetails(anyLong(), any(Member.class)))
@@ -256,7 +257,8 @@ public class ChallengeApiTest extends AbstractRestDocsTests {
                                 fieldWithPath("data.isHost").description("현재 접속한 사용자 == 챌린지 주최자"),
                                 fieldWithPath("data.isMemberEnrolledInChallenge").description("현재 접속한 사용자의 챌린지 참여 여부"),
                                 fieldWithPath("data.isTodayParticipatingDay").description("금일이 챌린지 참여일인지 여부"),
-                                fieldWithPath("data.isParticipatedToday").description("현재 접속한 사용자가 챌린지의 참가자일 경우, 금일 참여했는지 여부(참가자가 아니어도 false)")
+                                fieldWithPath("data.isParticipatedToday").description("현재 접속한 사용자가 챌린지의 참가자일 경우, 금일 참여했는지 여부(참가자가 아니어도 false)"),
+                                fieldWithPath("data.isGivenUp").description("챌린지 중도 포기 여부")
                         )
                 ));
     }
