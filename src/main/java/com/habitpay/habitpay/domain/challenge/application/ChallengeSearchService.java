@@ -12,7 +12,6 @@ import com.habitpay.habitpay.domain.challengeparticipationrecord.dao.ChallengePa
 import com.habitpay.habitpay.domain.member.domain.Member;
 import com.habitpay.habitpay.domain.participationstat.domain.ParticipationStat;
 import com.habitpay.habitpay.global.config.aws.S3FileService;
-import com.habitpay.habitpay.global.config.timezone.TimeZoneConverter;
 import com.habitpay.habitpay.global.response.PageResponse;
 import com.habitpay.habitpay.global.response.SuccessCode;
 import com.habitpay.habitpay.global.response.SuccessResponse;
@@ -52,7 +51,7 @@ public class ChallengeSearchService {
     public SuccessResponse<List<ChallengeEnrolledListItemResponse>> getEnrolledChallengeList(Member member) {
         List<ChallengeEnrollment> challengeEnrollmentList = challengeEnrollmentRepository.findAllByMember(member);
         List<ChallengeEnrolledListItemResponse> response = challengeEnrollmentList.stream()
-                .map(this::mapToResponse)
+                .map(this::toChallengeEnrolledListItemResponse)
                 .toList();
 
         return SuccessResponse.of(SuccessCode.NO_MESSAGE, response);
@@ -64,7 +63,7 @@ public class ChallengeSearchService {
                 .orElseThrow(() -> new ChallengeNotFoundException(id));
     }
 
-    private ChallengeEnrolledListItemResponse mapToResponse(ChallengeEnrollment challengeEnrollment) {
+    private ChallengeEnrolledListItemResponse toChallengeEnrolledListItemResponse(ChallengeEnrollment challengeEnrollment) {
         Challenge challenge = challengeEnrollment.getChallenge();
         ParticipationStat stat = challengeEnrollment.getParticipationStat();
         boolean isParticipatedToday = challengeParticipationRecordSearchService.hasParticipationPostForToday(challengeEnrollment);
