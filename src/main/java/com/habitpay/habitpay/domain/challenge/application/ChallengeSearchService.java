@@ -8,7 +8,6 @@ import com.habitpay.habitpay.domain.challenge.exception.ChallengeNotFoundExcepti
 import com.habitpay.habitpay.domain.challengeenrollment.dao.ChallengeEnrollmentRepository;
 import com.habitpay.habitpay.domain.challengeenrollment.domain.ChallengeEnrollment;
 import com.habitpay.habitpay.domain.challengeparticipationrecord.application.ChallengeParticipationRecordSearchService;
-import com.habitpay.habitpay.domain.challengeparticipationrecord.dao.ChallengeParticipationRecordRepository;
 import com.habitpay.habitpay.domain.member.domain.Member;
 import com.habitpay.habitpay.domain.participationstat.domain.ParticipationStat;
 import com.habitpay.habitpay.global.config.aws.S3FileService;
@@ -33,7 +32,6 @@ public class ChallengeSearchService {
     private final S3FileService s3FileService;
     private final ChallengeRepository challengeRepository;
     private final ChallengeEnrollmentRepository challengeEnrollmentRepository;
-    private final ChallengeParticipationRecordRepository challengeParticipationRecordRepository;
     private final ChallengeParticipationRecordSearchService challengeParticipationRecordSearchService;
 
     public SuccessResponse<PageResponse<ChallengePageResponse>> getChallengePage(Pageable pageable) {
@@ -49,12 +47,15 @@ public class ChallengeSearchService {
     }
 
     public SuccessResponse<List<ChallengeEnrolledListItemResponse>> getEnrolledChallengeList(Member member) {
-        List<ChallengeEnrollment> challengeEnrollmentList = challengeEnrollmentRepository.findAllByMember(member);
-        List<ChallengeEnrolledListItemResponse> response = challengeEnrollmentList.stream()
-                .map(this::toChallengeEnrolledListItemResponse)
-                .toList();
+        List<ChallengeEnrolledListItemResponse> response = mapEnrollmentsToResponses(member);
 
         return SuccessResponse.of(SuccessCode.NO_MESSAGE, response);
+    }
+
+    private List<ChallengeEnrolledListItemResponse> mapEnrollmentsToResponses(Member member) {
+        return challengeEnrollmentRepository.findAllByMember(member).stream()
+                .map(this::toChallengeEnrolledListItemResponse)
+                .toList();
     }
 
     @Transactional(readOnly = true)
