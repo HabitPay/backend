@@ -27,20 +27,13 @@ public class ChallengeDetailsService {
 
     public SuccessResponse<ChallengeDetailsResponse> getChallengeDetails(Long challengeId, Member member) {
         Challenge challenge = challengeSearchService.getChallengeById(challengeId);
-        Optional<ChallengeEnrollment> optionalEnrollment = challengeEnrollmentRepository.findByMemberAndChallenge(member, challenge);
+        ChallengeEnrollment enrollment = challengeEnrollmentRepository.findByMemberAndChallenge(member, challenge).orElse(null);
 
-        boolean isMemberEnrolledInChallenge = optionalEnrollment.isPresent();
-        boolean isParticipatedToday = optionalEnrollment
-                .map(challengeParticipationRecordSearchService::hasParticipationPostForToday)
-                .orElseGet(() -> false);
-        List<ChallengeEnrollment> challengeEnrollmentList = challengeEnrollmentRepository.findTop3ByChallenge(challenge);
-        List<String> enrolledMembersProfileImageList = challengeEnrollmentList.stream()
-                .map((challengeEnrollment) -> {
-                    return Optional.ofNullable(challengeEnrollment.getMember().getImageFileName())
-                            .map((imageFileName) -> s3FileService.getGetPreSignedUrl("profiles", imageFileName))
-                            .orElse("");
-                })
-                .toList();
+        boolean isMemberEnrolledInChallenge = enrollment != null;
+        boolean isParticipatedToday = isMemberEnrolledInChallenge && hasParticipatedToday(enrollment);
+        boolean isGivenUp = isMemberEnrolledInChallenge && enrollment.isGivenUp();
+
+        List<String> enrolledMembersProfileImageList = getEnrolledMembersProfileImages(challenge);
 
         return SuccessResponse.of(
                 SuccessCode.NO_MESSAGE,
@@ -49,7 +42,25 @@ public class ChallengeDetailsService {
                         challenge,
                         enrolledMembersProfileImageList,
                         isMemberEnrolledInChallenge,
-                        isParticipatedToday)
+                        isParticipatedToday,
+                        isGivenUp)
         );
+    }
+
+    private boolean hasParticipatedToday(ChallengeEnrollment enrollment) {
+        return challengeParticipationRecordSearchService.hasParticipationPostForToday(enrollment);
+    }
+
+    private List<String> getEnrolledMembersProfileImages(Challenge challenge) {
+        List<ChallengeEnrollment> challengeEnrollmentList = challengeEnrollmentRepository.findTop3ByChallenge(challenge);
+        return challengeEnrollmentList.stream()
+                .map(this::getProfileImageUrl)
+                .toList();
+    }
+
+    private String getProfileImageUrl(ChallengeEnrollment enrollment) {
+        return Optional.ofNullable(enrollment.getMember().getImageFileName())
+                .map(imageFileName -> s3FileService.getGetPreSignedUrl("profiles", imageFileName))
+                .orElse("");
     }
 }

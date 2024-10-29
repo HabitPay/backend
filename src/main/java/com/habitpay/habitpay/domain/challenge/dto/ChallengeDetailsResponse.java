@@ -27,8 +27,11 @@ public class ChallengeDetailsResponse {
     private List<String> enrolledMembersProfileImageList;
     private Boolean isHost;
     private Boolean isMemberEnrolledInChallenge;
+    private Boolean isGivenUp;
 
-    public static ChallengeDetailsResponse of(Member member, Challenge challenge, List<String> enrolledMembersProfileImageList, Boolean isMemberEnrolledInChallenge, Boolean isParticipatedToday) {
+    public static ChallengeDetailsResponse of(Member member, Challenge challenge,
+                                              List<String> enrolledMembersProfileImageList,
+                                              Boolean isMemberEnrolledInChallenge, Boolean isParticipatedToday, Boolean isGivenUp) {
         return ChallengeDetailsResponse.builder()
                 .title(challenge.getTitle())
                 .description(challenge.getDescription())
@@ -46,6 +49,7 @@ public class ChallengeDetailsResponse {
                 .enrolledMembersProfileImageList(enrolledMembersProfileImageList)
                 .isHost(challenge.getHost().getId().equals(member.getId()))
                 .isMemberEnrolledInChallenge(isMemberEnrolledInChallenge)
+                .isGivenUp(isGivenUp)
                 .build();
     }
 }
