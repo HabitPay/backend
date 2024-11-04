@@ -84,7 +84,8 @@ public class SchedulerTaskHelperService {
                         ParticipationStat stat = record.getParticipationStat();
                         Challenge challenge = record.getChallenge();
 
-                        setFailureCountInChallengeMap(challengeFailureCountMap, challenge);
+                        int count = challengeFailureCountMap.getOrDefault(challenge, 0);
+                        challengeFailureCountMap.put(challenge, count + 1);
                         stat.setFailureCount(stat.getFailureCount() + 1);
                         stat.setTotalFee(stat.getTotalFee() + challenge.getFeePerAbsence());
 
@@ -98,15 +99,6 @@ public class SchedulerTaskHelperService {
         participationStatRepository.saveAll(failureStatList);
         challengeParticipationRecordRepository.deleteAll(failureRecordList);
         challengeRepository.saveAll(feeAddedChallengeList);
-    }
-
-    private void setFailureCountInChallengeMap(HashMap<Challenge, Integer> challengeFailureCountMap, Challenge challenge) {
-        if (challengeFailureCountMap.containsKey(challenge)) {
-            int currentFailures = challengeFailureCountMap.get(challenge);
-            challengeFailureCountMap.put(challenge, currentFailures + 1);
-        } else {
-            challengeFailureCountMap.put(challenge, 1);
-        }
     }
 
     private List<Challenge> calculateFeeForChallenges(HashMap<Challenge, Integer> challengeFailureCountMap) {
