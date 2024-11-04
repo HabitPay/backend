@@ -63,8 +63,8 @@ public class ChallengePostUtilService {
             return;
         }
 
-        boolean todayIsParticipationDay = challenge.isTodayParticipatingDay();
-        if (!todayIsParticipationDay) {
+        boolean isTodayParticipationDay = challenge.isTodayParticipatingDay();
+        if (!isTodayParticipationDay) {
             return;
         }
 
