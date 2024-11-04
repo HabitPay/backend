@@ -104,16 +104,13 @@ public class SchedulerTaskHelperService {
     private List<Challenge> calculateFeeForChallenges(HashMap<Challenge, Integer> challengeFailureCountMap) {
         List<Challenge> feeAddedChallengeList = new ArrayList<>();
 
-        for (Map.Entry<Challenge, Integer> entry : challengeFailureCountMap.entrySet()) {
-            Challenge challenge = entry.getKey();
-            Integer failureCount = entry.getValue();
-
+        challengeFailureCountMap.forEach((challenge, failureCount) -> {
             int feePerAbsence = challenge.getFeePerAbsence();
             int currentTotalAbsenceFee = challenge.getTotalAbsenceFee();
             challenge.setTotalAbsenceFee(currentTotalAbsenceFee + (feePerAbsence * failureCount));
 
             feeAddedChallengeList.add(challenge);
-        }
+        });
 
         return feeAddedChallengeList;
     }
