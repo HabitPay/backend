@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Getter
-@Setter
 public class ChallengeRecords {
     private List<LocalDate> successDayList;
     private List<LocalDate> failureDayList;
