@@ -180,12 +180,27 @@ public class Challenge extends BaseTime {
                 ZonedDateTime startDateInLocal = TimeZoneConverter.convertEtcToLocalTimeZone(this.getStartDate());
                 ZonedDateTime targetDate = startDateInLocal.with(TemporalAdjusters.nextOrSame(targetDay));
 
+                // todo : 해결되면 삭제
+                log.debug("challenge.getId() : {}", this.getId());
+                log.debug("challenge.getStartDate() : {}", this.getStartDate());
+                log.debug("TimeZoneConverter.convertEtcToLocalTimeZone(this.getStartDate()) : {}", startDateInLocal);
+                log.debug("first targetDate : {}", targetDate);
+
                 // todo
-                ZonedDateTime tempEndDate = TimeZoneConverter.convertEtcToLocalTimeZone(this.getEndDate());
-                ZonedDateTime endDate = tempEndDate.toLocalDate().atTime(LocalTime.MAX).atZone(tempEndDate.getZone());
+                ZonedDateTime endDateInLocal = TimeZoneConverter.convertEtcToLocalTimeZone(this.getEndDate());
+                ZonedDateTime endDate = endDateInLocal.toLocalDate().atTime(LocalTime.MAX).atZone(endDateInLocal.getZone());
+
+                // todo : 해결되면 삭제
+                log.debug("challenge.getEndDate() : {}", this.getEndDate());
+                log.debug("TimeZoneConverter.convertEtcToLocalTimeZone(this.getEndDate()) : {}", endDateInLocal);
+                log.debug("endDate(timeMax) : {}", endDate);
 
                 while (!targetDate.isAfter(endDate)) {
                     dates.add(targetDate);
+
+                    // todo : 해결되면 삭제
+                    log.debug("Record를 위한 targetDate 리스트에 다음 날짜를 더함 : {}", targetDate);
+
                     targetDate = targetDate.plusWeeks(1);
                 }
             }
