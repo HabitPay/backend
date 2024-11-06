@@ -182,8 +182,8 @@ public class Challenge extends BaseTime {
 
                 // todo : 해결되면 삭제
                 log.debug("challenge.getId() : {}", this.getId());
-                log.debug("challenge.getStartDate() : {}", this.getStartDate());
-                log.debug("TimeZoneConverter.convertEtcToLocalTimeZone(this.getStartDate()) : {}", startDateInLocal);
+                log.debug("[startDate(UTC), startDate(KST)]");
+                log.debug("{}, {}", this.getStartDate(), startDateInLocal);
                 log.debug("first targetDate : {}", targetDate);
 
                 // todo
@@ -191,8 +191,8 @@ public class Challenge extends BaseTime {
                 ZonedDateTime endDate = endDateInLocal.toLocalDate().atTime(LocalTime.MAX).atZone(endDateInLocal.getZone());
 
                 // todo : 해결되면 삭제
-                log.debug("challenge.getEndDate() : {}", this.getEndDate());
-                log.debug("TimeZoneConverter.convertEtcToLocalTimeZone(this.getEndDate()) : {}", endDateInLocal);
+                log.debug("[endDate(UTC), endDate(KST)]");
+                log.debug("{}, {}", this.getEndDate(), endDateInLocal);
                 log.debug("endDate(timeMax) : {}", endDate);
 
                 while (!targetDate.isAfter(endDate)) {
