@@ -32,25 +32,29 @@ public class ChallengePostApi {
     private final ChallengePostDeleteService challengePostDeleteService;
 
     @GetMapping("/posts/{id}")
-    public SuccessResponse<PostViewResponse> getPost(@PathVariable Long id) {
+    public SuccessResponse<PostViewResponse> getPost(
+            @PathVariable Long id,
+            @AuthenticationPrincipal CustomUserDetails user) {
 
-        return challengePostSearchService.getPostViewByPostId(id);
+        return challengePostSearchService.getPostViewByPostId(id, user.getMember());
     }
 
     @GetMapping("/challenges/{id}/posts")
     public SuccessResponse<Slice<PostViewResponse>> getChallengePosts(
             @PathVariable("id") Long id,
+            @AuthenticationPrincipal CustomUserDetails user,
             @PageableDefault(sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
 
-        return challengePostSearchService.findPostViewListByChallengeId(id, pageable);
+        return challengePostSearchService.findPostViewListByChallengeId(id, user.getMember(), pageable);
     }
 
     @GetMapping("/challenges/{id}/posts/announcements")
     public SuccessResponse<Slice<PostViewResponse>> getAnnouncements(
             @PathVariable Long id,
+            @AuthenticationPrincipal CustomUserDetails user,
             @PageableDefault(sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
 
-        return challengePostSearchService.findAnnouncementPostViewListByChallengeId(id, pageable);
+        return challengePostSearchService.findAnnouncementPostViewListByChallengeId(id, user.getMember(), pageable);
     }
 
     @GetMapping("/challenges/{id}/posts/me")

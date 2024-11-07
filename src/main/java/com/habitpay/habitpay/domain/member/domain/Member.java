@@ -1,5 +1,6 @@
 package com.habitpay.habitpay.domain.member.domain;
 
+import com.habitpay.habitpay.domain.challengepost.domain.ChallengePost;
 import com.habitpay.habitpay.domain.model.BaseTime;
 import com.habitpay.habitpay.domain.refreshtoken.domain.RefreshToken;
 import jakarta.persistence.*;
@@ -8,6 +9,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 @Getter
 @NoArgsConstructor
@@ -38,6 +40,23 @@ public class Member extends BaseTime {
         this.imageFileName = imageFileName;
         this.nickname = nickname;
         this.role = role;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+
+        if (this == object) {
+            return true;
+        }
+        if (!(object instanceof Member member)) {
+            return false;
+        }
+        return Objects.equals(id, member.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 
     public void setNickname(String nickname) {
