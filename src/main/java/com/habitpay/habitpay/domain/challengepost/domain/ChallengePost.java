@@ -11,6 +11,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import java.util.Objects;
+
 @EntityListeners(AuditingEntityListener.class)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
@@ -45,6 +47,22 @@ public class ChallengePost extends BaseTime {
         this.challengeEnrollment = enrollment;
         this.content = content;
         this.isAnnouncement = isAnnouncement;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) {
+            return true;
+        }
+        if (!(object instanceof ChallengePost challengePost)) {
+            return false;
+        }
+        return Objects.equals(id, challengePost.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 
     public Member getWriter() {
