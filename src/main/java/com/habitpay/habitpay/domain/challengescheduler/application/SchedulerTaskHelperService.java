@@ -12,6 +12,7 @@ import com.habitpay.habitpay.domain.participationstat.dao.ParticipationStatRepos
 import com.habitpay.habitpay.domain.participationstat.domain.ParticipationStat;
 import com.habitpay.habitpay.global.config.timezone.TimeZoneConverter;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.DayOfWeek;
@@ -23,6 +24,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class SchedulerTaskHelperService {
 
     private final ChallengeRepository challengeRepository;
@@ -32,11 +34,12 @@ public class SchedulerTaskHelperService {
     private final ChallengeParticipationRecordSearchService challengeParticipationRecordSearchService;
 
     public List<Challenge> findStartingChallenges() {
-        ZonedDateTime today = TimeZoneConverter.convertEtcToLocalTimeZone(ZonedDateTime.now());
-        ZonedDateTime startOfDay = today.with(LocalTime.MIDNIGHT);
-        ZonedDateTime endOfDay = today.with(LocalTime.MAX);
+        ZonedDateTime now = TimeZoneConverter.convertEtcToLocalTimeZone(ZonedDateTime.now());
+        ZonedDateTime startOfMinute = now.withSecond(0).withNano(0);
+        ZonedDateTime endOfMinute = now.withSecond(59).withNano(999_999_999);
+        log.info("Fetching challenges starting at {}", startOfMinute);
 
-        return challengeRepository.findAllByStartDateBetweenAndState(startOfDay, endOfDay, ChallengeState.SCHEDULED);
+        return challengeRepository.findAllByStartDateBetweenAndState(startOfMinute, endOfMinute, ChallengeState.SCHEDULED);
     }
 
     public void createRecordsForChallenges(List<Challenge> challengeList) {
@@ -114,10 +117,12 @@ public class SchedulerTaskHelperService {
         return feeAddedChallengeList;
     }
 
-    public List<Challenge> findEndingChallenges(ZonedDateTime targetDay) {
-        ZonedDateTime startOfDay = targetDay.with(LocalTime.MIDNIGHT);
-        ZonedDateTime endOfDay = targetDay.with(LocalTime.MAX);
+    public List<Challenge> findEndingChallenges() {
+        ZonedDateTime now = TimeZoneConverter.convertEtcToLocalTimeZone(ZonedDateTime.now());
+        ZonedDateTime startOfMinute = now.withSecond(0).withNano(0);
+        ZonedDateTime endOfMinute = now.withSecond(59).withNano(999_999_999);
+        log.info("Fetching challenges ending at {}", startOfMinute);
 
-        return challengeRepository.findAllByEndDateBetweenAndState(startOfDay, endOfDay, ChallengeState.IN_PROGRESS);
+        return challengeRepository.findAllByEndDateBetweenAndState(startOfMinute, endOfMinute, ChallengeState.IN_PROGRESS);
     }
 }

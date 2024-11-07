@@ -11,6 +11,7 @@ import com.habitpay.habitpay.domain.participationstat.dao.ParticipationStatRepos
 import com.habitpay.habitpay.domain.participationstat.domain.ParticipationStat;
 import com.habitpay.habitpay.global.config.timezone.TimeZoneConverter;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,11 +29,8 @@ public class ChallengeSchedulerService {
 
     @Scheduled(cron = "0 * * * * *", zone = "Asia/Seoul")
     public void setChallengeForStart() {
-
         List<Challenge> challengeList = schedulerTaskHelperService.findStartingChallenges();
-
         challengeList.forEach(Challenge::setStateInProgress);
-
         schedulerTaskHelperService.createRecordsForChallenges(challengeList);
         challengeRepository.saveAll(challengeList);
     }
@@ -52,9 +50,7 @@ public class ChallengeSchedulerService {
 
     @Scheduled(cron = "0 * * * * *", zone = "Asia/Seoul")
     public void setChallengeForEnd() {
-        ZonedDateTime today = TimeZoneConverter.convertEtcToLocalTimeZone(ZonedDateTime.now());
-        ZonedDateTime yesterday = today.minusDays(1);
-        List<Challenge> challengeList = schedulerTaskHelperService.findEndingChallenges(yesterday);
+        List<Challenge> challengeList = schedulerTaskHelperService.findEndingChallenges();
         challengeList.forEach(Challenge::setStateCompletedPendingSettlement);
         challengeRepository.saveAll(challengeList);
     }
