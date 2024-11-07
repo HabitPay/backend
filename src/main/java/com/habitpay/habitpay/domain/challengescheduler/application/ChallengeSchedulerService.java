@@ -26,10 +26,9 @@ public class ChallengeSchedulerService {
     private final ChallengeRepository challengeRepository;
     private final SchedulerTaskHelperService schedulerTaskHelperService;
 
-    @Scheduled(cron = "0 0 0 * * *", zone = "Asia/Seoul")
+    @Scheduled(cron = "0 * * * * *", zone = "Asia/Seoul")
     public void setChallengeForStart() {
 
-        // todo : 시작 날짜 ZonedDateTime으로 받고 있음 -> 날짜 데이터(without 시간)만으로 데이터 타입 바꾸기(프론트, 백 모두)
         List<Challenge> challengeList = schedulerTaskHelperService.findStartingChallenges();
 
         challengeList.forEach(Challenge::setStateInProgress);
@@ -51,7 +50,7 @@ public class ChallengeSchedulerService {
         schedulerTaskHelperService.checkFailedParticipation(challengeList, yesterday);
     }
 
-    @Scheduled(cron = "0 0 0 * * *", zone = "Asia/Seoul")
+    @Scheduled(cron = "0 * * * * *", zone = "Asia/Seoul")
     public void setChallengeForEnd() {
         ZonedDateTime today = TimeZoneConverter.convertEtcToLocalTimeZone(ZonedDateTime.now());
         ZonedDateTime yesterday = today.minusDays(1);
