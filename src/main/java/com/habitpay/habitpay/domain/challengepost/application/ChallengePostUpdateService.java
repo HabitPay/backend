@@ -54,6 +54,7 @@ public class ChallengePostUpdateService {
 
         patchContent(post, request.getContent());
         patchIsAnnouncement(post, request.getIsAnnouncement());
+        challengePostRepository.save(post);
 
         postPhotoDeleteService.deleteByIds(postId, request.getDeletedPhotoIds());
         request.getModifiedPhotos().forEach(photo -> postPhotoUtilService.changeViewOrder(photo.getPhotoId(), photo.getViewOrder()));
@@ -71,7 +72,6 @@ public class ChallengePostUpdateService {
     private void patchContent(ChallengePost post, String content) {
         if (content != null) {
             post.modifyPostContent(content);
-            challengePostRepository.save(post);
         }
     }
 
@@ -84,7 +84,6 @@ public class ChallengePostUpdateService {
                 throw new ForbiddenException(ErrorCode.ONLY_HOST_CAN_UPLOAD_ANNOUNCEMENT);
             }
             post.modifyPostIsAnnouncement(isAnnouncement);
-            challengePostRepository.save(post);
         }
     }
 
