@@ -75,6 +75,7 @@ public class ChallengePostApiTest extends AbstractRestDocsTests {
 
 
     @Test
+    @WithMockOAuth2User
     @DisplayName("챌린지 포스트 조회")
     void findPost() throws Exception {
 
@@ -84,6 +85,7 @@ public class ChallengePostApiTest extends AbstractRestDocsTests {
                 .challengeEnrollmentId(1L)
                 .content("This is test post.")
                 .writer("test user")
+                .isPostAuthor(true)
                 .profileUrl("https://picsum.photos/id/40/200/300")
                 .isAnnouncement(false)
                 .createdAt(LocalDateTime.now())
@@ -92,7 +94,7 @@ public class ChallengePostApiTest extends AbstractRestDocsTests {
                         new PostPhotoView(2L, 2L, "https://picsum.photos/id/40/200/300")))
                 .build();
 
-        given(challengePostSearchService.getPostViewByPostId(anyLong()))
+        given(challengePostSearchService.getPostViewByPostId(anyLong(), any(Member.class)))
                 .willReturn(SuccessResponse.of(SuccessCode.NO_MESSAGE, mockPostViewResponse));
 
         // when
@@ -113,6 +115,7 @@ public class ChallengePostApiTest extends AbstractRestDocsTests {
                                 fieldWithPath("data.challengeEnrollmentId").description("포스트가 소속된 enrollment id"),
                                 fieldWithPath("data.content").description("포스트 내용"),
                                 fieldWithPath("data.writer").description("작성자"),
+                                fieldWithPath("data.isPostAuthor").description("요청한 멤버가 작성자 본인인지 여부"),
                                 fieldWithPath("data.profileUrl").description("작성자 프로필 이미지 URL"),
                                 fieldWithPath("data.isAnnouncement").description("공지글 여부"),
                                 fieldWithPath("data.createdAt").description("생성 일시"),
@@ -125,6 +128,7 @@ public class ChallengePostApiTest extends AbstractRestDocsTests {
     }
 
     @Test
+    @WithMockOAuth2User
     @DisplayName("챌린지 내 전체 포스트 조회")
     void findChallengePosts() throws Exception {
 
@@ -135,6 +139,7 @@ public class ChallengePostApiTest extends AbstractRestDocsTests {
                         .challengeEnrollmentId(1L)
                         .content("This is test post 1.")
                         .writer("test user")
+                        .isPostAuthor(true)
                         .profileUrl("")
                         .isAnnouncement(false)
                         .createdAt(LocalDateTime.now())
@@ -144,7 +149,8 @@ public class ChallengePostApiTest extends AbstractRestDocsTests {
                         .id(2L)
                         .challengeEnrollmentId(2L)
                         .content("This is test post 2.")
-                        .writer("test user")
+                        .writer("test user2")
+                        .isPostAuthor(false)
                         .profileUrl("https://picsum.photos/id/40/200/300")
                         .isAnnouncement(false)
                         .createdAt(LocalDateTime.now())
@@ -155,7 +161,7 @@ public class ChallengePostApiTest extends AbstractRestDocsTests {
                 mockPostViewResponseList, PageRequest.of(0, 10), true
         );
 
-        given(challengePostSearchService.findPostViewListByChallengeId(anyLong(), any(Pageable.class)))
+        given(challengePostSearchService.findPostViewListByChallengeId(anyLong(), any(Member.class), any(Pageable.class)))
                 .willReturn(SuccessResponse.of(SuccessCode.NO_MESSAGE, mockPostViewResponseSlice));
 
         // when
@@ -177,6 +183,7 @@ public class ChallengePostApiTest extends AbstractRestDocsTests {
                                 fieldWithPath("data.content[].challengeEnrollmentId").description("포스트가 소속된 enrollment id"),
                                 fieldWithPath("data.content[].content").description("포스트 내용"),
                                 fieldWithPath("data.content[].writer").description("작성자"),
+                                fieldWithPath("data.content[].isPostAuthor").description("요청한 멤버가 작성자 본인인지 여부"),
                                 fieldWithPath("data.content[].profileUrl").description("작성자 프로필 이미지 URL"),
                                 fieldWithPath("data.content[].isAnnouncement").description("공지글 여부"),
                                 fieldWithPath("data.content[].createdAt").description("생성 일시"),
@@ -211,6 +218,7 @@ public class ChallengePostApiTest extends AbstractRestDocsTests {
     }
 
     @Test
+    @WithMockOAuth2User
     @DisplayName("챌린지 내 전체 포스트 중 공지 포스트 조회")
     void findAnnouncementPosts() throws Exception {
 
@@ -221,6 +229,7 @@ public class ChallengePostApiTest extends AbstractRestDocsTests {
                         .challengeEnrollmentId(1L)
                         .content("This is announcement test post 1.")
                         .writer("test user")
+                        .isPostAuthor(false)
                         .profileUrl("")
                         .isAnnouncement(true)
                         .createdAt(LocalDateTime.now())
@@ -231,6 +240,7 @@ public class ChallengePostApiTest extends AbstractRestDocsTests {
                         .challengeEnrollmentId(2L)
                         .content("This is announcement test post 2.")
                         .writer("test user")
+                        .isPostAuthor(false)
                         .profileUrl("https://picsum.photos/id/40/200/300")
                         .isAnnouncement(true)
                         .createdAt(LocalDateTime.now())
@@ -241,7 +251,7 @@ public class ChallengePostApiTest extends AbstractRestDocsTests {
                 mockPostViewResponseList, PageRequest.of(0, 10), true
         );
 
-        given(challengePostSearchService.findAnnouncementPostViewListByChallengeId(anyLong(), any(Pageable.class)))
+        given(challengePostSearchService.findAnnouncementPostViewListByChallengeId(anyLong(), any(Member.class), any(Pageable.class)))
                 .willReturn(SuccessResponse.of(SuccessCode.NO_MESSAGE, mockPostViewResponseSlice));
 
         // when
@@ -263,6 +273,7 @@ public class ChallengePostApiTest extends AbstractRestDocsTests {
                                 fieldWithPath("data.content[].challengeEnrollmentId").description("포스트가 소속된 enrollment id"),
                                 fieldWithPath("data.content[].content").description("포스트 내용"),
                                 fieldWithPath("data.content[].writer").description("작성자"),
+                                fieldWithPath("data.content[].isPostAuthor").description("요청한 멤버가 작성자 본인인지 여부"),
                                 fieldWithPath("data.content[].profileUrl").description("작성자 프로필 이미지 URL"),
                                 fieldWithPath("data.content[].isAnnouncement").description("공지글 여부"),
                                 fieldWithPath("data.content[].createdAt").description("생성 일시"),
@@ -308,6 +319,7 @@ public class ChallengePostApiTest extends AbstractRestDocsTests {
                         .challengeEnrollmentId(1L)
                         .content("This is test post 1 by me.")
                         .writer("test user")
+                        .isPostAuthor(true)
                         .profileUrl("")
                         .isAnnouncement(false)
                         .createdAt(LocalDateTime.now())
@@ -318,6 +330,7 @@ public class ChallengePostApiTest extends AbstractRestDocsTests {
                         .challengeEnrollmentId(2L)
                         .content("This is test post 2 by me.")
                         .writer("test user")
+                        .isPostAuthor(true)
                         .profileUrl("https://picsum.photos/id/40/200/300")
                         .isAnnouncement(false)
                         .createdAt(LocalDateTime.now())
@@ -350,6 +363,7 @@ public class ChallengePostApiTest extends AbstractRestDocsTests {
                                 fieldWithPath("data.content[].challengeEnrollmentId").description("포스트가 소속된 enrollment id"),
                                 fieldWithPath("data.content[].content").description("포스트 내용"),
                                 fieldWithPath("data.content[].writer").description("작성자"),
+                                fieldWithPath("data.content[].isPostAuthor").description("요청한 멤버가 작성자 본인인지 여부"),
                                 fieldWithPath("data.content[].profileUrl").description("작성자 프로필 이미지 URL"),
                                 fieldWithPath("data.content[].isAnnouncement").description("공지글 여부"),
                                 fieldWithPath("data.content[].createdAt").description("생성 일시"),
