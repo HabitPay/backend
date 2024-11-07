@@ -17,7 +17,7 @@ import java.util.List;
 @Builder
 public class PostViewResponse {
     private Long id;
-    private Long challengeEnrollmentId;
+    private Long challengeId;
     private String content;
     private String writer;
     private Boolean isPostAuthor;
@@ -28,7 +28,7 @@ public class PostViewResponse {
 
     public PostViewResponse(ChallengePost post, Boolean isPostAuthor, String profileUrl, List<PostPhotoView> photoViewList) {
         this.id = post.getId();
-        this.challengeEnrollmentId = post.getChallengeEnrollment().getId();
+        this.challengeId = post.getChallenge().getId();
         this.content = post.getContent();
         this.writer = post.getWriter().getNickname();
         this.isPostAuthor = isPostAuthor;

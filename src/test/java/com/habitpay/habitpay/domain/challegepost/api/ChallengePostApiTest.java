@@ -82,7 +82,7 @@ public class ChallengePostApiTest extends AbstractRestDocsTests {
         // given
         PostViewResponse mockPostViewResponse = PostViewResponse.builder()
                 .id(1L)
-                .challengeEnrollmentId(1L)
+                .challengeId(1L)
                 .content("This is test post.")
                 .writer("test user")
                 .isPostAuthor(true)
@@ -112,7 +112,7 @@ public class ChallengePostApiTest extends AbstractRestDocsTests {
                                 fieldWithPath("data").description("응답 데이터"),
 
                                 fieldWithPath("data.id").description("포스트 id"),
-                                fieldWithPath("data.challengeEnrollmentId").description("포스트가 소속된 enrollment id"),
+                                fieldWithPath("data.challengeId").description("포스트가 소속된 challenge id"),
                                 fieldWithPath("data.content").description("포스트 내용"),
                                 fieldWithPath("data.writer").description("작성자"),
                                 fieldWithPath("data.isPostAuthor").description("요청한 멤버가 작성자 본인인지 여부"),
@@ -136,7 +136,7 @@ public class ChallengePostApiTest extends AbstractRestDocsTests {
         List<PostViewResponse> mockPostViewResponseList = List.of(
                 PostViewResponse.builder()
                         .id(1L)
-                        .challengeEnrollmentId(1L)
+                        .challengeId(1L)
                         .content("This is test post 1.")
                         .writer("test user")
                         .isPostAuthor(true)
@@ -147,7 +147,7 @@ public class ChallengePostApiTest extends AbstractRestDocsTests {
                         .build(),
                 PostViewResponse.builder()
                         .id(2L)
-                        .challengeEnrollmentId(2L)
+                        .challengeId(2L)
                         .content("This is test post 2.")
                         .writer("test user2")
                         .isPostAuthor(false)
@@ -180,7 +180,7 @@ public class ChallengePostApiTest extends AbstractRestDocsTests {
 
                                 fieldWithPath("data.content").description("포스트 뷰 목록"),
                                 fieldWithPath("data.content[].id").description("포스트 id"),
-                                fieldWithPath("data.content[].challengeEnrollmentId").description("포스트가 소속된 enrollment id"),
+                                fieldWithPath("data.content[].challengeId").description("포스트가 소속된 challenge id"),
                                 fieldWithPath("data.content[].content").description("포스트 내용"),
                                 fieldWithPath("data.content[].writer").description("작성자"),
                                 fieldWithPath("data.content[].isPostAuthor").description("요청한 멤버가 작성자 본인인지 여부"),
@@ -226,7 +226,7 @@ public class ChallengePostApiTest extends AbstractRestDocsTests {
         List<PostViewResponse> mockPostViewResponseList = List.of(
                 PostViewResponse.builder()
                         .id(1L)
-                        .challengeEnrollmentId(1L)
+                        .challengeId(1L)
                         .content("This is announcement test post 1.")
                         .writer("test user")
                         .isPostAuthor(false)
@@ -237,7 +237,7 @@ public class ChallengePostApiTest extends AbstractRestDocsTests {
                         .build(),
                 PostViewResponse.builder()
                         .id(2L)
-                        .challengeEnrollmentId(2L)
+                        .challengeId(2L)
                         .content("This is announcement test post 2.")
                         .writer("test user")
                         .isPostAuthor(false)
@@ -270,7 +270,7 @@ public class ChallengePostApiTest extends AbstractRestDocsTests {
 
                                 fieldWithPath("data.content").description("포스트 뷰 목록"),
                                 fieldWithPath("data.content[].id").description("포스트 id"),
-                                fieldWithPath("data.content[].challengeEnrollmentId").description("포스트가 소속된 enrollment id"),
+                                fieldWithPath("data.content[].challengeId").description("포스트가 소속된 challenge id"),
                                 fieldWithPath("data.content[].content").description("포스트 내용"),
                                 fieldWithPath("data.content[].writer").description("작성자"),
                                 fieldWithPath("data.content[].isPostAuthor").description("요청한 멤버가 작성자 본인인지 여부"),
@@ -316,7 +316,7 @@ public class ChallengePostApiTest extends AbstractRestDocsTests {
         List<PostViewResponse> mockPostViewResponseList = List.of(
                 PostViewResponse.builder()
                         .id(1L)
-                        .challengeEnrollmentId(1L)
+                        .challengeId(1L)
                         .content("This is test post 1 by me.")
                         .writer("test user")
                         .isPostAuthor(true)
@@ -327,7 +327,7 @@ public class ChallengePostApiTest extends AbstractRestDocsTests {
                         .build(),
                 PostViewResponse.builder()
                         .id(2L)
-                        .challengeEnrollmentId(2L)
+                        .challengeId(2L)
                         .content("This is test post 2 by me.")
                         .writer("test user")
                         .isPostAuthor(true)
@@ -360,7 +360,7 @@ public class ChallengePostApiTest extends AbstractRestDocsTests {
 
                                 fieldWithPath("data.content").description("포스트 뷰 목록"),
                                 fieldWithPath("data.content[].id").description("포스트 id"),
-                                fieldWithPath("data.content[].challengeEnrollmentId").description("포스트가 소속된 enrollment id"),
+                                fieldWithPath("data.content[].challengeId").description("포스트가 소속된 challenge id"),
                                 fieldWithPath("data.content[].content").description("포스트 내용"),
                                 fieldWithPath("data.content[].writer").description("작성자"),
                                 fieldWithPath("data.content[].isPostAuthor").description("요청한 멤버가 작성자 본인인지 여부"),
