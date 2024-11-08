@@ -50,13 +50,6 @@ public class ChallengeCreationService {
         challengeEnrollmentRepository.save(challengeEnrollment);
         participationStatRepository.save(participationStat);
 
-        if (isStartDateIsToday(challengeCreationRequest.getStartDate())) {
-            challenge.setStateInProgress();
-            List<Challenge> challengeList = Collections.singletonList(challenge);
-            schedulerTaskHelperService.createRecordsForChallenges(challengeList);
-            challengeRepository.save(challenge);
-        }
-
         return SuccessResponse.of(
                 SuccessCode.CREATE_CHALLENGE_SUCCESS,
                 ChallengeCreationResponse.of(member, challenge)
@@ -96,13 +89,4 @@ public class ChallengeCreationService {
         }
     }
 
-    private boolean isStartDateIsToday(ZonedDateTime startDate) {
-        ZonedDateTime now = ZonedDateTime.now();
-
-        if (startDate.isBefore(now)) {
-            throw new ChallengeStartTimeInvalidException(startDate);
-        }
-
-        return startDate.toLocalDate().equals(now.toLocalDate());
-    }
 }
