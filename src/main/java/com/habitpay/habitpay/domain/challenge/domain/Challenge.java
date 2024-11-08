@@ -177,7 +177,7 @@ public class Challenge extends BaseTime {
             if ((daysOfWeek & (1 << i)) != 0) {
 
                 DayOfWeek targetDay = DayOfWeek.of(7 - i);
-                ZonedDateTime startDateInLocal = TimeZoneConverter.convertEtcToLocalTimeZone(this.getStartDate());
+                ZonedDateTime startDateInLocal = TimeZoneConverter.convertEtcToLocalTimeZone(startDate);
                 ZonedDateTime targetDate = startDateInLocal.with(TemporalAdjusters.nextOrSame(targetDay));
 
                 // todo : 해결되면 삭제
@@ -187,7 +187,7 @@ public class Challenge extends BaseTime {
                 log.debug("first targetDate : {}", targetDate);
 
                 // todo
-                ZonedDateTime endDateInLocal = TimeZoneConverter.convertEtcToLocalTimeZone(this.getEndDate());
+                ZonedDateTime endDateInLocal = TimeZoneConverter.convertEtcToLocalTimeZone(endDate);
                 ZonedDateTime endDate = endDateInLocal.toLocalDate().atTime(LocalTime.MAX).atZone(endDateInLocal.getZone());
 
                 // todo : 해결되면 삭제

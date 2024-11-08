@@ -11,6 +11,7 @@ import com.habitpay.habitpay.domain.participationstat.dao.ParticipationStatRepos
 import com.habitpay.habitpay.domain.participationstat.domain.ParticipationStat;
 import com.habitpay.habitpay.global.config.timezone.TimeZoneConverter;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,14 +27,10 @@ public class ChallengeSchedulerService {
     private final ChallengeRepository challengeRepository;
     private final SchedulerTaskHelperService schedulerTaskHelperService;
 
-    @Scheduled(cron = "0 0 0 * * *", zone = "Asia/Seoul")
+    @Scheduled(cron = "0 * * * * *", zone = "Asia/Seoul")
     public void setChallengeForStart() {
-
-        // todo : 시작 날짜 ZonedDateTime으로 받고 있음 -> 날짜 데이터(without 시간)만으로 데이터 타입 바꾸기(프론트, 백 모두)
         List<Challenge> challengeList = schedulerTaskHelperService.findStartingChallenges();
-
         challengeList.forEach(Challenge::setStateInProgress);
-
         schedulerTaskHelperService.createRecordsForChallenges(challengeList);
         challengeRepository.saveAll(challengeList);
     }
@@ -51,11 +48,9 @@ public class ChallengeSchedulerService {
         schedulerTaskHelperService.checkFailedParticipation(challengeList, yesterday);
     }
 
-    @Scheduled(cron = "0 0 0 * * *", zone = "Asia/Seoul")
+    @Scheduled(cron = "0 * * * * *", zone = "Asia/Seoul")
     public void setChallengeForEnd() {
-        ZonedDateTime today = TimeZoneConverter.convertEtcToLocalTimeZone(ZonedDateTime.now());
-        ZonedDateTime yesterday = today.minusDays(1);
-        List<Challenge> challengeList = schedulerTaskHelperService.findEndingChallenges(yesterday);
+        List<Challenge> challengeList = schedulerTaskHelperService.findEndingChallenges();
         challengeList.forEach(Challenge::setStateCompletedPendingSettlement);
         challengeRepository.saveAll(challengeList);
     }
