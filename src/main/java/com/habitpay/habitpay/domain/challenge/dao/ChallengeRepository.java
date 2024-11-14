@@ -13,8 +13,10 @@ import java.util.List;
 
 public interface ChallengeRepository extends JpaRepository<Challenge, Long> {
 
-    // todo : startDate 받는 방식에 따라 필요하면 수정
+    @Query("SELECT c FROM Challenge c WHERE :startOfMinute <= c.startDate AND c.startDate < :endOfMinute")
     List<Challenge> findAllByStartDateBetweenAndState(ZonedDateTime startOfMinute, ZonedDateTime endOfMinute, ChallengeState state);
+
+    @Query("SELECT c FROM Challenge c WHERE :startOfMinute <= c.endDate AND c.endDate < :endOfMinute")
     List<Challenge> findAllByEndDateBetweenAndState(ZonedDateTime startOfMinute, ZonedDateTime endOfMinute, ChallengeState state);
 
     @Query(value = "SELECT * FROM challenge WHERE state = :state AND participating_days & :day = :day", nativeQuery = true)
