@@ -15,18 +15,17 @@ import com.habitpay.habitpay.domain.postphoto.application.PostPhotoUtilService;
 import com.habitpay.habitpay.domain.postphoto.domain.PostPhoto;
 import com.habitpay.habitpay.domain.postphoto.dto.PostPhotoView;
 import com.habitpay.habitpay.global.config.aws.S3FileService;
+import com.habitpay.habitpay.global.response.SliceResponse;
 import com.habitpay.habitpay.global.response.SuccessCode;
 import com.habitpay.habitpay.global.response.SuccessResponse;
+import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.SliceImpl;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -50,62 +49,71 @@ public class ChallengePostSearchService {
         Boolean isPostAuthor = member.equals(writer);
 
         String imageFileName = Optional.ofNullable(writer.getImageFileName()).orElse("");
-        String imageUrl = imageFileName.isEmpty() ? "" : s3FileService.getGetPreSignedUrl("profiles", imageFileName);
+        String imageUrl = imageFileName.isEmpty() ? ""
+            : s3FileService.getGetPreSignedUrl("profiles", imageFileName);
 
         return SuccessResponse.of(
-                SuccessCode.NO_MESSAGE,
-                new PostViewResponse(challengePost, isPostAuthor, imageUrl, photoViewList)
+            SuccessCode.NO_MESSAGE,
+            new PostViewResponse(challengePost, isPostAuthor, imageUrl, photoViewList)
         );
     }
 
-    public SuccessResponse<Slice<PostViewResponse>> findPostViewListByChallengeId(Long challengeId, Member member, Pageable pageable) {
+    public SuccessResponse<SliceResponse<PostViewResponse>> findPostViewListByChallengeId(
+        Long challengeId,
+        Member member, Pageable pageable) {
 
-        Slice<ChallengePost> postSlice = challengePostRepository.findAllByChallengeId(challengeId, pageable);
+        Slice<ChallengePost> postSlice = challengePostRepository.findAllByChallengeId(challengeId,
+            pageable);
         List<PostViewResponse> postViewResponseList = makePostViewResponseList(postSlice, member);
         Slice<PostViewResponse> postViewResponseSlice = new SliceImpl<>(
-                postViewResponseList, postSlice.getPageable(), postSlice.hasNext()
+            postViewResponseList, postSlice.getPageable(), postSlice.hasNext()
         );
 
         return SuccessResponse.of(
-                SuccessCode.NO_MESSAGE,
-                postViewResponseSlice
+            SuccessCode.NO_MESSAGE,
+            SliceResponse.from(postViewResponseSlice)
         );
     }
 
-    public SuccessResponse<Slice<PostViewResponse>> findAnnouncementPostViewListByChallengeId(Long challengeId, Member member, Pageable pageable) {
+    public SuccessResponse<Slice<PostViewResponse>> findAnnouncementPostViewListByChallengeId(
+        Long challengeId, Member member, Pageable pageable) {
 
-        Slice<ChallengePost> postSlice = challengePostRepository.findAllByChallengeIdAndIsAnnouncementTrue(challengeId, pageable);
+        Slice<ChallengePost> postSlice = challengePostRepository.findAllByChallengeIdAndIsAnnouncementTrue(
+            challengeId, pageable);
         List<PostViewResponse> postViewResponseList = makePostViewResponseList(postSlice, member);
         Slice<PostViewResponse> postViewResponseSlice = new SliceImpl<>(
-                postViewResponseList, postSlice.getPageable(), postSlice.hasNext()
+            postViewResponseList, postSlice.getPageable(), postSlice.hasNext()
         );
 
         return SuccessResponse.of(
-                SuccessCode.NO_MESSAGE,
-                postViewResponseSlice
+            SuccessCode.NO_MESSAGE,
+            postViewResponseSlice
         );
     }
 
-    public SuccessResponse<Slice<PostViewResponse>> findPostViewListByMember(Long challengeId, Member member, Pageable pageable) {
+    public SuccessResponse<Slice<PostViewResponse>> findPostViewListByMember(Long challengeId,
+        Member member, Pageable pageable) {
         Challenge challenge = challengeSearchService.getChallengeById(challengeId);
-        ChallengeEnrollment enrollment = challengeEnrollmentSearchService.findByMemberAndChallenge(member, challenge)
-                .orElseThrow(() -> new NotEnrolledChallengeException(member.getId(), challengeId));
+        ChallengeEnrollment enrollment = challengeEnrollmentSearchService.findByMemberAndChallenge(
+                member, challenge)
+            .orElseThrow(() -> new NotEnrolledChallengeException(member.getId(), challengeId));
 
-        Slice<ChallengePost> postSlice = challengePostRepository.findAllByChallengeEnrollment(enrollment, pageable);
-        List<PostViewResponse> postViewResponseList =  makePostViewResponseList(postSlice, member);
+        Slice<ChallengePost> postSlice = challengePostRepository.findAllByChallengeEnrollment(
+            enrollment, pageable);
+        List<PostViewResponse> postViewResponseList = makePostViewResponseList(postSlice, member);
         Slice<PostViewResponse> postViewResponseSlice = new SliceImpl<>(
-                postViewResponseList, postSlice.getPageable(), postSlice.hasNext()
+            postViewResponseList, postSlice.getPageable(), postSlice.hasNext()
         );
 
         return SuccessResponse.of(
-                SuccessCode.NO_MESSAGE,
-                postViewResponseSlice
+            SuccessCode.NO_MESSAGE,
+            postViewResponseSlice
         );
     }
 
     public ChallengePost getChallengePostById(Long id) {
         return challengePostRepository.findById(id)
-                .orElseThrow(() -> new PostNotFoundException(id));
+            .orElseThrow(() -> new PostNotFoundException(id));
     }
 
     public Challenge getChallengeByPostId(Long postId) {
@@ -113,17 +121,20 @@ public class ChallengePostSearchService {
         return post.getChallenge();
     }
 
-    private List<PostViewResponse> makePostViewResponseList(Slice<ChallengePost> postList, Member member) {
+    private List<PostViewResponse> makePostViewResponseList(Slice<ChallengePost> postList,
+        Member member) {
         return postList.stream()
-                .map(post -> {
-                    List<PostPhotoView> photoViewList = postPhotoUtilService.makePhotoViewList(postPhotoSearchService.findAllByPost(post));
-                    Member writer = post.getWriter();
-                    Boolean isPostAuthor = member.equals(writer);
-                    String imageFileName = Optional.ofNullable(writer.getImageFileName()).orElse("");
-                    String imageUrl = imageFileName.isEmpty() ? "" : s3FileService.getGetPreSignedUrl("profiles", imageFileName);
-                    return new PostViewResponse(post, isPostAuthor, imageUrl, photoViewList);
-                })
-                .toList();
+            .map(post -> {
+                List<PostPhotoView> photoViewList = postPhotoUtilService.makePhotoViewList(
+                    postPhotoSearchService.findAllByPost(post));
+                Member writer = post.getWriter();
+                Boolean isPostAuthor = member.equals(writer);
+                String imageFileName = Optional.ofNullable(writer.getImageFileName()).orElse("");
+                String imageUrl = imageFileName.isEmpty() ? ""
+                    : s3FileService.getGetPreSignedUrl("profiles", imageFileName);
+                return new PostViewResponse(post, isPostAuthor, imageUrl, photoViewList);
+            })
+            .toList();
     }
 
 }
