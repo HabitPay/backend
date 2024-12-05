@@ -8,7 +8,9 @@ import com.habitpay.habitpay.domain.challengepost.dto.AddPostRequest;
 import com.habitpay.habitpay.domain.challengepost.dto.ModifyPostRequest;
 import com.habitpay.habitpay.domain.challengepost.dto.PostViewResponse;
 import com.habitpay.habitpay.global.config.auth.CustomUserDetails;
+import com.habitpay.habitpay.global.response.SliceResponse;
 import com.habitpay.habitpay.global.response.SuccessResponse;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
@@ -16,9 +18,14 @@ import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
@@ -33,35 +40,37 @@ public class ChallengePostApi {
 
     @GetMapping("/posts/{id}")
     public SuccessResponse<PostViewResponse> getPost(
-            @PathVariable Long id,
-            @AuthenticationPrincipal CustomUserDetails user) {
+        @PathVariable Long id,
+        @AuthenticationPrincipal CustomUserDetails user) {
 
         return challengePostSearchService.getPostViewByPostId(id, user.getMember());
     }
 
     @GetMapping("/challenges/{id}/posts")
-    public SuccessResponse<Slice<PostViewResponse>> getChallengePosts(
-            @PathVariable("id") Long id,
-            @AuthenticationPrincipal CustomUserDetails user,
-            @PageableDefault(sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
+    public SuccessResponse<SliceResponse<PostViewResponse>> getChallengePosts(
+        @PathVariable("id") Long id,
+        @AuthenticationPrincipal CustomUserDetails user,
+        @PageableDefault(sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
 
-        return challengePostSearchService.findPostViewListByChallengeId(id, user.getMember(), pageable);
+        return challengePostSearchService.findPostViewListByChallengeId(id, user.getMember(),
+            pageable);
     }
 
     @GetMapping("/challenges/{id}/posts/announcements")
     public SuccessResponse<Slice<PostViewResponse>> getAnnouncements(
-            @PathVariable Long id,
-            @AuthenticationPrincipal CustomUserDetails user,
-            @PageableDefault(sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
+        @PathVariable Long id,
+        @AuthenticationPrincipal CustomUserDetails user,
+        @PageableDefault(sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
 
-        return challengePostSearchService.findAnnouncementPostViewListByChallengeId(id, user.getMember(), pageable);
+        return challengePostSearchService.findAnnouncementPostViewListByChallengeId(id,
+            user.getMember(), pageable);
     }
 
     @GetMapping("/challenges/{id}/posts/me")
     public SuccessResponse<Slice<PostViewResponse>> getChallengePostsByMe(
-            @PathVariable Long id,
-            @AuthenticationPrincipal CustomUserDetails user,
-            @PageableDefault(sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
+        @PathVariable Long id,
+        @AuthenticationPrincipal CustomUserDetails user,
+        @PageableDefault(sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
 
         return challengePostSearchService.findPostViewListByMember(id, user.getMember(), pageable);
     }
@@ -81,26 +90,26 @@ public class ChallengePostApi {
 
     @PostMapping("/challenges/{id}/posts")
     public SuccessResponse<List<String>> createPost(
-            @RequestBody AddPostRequest request,
-            @PathVariable("id") Long id,
-            @AuthenticationPrincipal CustomUserDetails user) {
+        @RequestBody AddPostRequest request,
+        @PathVariable("id") Long id,
+        @AuthenticationPrincipal CustomUserDetails user) {
         return challengePostCreationService.createPost(request, id, user.getMember());
     }
 
     @PatchMapping("/challenges/{challengeId}/posts/{postId}")
     public SuccessResponse<List<String>> patchPost(
-            @RequestBody ModifyPostRequest request, @PathVariable("challengeId") Long challengeId,
-            @PathVariable("postId") Long postId,
-            @AuthenticationPrincipal CustomUserDetails user) {
+        @RequestBody ModifyPostRequest request, @PathVariable("challengeId") Long challengeId,
+        @PathVariable("postId") Long postId,
+        @AuthenticationPrincipal CustomUserDetails user) {
 
         return challengePostUpdateService.patchPost(request, challengeId, postId, user.getMember());
     }
 
     @DeleteMapping("/challenges/{challengeId}/posts/{postId}")
     public SuccessResponse<Void> deletePost(
-            @PathVariable("challengeId") Long challengeId,
-            @PathVariable("postId") Long postId,
-            @AuthenticationPrincipal CustomUserDetails user) {
+        @PathVariable("challengeId") Long challengeId,
+        @PathVariable("postId") Long postId,
+        @AuthenticationPrincipal CustomUserDetails user) {
 
         return challengePostDeleteService.deletePost(challengeId, postId, user.getMember());
     }
