@@ -10,6 +10,7 @@ import com.habitpay.habitpay.domain.challengepost.dto.ModifyPostRequest;
 import com.habitpay.habitpay.domain.member.domain.Member;
 import com.habitpay.habitpay.domain.postphoto.application.PostPhotoCreationService;
 import com.habitpay.habitpay.domain.postphoto.application.PostPhotoDeleteService;
+import com.habitpay.habitpay.domain.postphoto.application.PostPhotoUpdateService;
 import com.habitpay.habitpay.domain.postphoto.application.PostPhotoUtilService;
 import com.habitpay.habitpay.global.error.exception.ErrorCode;
 import com.habitpay.habitpay.global.error.exception.ForbiddenException;
@@ -28,6 +29,7 @@ import java.util.List;
 public class ChallengePostUpdateService {
 
     private final PostPhotoCreationService postPhotoCreationService;
+    private final PostPhotoUpdateService postPhotoUpdateService;
     private final PostPhotoUtilService postPhotoUtilService;
     private final PostPhotoDeleteService postPhotoDeleteService;
     private final ChallengeSearchService challengeSearchService;
@@ -57,8 +59,7 @@ public class ChallengePostUpdateService {
         challengePostRepository.save(post);
 
         postPhotoDeleteService.deleteByIds(postId, request.getDeletedPhotoIds());
-        request.getModifiedPhotos().forEach(photo -> postPhotoUtilService.changeViewOrder(photo.getPhotoId(), photo.getViewOrder()));
-
+        postPhotoUpdateService.changePhotoViewOrder(request.getModifiedPhotos());
         List<String> presignedUrlList = postPhotoCreationService.createPhotoUrlList(
                 challengePostSearchService.getChallengePostById(postId), request.getNewPhotos()
         );

@@ -9,8 +9,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
@@ -32,7 +34,8 @@ public class PostPhotoDeleteService {
     public void deleteByIds(Long postId, List<Long> photoIdList) {
         ChallengePost post = challengePostSearchService.getChallengePostById(postId);
 
-        photoIdList.forEach(photoId -> {
+        Optional.ofNullable(photoIdList).orElse(Collections.emptyList())
+        .forEach(photoId -> {
             if (postPhotoUtilService.photoBelongToPost(photoId, post)) {
                 this.deleteById(photoId);
             }
