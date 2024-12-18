@@ -1,15 +1,24 @@
 package com.habitpay.habitpay.domain.participationstat.domain;
 
 import com.habitpay.habitpay.domain.challengeenrollment.domain.ChallengeEnrollment;
-
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @NoArgsConstructor
 @Getter
+@Setter
 @Table(name = "participation_stat")
 public class ParticipationStat {
 
@@ -40,15 +49,7 @@ public class ParticipationStat {
 
     public static ParticipationStat of(ChallengeEnrollment enrollment) {
         return ParticipationStat.builder()
-                .enrollment(enrollment)
-                .build();
+            .enrollment(enrollment)
+            .build();
     }
-
-    public void setSuccessCount(int value) {
-        this.successCount = value;
-    }
-
-    public void setFailureCount(int value) { this.failureCount = value; }
-
-    public void setTotalFee(int value) { this.totalFee = value; }
 }
