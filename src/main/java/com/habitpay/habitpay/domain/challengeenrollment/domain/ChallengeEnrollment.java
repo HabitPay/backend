@@ -1,16 +1,23 @@
 package com.habitpay.habitpay.domain.challengeenrollment.domain;
 
 import com.habitpay.habitpay.domain.challenge.domain.Challenge;
-import com.habitpay.habitpay.domain.challengeparticipationrecord.domain.ChallengeParticipationRecord;
 import com.habitpay.habitpay.domain.member.domain.Member;
 import com.habitpay.habitpay.domain.participationstat.domain.ParticipationStat;
-import jakarta.persistence.*;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
+import java.time.ZonedDateTime;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import java.time.ZonedDateTime;
 
 @Getter
 @Setter
@@ -18,6 +25,7 @@ import java.time.ZonedDateTime;
 @Entity
 @Table(name = "challenge_enrollment")
 public class ChallengeEnrollment {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -30,6 +38,10 @@ public class ChallengeEnrollment {
     @JoinColumn(name = "member_id")
     private Member member;
 
+    @OneToOne(cascade = CascadeType.REMOVE)
+    @JoinColumn(name = "participation_stat_id")
+    private ParticipationStat participationStat;
+
     @Column(nullable = false)
     private boolean isGivenUp;
 
@@ -38,10 +50,6 @@ public class ChallengeEnrollment {
 
     @Column()
     private ZonedDateTime givenUpDate;
-
-    @OneToOne
-    @JoinColumn(name = "participation_stat_id")
-    private ParticipationStat participationStat;
 
     @Builder
     public ChallengeEnrollment(Challenge challenge, Member member) {
@@ -53,8 +61,8 @@ public class ChallengeEnrollment {
 
     public static ChallengeEnrollment of(Member member, Challenge challenge) {
         return ChallengeEnrollment.builder()
-                .challenge(challenge)
-                .member(member)
-                .build();
+            .challenge(challenge)
+            .member(member)
+            .build();
     }
 }
