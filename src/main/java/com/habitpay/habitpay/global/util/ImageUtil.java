@@ -1,17 +1,22 @@
 package com.habitpay.habitpay.global.util;
 
 import com.habitpay.habitpay.domain.model.Image;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+import org.springframework.util.unit.DataSize;
 
+@Component
 public class ImageUtil {
 
-    public static final long MB = 1024 * 1024;
-    public static final long IMAGE_SIZE_LIMIT = 10 * MB;
+    @Value("${app.max-upload-file-size}")
+    private DataSize maxUploadSize;
 
-    public static boolean isValidImageExtension(String extension) {
+    public boolean isValidImageExtension(String extension) {
         return Image.VALID_EXTENSION.contains(extension.toUpperCase());
     }
 
-    public static boolean isValidFileSize(Long size) {
-        return 0 < size && size <= IMAGE_SIZE_LIMIT;
+    public boolean isValidFileSize(Long size) {
+        System.out.printf("maxUploadSize: %d\n", maxUploadSize.toBytes());
+        return 0 < size && size <= maxUploadSize.toBytes();
     }
 }
