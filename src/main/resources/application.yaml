@@ -40,6 +40,9 @@ spring:
     enabled: true
     baseline-on-migrate: true
 ---
+app:
+  max-upload-file-size: "10MB"
+---
 jwt:
   issuer: ${JWT_ISSUER}
   secret: ${JWT_SECRET}

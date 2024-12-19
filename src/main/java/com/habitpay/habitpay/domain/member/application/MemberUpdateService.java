@@ -8,18 +8,16 @@ import com.habitpay.habitpay.domain.member.dto.NicknameDto;
 import com.habitpay.habitpay.domain.member.exception.InvalidNicknameException;
 import com.habitpay.habitpay.global.config.aws.S3FileService;
 import com.habitpay.habitpay.global.error.exception.ErrorCode;
-import com.habitpay.habitpay.global.error.exception.InvalidValueException;
 import com.habitpay.habitpay.global.response.SuccessCode;
 import com.habitpay.habitpay.global.response.SuccessResponse;
 import com.habitpay.habitpay.global.util.ImageUtil;
-import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
-
 import java.util.Optional;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
 
 @Slf4j
 @Service
@@ -27,11 +25,12 @@ import java.util.regex.Pattern;
 public class MemberUpdateService {
 
     private final MemberRepository memberRepository;
+    private final ImageUtil imageUtil;
     private final S3FileService s3FileService;
 
     public SuccessResponse<NicknameDto> updateNickname(NicknameDto nicknameDto, Member member) {
         String nickname = nicknameDto.getNickname();
-        if (isNicknameValidFormat(nickname) == false) {
+        if (!isNicknameValidFormat(nickname)) {
             throw new InvalidNicknameException(nickname, ErrorCode.INVALID_NICKNAME_RULE);
         }
 
@@ -44,43 +43,41 @@ public class MemberUpdateService {
         return SuccessResponse.of(SuccessCode.NICKNAME_UPDATE_SUCCESS.getMessage(), nicknameDto);
     }
 
-    public SuccessResponse<ImageUpdateResponse> updateImage(ImageUpdateRequest imageUpdateRequest, Member member) {
-        Long contentLength = imageUpdateRequest.getContentLength();
-        String extension = imageUpdateRequest.getExtension();
+    public SuccessResponse<ImageUpdateResponse> updateImage(ImageUpdateRequest request,
+        Member member) {
 
-        validateImageFormat(contentLength, extension);
+        // 이미지 형식(파일 크기, 확장자) 유효성 검사
+        imageUtil.validateImageFormat(request.getContentLength(), request.getExtension());
 
-        // 프로필 이미지가 이미 존재하는 경우 기존 이미지 삭제
-        Optional.ofNullable(member.getImageFileName())
-                .ifPresent((imageFileName) -> s3FileService.deleteImage("profiles", imageFileName));
+        // 기존 프로필 이미지 삭제
+        deleteExistingImageIfExists(member);
 
-        //  프론트엔드에 preSignedUrl 발급
-        String randomFileName = UUID.randomUUID().toString();
-        String savedFileName = String.format("%s.%s", randomFileName, extension);
-        String preSignedUrl = s3FileService.getPutPreSignedUrl("profiles", savedFileName, extension, contentLength);
+        // 새로운 이미지 저장 및 URL 생성
+        String preSignedUrl = saveNewImage(request, member);
+
+        return SuccessResponse.of(
+            SuccessCode.PROFILE_IMAGE_UPDATE_SUCCESS.getMessage(),
+            ImageUpdateResponse.from(preSignedUrl)
+        );
+    }
+
+    private String saveNewImage(ImageUpdateRequest request, Member member) {
+        String savedFileName = String.format("%s.%s", UUID.randomUUID(), request.getExtension());
+        String preSignedUrl = s3FileService.getPutPreSignedUrl(
+            "profiles", savedFileName, request.getExtension(), request.getContentLength()
+        );
         log.info("[PATCH /member/image] savedFileName: {}", savedFileName);
 
         member.setImageFileName(savedFileName);
         memberRepository.save(member);
 
-        return SuccessResponse.of(
-                SuccessCode.PROFILE_IMAGE_UPDATE_SUCCESS.getMessage(),
-                ImageUpdateResponse.from(preSignedUrl)
-        );
+        return preSignedUrl;
     }
 
-    private void validateImageFormat(Long contentLength, String extension) {
-
-        // 1. 이미지 크기 제한이 넘을 경우
-        if (ImageUtil.isValidFileSize(contentLength) == false) {
-            throw new InvalidValueException(String.format("size: %dMB", contentLength / 1024 / 1024), ErrorCode.PROFILE_IMAGE_SIZE_TOO_LARGE);
-        }
-
-        // 2. 이미지 확장자가 허용되지 않은 경우
-        if (ImageUtil.isValidImageExtension(extension) == false) {
-            throw new InvalidValueException(String.format("extension: %s", extension), ErrorCode.UNSUPPORTED_IMAGE_EXTENSION);
-        }
-
+    // TODO: 개발 환경, 운영 환경에 따라 S3 저장 위치 다르게 설정하기
+    private void deleteExistingImageIfExists(Member member) {
+        Optional.ofNullable(member.getImageFileName())
+            .ifPresent((imageFileName) -> s3FileService.deleteImage("profiles", imageFileName));
     }
 
     private boolean isNicknameValidFormat(String nickname) {
