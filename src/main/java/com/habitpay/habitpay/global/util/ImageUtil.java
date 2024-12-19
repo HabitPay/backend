@@ -15,14 +15,14 @@ public class ImageUtil {
 
     public void validateImageFormat(Long contentLength, String extension) {
         // 1. 이미지 크기 제한이 넘을 경우
-        if (isValidFileSize(contentLength)) {
+        if (!isValidFileSize(contentLength)) {
             throw new InvalidValueException(
                 String.format("size: %dMB", contentLength / 1024 / 1024),
                 ErrorCode.PROFILE_IMAGE_SIZE_TOO_LARGE);
         }
 
         // 2. 이미지 확장자가 허용되지 않은 경우
-        if (isValidImageExtension(extension)) {
+        if (!isValidImageExtension(extension)) {
             throw new InvalidValueException(String.format("extension: %s", extension),
                 ErrorCode.UNSUPPORTED_IMAGE_EXTENSION);
         }
