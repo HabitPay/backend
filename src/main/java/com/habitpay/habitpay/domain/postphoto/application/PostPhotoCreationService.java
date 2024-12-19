@@ -5,8 +5,6 @@ import com.habitpay.habitpay.domain.postphoto.dao.PostPhotoRepository;
 import com.habitpay.habitpay.domain.postphoto.domain.PostPhoto;
 import com.habitpay.habitpay.domain.postphoto.dto.AddPostPhotoData;
 import com.habitpay.habitpay.global.config.aws.S3FileService;
-import com.habitpay.habitpay.global.error.exception.ErrorCode;
-import com.habitpay.habitpay.global.error.exception.InvalidValueException;
 import com.habitpay.habitpay.global.util.ImageUtil;
 import java.util.ArrayList;
 import java.util.List;
@@ -42,22 +40,10 @@ public class PostPhotoCreationService {
     }
 
     private String savePhoto(ChallengePost post, AddPostPhotoData photo) {
-        String imageExtension = photo.getImageExtension();
-        Long contentLength = photo.getContentLength();
 
-        if (!imageUtil.isValidFileSize(contentLength)) {
-            throw new InvalidValueException(
-                String.format("size: %dMB", contentLength / 1024 / 1024),
-                ErrorCode.POST_PHOTO_IMAGE_SIZE_TOO_LARGE);
-        }
+        imageUtil.validateImageFormat(photo.getContentLength(), photo.getImageExtension());
 
-        if (!imageUtil.isValidImageExtension(imageExtension)) {
-            throw new InvalidValueException(String.format("extension: %s", imageExtension),
-                ErrorCode.UNSUPPORTED_IMAGE_EXTENSION);
-        }
-
-        String randomFileName = UUID.randomUUID().toString();
-        String savedFileName = String.format("%s.%s", randomFileName, imageExtension);
+        String savedFileName = String.format("%s.%s", UUID.randomUUID(), photo.getImageExtension());
         log.info("[save] savedFileName: {}", savedFileName);
 
         PostPhoto postPhoto = postPhotoRepository.save(PostPhoto.builder()
@@ -67,8 +53,9 @@ public class PostPhotoCreationService {
             .build());
 
         String targetUrl = postPhotoUtilService.makeS3TargetPath(postPhoto);
-        return s3FileService.getPutPreSignedUrl(targetUrl, savedFileName, imageExtension,
-            contentLength);
+        
+        return s3FileService.getPutPreSignedUrl(targetUrl, savedFileName, photo.getImageExtension(),
+            photo.getContentLength());
     }
 
 }

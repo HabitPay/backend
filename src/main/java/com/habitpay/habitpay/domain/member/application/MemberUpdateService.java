@@ -8,7 +8,6 @@ import com.habitpay.habitpay.domain.member.dto.NicknameDto;
 import com.habitpay.habitpay.domain.member.exception.InvalidNicknameException;
 import com.habitpay.habitpay.global.config.aws.S3FileService;
 import com.habitpay.habitpay.global.error.exception.ErrorCode;
-import com.habitpay.habitpay.global.error.exception.InvalidValueException;
 import com.habitpay.habitpay.global.response.SuccessCode;
 import com.habitpay.habitpay.global.response.SuccessResponse;
 import com.habitpay.habitpay.global.util.ImageUtil;
@@ -48,7 +47,7 @@ public class MemberUpdateService {
         Member member) {
 
         // 이미지 형식(파일 크기, 확장자) 유효성 검사
-        validateImageFormat(request.getContentLength(), request.getExtension());
+        imageUtil.validateImageFormat(request.getContentLength(), request.getExtension());
 
         // 기존 프로필 이미지 삭제
         deleteExistingImageIfExists(member);
@@ -79,22 +78,6 @@ public class MemberUpdateService {
     private void deleteExistingImageIfExists(Member member) {
         Optional.ofNullable(member.getImageFileName())
             .ifPresent((imageFileName) -> s3FileService.deleteImage("profiles", imageFileName));
-    }
-
-    private void validateImageFormat(Long contentLength, String extension) {
-
-        // 1. 이미지 크기 제한이 넘을 경우
-        if (!imageUtil.isValidFileSize(contentLength)) {
-            throw new InvalidValueException(
-                String.format("size: %dMB", contentLength / 1024 / 1024),
-                ErrorCode.PROFILE_IMAGE_SIZE_TOO_LARGE);
-        }
-
-        // 2. 이미지 확장자가 허용되지 않은 경우
-        if (!imageUtil.isValidImageExtension(extension)) {
-            throw new InvalidValueException(String.format("extension: %s", extension),
-                ErrorCode.UNSUPPORTED_IMAGE_EXTENSION);
-        }
     }
 
     private boolean isNicknameValidFormat(String nickname) {
