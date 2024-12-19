@@ -44,31 +44,41 @@ public class MemberUpdateService {
         return SuccessResponse.of(SuccessCode.NICKNAME_UPDATE_SUCCESS.getMessage(), nicknameDto);
     }
 
-    public SuccessResponse<ImageUpdateResponse> updateImage(ImageUpdateRequest imageUpdateRequest,
+    public SuccessResponse<ImageUpdateResponse> updateImage(ImageUpdateRequest request,
         Member member) {
-        Long contentLength = imageUpdateRequest.getContentLength();
-        String extension = imageUpdateRequest.getExtension();
 
-        validateImageFormat(contentLength, extension);
+        // 이미지 형식(파일 크기, 확장자) 유효성 검사
+        validateImageFormat(request.getContentLength(), request.getExtension());
 
-        // 프로필 이미지가 이미 존재하는 경우 기존 이미지 삭제
-        Optional.ofNullable(member.getImageFileName())
-            .ifPresent((imageFileName) -> s3FileService.deleteImage("profiles", imageFileName));
+        // 기존 프로필 이미지 삭제
+        deleteExistingImageIfExists(member);
 
-        //  프론트엔드에 preSignedUrl 발급
-        String randomFileName = UUID.randomUUID().toString();
-        String savedFileName = String.format("%s.%s", randomFileName, extension);
-        String preSignedUrl = s3FileService.getPutPreSignedUrl("profiles", savedFileName, extension,
-            contentLength);
-        log.info("[PATCH /member/image] savedFileName: {}", savedFileName);
-
-        member.setImageFileName(savedFileName);
-        memberRepository.save(member);
+        // 새로운 이미지 저장 및 URL 생성
+        String preSignedUrl = saveNewImage(request, member);
 
         return SuccessResponse.of(
             SuccessCode.PROFILE_IMAGE_UPDATE_SUCCESS.getMessage(),
             ImageUpdateResponse.from(preSignedUrl)
         );
+    }
+
+    private String saveNewImage(ImageUpdateRequest request, Member member) {
+        String savedFileName = String.format("%s.%s", UUID.randomUUID(), request.getExtension());
+        String preSignedUrl = s3FileService.getPutPreSignedUrl(
+            "profiles", savedFileName, request.getExtension(), request.getContentLength()
+        );
+        log.info("[PATCH /member/image] savedFileName: {}", savedFileName);
+
+        member.setImageFileName(savedFileName);
+        memberRepository.save(member);
+
+        return preSignedUrl;
+    }
+
+    // TODO: 개발 환경, 운영 환경에 따라 S3 저장 위치 다르게 설정하기
+    private void deleteExistingImageIfExists(Member member) {
+        Optional.ofNullable(member.getImageFileName())
+            .ifPresent((imageFileName) -> s3FileService.deleteImage("profiles", imageFileName));
     }
 
     private void validateImageFormat(Long contentLength, String extension) {
@@ -85,7 +95,6 @@ public class MemberUpdateService {
             throw new InvalidValueException(String.format("extension: %s", extension),
                 ErrorCode.UNSUPPORTED_IMAGE_EXTENSION);
         }
-
     }
 
     private boolean isNicknameValidFormat(String nickname) {
