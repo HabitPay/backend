@@ -45,6 +45,9 @@ spring:
   flyway:
     enabled: false
 ---
+app:
+  max-upload-file-size: "10MB"
+---
 cors:
   allowed-origins: http://localhost:3000
 ---
