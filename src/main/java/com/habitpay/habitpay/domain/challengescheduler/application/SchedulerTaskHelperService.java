@@ -78,7 +78,6 @@ public class SchedulerTaskHelperService {
     public void checkFailedParticipation(List<Challenge> challengeList, ZonedDateTime yesterday) {
         HashMap<Challenge, Integer> challengeFailureCountMap = new HashMap<>();
         List<ParticipationStat> failureStatList = new ArrayList<>();
-        List<ChallengeParticipationRecord> failureRecordList = new ArrayList<>();
 
         challengeParticipationRecordSearchService.findByChallengesAndTargetDate(challengeList, yesterday)
                 .forEach(record -> {
@@ -92,14 +91,12 @@ public class SchedulerTaskHelperService {
                         stat.setTotalFee(stat.getTotalFee() + challenge.getFeePerAbsence());
 
                         failureStatList.add(record.getParticipationStat());
-                        failureRecordList.add(record);
                     }
                 });
 
         List<Challenge> feeAddedChallengeList = calculateFeeForChallenges(challengeFailureCountMap);
 
         participationStatRepository.saveAll(failureStatList);
-        challengeParticipationRecordRepository.deleteAll(failureRecordList);
         challengeRepository.saveAll(feeAddedChallengeList);
     }
 
