@@ -16,7 +16,6 @@ public class ImageUtil {
     }
 
     public boolean isValidFileSize(Long size) {
-        System.out.printf("maxUploadSize: %d\n", maxUploadSize.toBytes());
         return 0 < size && size <= maxUploadSize.toBytes();
     }
 }
