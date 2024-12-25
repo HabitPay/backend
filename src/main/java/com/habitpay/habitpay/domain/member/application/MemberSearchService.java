@@ -31,4 +31,9 @@ public class MemberSearchService {
         return memberRepository.findById(id)
                 .orElseThrow(() -> new MemberNotFoundException(id));
     }
+
+    public String getMemberProfileImageUrl(String imageFileName) {
+        if (imageFileName == null) { imageFileName = ""; }
+        return imageFileName.isEmpty() ? "" : s3FileService.getGetPreSignedUrl("profiles", imageFileName);
+    }
 }
