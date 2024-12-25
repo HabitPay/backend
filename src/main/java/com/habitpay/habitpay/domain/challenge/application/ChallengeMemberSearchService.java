@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class ChallengeMemberSearchService {
 
-    public SuccessResponse<?> getChallengeMemberList() {
+    public SuccessResponse<?> getEnrolledMemberList() {
         return SuccessResponse.of(
                 SuccessCode.NO_MESSAGE
         );
