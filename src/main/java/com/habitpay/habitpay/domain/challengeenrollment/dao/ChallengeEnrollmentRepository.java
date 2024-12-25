@@ -19,6 +19,11 @@ public interface ChallengeEnrollmentRepository extends JpaRepository<ChallengeEn
     List<ChallengeEnrollment> findTop3ByChallenge(Challenge challenge);
     List<ChallengeEnrollment> findAllByChallenge(Challenge challenge);
 
+    @Query("SELECT e.member " +
+    "FROM ChallengeEnrollment e " +
+    "WHERE e.challenge = :challenge")
+    List<Member> findAllMemberByChallenge(Challenge challenge);
+
     @Query("SELECT new com.habitpay.habitpay.domain.challengeabsencefee.dto.MemberFeeView(m.id, m.nickname, s.totalFee, (s.successCount / :totalCount) * 100) " +
     "FROM ChallengeEnrollment e " +
     "JOIN e.member m " +

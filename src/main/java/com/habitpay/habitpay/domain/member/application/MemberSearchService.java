@@ -21,7 +21,7 @@ public class MemberSearchService {
 
     public SuccessResponse<MemberProfileResponse> getMemberProfile(Member member) {
         String imageFileName = Optional.ofNullable(member.getImageFileName()).orElse("");
-        String imageUrl = imageFileName.isEmpty() ? "" : s3FileService.getGetPreSignedUrl("profiles", imageFileName);
+        String imageUrl = getMemberProfileImageUrl(imageFileName);
         
         return SuccessResponse.of(SuccessCode.NO_MESSAGE, MemberProfileResponse.of(member, imageUrl));
     }
@@ -30,5 +30,9 @@ public class MemberSearchService {
     public Member getMemberById(Long id) {
         return memberRepository.findById(id)
                 .orElseThrow(() -> new MemberNotFoundException(id));
+    }
+
+    public String getMemberProfileImageUrl(String imageFileName) {
+        return imageFileName.isEmpty() ? "" : s3FileService.getGetPreSignedUrl("profiles", imageFileName);
     }
 }

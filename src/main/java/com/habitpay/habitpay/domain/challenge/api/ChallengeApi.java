@@ -49,9 +49,9 @@ public class ChallengeApi {
     }
 
     @GetMapping("/challenges/{id}/members")
-    public SuccessResponse<?> getEnrolledMemberList(@PathVariable("id") Long id,
+    public SuccessResponse<List<ChallengeEnrolledMember>> getEnrolledMemberList(@PathVariable("id") Long id,
                                                     @AuthenticationPrincipal CustomUserDetails user) {
-        return challengeMemberSearchService.getEnrolledMemberList();
+        return challengeMemberSearchService.getEnrolledMemberList(id, user.getMember());
     }
 
     @GetMapping("/challenges/{id}/records")
