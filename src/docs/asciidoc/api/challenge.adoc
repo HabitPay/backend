@@ -43,6 +43,12 @@ operation::challenge/get-challenge-details[snippets='http-request,http-response,
 
 operation::challenge/get-challenge-details-not-found-exception[snippets='http-request,http-response,response-fields']
 
+=== 챌린지 등록 멤버 조회
+
+특정 챌린지 내에 등록한 멤버들의 목록을 조회합니다.
+
+operation::challenge/get-challenge-members[snippets='http-request,http-response,response-fields']
+
 === 챌린지 별 참여 기록 조회
 
 챌린지 별 참여 기록을 조회합니다.

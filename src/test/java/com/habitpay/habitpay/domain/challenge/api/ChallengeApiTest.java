@@ -74,6 +74,9 @@ public class ChallengeApiTest extends AbstractRestDocsTests {
     ChallengeRecordsService challengeRecordsService;
 
     @MockBean
+    ChallengeMemberSearchService challengeMemberSearchService;
+
+    @MockBean
     TimeZoneProperties timeZoneProperties;
 
     @MockBean
@@ -282,6 +285,49 @@ public class ChallengeApiTest extends AbstractRestDocsTests {
                         responseFields(
                                 fieldWithPath("code").description("오류 응답 코드"),
                                 fieldWithPath("message").description("오류 메세지")
+                        )
+                ));
+    }
+
+    @Test
+    @WithMockOAuth2User
+    @DisplayName("챌린지 등록 멤버 조회")
+    void getEnrolledMemberList() throws Exception {
+
+        // given
+        List<ChallengeEnrolledMember> mockEnrolledMemberList = List.of(
+                ChallengeEnrolledMember.builder()
+                        .memberId(1L)
+                        .nickname("test user1")
+                        .profileImageUrl("https://picsum.photos/id/40/200/300")
+                        .isMyself(true)
+                        .build(),
+                ChallengeEnrolledMember.builder()
+                        .memberId(2L)
+                        .nickname("test user2")
+                        .profileImageUrl("")
+                        .isMyself(false)
+                        .build());
+
+        given(challengeMemberSearchService.getEnrolledMemberList(anyLong(), any(Member.class)))
+                .willReturn(SuccessResponse.of(SuccessCode.NO_MESSAGE, mockEnrolledMemberList));
+
+        // when
+        ResultActions result = mockMvc.perform(get("/api/challenges/{id}/members", 1L)
+                .header(HttpHeaders.AUTHORIZATION, AUTHORIZATION_HEADER_PREFIX + "ACCESS_TOKEN"));
+
+        // then
+        result.andExpect(status().isOk())
+                .andDo(document("challenge/get-challenge-members",
+                        requestHeaders(
+                                headerWithName(HttpHeaders.AUTHORIZATION).description("액세스 토큰")
+                        ),
+                        responseFields(
+                                fieldWithPath("message").description("메세지"),
+                                fieldWithPath("data[].memberId").description("멤버 아이디"),
+                                fieldWithPath("data[].nickname").description("멤버 이름"),
+                                fieldWithPath("data[].profileImageUrl").description("프로필 이미지 url"),
+                                fieldWithPath("data[].isMyself").description("해당 멤버 데이터가 로그인한 본인의 것인지 여부")
                         )
                 ));
     }
