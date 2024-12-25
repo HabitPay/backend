@@ -21,7 +21,7 @@ public class MemberSearchService {
 
     public SuccessResponse<MemberProfileResponse> getMemberProfile(Member member) {
         String imageFileName = Optional.ofNullable(member.getImageFileName()).orElse("");
-        String imageUrl = getMemberProfileImageUrl(imageFileName);
+        String imageUrl = imageFileName.isEmpty() ? "" : s3FileService.getGetPreSignedUrl("profiles", imageFileName);
         
         return SuccessResponse.of(SuccessCode.NO_MESSAGE, MemberProfileResponse.of(member, imageUrl));
     }
@@ -33,6 +33,7 @@ public class MemberSearchService {
     }
 
     public String getMemberProfileImageUrl(String imageFileName) {
+        if (imageFileName == null) { imageFileName = ""; }
         return imageFileName.isEmpty() ? "" : s3FileService.getGetPreSignedUrl("profiles", imageFileName);
     }
 }
