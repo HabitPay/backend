@@ -24,7 +24,7 @@ public class ChallengeMemberSearchService {
     public SuccessResponse<List<ChallengeEnrolledMember>> getEnrolledMemberList(Long challengeId, Member myself) {
         Challenge challenge = challengeSearchService.getChallengeById(challengeId);
         List<Member> memberList = challengeEnrollmentRepository.findAllMemberByChallenge(challenge);
-        List<ChallengeEnrolledMember> enrolledMemberList = makeEnrolledMemberList(memberList);
+        List<ChallengeEnrolledMember> enrolledMemberList = makeEnrolledMemberList(memberList, myself);
 
         return SuccessResponse.of(
                 SuccessCode.NO_MESSAGE,
@@ -32,11 +32,12 @@ public class ChallengeMemberSearchService {
         );
     }
 
-    private List<ChallengeEnrolledMember> makeEnrolledMemberList(List<Member> memberList) {
+    private List<ChallengeEnrolledMember> makeEnrolledMemberList(List<Member> memberList, Member myself) {
         return memberList.stream()
                 .map(member -> {
                     String imageUrl = memberSearchService.getMemberProfileImageUrl(member.getImageFileName());
-                    return ChallengeEnrolledMember.of(member.getId(), member.getNickname(), imageUrl);
+                    Boolean isMyself = member.equals(myself);
+                    return ChallengeEnrolledMember.of(member.getId(), member.getNickname(), imageUrl, isMyself);
                 })
                 .collect(Collectors.toList());
     }
