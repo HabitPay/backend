@@ -8,6 +8,7 @@ import com.habitpay.habitpay.domain.challenge.exception.ChallengeNotFoundExcepti
 import com.habitpay.habitpay.domain.challengeenrollment.dao.ChallengeEnrollmentRepository;
 import com.habitpay.habitpay.domain.challengeenrollment.domain.ChallengeEnrollment;
 import com.habitpay.habitpay.domain.challengeparticipationrecord.application.ChallengeParticipationRecordSearchService;
+import com.habitpay.habitpay.domain.member.application.MemberSearchService;
 import com.habitpay.habitpay.domain.member.domain.Member;
 import com.habitpay.habitpay.domain.participationstat.domain.ParticipationStat;
 import com.habitpay.habitpay.global.config.aws.S3FileService;
@@ -33,6 +34,7 @@ public class ChallengeSearchService {
     private final ChallengeRepository challengeRepository;
     private final ChallengeEnrollmentRepository challengeEnrollmentRepository;
     private final ChallengeParticipationRecordSearchService challengeParticipationRecordSearchService;
+    private final MemberSearchService memberSearchService;
 
     public SuccessResponse<PageResponse<ChallengePageResponse>> getChallengePage(Pageable pageable) {
         Page<ChallengePageResponse> challengePage = challengeRepository.findAll(pageable)
@@ -47,6 +49,14 @@ public class ChallengeSearchService {
     }
 
     public SuccessResponse<List<ChallengeEnrolledListItemResponse>> getEnrolledChallengeList(Member member) {
+        List<ChallengeEnrolledListItemResponse> response = mapEnrollmentsToResponses(member);
+
+        return SuccessResponse.of(SuccessCode.NO_MESSAGE, response);
+    }
+
+    public SuccessResponse<List<ChallengeEnrolledListItemResponse>> getEnrolledChallengeListOfMember(Long id, Member currentUser) {
+        Member member = memberSearchService.getMemberById(id);
+//        if (member.equals(currentUser)) { return SuccessResponse.of(); }
         List<ChallengeEnrolledListItemResponse> response = mapEnrollmentsToResponses(member);
 
         return SuccessResponse.of(SuccessCode.NO_MESSAGE, response);
