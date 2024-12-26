@@ -75,7 +75,7 @@ public class ChallengePostSearchService {
         );
     }
 
-    public SuccessResponse<Slice<PostViewResponse>> findAnnouncementPostViewListByChallengeId(
+    public SuccessResponse<SliceResponse<PostViewResponse>> findAnnouncementPostViewListByChallengeId(
         Long challengeId, Member member, Pageable pageable) {
 
         Slice<ChallengePost> postSlice = challengePostRepository.findAllByChallengeIdAndIsAnnouncementTrue(
@@ -87,11 +87,11 @@ public class ChallengePostSearchService {
 
         return SuccessResponse.of(
             SuccessCode.NO_MESSAGE,
-            postViewResponseSlice
+                SliceResponse.from(postViewResponseSlice)
         );
     }
 
-    public SuccessResponse<Slice<PostViewResponse>> findPostViewListByMember(Long challengeId,
+    public SuccessResponse<SliceResponse<PostViewResponse>> findPostViewListByMember(Long challengeId,
         Member member, Pageable pageable) {
         Challenge challenge = challengeSearchService.getChallengeById(challengeId);
         ChallengeEnrollment enrollment = challengeEnrollmentSearchService.findByMemberAndChallenge(
@@ -107,7 +107,7 @@ public class ChallengePostSearchService {
 
         return SuccessResponse.of(
             SuccessCode.NO_MESSAGE,
-            postViewResponseSlice
+                SliceResponse.from(postViewResponseSlice)
         );
     }
 
