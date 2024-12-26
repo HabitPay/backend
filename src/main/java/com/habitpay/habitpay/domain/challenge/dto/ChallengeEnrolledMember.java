@@ -11,12 +11,12 @@ public class ChallengeEnrolledMember {
     private String profileImageUrl;
     private Boolean isCurrentUser;
 
-    public static ChallengeEnrolledMember of(Long id, String nickname, String imageUrl, Boolean isMyself) {
+    public static ChallengeEnrolledMember of(Long id, String nickname, String imageUrl, Boolean isCurrentUser) {
         return ChallengeEnrolledMember.builder()
                 .memberId(id)
                 .nickname(nickname)
                 .profileImageUrl(imageUrl)
-                .isCurrentUser(isMyself)
+                .isCurrentUser(isCurrentUser)
                 .build();
     }
 }
