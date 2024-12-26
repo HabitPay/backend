@@ -12,14 +12,14 @@ public class MemberFee {
     private String nickname;
     private int totalFee;
     private int completionRate;
-    private Boolean isMe;
+    private Boolean isCurrentUser;
 
     public static MemberFee of(MemberFeeView memberFeeView, Long memberId) {
         return MemberFee.builder()
                 .nickname(memberFeeView.getNickname())
                 .totalFee(memberFeeView.getTotalFee())
                 .completionRate(memberFeeView.getCompletionRate())
-                .isMe(memberFeeView.getMemberId().equals(memberId))
+                .isCurrentUser(memberFeeView.getMemberId().equals(memberId))
                 .build();
     }
 

@@ -300,13 +300,13 @@ public class ChallengeApiTest extends AbstractRestDocsTests {
                         .memberId(1L)
                         .nickname("test user1")
                         .profileImageUrl("https://picsum.photos/id/40/200/300")
-                        .isMyself(true)
+                        .isCurrentUser(true)
                         .build(),
                 ChallengeEnrolledMember.builder()
                         .memberId(2L)
                         .nickname("test user2")
                         .profileImageUrl("")
-                        .isMyself(false)
+                        .isCurrentUser(false)
                         .build());
 
         given(challengeMemberSearchService.getEnrolledMemberList(anyLong(), any(Member.class)))

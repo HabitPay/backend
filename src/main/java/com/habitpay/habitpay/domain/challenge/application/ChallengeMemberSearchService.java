@@ -21,10 +21,10 @@ public class ChallengeMemberSearchService {
     private final MemberSearchService memberSearchService;
     private final ChallengeEnrollmentRepository challengeEnrollmentRepository;
 
-    public SuccessResponse<List<ChallengeEnrolledMember>> getEnrolledMemberList(Long challengeId, Member myself) {
+    public SuccessResponse<List<ChallengeEnrolledMember>> getEnrolledMemberList(Long challengeId, Member currentUser) {
         Challenge challenge = challengeSearchService.getChallengeById(challengeId);
         List<Member> memberList = challengeEnrollmentRepository.findAllMemberByChallenge(challenge);
-        List<ChallengeEnrolledMember> enrolledMemberList = makeEnrolledMemberList(memberList, myself);
+        List<ChallengeEnrolledMember> enrolledMemberList = makeEnrolledMemberList(memberList, currentUser);
 
         return SuccessResponse.of(
                 SuccessCode.NO_MESSAGE,
@@ -32,12 +32,12 @@ public class ChallengeMemberSearchService {
         );
     }
 
-    private List<ChallengeEnrolledMember> makeEnrolledMemberList(List<Member> memberList, Member myself) {
+    private List<ChallengeEnrolledMember> makeEnrolledMemberList(List<Member> memberList, Member currentUser) {
         return memberList.stream()
                 .map(member -> {
                     String imageUrl = memberSearchService.getMemberProfileImageUrl(member.getImageFileName());
-                    Boolean isMyself = member.equals(myself);
-                    return ChallengeEnrolledMember.of(member.getId(), member.getNickname(), imageUrl, isMyself);
+                    Boolean isCurrentUser = member.equals(currentUser);
+                    return ChallengeEnrolledMember.of(member.getId(), member.getNickname(), imageUrl, isCurrentUser);
                 })
                 .collect(Collectors.toList());
     }
