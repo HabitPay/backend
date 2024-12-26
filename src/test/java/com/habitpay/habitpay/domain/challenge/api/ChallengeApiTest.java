@@ -327,7 +327,7 @@ public class ChallengeApiTest extends AbstractRestDocsTests {
                                 fieldWithPath("data[].memberId").description("멤버 아이디"),
                                 fieldWithPath("data[].nickname").description("멤버 이름"),
                                 fieldWithPath("data[].profileImageUrl").description("프로필 이미지 url"),
-                                fieldWithPath("data[].isMyself").description("해당 멤버 데이터가 로그인한 본인의 것인지 여부")
+                                fieldWithPath("data[].isCurrentUser").description("해당 멤버 데이터가 로그인한 본인의 것인지 여부")
                         )
                 ));
     }
