@@ -4,7 +4,16 @@ import com.habitpay.habitpay.domain.challenge.domain.Challenge;
 import com.habitpay.habitpay.domain.challengeenrollment.domain.ChallengeEnrollment;
 import com.habitpay.habitpay.domain.member.domain.Member;
 import com.habitpay.habitpay.domain.model.BaseTime;
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -17,6 +26,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @Getter
 @Table(name = "challenge_post")
 public class ChallengePost extends BaseTime {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -29,7 +39,7 @@ public class ChallengePost extends BaseTime {
     @JoinColumn(name = "challenge_enrollment_id")
     private ChallengeEnrollment challengeEnrollment;
 
-    @Column()
+    @Column(length = 1000)
     private String content;
 
     @Column(nullable = false)
@@ -37,10 +47,10 @@ public class ChallengePost extends BaseTime {
 
     @Builder
     public ChallengePost(
-            Challenge challenge,
-            ChallengeEnrollment enrollment,
-            String content,
-            boolean isAnnouncement) {
+        Challenge challenge,
+        ChallengeEnrollment enrollment,
+        String content,
+        boolean isAnnouncement) {
         this.challenge = challenge;
         this.challengeEnrollment = enrollment;
         this.content = content;
