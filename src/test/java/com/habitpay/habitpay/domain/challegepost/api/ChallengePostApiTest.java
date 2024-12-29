@@ -13,6 +13,7 @@ import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuild
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -475,6 +476,38 @@ public class ChallengePostApiTest extends AbstractRestDocsTests {
 
     @Test
     @WithMockOAuth2User
+    @DisplayName("챌린지 게시물 생성 - 게시물 길이 초과 (400 Bad Request)")
+    void challengePostCreationContentLengthTooLongException() throws Exception {
+
+        // given
+        AddPostRequest invalidRequest = AddPostRequest.builder()
+            .content("A".repeat(1001)) // 본문 길이 초과
+            .isAnnouncement(false)
+            .photos(List.of(new AddPostPhotoData(1L, "jpg", 100L)))
+            .build();
+
+        // when
+        ResultActions result = mockMvc.perform(post("/api/challenges/{id}/posts", 1L)
+            .header(HttpHeaders.AUTHORIZATION, AUTHORIZATION_HEADER_PREFIX + "ACCESS_TOKEN")
+            .content(objectMapper.writeValueAsString(invalidRequest))
+            .contentType(MediaType.APPLICATION_JSON));
+
+        // then
+        result.andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$.message").value("본문 길이는 최대 1000자 입니다."))
+            .andDo(document("challenge/challenge-post-creation-content-length-too-long-exception",
+                requestHeaders(
+                    headerWithName(HttpHeaders.AUTHORIZATION).description("액세스 토큰")
+                ),
+                responseFields(
+                    fieldWithPath("code").description("오류 응답 코드"),
+                    fieldWithPath("message").description("오류 메세지")
+                )
+            ));
+    }
+
+    @Test
+    @WithMockOAuth2User
     @DisplayName("챌린지 게시물 생성 - 챌린지 중도 포기 이후 (403 Forbidden)")
     void challengePostCreationForbiddenException() throws Exception {
 
@@ -559,6 +592,42 @@ public class ChallengePostApiTest extends AbstractRestDocsTests {
                 responseFields(
                     fieldWithPath("message").description("메시지"),
                     fieldWithPath("data").description("AWS S3 업로드를 위한 preSignedUrl List<String>")
+                )
+            ));
+    }
+
+
+    @Test
+    @WithMockOAuth2User
+    @DisplayName("챌린지 게시물 수정 - 게시물 길이 초과 (400 Bad Request)")
+    void challengePostPatchContentLengthTooLongException() throws Exception {
+
+        // given
+        ModifyPostRequest invalidRequest = ModifyPostRequest.builder()
+            .content("A".repeat(1001))
+            .isAnnouncement(false)
+            .newPhotos(List.of(new AddPostPhotoData(2L, "jpg", 100L)))
+            .modifiedPhotos(List.of(new ModifyPostPhotoData(3L, 1L)))
+            .deletedPhotoIds(List.of(1L))
+            .build();
+
+        // when
+        ResultActions result = mockMvc.perform(
+            patch("/api/challenges/{challengeId}/posts/{postId}", 1L, 1L)
+                .header(HttpHeaders.AUTHORIZATION, AUTHORIZATION_HEADER_PREFIX + "ACCESS_TOKEN")
+                .content(objectMapper.writeValueAsString(invalidRequest))
+                .contentType(MediaType.APPLICATION_JSON));
+
+        // then
+        result.andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$.message").value("본문 길이는 최대 1000자 입니다."))
+            .andDo(document("challenge/challenge-post-patch-content-length-too-long-exception",
+                requestHeaders(
+                    headerWithName(HttpHeaders.AUTHORIZATION).description("액세스 토큰")
+                ),
+                responseFields(
+                    fieldWithPath("code").description("오류 응답 코드"),
+                    fieldWithPath("message").description("오류 메세지")
                 )
             ));
     }
