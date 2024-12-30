@@ -58,7 +58,7 @@ public class ChallengePostApi {
     }
 
     @GetMapping("/challenges/{id}/posts/announcements")
-    public SuccessResponse<Slice<PostViewResponse>> getAnnouncements(
+    public SuccessResponse<SliceResponse<PostViewResponse>> getAnnouncements(
         @PathVariable Long id,
         @AuthenticationPrincipal CustomUserDetails user,
         @PageableDefault(sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
@@ -68,7 +68,7 @@ public class ChallengePostApi {
     }
 
     @GetMapping("/challenges/{id}/posts/me")
-    public SuccessResponse<Slice<PostViewResponse>> getChallengePostsByMe(
+    public SuccessResponse<SliceResponse<PostViewResponse>> getChallengePostsByMe(
         @PathVariable Long id,
         @AuthenticationPrincipal CustomUserDetails user,
         @PageableDefault(sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
@@ -79,7 +79,7 @@ public class ChallengePostApi {
     // -----------------------------------------------------------------------------
     // todo : 'memberId' 등 멤버 식별할 수 있는 데이터를 받은 후 수정
 //    @GetMapping("/challenges/{id}/posts/member")
-//    public SuccessResponse<Slice<PostViewResponse>> getChallengePostsByMember(
+//    public SuccessResponse<SliceResponse<PostViewResponse>> getChallengePostsByMember(
 //            @PathVariable Long id,
 //            @PageableDefault(sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
 //
