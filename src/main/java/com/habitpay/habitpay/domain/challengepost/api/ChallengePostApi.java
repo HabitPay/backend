@@ -10,6 +10,7 @@ import com.habitpay.habitpay.domain.challengepost.dto.PostViewResponse;
 import com.habitpay.habitpay.global.config.auth.CustomUserDetails;
 import com.habitpay.habitpay.global.response.SliceResponse;
 import com.habitpay.habitpay.global.response.SuccessResponse;
+import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -90,7 +91,7 @@ public class ChallengePostApi {
 
     @PostMapping("/challenges/{id}/posts")
     public SuccessResponse<List<String>> createPost(
-        @RequestBody AddPostRequest request,
+        @Valid @RequestBody AddPostRequest request,
         @PathVariable("id") Long id,
         @AuthenticationPrincipal CustomUserDetails user) {
         return challengePostCreationService.createPost(request, id, user.getMember());
@@ -98,7 +99,8 @@ public class ChallengePostApi {
 
     @PatchMapping("/challenges/{challengeId}/posts/{postId}")
     public SuccessResponse<List<String>> patchPost(
-        @RequestBody ModifyPostRequest request, @PathVariable("challengeId") Long challengeId,
+        @Valid @RequestBody ModifyPostRequest request,
+        @PathVariable("challengeId") Long challengeId,
         @PathVariable("postId") Long postId,
         @AuthenticationPrincipal CustomUserDetails user) {
 
