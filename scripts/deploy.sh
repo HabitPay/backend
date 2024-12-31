@@ -2,7 +2,7 @@
 
 DOCKER_IMAGE=$1
 APPLICATION=habitpay
-LOG_FILE="/var/log/habitpay/deploy.log"
+LOG_FILE="/var/log/$APPLICATION/deploy.log"
 HEALTHCHECK_RESULT=
 
 log() {

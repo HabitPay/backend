@@ -1,10 +1,10 @@
 #!/bin/bash
 
 APPLICATION=habitpay
-LOG_FILE="/var/log/$APPLICATION/deploy.log"
+LOG_FILE="/var/log/$APPLICATION/down-running-container.log"
 HEALTHCHECK_API="actuator/health"
-BLUE_CONTAINER="backend.habitpay.internal:8080"
-GREEN_CONTAINER="backend.habitpay.internal:8081"
+BLUE_CONTAINER="blue"
+GREEN_CONTAINER="green"
 
 log() {
     local msg="$1"
@@ -23,7 +23,7 @@ healthcheck() {
     local retries=0
 
     while [ $retries -lt $max_retries ]; do
-        local container_status=$(wget -qO- $container_endpoint | jq -r '.status')
+        local container_status=$(docker exec -it nginx wget -qO- $container_endpoint | jq -r '.status')
         if [ "$container_status" = "UP" ]; then
             log "$container_endpoint is running."
             return 0
