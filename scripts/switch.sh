@@ -6,7 +6,7 @@ BLUE_CONTAINER="blue"
 GREEN_CONTAINER="green"
 PORT_NUMBER=8080
 HEALTHCHECK_API="actuator/health"
-NGINX_CONFIGURATION_FILE="../conf/nginx.conf"
+NGINX_CONFIGURATION_FILE="/home/ec2-user/habitpay/backend/conf/nginx.conf"
 
 log() {
     local msg="$1"
