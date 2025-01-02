@@ -9,12 +9,13 @@ services:
       - nginx-connection
     volumes:
       - ./conf/:/etc/nginx/conf.d/
-
+    depends_on:
+      blue:
+        condition: service_healthy
+        
   blue:
     container_name: blue
-    image: habitpay/backend:${version}
-    ports:
-      - "$BLUE_PORT:$BACKEND_PORT"
+    image: habitpay/backend:v0.9.1
     restart: on-failure:3
     healthcheck:
       test: "wget --quiet --spider localhost:$$BACKEND_PORT/actuator/health || exit 1"
@@ -27,12 +28,14 @@ services:
       - ../env/.env.db.prod
     networks:
       - nginx-connection
+      - db-connection
+    depends_on:
+      postgres:
+        condition: service_healthy
 
   green:
     container_name: green
-    image: habitpay/backend:${version}
-    ports:
-      - "$GREEN_PORT:$BACKEND_PORT"
+    image: habitpay/backend:v0.9.1
     restart: on-failure:3
     healthcheck:
       test: "wget --quiet --spider localhost:$$BACKEND_PORT/actuator/health || exit 1"
@@ -45,13 +48,15 @@ services:
       - ../env/.env.db.prod
     networks:
       - nginx-connection
+      - db-connection
+    depends_on:
+      postgres:
+        condition: service_healthy
 
   postgres:
     container_name: postgres
     image: postgres:16.2-alpine3.18
     restart: on-failure:3
-    ports:
-      - $POSTGRES_PORT:$POSTGRES_PORT
     networks:
       - db-connection
     healthcheck:
@@ -71,8 +76,6 @@ services:
     container_name: pgadmin
     image: dpage/pgadmin4
     restart: on-failure:3
-    ports:
-      - $PGADMIN_PORT:80
     volumes:
       - pgadmin-data:/var/lib/pgadmin
     env_file:
