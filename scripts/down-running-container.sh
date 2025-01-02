@@ -1,10 +1,11 @@
 #!/bin/bash
 
 APPLICATION=habitpay
-LOG_FILE="/var/log/$APPLICATION/deploy.log"
+LOG_FILE="/var/log/$APPLICATION/down-running-container.log"
 HEALTHCHECK_API="actuator/health"
-BLUE_CONTAINER="backend.habitpay.internal:8080"
-GREEN_CONTAINER="backend.habitpay.internal:8081"
+BLUE_CONTAINER="blue"
+GREEN_CONTAINER="green"
+PORT_NUMBER=8080
 
 log() {
     local msg="$1"
@@ -23,7 +24,7 @@ healthcheck() {
     local retries=0
 
     while [ $retries -lt $max_retries ]; do
-        local container_status=$(wget -qO- $container_endpoint | jq -r '.status')
+        local container_status=$(docker exec -t nginx wget -qO- $container_endpoint | jq -r '.status')
         if [ "$container_status" = "UP" ]; then
             log "$container_endpoint is running."
             return 0
@@ -63,7 +64,7 @@ main() {
 
     if [ "$is_blue_running" = "running" ] && [ "$blue_start_time" "<" "$green_start_time" ]; then
         log "Blue container started first."
-        if healthcheck "$GREEN_CONTAINER/$HEALTHCHECK_API"; then
+        if healthcheck "$GREEN_CONTAINER:$PORT_NUMBER/$HEALTHCHECK_API"; then
             down blue || { log_error "Failed to stop blue container. Exiting..."; exit 1; }
         else
             log_error "Failed to down blue. Exiting..."
@@ -71,7 +72,7 @@ main() {
         fi
     elif [ "$is_green_running" = "running" ] && [ "$green_start_time" "<" "$blue_start_time" ]; then
         log "Green container started first."
-        if healthcheck "$BLUE_CONTAINER/$HEALTHCHECK_API"; then
+        if healthcheck "$BLUE_CONTAINER:$PORT_NUMBER/$HEALTHCHECK_API"; then
             down green || { log_error "Failed to stop green container. Exiting..."; exit 1; }
         else
             log_error "Failed to down green. Exiting..."
