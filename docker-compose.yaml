@@ -9,9 +9,6 @@ services:
       - nginx-connection
     volumes:
       - ./conf/:/etc/nginx/conf.d/
-    depends_on:
-      blue:
-        condition: service_healthy
         
   blue:
     container_name: blue
