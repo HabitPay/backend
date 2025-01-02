@@ -4,8 +4,9 @@ APPLICATION_NAME="habitpay"
 LOG_FILE="/var/log/$APPLICATION_NAME/switch.log"
 BLUE_CONTAINER="blue"
 GREEN_CONTAINER="green"
+PORT_NUMBER=8080
 HEALTHCHECK_API="actuator/health"
-NGINX_CONFIGURATION_FILE="conf/nginx.conf"
+NGINX_CONFIGURATION_FILE="../conf/nginx.conf"
 
 log() {
     local msg="$1"
@@ -24,7 +25,7 @@ healthcheck() {
     local retries=0
 
     while [ $retries -lt $max_retries ]; do
-        local container_status=$(wget -qO- $container_endpoint | jq -r '.status')
+        local container_status=$(docker exec -t nginx wget -qO- $container_endpoint | jq -r '.status')
         if [ "$container_status" = "UP" ]; then
             log "$container_endpoint is running."
             return 0
@@ -54,11 +55,11 @@ main() {
 
     if [ "$is_blue_running" = "running" ]; then
         log "Blue container is running."
-        healthcheck "$GREEN_CONTAINER/$HEALTHCHECK_API"
+        healthcheck "$GREEN_CONTAINER:$PORT_NUMBER/$HEALTHCHECK_API"
         switch blue green
     elif [ "$is_green_running" = "running" ] ; then
         log "Green container is running."
-        healthcheck "$BLUE_CONTAINER/$HEALTHCHECK_API"
+        healthcheck "$BLUE_CONTAINER:$PORT_NUMBER/$HEALTHCHECK_API"
         switch green blue
     else
         log_error "Neither container is running. Exiting..."

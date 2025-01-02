@@ -43,7 +43,7 @@ switch() {
     local target=$2
 
     log "$current is running. Turning on $target container..."
-    yq -i ".services.$target.image = \"$DOCKER_IMAGE\"" docker-compose.yaml
+    yq -i ".services.$target.image = \"$DOCKER_IMAGE\"" ../docker-compose.yaml
     sudo docker compose -p $APPLICATION up "$target" -d
     healthcheck "$target"
 
@@ -72,7 +72,7 @@ main() {
         switch green blue
     else
         log "Application is not running. Starting the application...(with blue container)"
-        yq -i ".services.blue.image = \"$DOCKER_IMAGE\"" docker-compose.yaml
+        yq -i ".services.blue.image = \"$DOCKER_IMAGE\"" ../docker-compose.yaml
         sudo docker compose -p $APPLICATION up blue -d
         healthcheck blue
     fi
