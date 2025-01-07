@@ -55,7 +55,7 @@ public class ChallengeSearchService {
         return SuccessResponse.of(SuccessCode.NO_MESSAGE, response);
     }
 
-    public SuccessResponse<List<ChallengeEnrolledListItemResponseForMember>> getEnrolledChallengeListOfMember(Long id, Member currentUser) {
+    public SuccessResponse<List<ChallengeEnrolledListItemResponseForMember>> getEnrolledChallengeListForMember(Long id, Member currentUser) {
         Member member = memberSearchService.getMemberById(id);
         boolean isCurrentUser = member.equals(currentUser);
         List<ChallengeEnrolledListItemResponseForMember> response = mapEnrollmentsToResponsesForMember(isCurrentUser, member);
