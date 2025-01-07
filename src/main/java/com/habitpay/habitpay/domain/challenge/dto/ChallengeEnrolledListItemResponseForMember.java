@@ -4,9 +4,11 @@ import com.habitpay.habitpay.domain.challenge.domain.Challenge;
 import com.habitpay.habitpay.domain.challengeenrollment.domain.ChallengeEnrollment;
 import com.habitpay.habitpay.domain.participationstat.domain.ParticipationStat;
 import lombok.Builder;
+import lombok.Getter;
 
 import java.time.ZonedDateTime;
 
+@Getter
 @Builder
 public class ChallengeEnrolledListItemResponseForMember {
     private Boolean isCurrentUser;
