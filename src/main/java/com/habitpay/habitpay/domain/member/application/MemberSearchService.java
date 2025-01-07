@@ -33,7 +33,9 @@ public class MemberSearchService {
     }
 
     public String getMemberProfileImageUrl(String imageFileName) {
-        if (imageFileName == null) { imageFileName = ""; }
-        return imageFileName.isEmpty() ? "" : s3FileService.getGetPreSignedUrl("profiles", imageFileName);
+        return Optional.ofNullable(imageFileName)
+                .filter(fileName -> !fileName.isEmpty())
+                .map(fileName -> s3FileService.getGetPreSignedUrl("profiles", fileName))
+                .orElse("");
     }
 }

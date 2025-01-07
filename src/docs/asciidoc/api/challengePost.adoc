@@ -55,6 +55,12 @@ operation::challengePost/create-challenge-post[snippets='http-request,http-respo
 
 ==== 에러 응답
 
+===== 게시물 본문 길이 제한 초과 (400 Bad Request)
+
+게시물 본문 길이 제한을 초과한 경우입니다.
+
+operation::challenge/challenge-post-creation-content-length-too-long-exception[snippets='http-request,http-response,response-fields']
+
 ===== 중도 포기한 경우 (403 Forbidden)
 
 챌린지를 중도 포기한 이후 게시물을 생성할 수 없습니다.
@@ -69,6 +75,12 @@ operation::challenge/challenge-post-creation-forbidden-exception[snippets='http-
 operation::challengePost/patch-challenge-post[snippets='http-request,http-response,request-fields,response-fields']
 
 ==== 에러 응답
+
+===== 게시물 본문 길이 제한 초과 (400 Bad Request)
+
+게시물 본문 길이 제한을 초과한 경우입니다.
+
+operation::challenge/challenge-post-patch-content-length-too-long-exception[snippets='http-request,http-response,response-fields']
 
 ===== 중도 포기한 경우 (403 Forbidden)
 
