@@ -3,11 +3,13 @@ package com.habitpay.habitpay.domain.challenge.application;
 import com.habitpay.habitpay.domain.challenge.dao.ChallengeRepository;
 import com.habitpay.habitpay.domain.challenge.domain.Challenge;
 import com.habitpay.habitpay.domain.challenge.dto.ChallengeEnrolledListItemResponse;
+import com.habitpay.habitpay.domain.challenge.dto.ChallengeEnrolledListItemResponseForMember;
 import com.habitpay.habitpay.domain.challenge.dto.ChallengePageResponse;
 import com.habitpay.habitpay.domain.challenge.exception.ChallengeNotFoundException;
 import com.habitpay.habitpay.domain.challengeenrollment.dao.ChallengeEnrollmentRepository;
 import com.habitpay.habitpay.domain.challengeenrollment.domain.ChallengeEnrollment;
 import com.habitpay.habitpay.domain.challengeparticipationrecord.application.ChallengeParticipationRecordSearchService;
+import com.habitpay.habitpay.domain.member.application.MemberSearchService;
 import com.habitpay.habitpay.domain.member.domain.Member;
 import com.habitpay.habitpay.domain.participationstat.domain.ParticipationStat;
 import com.habitpay.habitpay.global.config.aws.S3FileService;
@@ -33,6 +35,7 @@ public class ChallengeSearchService {
     private final ChallengeRepository challengeRepository;
     private final ChallengeEnrollmentRepository challengeEnrollmentRepository;
     private final ChallengeParticipationRecordSearchService challengeParticipationRecordSearchService;
+    private final MemberSearchService memberSearchService;
 
     public SuccessResponse<PageResponse<ChallengePageResponse>> getChallengePage(Pageable pageable) {
         Page<ChallengePageResponse> challengePage = challengeRepository.findAll(pageable)
@@ -52,6 +55,14 @@ public class ChallengeSearchService {
         return SuccessResponse.of(SuccessCode.NO_MESSAGE, response);
     }
 
+    public SuccessResponse<List<ChallengeEnrolledListItemResponseForMember>> getEnrolledChallengeListForMember(Long id, Member currentUser) {
+        Member member = memberSearchService.getMemberById(id);
+        boolean isCurrentUser = member.equals(currentUser);
+        List<ChallengeEnrolledListItemResponseForMember> response = mapEnrollmentsToResponsesForMember(isCurrentUser, member);
+
+        return SuccessResponse.of(SuccessCode.NO_MESSAGE, response);
+    }
+
     private List<ChallengeEnrolledListItemResponse> mapEnrollmentsToResponses(Member member) {
         return challengeEnrollmentRepository.findAllByMember(member).stream()
                 .map(this::toChallengeEnrolledListItemResponse)
@@ -66,6 +77,22 @@ public class ChallengeSearchService {
                 .map((imageFileName) -> s3FileService.getGetPreSignedUrl("profiles", imageFileName))
                 .orElse("");
         return ChallengeEnrolledListItemResponse.of(challenge, challengeEnrollment, stat, hostProfileImageUrl, isParticipatedToday);
+    }
+
+    private List<ChallengeEnrolledListItemResponseForMember> mapEnrollmentsToResponsesForMember(boolean isCurrentUser, Member member) {
+        return challengeEnrollmentRepository.findAllByMember(member).stream()
+                .map(enrollment -> toChallengeEnrolledListItemResponseForMember(isCurrentUser, enrollment))
+                .toList();
+    }
+
+    private ChallengeEnrolledListItemResponseForMember toChallengeEnrolledListItemResponseForMember(boolean isCurrentUser, ChallengeEnrollment challengeEnrollment) {
+        Challenge challenge = challengeEnrollment.getChallenge();
+        ParticipationStat stat = challengeEnrollment.getParticipationStat();
+        boolean isParticipatedToday = challengeParticipationRecordSearchService.hasParticipationPostForToday(challengeEnrollment);
+        String hostProfileImageUrl = Optional.ofNullable(challenge.getHost().getImageFileName())
+                .map((imageFileName) -> s3FileService.getGetPreSignedUrl("profiles", imageFileName))
+                .orElse("");
+        return ChallengeEnrolledListItemResponseForMember.of(isCurrentUser, challenge, challengeEnrollment, stat, hostProfileImageUrl, isParticipatedToday);
     }
 
     @Transactional(readOnly = true)
