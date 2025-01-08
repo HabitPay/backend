@@ -3,7 +3,6 @@ package com.habitpay.habitpay.domain.challenge.application;
 import com.habitpay.habitpay.domain.challenge.dao.ChallengeRepository;
 import com.habitpay.habitpay.domain.challenge.domain.Challenge;
 import com.habitpay.habitpay.domain.challenge.dto.ChallengeEnrolledListItemResponse;
-import com.habitpay.habitpay.domain.challenge.dto.ChallengeEnrolledListItemResponseForMember;
 import com.habitpay.habitpay.domain.challenge.dto.ChallengePageResponse;
 import com.habitpay.habitpay.domain.challenge.exception.ChallengeNotFoundException;
 import com.habitpay.habitpay.domain.challengeenrollment.dao.ChallengeEnrollmentRepository;
@@ -55,10 +54,9 @@ public class ChallengeSearchService {
         return SuccessResponse.of(SuccessCode.NO_MESSAGE, response);
     }
 
-    public SuccessResponse<List<ChallengeEnrolledListItemResponseForMember>> getEnrolledChallengeListForMember(Long id, Member currentUser) {
+    public SuccessResponse<List<ChallengeEnrolledListItemResponse>> getEnrolledChallengeListForMember(Long id) {
         Member member = memberSearchService.getMemberById(id);
-        boolean isCurrentUser = member.equals(currentUser);
-        List<ChallengeEnrolledListItemResponseForMember> response = mapEnrollmentsToResponsesForMember(isCurrentUser, member);
+        List<ChallengeEnrolledListItemResponse> response = mapEnrollmentsToResponses(member);
 
         return SuccessResponse.of(SuccessCode.NO_MESSAGE, response);
     }
@@ -77,22 +75,6 @@ public class ChallengeSearchService {
                 .map((imageFileName) -> s3FileService.getGetPreSignedUrl("profiles", imageFileName))
                 .orElse("");
         return ChallengeEnrolledListItemResponse.of(challenge, challengeEnrollment, stat, hostProfileImageUrl, isParticipatedToday);
-    }
-
-    private List<ChallengeEnrolledListItemResponseForMember> mapEnrollmentsToResponsesForMember(boolean isCurrentUser, Member member) {
-        return challengeEnrollmentRepository.findAllByMember(member).stream()
-                .map(enrollment -> toChallengeEnrolledListItemResponseForMember(isCurrentUser, enrollment))
-                .toList();
-    }
-
-    private ChallengeEnrolledListItemResponseForMember toChallengeEnrolledListItemResponseForMember(boolean isCurrentUser, ChallengeEnrollment challengeEnrollment) {
-        Challenge challenge = challengeEnrollment.getChallenge();
-        ParticipationStat stat = challengeEnrollment.getParticipationStat();
-        boolean isParticipatedToday = challengeParticipationRecordSearchService.hasParticipationPostForToday(challengeEnrollment);
-        String hostProfileImageUrl = Optional.ofNullable(challenge.getHost().getImageFileName())
-                .map((imageFileName) -> s3FileService.getGetPreSignedUrl("profiles", imageFileName))
-                .orElse("");
-        return ChallengeEnrolledListItemResponseForMember.of(isCurrentUser, challenge, challengeEnrollment, stat, hostProfileImageUrl, isParticipatedToday);
     }
 
     @Transactional(readOnly = true)
