@@ -15,6 +15,12 @@ Request Header 에는 ``Authorization: Bearer {access token}`` 와 같은 형식
 
 operation::member/get-member[snippets='http-request,http-response,response-fields']
 
+=== 타 사용자 포함 상세 조회
+
+사용자의 상세 정보를 조회합니다. 본인이 아닌 다른 멤버의 정보도 조회할 수 있습니다.
+
+operation::member/get-member-details[snippets='http-request,http-response,response-fields']
+
 === 사용자 닉네임 변경
 
 사용자의 닉네임을 변경합니다.

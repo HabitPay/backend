@@ -3,13 +3,11 @@ package com.habitpay.habitpay.domain.member.api;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.habitpay.habitpay.docs.springrestdocs.AbstractRestDocsTests;
 import com.habitpay.habitpay.domain.member.application.MemberDeleteService;
+import com.habitpay.habitpay.domain.member.application.MemberDetailsService;
 import com.habitpay.habitpay.domain.member.application.MemberSearchService;
 import com.habitpay.habitpay.domain.member.application.MemberUpdateService;
 import com.habitpay.habitpay.domain.member.domain.Member;
-import com.habitpay.habitpay.domain.member.dto.ImageUpdateRequest;
-import com.habitpay.habitpay.domain.member.dto.ImageUpdateResponse;
-import com.habitpay.habitpay.domain.member.dto.MemberProfileResponse;
-import com.habitpay.habitpay.domain.member.dto.NicknameDto;
+import com.habitpay.habitpay.domain.member.dto.*;
 import com.habitpay.habitpay.domain.member.exception.InvalidNicknameException;
 import com.habitpay.habitpay.domain.refreshtoken.application.RefreshTokenCreationService;
 import com.habitpay.habitpay.global.config.aws.S3FileService;
@@ -30,6 +28,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
@@ -54,6 +53,9 @@ public class MemberApiTest extends AbstractRestDocsTests {
 
     @MockBean
     MemberDeleteService memberDeleteService;
+
+    @MockBean
+    MemberDetailsService memberDetailsService;
 
     @MockBean
     TokenService tokenService;
@@ -96,6 +98,42 @@ public class MemberApiTest extends AbstractRestDocsTests {
                                 fieldWithPath("data.nickname").description("사용자 닉네임"),
                                 fieldWithPath("data.imageUrl").description("사용자 이미지 URL")
                         )
+                ));
+    }
+
+    @Test
+    @WithMockOAuth2User
+    @DisplayName("타 사용자 포함 상세 조회")
+    void getMemberDetails() throws Exception {
+
+        // given
+        MemberDetailsResponse memberDetailsResponse = MemberDetailsResponse.builder()
+                .memberId(1L)
+                .nickname("HabitPay")
+                .imageUrl("https://picsum.photos/id/40/200/300")
+                .isCurrentUser(false)
+                .build();
+
+        given(memberDetailsService.getMemberDetails(anyLong(), any(Member.class)))
+                .willReturn(SuccessResponse.of(SuccessCode.NO_MESSAGE, memberDetailsResponse));
+
+        // when
+        ResultActions result = mockMvc.perform(get("/api/members/{id}", 1L)
+                .header(HttpHeaders.AUTHORIZATION, AUTHORIZATION_HEADER_PREFIX + "ACCESS_TOKEN"));
+
+        // then
+        result.andExpect(status().isOk())
+                .andDo(document("member/get-member-details",
+                        requestHeaders(
+                                headerWithName(HttpHeaders.AUTHORIZATION).description("액세스 토큰")
+                        ),
+                        responseFields(
+                                fieldWithPath("message").description("메세지"),
+                                fieldWithPath("data.memberId").description("사용자 멤버 아이디"),
+                                fieldWithPath("data.nickname").description("사용자 닉네임"),
+                                fieldWithPath("data.imageUrl").description("사용자 이미지 URL"),
+                                fieldWithPath("data.isCurrentUser").description("요청 받은 데이터의 주인이 요청한 사용자인지 여부")
+                                )
                 ));
     }
 
