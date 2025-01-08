@@ -210,8 +210,7 @@ public class ChallengeApiTest extends AbstractRestDocsTests {
     void getEnrolledChallengeListForMember() throws Exception {
 
         // given
-        ChallengeEnrolledListItemResponseForMember response = ChallengeEnrolledListItemResponseForMember.builder()
-                .isCurrentUser(false)
+        ChallengeEnrolledListItemResponse response = ChallengeEnrolledListItemResponse.builder()
                 .challengeId(1L)
                 .title("챌린지 제목")
                 .description("챌린지 설명")
@@ -230,7 +229,7 @@ public class ChallengeApiTest extends AbstractRestDocsTests {
                 .isParticipatedToday(false)
                 .build();
 
-        given(challengeSearchService.getEnrolledChallengeListForMember(anyLong(), any(Member.class)))
+        given(challengeSearchService.getEnrolledChallengeListForMember(anyLong()))
                 .willReturn(SuccessResponse.of(SuccessCode.NO_MESSAGE, List.of(response)));
 
         // when
@@ -245,7 +244,6 @@ public class ChallengeApiTest extends AbstractRestDocsTests {
                         ),
                         responseFields(
                                 fieldWithPath("message").description("메세지"),
-                                fieldWithPath("data[].isCurrentUser").description("현재 인증된 사용자가가 요청한 데이터의 주인인지 여부"),
                                 fieldWithPath("data[].challengeId").description("챌린지 ID"),
                                 fieldWithPath("data[].title").description("챌린지 제목"),
                                 fieldWithPath("data[].description").description("챌린지 설명"),
