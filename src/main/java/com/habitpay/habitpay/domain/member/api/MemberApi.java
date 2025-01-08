@@ -18,10 +18,18 @@ public class MemberApi {
     private final MemberSearchService memberSearchService;
     private final MemberUpdateService memberUpdateService;
     private final MemberDeleteService memberDeleteService;
+    private final MemberDetailsService memberDetailsService;
 
     @GetMapping("/member")
     public SuccessResponse<MemberProfileResponse> getMember(@AuthenticationPrincipal CustomUserDetails user) {
         return memberSearchService.getMemberProfile(user.getMember());
+    }
+
+    @GetMapping("/members/{id}")
+    public SuccessResponse<MemberDetailsResponse> getMemberDetails(
+            @PathVariable("id") Long id,
+            @AuthenticationPrincipal CustomUserDetails user) {
+        return memberDetailsService.getMemberDetails(id, user.getMember());
     }
 
     @PatchMapping("/member/nickname")
