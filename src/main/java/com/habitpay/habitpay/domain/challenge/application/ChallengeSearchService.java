@@ -3,7 +3,6 @@ package com.habitpay.habitpay.domain.challenge.application;
 import com.habitpay.habitpay.domain.challenge.dao.ChallengeRepository;
 import com.habitpay.habitpay.domain.challenge.domain.Challenge;
 import com.habitpay.habitpay.domain.challenge.dto.ChallengeEnrolledListItemResponse;
-import com.habitpay.habitpay.domain.challenge.dto.ChallengeEnrolledListItemResponseForMember;
 import com.habitpay.habitpay.domain.challenge.dto.ChallengePageResponse;
 import com.habitpay.habitpay.domain.challenge.exception.ChallengeNotFoundException;
 import com.habitpay.habitpay.domain.challengeenrollment.dao.ChallengeEnrollmentRepository;
