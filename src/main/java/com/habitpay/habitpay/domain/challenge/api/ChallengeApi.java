@@ -79,7 +79,7 @@ public class ChallengeApi {
     }
 
     @PostMapping("/challenges/{id}/cancel-after-start")
-    public SuccessResponse<?> cancelChallengeAfterStart(@PathVariable("id") Long id,
+    public SuccessResponse<Void> cancelChallengeAfterStart(@PathVariable("id") Long id,
                                                                          @AuthenticationPrincipal CustomUserDetails user) {
         return challengeCancelService.cancelChallengeAfterStart(id, user.getMember());
     }
