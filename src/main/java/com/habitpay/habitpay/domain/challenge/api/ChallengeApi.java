@@ -27,6 +27,7 @@ public class ChallengeApi {
     private final ChallengeSearchService challengeSearchService;
     private final ChallengeDeleteService challengeDeleteService;
     private final ChallengeRecordsService challengeRecordsService;
+    private final ChallengeCancelService challengeCancelService;
     private final ChallengeMemberSearchService challengeMemberSearchService;
 
     @GetMapping("/challenges")
@@ -75,6 +76,12 @@ public class ChallengeApi {
     public SuccessResponse<ChallengePatchResponse> patchChallengeDetails(@PathVariable("id") Long id, @RequestBody ChallengePatchRequest challengePatchRequest,
                                                                          @AuthenticationPrincipal CustomUserDetails user) {
         return challengePatchService.patch(id, challengePatchRequest, user.getMember());
+    }
+
+    @PostMapping("/challenges/{id}/cancel-after-start")
+    public SuccessResponse<?> cancelChallengeAfterStart(@PathVariable("id") Long id,
+                                                                         @AuthenticationPrincipal CustomUserDetails user) {
+        return challengeCancelService.cancelChallengeAfterStart(id, user.getMember());
     }
 
     @DeleteMapping("/challenges/{id}")
