@@ -11,10 +11,10 @@ public class MemberFeeView {
     private int totalFee;
     private int completionRate;
 
-    public MemberFeeView(Long memberId, String nickname, int totalFee, int completionRate) {
+    public MemberFeeView(Long memberId, String nickname, int totalFee, double completionRate) {
         this.memberId = memberId;
         this.nickname = nickname;
         this.totalFee = totalFee;
-        this.completionRate = completionRate;
+        this.completionRate = (int) Math.round(completionRate);
     }
 }
