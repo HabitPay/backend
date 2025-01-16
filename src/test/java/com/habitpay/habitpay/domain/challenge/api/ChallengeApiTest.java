@@ -710,7 +710,7 @@ public class ChallengeApiTest extends AbstractRestDocsTests {
     void deleteChallenge() throws Exception {
 
         // given
-        given(challengeDeleteService.delete(anyLong(), anyLong()))
+        given(challengeDeleteService.delete(anyLong(), any(Member.class)))
             .willReturn(SuccessResponse.of(SuccessCode.DELETE_CHALLENGE_SUCCESS));
 
         // when
@@ -737,7 +737,7 @@ public class ChallengeApiTest extends AbstractRestDocsTests {
     void deleteChallengeForbiddenException() throws Exception {
 
         // given
-        given(challengeDeleteService.delete(anyLong(), anyLong()))
+        given(challengeDeleteService.delete(anyLong(), any(Member.class)))
             .willThrow(new ForbiddenException(ErrorCode.NOT_ALLOWED_TO_DELETE_CHALLENGE));
 
         // when
@@ -760,7 +760,7 @@ public class ChallengeApiTest extends AbstractRestDocsTests {
     void deleteChallengeNotFoundException() throws Exception {
 
         // given
-        given(challengeDeleteService.delete(anyLong(), anyLong()))
+        given(challengeDeleteService.delete(anyLong(), any(Member.class)))
             .willThrow(new ChallengeNotFoundException(0L));
 
         // when

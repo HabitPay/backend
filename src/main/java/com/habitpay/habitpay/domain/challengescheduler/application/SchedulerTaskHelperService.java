@@ -3,7 +3,7 @@ package com.habitpay.habitpay.domain.challengescheduler.application;
 import com.habitpay.habitpay.domain.challenge.dao.ChallengeRepository;
 import com.habitpay.habitpay.domain.challenge.domain.Challenge;
 import com.habitpay.habitpay.domain.challenge.domain.ChallengeState;
-import com.habitpay.habitpay.domain.challengeenrollment.dao.ChallengeEnrollmentRepository;
+import com.habitpay.habitpay.domain.challengeenrollment.application.ChallengeEnrollmentSearchService;
 import com.habitpay.habitpay.domain.challengeenrollment.domain.ChallengeEnrollment;
 import com.habitpay.habitpay.domain.challengeparticipationrecord.application.ChallengeParticipationRecordSearchService;
 import com.habitpay.habitpay.domain.challengeparticipationrecord.dao.ChallengeParticipationRecordRepository;
@@ -28,10 +28,10 @@ import java.util.List;
 public class SchedulerTaskHelperService {
 
     private final ChallengeRepository challengeRepository;
-    private final ChallengeEnrollmentRepository challengeEnrollmentRepository;
     private final ChallengeParticipationRecordRepository challengeParticipationRecordRepository;
     private final ParticipationStatRepository participationStatRepository;
     private final ChallengeParticipationRecordSearchService challengeParticipationRecordSearchService;
+    private final ChallengeEnrollmentSearchService challengeEnrollmentSearchService;
 
     public List<Challenge> findStartingChallenges() {
         ZonedDateTime now = TimeZoneConverter.convertEtcToLocalTimeZone(ZonedDateTime.now());
@@ -44,7 +44,7 @@ public class SchedulerTaskHelperService {
 
     public void createRecordsForChallenges(List<Challenge> challengeList) {
         challengeList.forEach(challenge -> {
-            List<ChallengeEnrollment> enrollmentList = challengeEnrollmentRepository.findAllByChallenge(challenge);
+            List<ChallengeEnrollment> enrollmentList = challengeEnrollmentSearchService.findAllByChallenge(challenge);
             List<ZonedDateTime> participationDates = challenge.getParticipationDates();
 
             List<ChallengeParticipationRecord> recordList = createRecordsForEnrollments(enrollmentList, participationDates);

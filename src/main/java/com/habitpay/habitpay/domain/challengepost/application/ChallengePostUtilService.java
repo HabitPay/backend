@@ -35,10 +35,6 @@ public class ChallengePostUtilService {
         }
     }
 
-    public boolean isChallengeHost(Challenge challenge, Member member) {
-        return challenge.getHost().equals(member);
-    }
-
     public void checkChallengePeriodForPost(Challenge challenge) {
         ZonedDateTime now = ZonedDateTime.now();
         ChallengeState state = challenge.getState();

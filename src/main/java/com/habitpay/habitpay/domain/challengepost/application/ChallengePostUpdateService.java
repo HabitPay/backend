@@ -7,6 +7,7 @@ import com.habitpay.habitpay.domain.challengeenrollment.domain.ChallengeEnrollme
 import com.habitpay.habitpay.domain.challengepost.dao.ChallengePostRepository;
 import com.habitpay.habitpay.domain.challengepost.domain.ChallengePost;
 import com.habitpay.habitpay.domain.challengepost.dto.ModifyPostRequest;
+import com.habitpay.habitpay.domain.member.application.MemberUtilsService;
 import com.habitpay.habitpay.domain.member.domain.Member;
 import com.habitpay.habitpay.domain.postphoto.application.PostPhotoCreationService;
 import com.habitpay.habitpay.domain.postphoto.application.PostPhotoDeleteService;
@@ -30,12 +31,12 @@ public class ChallengePostUpdateService {
 
     private final PostPhotoCreationService postPhotoCreationService;
     private final PostPhotoUpdateService postPhotoUpdateService;
-    private final PostPhotoUtilService postPhotoUtilService;
     private final PostPhotoDeleteService postPhotoDeleteService;
     private final ChallengeSearchService challengeSearchService;
     private final ChallengePostSearchService challengePostSearchService;
     private final ChallengePostUtilService challengePostUtilService;
     private final ChallengeEnrollmentSearchService challengeEnrollmentSearchService;
+    private final MemberUtilsService memberUtilsService;
 
     private final ChallengePostRepository challengePostRepository;
 
@@ -81,7 +82,7 @@ public class ChallengePostUpdateService {
         Member member = post.getWriter();
 
         if (isAnnouncement != null) {
-            if (isAnnouncement && !challengePostUtilService.isChallengeHost(challenge, member)) {
+            if (isAnnouncement && !memberUtilsService.isChallengeHost(challenge, member)) {
                 throw new ForbiddenException(ErrorCode.ONLY_HOST_CAN_UPLOAD_ANNOUNCEMENT);
             }
             post.modifyPostIsAnnouncement(isAnnouncement);

@@ -80,7 +80,7 @@ public class ChallengeApi {
     @DeleteMapping("/challenges/{id}")
     public SuccessResponse<Void> deleteChallenge(@PathVariable("id") Long id,
                                                  @AuthenticationPrincipal CustomUserDetails user) {
-        return challengeDeleteService.delete(id, user.getId());
+        return challengeDeleteService.delete(id, user.getMember());
     }
 
 }

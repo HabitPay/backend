@@ -8,6 +8,7 @@ import com.habitpay.habitpay.domain.member.domain.Member;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -22,5 +23,9 @@ public class ChallengeEnrollmentSearchService {
     public ChallengeEnrollment getByMemberAndChallenge(Member member, Challenge challenge) {
         return challengeEnrollmentRepository.findByMemberAndChallenge(member, challenge)
                 .orElseThrow(() -> new NotEnrolledChallengeException(member.getId(), challenge.getId()));
+    }
+
+    public List<ChallengeEnrollment> findAllByChallenge(Challenge challenge) {
+        return challengeEnrollmentRepository.findAllByChallenge(challenge);
     }
 }

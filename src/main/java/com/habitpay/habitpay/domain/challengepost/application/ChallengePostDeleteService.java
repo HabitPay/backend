@@ -6,6 +6,7 @@ import com.habitpay.habitpay.domain.challengeenrollment.application.ChallengeEnr
 import com.habitpay.habitpay.domain.challengeenrollment.domain.ChallengeEnrollment;
 import com.habitpay.habitpay.domain.challengepost.dao.ChallengePostRepository;
 import com.habitpay.habitpay.domain.challengepost.domain.ChallengePost;
+import com.habitpay.habitpay.domain.member.application.MemberUtilsService;
 import com.habitpay.habitpay.domain.member.domain.Member;
 import com.habitpay.habitpay.domain.postphoto.application.PostPhotoDeleteService;
 import com.habitpay.habitpay.global.error.exception.ErrorCode;
@@ -27,6 +28,7 @@ public class ChallengePostDeleteService {
     private final PostPhotoDeleteService postPhotoDeleteService;
     private final ChallengePostSearchService challengePostSearchService;
     private final ChallengePostUtilService challengePostUtilService;
+    private final MemberUtilsService memberUtilsService;
 
     private final ChallengePostRepository challengePostRepository;
 
@@ -42,7 +44,7 @@ public class ChallengePostDeleteService {
         ChallengePost post = challengePostSearchService.getChallengePostById(postId);
 
         if (post.getIsAnnouncement()) {
-            if (!challengePostUtilService.isChallengeHost(challenge, member)) {
+            if (!memberUtilsService.isChallengeHost(challenge, member)) {
                 throw new ForbiddenException(ErrorCode.ONLY_HOST_CAN_DELETE_ANNOUNCEMENT);
             }
         } else {
