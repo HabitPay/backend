@@ -6,6 +6,7 @@ import com.habitpay.habitpay.domain.challengeenrollment.dao.ChallengeEnrollmentR
 import com.habitpay.habitpay.domain.challengeenrollment.domain.ChallengeEnrollment;
 import com.habitpay.habitpay.domain.challengeenrollment.exception.AlreadyGivenUpChallengeException;
 import com.habitpay.habitpay.domain.challengeparticipationrecord.dao.ChallengeParticipationRecordRepository;
+import com.habitpay.habitpay.domain.member.application.MemberUtilsService;
 import com.habitpay.habitpay.domain.member.domain.Member;
 import com.habitpay.habitpay.global.config.timezone.TimeZoneConverter;
 import com.habitpay.habitpay.global.error.exception.BadRequestException;
@@ -28,6 +29,7 @@ public class ChallengeEnrollmentCancellationService {
     private final ChallengeParticipationRecordRepository challengeParticipationRecordRepository;
     private final ChallengeSearchService challengeSearchService;
     private final ChallengeEnrollmentSearchService challengeEnrollmentSearchService;
+    private final MemberUtilsService memberUtilsService;
 
     @Transactional
     public SuccessResponse<Void> cancel(Long challengeId, Member member) {
@@ -66,7 +68,9 @@ public class ChallengeEnrollmentCancellationService {
             member, challenge);
         ZonedDateTime now = TimeZoneConverter.convertEtcToLocalTimeZone(ZonedDateTime.now());
 
-        // todo : host는 금지
+        if (memberUtilsService.isChallengeHost(challenge, member)) {
+            throw new BadRequestException(ErrorCode.NOT_ALLOWED_TO_CANCEL_ENROLLMENT_OF_HOST);
+        }
 
         if (now.isBefore(challenge.getStartDate())) {
             throw new BadRequestException(ErrorCode.TOO_EARLY_GIVEN_UP_CHALLENGE);
