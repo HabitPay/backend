@@ -66,6 +66,8 @@ public class ChallengeEnrollmentCancellationService {
             member, challenge);
         ZonedDateTime now = TimeZoneConverter.convertEtcToLocalTimeZone(ZonedDateTime.now());
 
+        // todo : host는 금지
+
         if (now.isBefore(challenge.getStartDate())) {
             throw new BadRequestException(ErrorCode.TOO_EARLY_GIVEN_UP_CHALLENGE);
         }
