@@ -56,14 +56,20 @@ down() {
     log "Successfully stopped and removed $target container."
 }
 
+get_previous_running_image() {
+  return $(docker ps -a | grep "$1" | awk '{print $2}')
+}
+
 main() {
     local is_blue_running=$(sudo docker container inspect blue --format='{{json .State.Status}}' | sed 's/"//g')
     local is_green_running=$(sudo docker container inspect green --format='{{json .State.Status}}' | sed 's/"//g')
     local blue_start_time=$(sudo docker container inspect blue --format='{{.State.StartedAt}}')
     local green_start_time=$(sudo docker container inspect green --format='{{.State.StartedAt}}')
+    local previous_running_image=
 
     if [ "$is_blue_running" = "running" ] && [ "$blue_start_time" "<" "$green_start_time" ]; then
         log "Blue container started first."
+        previous_running_image=get_previous_running_image "blue"
         if healthcheck "$GREEN_CONTAINER:$PORT_NUMBER/$HEALTHCHECK_API"; then
             down blue || { log_error "Failed to stop blue container. Exiting..."; exit 1; }
         else
@@ -72,6 +78,7 @@ main() {
         fi
     elif [ "$is_green_running" = "running" ] && [ "$green_start_time" "<" "$blue_start_time" ]; then
         log "Green container started first."
+        previous_running_image=get_previous_running_image "green"
         if healthcheck "$BLUE_CONTAINER:$PORT_NUMBER/$HEALTHCHECK_API"; then
             down green || { log_error "Failed to stop green container. Exiting..."; exit 1; }
         else
@@ -82,7 +89,8 @@ main() {
         log "Application is not running. Exiting..."
     fi
 
-    docker image prune -a -f
+    log "Previous running image: $previous_running_image"
+    docker rmi $previous_running_image
 }
 
 main >> "$LOG_FILE" 2>&1
