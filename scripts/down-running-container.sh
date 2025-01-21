@@ -57,7 +57,7 @@ down() {
 }
 
 get_previous_running_image() {
-  return $(docker ps -a | grep "$1" | awk '{print $2}')
+  docker ps -a | grep "$1" | awk '{print $2}'
 }
 
 main() {
@@ -69,7 +69,7 @@ main() {
 
     if [ "$is_blue_running" = "running" ] && [ "$blue_start_time" "<" "$green_start_time" ]; then
         log "Blue container started first."
-        previous_running_image=get_previous_running_image "blue"
+        previous_running_image=$(get_previous_running_image "blue")
         if healthcheck "$GREEN_CONTAINER:$PORT_NUMBER/$HEALTHCHECK_API"; then
             down blue || { log_error "Failed to stop blue container. Exiting..."; exit 1; }
         else
@@ -78,7 +78,7 @@ main() {
         fi
     elif [ "$is_green_running" = "running" ] && [ "$green_start_time" "<" "$blue_start_time" ]; then
         log "Green container started first."
-        previous_running_image=get_previous_running_image "green"
+        previous_running_image=$(get_previous_running_image "green")
         if healthcheck "$BLUE_CONTAINER:$PORT_NUMBER/$HEALTHCHECK_API"; then
             down green || { log_error "Failed to stop green container. Exiting..."; exit 1; }
         else
