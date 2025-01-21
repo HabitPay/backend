@@ -61,6 +61,8 @@ get_previous_running_image() {
 }
 
 main() {
+    sleep 30
+
     local is_blue_running=$(sudo docker container inspect blue --format='{{json .State.Status}}' | sed 's/"//g')
     local is_green_running=$(sudo docker container inspect green --format='{{json .State.Status}}' | sed 's/"//g')
     local blue_start_time=$(sudo docker container inspect blue --format='{{.State.StartedAt}}')
