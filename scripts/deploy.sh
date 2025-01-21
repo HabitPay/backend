@@ -52,6 +52,7 @@ switch() {
 
     if [ $HEALTHCHECK_RESULT -eq 0 ]; then
         log "$target is running."
+        sleep 20
     else
         log_error "Failed to run $target. Exiting..."
         exit 1
