@@ -57,7 +57,7 @@ main() {
         log "Previous running container is Blue."
         healthcheck "$GREEN_CONTAINER:$PORT_NUMBER/$HEALTHCHECK_API"
         switch blue green
-    elif [ "$is_green_running" = "running" ]; then
+    elif [ "$blue_start_time" ">" "$green_start_time" ]; then
         log "Previous running container is Green."
         healthcheck "$BLUE_CONTAINER:$PORT_NUMBER/$HEALTHCHECK_API"
         switch green blue
