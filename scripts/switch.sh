@@ -50,15 +50,15 @@ switch() {
 }
 
 main() {
-    local is_blue_running=$(grep -q "http://blue" $NGINX_CONFIGURATION_FILE && echo "running")
-    local is_green_running=$(grep -q "http://green" $NGINX_CONFIGURATION_FILE && echo "running")
+    local blue_start_time=$(sudo docker container inspect blue --format='{{.State.StartedAt}}')
+    local green_start_time=$(sudo docker container inspect green --format='{{.State.StartedAt}}')
 
-    if [ "$is_blue_running" = "running" ]; then
-        log "Blue container is running."
+    if [ "$blue_start_time" "<" "$green_start_time" ]; then
+        log "Previous running container is Blue."
         healthcheck "$GREEN_CONTAINER:$PORT_NUMBER/$HEALTHCHECK_API"
         switch blue green
     elif [ "$is_green_running" = "running" ]; then
-        log "Green container is running."
+        log "Previous running container is Green."
         healthcheck "$BLUE_CONTAINER:$PORT_NUMBER/$HEALTHCHECK_API"
         switch green blue
     else
