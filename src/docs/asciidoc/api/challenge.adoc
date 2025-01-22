@@ -96,6 +96,12 @@ operation::challenge/create-challenge-invalid-start-time[snippets='http-request,
 
 operation::challenge/create-challenge-invalid-participating-days[snippets='http-request,http-response,response-fields']
 
+=== 챌린지 정산
+
+종료된 챌린지의 상태를 정산 완료로 변경합니다.
+
+operation::challenge/settlement[snippets='http-request,http-response,response-fields']
+
 === 챌린지 정보 수정
 
 챌린지 정보를 수정합니다.
