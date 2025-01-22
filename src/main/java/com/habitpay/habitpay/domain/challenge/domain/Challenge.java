@@ -160,6 +160,8 @@ public class Challenge extends BaseTime {
         this.state = ChallengeState.COMPLETED_PENDING_SETTLEMENT;
     }
 
+    public void setStateCompletedSettled() { this.state = ChallengeState.COMPLETED_SETTLED; }
+
     public boolean isTodayParticipatingDay() {
         ZonedDateTime nowInLocal = TimeZoneConverter.convertEtcToLocalTimeZone(ZonedDateTime.now());
         DayOfWeek today = nowInLocal.getDayOfWeek();
