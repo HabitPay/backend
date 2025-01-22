@@ -37,7 +37,6 @@ public class SchedulerTaskHelperService {
         ZonedDateTime now = TimeZoneConverter.convertEtcToLocalTimeZone(ZonedDateTime.now());
         ZonedDateTime startOfMinute = now.withSecond(0).withNano(0);
         ZonedDateTime endOfMinute = now.plusMinutes(1).withSecond(0).withNano(0);
-        log.info("Fetching challenges starting at {}", startOfMinute);
 
         return challengeRepository.findAllByStartDateBetweenAndState(startOfMinute, endOfMinute, ChallengeState.SCHEDULED);
     }
@@ -118,7 +117,6 @@ public class SchedulerTaskHelperService {
         ZonedDateTime now = TimeZoneConverter.convertEtcToLocalTimeZone(ZonedDateTime.now());
         ZonedDateTime startOfMinute = now.withSecond(0).withNano(0);
         ZonedDateTime endOfMinute = now.plusMinutes(1).withSecond(0).withNano(0);
-        log.info("Fetching challenges ending at {}", startOfMinute);
 
         return challengeRepository.findAllByEndDateBetweenAndState(startOfMinute, endOfMinute, ChallengeState.IN_PROGRESS);
     }
