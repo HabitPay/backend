@@ -28,6 +28,7 @@ public class ChallengeApi {
     private final ChallengeDeleteService challengeDeleteService;
     private final ChallengeRecordsService challengeRecordsService;
     private final ChallengeMemberSearchService challengeMemberSearchService;
+    private final ChallengeSettlementService challengeSettlementService;
 
     @GetMapping("/challenges")
     public SuccessResponse<PageResponse<ChallengePageResponse>> getChallengePage(
@@ -75,6 +76,12 @@ public class ChallengeApi {
     public SuccessResponse<ChallengePatchResponse> patchChallengeDetails(@PathVariable("id") Long id, @RequestBody ChallengePatchRequest challengePatchRequest,
                                                                          @AuthenticationPrincipal CustomUserDetails user) {
         return challengePatchService.patch(id, challengePatchRequest, user.getMember());
+    }
+
+    @PatchMapping("/challenges/{id}/settlement")
+    public SuccessResponse<Void> setChallengeSettled(@PathVariable("id") Long id,
+                                                                         @AuthenticationPrincipal CustomUserDetails user) {
+        return challengeSettlementService.settleChallenge(id, user.getMember());
     }
 
     @DeleteMapping("/challenges/{id}")
