@@ -72,16 +72,16 @@ public class ChallengeApi {
         return challengeCreationService.createChallenge(challengeCreationRequest, user.getMember());
     }
 
+    @PostMapping("/challenges/{id}/settlement")
+    public SuccessResponse<Void> setChallengeSettled(@PathVariable("id") Long id,
+                                                     @AuthenticationPrincipal CustomUserDetails user) {
+        return challengeSettlementService.settleChallenge(id, user.getMember());
+    }
+
     @PatchMapping("/challenges/{id}")
     public SuccessResponse<ChallengePatchResponse> patchChallengeDetails(@PathVariable("id") Long id, @RequestBody ChallengePatchRequest challengePatchRequest,
                                                                          @AuthenticationPrincipal CustomUserDetails user) {
         return challengePatchService.patch(id, challengePatchRequest, user.getMember());
-    }
-
-    @PatchMapping("/challenges/{id}/settlement")
-    public SuccessResponse<Void> setChallengeSettled(@PathVariable("id") Long id,
-                                                                         @AuthenticationPrincipal CustomUserDetails user) {
-        return challengeSettlementService.settleChallenge(id, user.getMember());
     }
 
     @DeleteMapping("/challenges/{id}")

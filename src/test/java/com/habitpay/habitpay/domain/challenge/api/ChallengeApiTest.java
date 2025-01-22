@@ -17,13 +17,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.habitpay.habitpay.docs.springrestdocs.AbstractRestDocsTests;
-import com.habitpay.habitpay.domain.challenge.application.ChallengeCreationService;
-import com.habitpay.habitpay.domain.challenge.application.ChallengeDeleteService;
-import com.habitpay.habitpay.domain.challenge.application.ChallengeDetailsService;
-import com.habitpay.habitpay.domain.challenge.application.ChallengeMemberSearchService;
-import com.habitpay.habitpay.domain.challenge.application.ChallengePatchService;
-import com.habitpay.habitpay.domain.challenge.application.ChallengeRecordsService;
-import com.habitpay.habitpay.domain.challenge.application.ChallengeSearchService;
+import com.habitpay.habitpay.domain.challenge.application.*;
 import com.habitpay.habitpay.domain.challenge.dto.ChallengeCreationRequest;
 import com.habitpay.habitpay.domain.challenge.dto.ChallengeCreationResponse;
 import com.habitpay.habitpay.domain.challenge.dto.ChallengeDetailsResponse;
@@ -93,6 +87,9 @@ public class ChallengeApiTest extends AbstractRestDocsTests {
 
     @MockBean
     ChallengeMemberSearchService challengeMemberSearchService;
+
+    @MockBean
+    ChallengeSettlementService challengeSettlementService;
 
     @MockBean
     TimeZoneProperties timeZoneProperties;
@@ -592,6 +589,31 @@ public class ChallengeApiTest extends AbstractRestDocsTests {
             ));
     }
 
+    @Test
+    @WithMockOAuth2User
+    @DisplayName("챌린지 정산")
+    void settleChallenge() throws Exception {
+
+        // given
+        given(challengeSettlementService.settleChallenge(anyLong(), any(Member.class)))
+                .willReturn(SuccessResponse.of(SuccessCode.CHALLENGE_SETTLEMENT_SUCCESS));
+
+        // when
+        ResultActions result = mockMvc.perform(post("/api/challenges/{id}/settlement", 1L)
+                .header(HttpHeaders.AUTHORIZATION, AUTHORIZATION_HEADER_PREFIX + "ACCESS_TOKEN"));
+
+        // then
+        result.andExpect(status().isOk())
+                .andDo(document("challenge/settlement",
+                        requestHeaders(
+                                headerWithName(HttpHeaders.AUTHORIZATION).description("액세스 토큰")
+                        ),
+                        responseFields(
+                                fieldWithPath("message").description("메세지"),
+                                fieldWithPath("data").description("null")
+                        )
+                ));
+    }
 
     @Test
     @WithMockOAuth2User
