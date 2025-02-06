@@ -157,12 +157,23 @@ public class Challenge extends BaseTime {
     }
 
     public void setStateCompletedPendingSettlement() {
+        this.isPaidAll = false;
         this.state = ChallengeState.COMPLETED_PENDING_SETTLEMENT;
     }
 
     public void setStateCompletedSettled() {
         this.isPaidAll = true;
         this.state = ChallengeState.COMPLETED_SETTLED;
+    }
+
+    public void setStateCanceledSettled() {
+        this.isPaidAll = true;
+        this.state = ChallengeState.CANCELED_SETTLED;
+    }
+
+    public void setStateCanceled() {
+        this.isPaidAll = false;
+        this.state = ChallengeState.CANCELED;
     }
 
     public boolean isTodayParticipatingDay() {

@@ -33,11 +33,14 @@ public class ChallengeSettlementService {
             throw new BadRequestException(ErrorCode.INVALID_CHALLENGE_SETTLEMENT_TIME);
         }
 
-        if (!(challenge.getState() == ChallengeState.COMPLETED_PENDING_SETTLEMENT)) {
-            throw new BadRequestException(ErrorCode.INVALID_CHALLENGE_STATE_FOR_SETTLEMENT);
+        switch (challenge.getState()) {
+            case COMPLETED_PENDING_SETTLEMENT -> challenge.setStateCompletedSettled();
+            case COMPLETED_SETTLED -> challenge.setStateCompletedPendingSettlement();
+            case CANCELED -> challenge.setStateCanceledSettled();
+            case CANCELED_SETTLED -> challenge.setStateCanceled();
+            default -> throw new BadRequestException(ErrorCode.INVALID_CHALLENGE_STATE_FOR_SETTLEMENT);
         }
 
-        challenge.setStateCompletedSettled();
         challengeRepository.save(challenge);
 
         return SuccessResponse.of(SuccessCode.CHALLENGE_SETTLEMENT_SUCCESS);
