@@ -19,6 +19,17 @@ operation::challenge/get-challenge-page[snippets='http-request,http-response,res
 
 현재 접속한 사용자가 참여하고 있는 챌린지 목록을 반환합니다.
 
+
+챌린지 상태의 경우, 다음의 7가지 상태 중 하나가 문자열로 전달됩니다.
+
+[ "SCHEDULED"(진행 예정),
+"IN_PROGRESS"(진행 중),
+"COMPLETED_PENDING_SETTLEMENT"(완료, 정산 안 됨),
+"COMPLETED_SETTLED"(완료, 정산됨),
+"CANCELED"(중도 취소),
+"CANCELED_SETTLED"(중도 취소, 정산됨),
+"CANCELED_BEFORE_START"(시작 전 취소함) ]
+
 operation::challenge/get-my-challenge-list[snippets='http-request,http-response,response-fields']
 
 === 다른 멤버의 챌린지 참여 목록 조회

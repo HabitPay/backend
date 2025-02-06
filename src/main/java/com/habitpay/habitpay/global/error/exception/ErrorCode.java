@@ -47,7 +47,7 @@ public enum ErrorCode {
     NOT_ALLOWED_TO_CANCEL_ENROLLMENT_OF_HOST(HttpStatus.BAD_REQUEST, "챌린지 주최자는 참여 취소가 불가능 합니다."),
     NOT_ALLOWED_TO_DELETE_CHALLENGE(HttpStatus.FORBIDDEN, "챌린지 삭제는 챌린지 주최자만 가능합니다."),
     INVALID_CHALLENGE_SETTLEMENT_TIME(HttpStatus.BAD_REQUEST, "정산은 챌린지 종료 이후에 가능합니다."),
-    INVALID_CHALLENGE_STATE_FOR_SETTLEMENT(HttpStatus.BAD_REQUEST, "정산은 챌린지가 종료 이후 정산 대기 상태일 때만 가능합니다."),
+    INVALID_CHALLENGE_STATE_FOR_SETTLEMENT(HttpStatus.BAD_REQUEST, "정산 혹은 정산 취소 처리가 불가한 상태입니다."),
 
     // Challenge Participation Record
     RECORD_NOT_FOUND(HttpStatus.NOT_FOUND, "챌린지 참여 기록이 존재하지 않습니다."),

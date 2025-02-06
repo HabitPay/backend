@@ -18,6 +18,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.habitpay.habitpay.docs.springrestdocs.AbstractRestDocsTests;
 import com.habitpay.habitpay.domain.challenge.application.*;
+import com.habitpay.habitpay.domain.challenge.domain.ChallengeState;
 import com.habitpay.habitpay.domain.challenge.dto.ChallengeCreationRequest;
 import com.habitpay.habitpay.domain.challenge.dto.ChallengeCreationResponse;
 import com.habitpay.habitpay.domain.challenge.dto.ChallengeDetailsResponse;
@@ -169,23 +170,24 @@ public class ChallengeApiTest extends AbstractRestDocsTests {
 
         // given
         ChallengeEnrolledListItemResponse response = ChallengeEnrolledListItemResponse.builder()
-            .challengeId(1L)
-            .title("챌린지 제목")
-            .description("챌린지 설명")
-            .startDate(ZonedDateTime.now())
-            .endDate(ZonedDateTime.now().plusDays(5))
-            .stopDate(null)
-            .totalParticipatingDaysCount(2)
-            .numberOfParticipants(1)
-            .participatingDays(1 << 2)
-            .totalFee(1000)
-            .isPaidAll(false)
-            .hostProfileImage("챌린지 주최자 프로필 이미지")
-            .isMemberGivenUp(false)
-            .successCount(4)
-            .isTodayParticipatingDay(true)
-            .isParticipatedToday(false)
-            .build();
+                .challengeId(1L)
+                .title("챌린지 제목")
+                .description("챌린지 설명")
+                .startDate(ZonedDateTime.now())
+                .endDate(ZonedDateTime.now().plusDays(5))
+                .stopDate(null)
+                .totalParticipatingDaysCount(2)
+                .numberOfParticipants(1)
+                .participatingDays(1 << 2)
+                .totalFee(1000)
+                .isPaidAll(false)
+                .hostProfileImage("챌린지 주최자 프로필 이미지")
+                .isMemberGivenUp(false)
+                .successCount(4)
+                .isTodayParticipatingDay(true)
+                .isParticipatedToday(false)
+                .challengeState(String.valueOf(ChallengeState.IN_PROGRESS))
+                .build();
 
         given(challengeSearchService.getEnrolledChallengeList(any(Member.class)))
             .willReturn(SuccessResponse.of(SuccessCode.NO_MESSAGE, List.of(response)));
@@ -201,24 +203,25 @@ public class ChallengeApiTest extends AbstractRestDocsTests {
                     headerWithName(HttpHeaders.AUTHORIZATION).description("액세스 토큰")
                 ),
                 responseFields(
-                    fieldWithPath("message").description("메세지"),
-                    fieldWithPath("data[].challengeId").description("챌린지 ID"),
-                    fieldWithPath("data[].title").description("챌린지 제목"),
-                    fieldWithPath("data[].description").description("챌린지 설명"),
-                    fieldWithPath("data[].startDate").description("챌린지 시작 일시"),
-                    fieldWithPath("data[].endDate").description("챌린지 종료 일시"),
-                    fieldWithPath("data[].stopDate").description("챌린지 중단 일시"),
-                    fieldWithPath("data[].totalParticipatingDaysCount").description("챌린지 총 참여 일수"),
-                    fieldWithPath("data[].numberOfParticipants").description("챌린지 참여 인원"),
-                    fieldWithPath("data[].participatingDays").description("챌린지 참여 요일"),
-                    fieldWithPath("data[].totalFee").description("나의 벌금 합계"),
-                    fieldWithPath("data[].isPaidAll").description("최종 정산 여부"),
-                    fieldWithPath("data[].hostProfileImage").description("챌린지 주최자 프로필 이미지"),
-                    fieldWithPath("data[].isMemberGivenUp").description("현재 사용자의 챌린지 포기 여부"),
-                    fieldWithPath("data[].successCount").description("챌린지 인증 성공 횟수"),
-                    fieldWithPath("data[].isTodayParticipatingDay").description(
-                        "오늘 요일 == 챌린지 참여 요일"),
-                    fieldWithPath("data[].isParticipatedToday").description("오늘 챌린지 참여 여부")
+                        fieldWithPath("message").description("메세지"),
+                        fieldWithPath("data[].challengeId").description("챌린지 ID"),
+                        fieldWithPath("data[].title").description("챌린지 제목"),
+                        fieldWithPath("data[].description").description("챌린지 설명"),
+                        fieldWithPath("data[].startDate").description("챌린지 시작 일시"),
+                        fieldWithPath("data[].endDate").description("챌린지 종료 일시"),
+                        fieldWithPath("data[].stopDate").description("챌린지 중단 일시"),
+                        fieldWithPath("data[].totalParticipatingDaysCount").description("챌린지 총 참여 일수"),
+                        fieldWithPath("data[].numberOfParticipants").description("챌린지 참여 인원"),
+                        fieldWithPath("data[].participatingDays").description("챌린지 참여 요일"),
+                        fieldWithPath("data[].totalFee").description("나의 벌금 합계"),
+                        fieldWithPath("data[].isPaidAll").description("최종 정산 여부"),
+                        fieldWithPath("data[].hostProfileImage").description("챌린지 주최자 프로필 이미지"),
+                        fieldWithPath("data[].isMemberGivenUp").description("현재 사용자의 챌린지 포기 여부"),
+                        fieldWithPath("data[].successCount").description("챌린지 인증 성공 횟수"),
+                        fieldWithPath("data[].isTodayParticipatingDay").description(
+                            "오늘 요일 == 챌린지 참여 요일"),
+                        fieldWithPath("data[].isParticipatedToday").description("오늘 챌린지 참여 여부"),
+                        fieldWithPath("data[].challengeState").description("챌린지 상태")
                 )
             ));
     }
@@ -230,23 +233,24 @@ public class ChallengeApiTest extends AbstractRestDocsTests {
 
         // given
         ChallengeEnrolledListItemResponse response = ChallengeEnrolledListItemResponse.builder()
-            .challengeId(1L)
-            .title("챌린지 제목")
-            .description("챌린지 설명")
-            .startDate(ZonedDateTime.now())
-            .endDate(ZonedDateTime.now().plusDays(5))
-            .stopDate(null)
-            .totalParticipatingDaysCount(2)
-            .numberOfParticipants(1)
-            .participatingDays(1 << 2)
-            .totalFee(1000)
-            .isPaidAll(false)
-            .hostProfileImage("챌린지 주최자 프로필 이미지")
-            .isMemberGivenUp(false)
-            .successCount(4)
-            .isTodayParticipatingDay(true)
-            .isParticipatedToday(false)
-            .build();
+                .challengeId(1L)
+                .title("챌린지 제목")
+                .description("챌린지 설명")
+                .startDate(ZonedDateTime.now())
+                .endDate(ZonedDateTime.now().plusDays(5))
+                .stopDate(null)
+                .totalParticipatingDaysCount(2)
+                .numberOfParticipants(1)
+                .participatingDays(1 << 2)
+                .totalFee(1000)
+                .isPaidAll(false)
+                .hostProfileImage("챌린지 주최자 프로필 이미지")
+                .isMemberGivenUp(false)
+                .successCount(4)
+                .isTodayParticipatingDay(true)
+                .isParticipatedToday(false)
+                .challengeState(String.valueOf(ChallengeState.COMPLETED_PENDING_SETTLEMENT))
+                .build();
 
         given(challengeSearchService.getEnrolledChallengeListForMember(anyLong()))
             .willReturn(SuccessResponse.of(SuccessCode.NO_MESSAGE, List.of(response)));
@@ -262,24 +266,25 @@ public class ChallengeApiTest extends AbstractRestDocsTests {
                     headerWithName(HttpHeaders.AUTHORIZATION).description("액세스 토큰")
                 ),
                 responseFields(
-                    fieldWithPath("message").description("메세지"),
-                    fieldWithPath("data[].challengeId").description("챌린지 ID"),
-                    fieldWithPath("data[].title").description("챌린지 제목"),
-                    fieldWithPath("data[].description").description("챌린지 설명"),
-                    fieldWithPath("data[].startDate").description("챌린지 시작 일시"),
-                    fieldWithPath("data[].endDate").description("챌린지 종료 일시"),
-                    fieldWithPath("data[].stopDate").description("챌린지 중단 일시"),
-                    fieldWithPath("data[].totalParticipatingDaysCount").description("챌린지 총 참여 일수"),
-                    fieldWithPath("data[].numberOfParticipants").description("챌린지 참여 인원"),
-                    fieldWithPath("data[].participatingDays").description("챌린지 참여 요일"),
-                    fieldWithPath("data[].totalFee").description("나의 벌금 합계"),
-                    fieldWithPath("data[].isPaidAll").description("최종 정산 여부"),
-                    fieldWithPath("data[].hostProfileImage").description("챌린지 주최자 프로필 이미지"),
-                    fieldWithPath("data[].isMemberGivenUp").description("현재 사용자의 챌린지 포기 여부"),
-                    fieldWithPath("data[].successCount").description("챌린지 인증 성공 횟수"),
-                    fieldWithPath("data[].isTodayParticipatingDay").description(
-                        "오늘 요일 == 챌린지 참여 요일"),
-                    fieldWithPath("data[].isParticipatedToday").description("오늘 챌린지 참여 여부")
+                        fieldWithPath("message").description("메세지"),
+                        fieldWithPath("data[].challengeId").description("챌린지 ID"),
+                        fieldWithPath("data[].title").description("챌린지 제목"),
+                        fieldWithPath("data[].description").description("챌린지 설명"),
+                        fieldWithPath("data[].startDate").description("챌린지 시작 일시"),
+                        fieldWithPath("data[].endDate").description("챌린지 종료 일시"),
+                        fieldWithPath("data[].stopDate").description("챌린지 중단 일시"),
+                        fieldWithPath("data[].totalParticipatingDaysCount").description("챌린지 총 참여 일수"),
+                        fieldWithPath("data[].numberOfParticipants").description("챌린지 참여 인원"),
+                        fieldWithPath("data[].participatingDays").description("챌린지 참여 요일"),
+                        fieldWithPath("data[].totalFee").description("나의 벌금 합계"),
+                        fieldWithPath("data[].isPaidAll").description("최종 정산 여부"),
+                        fieldWithPath("data[].hostProfileImage").description("챌린지 주최자 프로필 이미지"),
+                        fieldWithPath("data[].isMemberGivenUp").description("현재 사용자의 챌린지 포기 여부"),
+                        fieldWithPath("data[].successCount").description("챌린지 인증 성공 횟수"),
+                        fieldWithPath("data[].isTodayParticipatingDay").description(
+                            "오늘 요일 == 챌린지 참여 요일"),
+                        fieldWithPath("data[].isParticipatedToday").description("오늘 챌린지 참여 여부"),
+                        fieldWithPath("data[].challengeState").description("챌린지 상태")
                 )
             ));
     }
@@ -291,24 +296,25 @@ public class ChallengeApiTest extends AbstractRestDocsTests {
 
         // given
         ChallengeDetailsResponse challengeDetailsResponse = ChallengeDetailsResponse.builder()
-            .title("챌린지 제목")
-            .description("챌린지 설명")
-            .startDate(ZonedDateTime.now())
-            .endDate(ZonedDateTime.now().plusDays(5))
-            .stopDate(null)
-            .numberOfParticipants(1)
-            .participatingDays(1 << 2)
-            .feePerAbsence(1000)
-            .totalAbsenceFee(0)
-            .isPaidAll(false)
-            .hostNickname("챌린지 주최자 닉네임")
-            .enrolledMembersProfileImageList(List.of("imageLink1", "imageLink2", "imageLink3"))
-            .isHost(true)
-            .isMemberEnrolledInChallenge(true)
-            .isTodayParticipatingDay(true)
-            .isParticipatedToday(true)
-            .isGivenUp(false)
-            .build();
+                .title("챌린지 제목")
+                .description("챌린지 설명")
+                .startDate(ZonedDateTime.now())
+                .endDate(ZonedDateTime.now().plusDays(5))
+                .stopDate(null)
+                .numberOfParticipants(1)
+                .participatingDays(1 << 2)
+                .feePerAbsence(1000)
+                .totalAbsenceFee(0)
+                .isPaidAll(false)
+                .hostNickname("챌린지 주최자 닉네임")
+                .enrolledMembersProfileImageList(List.of("imageLink1", "imageLink2", "imageLink3"))
+                .isHost(true)
+                .isMemberEnrolledInChallenge(true)
+                .isTodayParticipatingDay(true)
+                .isParticipatedToday(true)
+                .isGivenUp(false)
+                .challengeState(String.valueOf(ChallengeState.SCHEDULED))
+                .build();
 
         given(challengeDetailsService.getChallengeDetails(anyLong(), any(Member.class)))
             .willReturn(SuccessResponse.of(SuccessCode.NO_MESSAGE, challengeDetailsResponse));
@@ -324,27 +330,28 @@ public class ChallengeApiTest extends AbstractRestDocsTests {
                     headerWithName(HttpHeaders.AUTHORIZATION).description("액세스 토큰")
                 ),
                 responseFields(
-                    fieldWithPath("message").description("메세지"),
-                    fieldWithPath("data.title").description("챌린지 제목"),
-                    fieldWithPath("data.description").description("챌린지 설명"),
-                    fieldWithPath("data.startDate").description("챌린지 시작 일시"),
-                    fieldWithPath("data.endDate").description("챌린지 종료 일시"),
-                    fieldWithPath("data.stopDate").description("챌린지 중단 일시"),
-                    fieldWithPath("data.numberOfParticipants").description("챌린지 참여 인"),
-                    fieldWithPath("data.participatingDays").description("챌린지 참여 요일"),
-                    fieldWithPath("data.feePerAbsence").description("미참여 1회당 벌금"),
-                    fieldWithPath("data.totalAbsenceFee").description("챌린지 전체 벌금"),
-                    fieldWithPath("data.isPaidAll").description("최종 정산 여부"),
-                    fieldWithPath("data.hostNickname").description("챌린지 주최자 닉네임"),
-                    fieldWithPath("data.enrolledMembersProfileImageList").description(
-                        "챌린지 참여자 프로필 이미지 (최대 3명)"),
-                    fieldWithPath("data.isHost").description("현재 접속한 사용자 == 챌린지 주최자"),
-                    fieldWithPath("data.isMemberEnrolledInChallenge").description(
-                        "현재 접속한 사용자의 챌린지 참여 여부"),
-                    fieldWithPath("data.isTodayParticipatingDay").description("금일이 챌린지 참여일인지 여부"),
-                    fieldWithPath("data.isParticipatedToday").description(
-                        "현재 접속한 사용자가 챌린지의 참가자일 경우, 금일 참여했는지 여부(참가자가 아니어도 false)"),
-                    fieldWithPath("data.isGivenUp").description("챌린지 중도 포기 여부")
+                        fieldWithPath("message").description("메세지"),
+                        fieldWithPath("data.title").description("챌린지 제목"),
+                        fieldWithPath("data.description").description("챌린지 설명"),
+                        fieldWithPath("data.startDate").description("챌린지 시작 일시"),
+                        fieldWithPath("data.endDate").description("챌린지 종료 일시"),
+                        fieldWithPath("data.stopDate").description("챌린지 중단 일시"),
+                        fieldWithPath("data.numberOfParticipants").description("챌린지 참여 인"),
+                        fieldWithPath("data.participatingDays").description("챌린지 참여 요일"),
+                        fieldWithPath("data.feePerAbsence").description("미참여 1회당 벌금"),
+                        fieldWithPath("data.totalAbsenceFee").description("챌린지 전체 벌금"),
+                        fieldWithPath("data.isPaidAll").description("최종 정산 여부"),
+                        fieldWithPath("data.hostNickname").description("챌린지 주최자 닉네임"),
+                        fieldWithPath("data.enrolledMembersProfileImageList").description(
+                            "챌린지 참여자 프로필 이미지 (최대 3명)"),
+                        fieldWithPath("data.isHost").description("현재 접속한 사용자 == 챌린지 주최자"),
+                        fieldWithPath("data.isMemberEnrolledInChallenge").description(
+                            "현재 접속한 사용자의 챌린지 참여 여부"),
+                        fieldWithPath("data.isTodayParticipatingDay").description("금일이 챌린지 참여일인지 여부"),
+                        fieldWithPath("data.isParticipatedToday").description(
+                            "현재 접속한 사용자가 챌린지의 참가자일 경우, 금일 참여했는지 여부(참가자가 아니어도 false)"),
+                        fieldWithPath("data.isGivenUp").description("챌린지 중도 포기 여부"),
+                        fieldWithPath("data.challengeState").description("챌린지 상태")
                 )
             ));
     }

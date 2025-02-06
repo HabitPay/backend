@@ -27,6 +27,7 @@ public class ChallengeEnrolledListItemResponse {
     private int successCount;
     private Boolean isTodayParticipatingDay;
     private Boolean isParticipatedToday;
+    private String challengeState;
 
     public static ChallengeEnrolledListItemResponse of(Challenge challenge, ChallengeEnrollment challengeEnrollment, ParticipationStat stat, String hostProfileImage, boolean isParticipatedToday) {
         return ChallengeEnrolledListItemResponse.builder()
@@ -46,6 +47,7 @@ public class ChallengeEnrolledListItemResponse {
                 .successCount(stat.getSuccessCount())
                 .isTodayParticipatingDay(challenge.isTodayParticipatingDay())
                 .isParticipatedToday(isParticipatedToday)
+                .challengeState(String.valueOf(challenge.getState()))
                 .build();
     }
 }
