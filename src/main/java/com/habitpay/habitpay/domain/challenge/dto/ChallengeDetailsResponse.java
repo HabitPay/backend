@@ -28,6 +28,7 @@ public class ChallengeDetailsResponse {
     private Boolean isHost;
     private Boolean isMemberEnrolledInChallenge;
     private Boolean isGivenUp;
+    private String challengeState;
 
     public static ChallengeDetailsResponse of(Member member, Challenge challenge,
                                               List<String> enrolledMembersProfileImageList,
@@ -50,6 +51,7 @@ public class ChallengeDetailsResponse {
                 .isHost(challenge.getHost().getId().equals(member.getId()))
                 .isMemberEnrolledInChallenge(isMemberEnrolledInChallenge)
                 .isGivenUp(isGivenUp)
+                .challengeState(String.valueOf(challenge.getState()))
                 .build();
     }
 }
