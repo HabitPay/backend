@@ -44,7 +44,7 @@ switch() {
     local target=$2
 
     log "Switching from $current to $target..."
-    sed -i "s|http://$current|http://$target|" $NGINX_CONFIGURATION_FILE
+    sed -i -E "s|proxy_pass[[:space:]]+http://[^;]+;|proxy_pass http://$target;|g" $NGINX_CONFIGURATION_FILE
     docker exec nginx nginx -s reload
     log "Complete to switch container. ($current -> $target)"
 }
